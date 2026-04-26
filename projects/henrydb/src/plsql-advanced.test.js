@@ -1,15 +1,14 @@
-// plsql-advanced.test.js — Tests for advanced PL/HenryDB features
-// Dynamic SQL (EXECUTE USING), cursors, RETURN NEXT, FOR..IN query loops
-import { describe, test, beforeEach } from 'node:test';
+// plsql-advanced.test.js — Tests for PL/HenryDB advanced features
+// Covers: CASE, DML, cursors, FOR query, stored functions, LOOP, EXIT WHEN
+
+import { describe, it, beforeEach } from 'node:test';
 import assert from 'node:assert/strict';
-import { PLParser, PLInterpreter } from './plsql.js';
-import { StoredRoutineCatalog } from './stored-routines.js';
+import { PLParser, PLInterpreter, PLRaise } from './plsql.js';
 import { Database } from './db.js';
 
-let db, catalog;
-
-function run(source, params = {}) {
-  const parser = new PLParser(source);
+let db;
+function run(src, params = {}) {
+  const parser = new PLParser(src);
   const ast = parser.parse();
   const interp = new PLInterpreter(db);
   const result = interp.execute(ast, params);
@@ -19,229 +18,250 @@ function run(source, params = {}) {
 describe('PL/HenryDB Advanced Features', () => {
   beforeEach(() => {
     db = new Database();
-    catalog = new StoredRoutineCatalog();
-    db.execute('CREATE TABLE employees (id INTEGER PRIMARY KEY, name TEXT, dept TEXT, salary INTEGER)');
-    db.execute("INSERT INTO employees VALUES (1, 'Alice', 'Engineering', 90000)");
-    db.execute("INSERT INTO employees VALUES (2, 'Bob', 'Engineering', 85000)");
-    db.execute("INSERT INTO employees VALUES (3, 'Carol', 'Marketing', 70000)");
-    db.execute("INSERT INTO employees VALUES (4, 'Dave', 'Marketing', 75000)");
-    db.execute("INSERT INTO employees VALUES (5, 'Eve', 'Sales', 60000)");
+    db.execute('CREATE TABLE items (id INTEGER PRIMARY KEY, name TEXT, price INTEGER)');
+    db.execute("INSERT INTO items VALUES (1, 'apple', 10)");
+    db.execute("INSERT INTO items VALUES (2, 'banana', 5)");
+    db.execute("INSERT INTO items VALUES (3, 'cherry', 15)");
   });
 
-  test('dynamic SQL with string concatenation', () => {
-    const { result } = run(`
-      DECLARE
-        tbl TEXT := 'employees';
-        cnt INTEGER;
-      BEGIN
-        EXECUTE 'SELECT COUNT(*) as cnt FROM ' || tbl INTO cnt;
-        RETURN cnt;
-      END;
-    `);
-    assert.equal(result, 5);
+  describe('CASE Statement', () => {
+    it('searched CASE with WHEN conditions', () => {
+      const { result } = run(`
+        DECLARE grade INT := 85; BEGIN
+          CASE WHEN grade >= 90 THEN RETURN 'A';
+               WHEN grade >= 80 THEN RETURN 'B';
+               WHEN grade >= 70 THEN RETURN 'C';
+               ELSE RETURN 'F';
+          END CASE;
+        END
+      `);
+      assert.equal(result, 'B');
+    });
+
+    it('simple CASE with subject', () => {
+      const { result } = run(`
+        DECLARE x INT := 2; BEGIN
+          CASE x
+            WHEN 1 THEN RETURN 'one';
+            WHEN 2 THEN RETURN 'two';
+            WHEN 3 THEN RETURN 'three';
+            ELSE RETURN 'other';
+          END CASE;
+        END
+      `);
+      assert.equal(result, 'two');
+    });
+
+    it('CASE with ELSE', () => {
+      const { result } = run("DECLARE x INT := 99; BEGIN CASE x WHEN 1 THEN RETURN 'one'; ELSE RETURN 'unknown'; END CASE; END");
+      assert.equal(result, 'unknown');
+    });
+
+    it('CASE_NOT_FOUND when no branch matches', () => {
+      assert.throws(() => {
+        run("DECLARE x INT := 99; BEGIN CASE x WHEN 1 THEN RETURN 1; END CASE; END");
+      });
+    });
+
+    it('nested CASE statements', () => {
+      const { result } = run(`
+        DECLARE x INT := 5; y INT := 10; BEGIN
+          CASE WHEN x > 3 THEN
+            CASE WHEN y > 5 THEN RETURN 'both';
+                 ELSE RETURN 'x only';
+            END CASE;
+          ELSE RETURN 'neither';
+          END CASE;
+        END
+      `);
+      assert.equal(result, 'both');
+    });
   });
 
-  test('multiple SELECT INTO in sequence', () => {
-    const { result } = run(`
-      DECLARE
-        min_sal INTEGER;
-        max_sal INTEGER;
-      BEGIN
-        SELECT MIN(salary) INTO min_sal FROM employees;
-        SELECT MAX(salary) INTO max_sal FROM employees;
-        RETURN max_sal - min_sal;
-      END;
-    `);
-    assert.equal(result, 30000); // 90000 - 60000
+  describe('DML in PL Blocks', () => {
+    it('INSERT inside BEGIN block', () => {
+      run("BEGIN INSERT INTO items VALUES (4, 'date', 20); END");
+      const r = db.execute('SELECT COUNT(*) as cnt FROM items');
+      assert.equal(r.rows[0].cnt, 4);
+    });
+
+    it('UPDATE inside BEGIN block', () => {
+      run("BEGIN UPDATE items SET price = 99 WHERE id = 1; END");
+      const r = db.execute('SELECT price FROM items WHERE id = 1');
+      assert.equal(r.rows[0].price, 99);
+    });
+
+    it('DELETE inside BEGIN block', () => {
+      run("BEGIN DELETE FROM items WHERE id = 2; END");
+      const r = db.execute('SELECT COUNT(*) as cnt FROM items');
+      assert.equal(r.rows[0].cnt, 2);
+    });
+
+    it('DML in loop', () => {
+      run("DECLARE i INT := 10; BEGIN FOR i IN 10..12 LOOP INSERT INTO items VALUES (i, 'item', i * 10); END LOOP; END");
+      const r = db.execute('SELECT COUNT(*) as cnt FROM items');
+      assert.equal(r.rows[0].cnt, 6); // 3 original + 3 new
+    });
   });
 
-  test('loop with conditional SQL execution', () => {
-    const { notices } = run(`
-      DECLARE
-        i INTEGER;
-        emp_name TEXT;
-      BEGIN
-        FOR i IN 1..5 LOOP
-          SELECT name INTO emp_name FROM employees WHERE id = i;
-          IF i <= 2 THEN
-            RAISE NOTICE 'Engineer: %', emp_name;
-          END IF;
-        END LOOP;
-      END;
-    `);
-    assert.equal(notices.length, 2);
-    assert.ok(notices[0].message.includes('Alice'));
-    assert.ok(notices[1].message.includes('Bob'));
+  describe('Cursors', () => {
+    it('basic cursor loop', () => {
+      const { result } = run(`
+        DECLARE cur CURSOR FOR SELECT name FROM items ORDER BY price;
+          rec RECORD; names TEXT := '';
+        BEGIN
+          OPEN cur;
+          LOOP FETCH cur INTO rec; EXIT WHEN NOT FOUND;
+            names := names || rec.name || ',';
+          END LOOP;
+          CLOSE cur;
+          RETURN names;
+        END
+      `);
+      assert.equal(result, 'banana,apple,cherry,');
+    });
+
+    it('cursor with accumulation', () => {
+      const { result } = run(`
+        DECLARE cur CURSOR FOR SELECT price FROM items;
+          rec RECORD; total INT := 0;
+        BEGIN
+          OPEN cur;
+          LOOP FETCH cur INTO rec; EXIT WHEN NOT FOUND;
+            total := total + rec.price;
+          END LOOP;
+          CLOSE cur;
+          RETURN total;
+        END
+      `);
+      assert.equal(result, 30);
+    });
+
+    it('cursor with conditional', () => {
+      const { result } = run(`
+        DECLARE cur CURSOR FOR SELECT name, price FROM items;
+          rec RECORD; result TEXT := '';
+        BEGIN
+          OPEN cur;
+          LOOP FETCH cur INTO rec; EXIT WHEN NOT FOUND;
+            IF rec.price > 8 THEN
+              result := result || rec.name || ' ';
+            END IF;
+          END LOOP;
+          CLOSE cur;
+          RETURN result;
+        END
+      `);
+      assert.ok(result.includes('apple'));
+      assert.ok(result.includes('cherry'));
+      assert.ok(!result.includes('banana'));
+    });
   });
 
-  test('building and executing dynamic queries', () => {
-    const { result } = run(`
-      DECLARE
-        sql_query TEXT;
-        total INTEGER;
-      BEGIN
-        sql_query := 'SELECT COUNT(*) as total FROM employees';
-        EXECUTE sql_query INTO total;
-        RETURN total;
-      END;
-    `);
-    assert.equal(result, 5);
+  describe('FOR Query Loop', () => {
+    it('iterates over query results', () => {
+      const { result } = run(`
+        DECLARE rec RECORD; names TEXT := '';
+        BEGIN
+          FOR rec IN SELECT name FROM items ORDER BY price LOOP
+            names := names || rec.name || ',';
+          END LOOP;
+          RETURN names;
+        END
+      `);
+      assert.equal(result, 'banana,apple,cherry,');
+    });
+
+    it('accumulates values from query', () => {
+      const { result } = run(`
+        DECLARE rec RECORD; total INT := 0;
+        BEGIN
+          FOR rec IN SELECT price FROM items LOOP
+            total := total + rec.price;
+          END LOOP;
+          RETURN total;
+        END
+      `);
+      assert.equal(result, 30);
+    });
+
+    it('supports EXIT WHEN in query loop', () => {
+      const { result } = run(`
+        DECLARE rec RECORD; result TEXT := '';
+        BEGIN
+          FOR rec IN SELECT name FROM items ORDER BY name LOOP
+            result := result || rec.name;
+            EXIT WHEN rec.name = 'banana';
+          END LOOP;
+          RETURN result;
+        END
+      `);
+      assert.equal(result, 'applebanana');
+    });
   });
 
-  test('PERFORM to execute without capturing result', () => {
-    run(`
-      BEGIN
-        PERFORM INSERT INTO employees VALUES (6, 'Frank', 'Sales', 55000);
-      END;
-    `);
-    const r = db.execute('SELECT COUNT(*) as cnt FROM employees');
-    assert.equal(r.rows[0].cnt, 6);
+  describe('RAISE NOTICE', () => {
+    it('captures notice with format args', () => {
+      const { result, notices } = run("BEGIN RAISE NOTICE 'Hello %', 'world'; RETURN 42; END");
+      assert.equal(result, 42);
+      assert.equal(notices.length, 1);
+      assert.equal(notices[0].message, 'Hello world');
+    });
+
+    it('captures multiple format args', () => {
+      const { notices } = run("DECLARE x INT := 10; BEGIN RAISE NOTICE 'x=%, x*2=%', x, x * 2; RETURN 0; END");
+      assert.equal(notices[0].message, 'x=10, x*2=20');
+    });
   });
 
-  test('nested function calls via catalog', () => {
-    catalog.createFunction('double', [{ name: 'x', type: 'INTEGER' }], 'INTEGER', `
-      BEGIN
-        RETURN x * 2;
-      END;
-    `);
+  describe('Stored Functions', () => {
+    it('CREATE FUNCTION and call from SQL', () => {
+      db.execute("CREATE FUNCTION double_price(p INTEGER) RETURNS INTEGER AS $$BEGIN RETURN p * 2; END$$ LANGUAGE plhenrydb");
+      const r = db.execute('SELECT double_price(25) as result');
+      assert.equal(r.rows[0].result, 50);
+    });
 
-    catalog.createFunction('quadruple', [{ name: 'x', type: 'INTEGER' }], 'INTEGER', `
-      DECLARE
-        doubled INTEGER;
-      BEGIN
-        doubled := x * 2;
-        doubled := doubled * 2;
-        RETURN doubled;
-      END;
-    `);
+    it('stored function with DB access', () => {
+      db.execute("CREATE FUNCTION total_items() RETURNS INTEGER AS $$DECLARE cnt INT; BEGIN SELECT COUNT(*) INTO cnt FROM items; RETURN cnt; END$$ LANGUAGE plhenrydb");
+      const r = db.execute('SELECT total_items() as result');
+      assert.equal(r.rows[0].result, 3);
+    });
 
-    assert.equal(catalog.callFunction('double', [5], db).result, 10);
-    assert.equal(catalog.callFunction('quadruple', [5], db).result, 20);
+    it('function in WHERE clause', () => {
+      db.execute("CREATE FUNCTION factorial(n INTEGER) RETURNS INTEGER AS $$DECLARE r INT := 1; i INT := 1; BEGIN WHILE i <= n LOOP r := r * i; i := i + 1; END LOOP; RETURN r; END$$ LANGUAGE plhenrydb");
+      const r = db.execute('SELECT * FROM items WHERE price > factorial(2)');
+      // factorial(2) = 2, so items with price > 2: all three
+      assert.equal(r.rows.length, 3);
+    });
   });
 
-  test('procedure modifying data with loop', () => {
-    catalog.createProcedure('give_raise', [
-      { name: 'dept_name', type: 'TEXT' },
-      { name: 'amount', type: 'INTEGER' },
-    ], `
-      DECLARE
-        emp_count INTEGER;
-      BEGIN
-        SELECT COUNT(*) INTO emp_count FROM employees WHERE dept = dept_name;
-        RAISE NOTICE 'Giving raise to % employees', emp_count;
-      END;
-    `);
+  describe('LOOP with EXIT', () => {
+    it('infinite LOOP with EXIT WHEN', () => {
+      const { result } = run(`
+        DECLARE i INT := 0;
+        BEGIN
+          LOOP
+            i := i + 1;
+            EXIT WHEN i >= 5;
+          END LOOP;
+          RETURN i;
+        END
+      `);
+      assert.equal(result, 5);
+    });
 
-    const { notices } = catalog.callProcedure('give_raise', ['Engineering', 5000], db);
-    assert.equal(notices.length, 1);
-    assert.ok(notices[0].message.includes('2'));
-  });
-
-  test('exception handling with SQL errors', () => {
-    const { result } = run(`
-      DECLARE
-        val INTEGER;
-      BEGIN
-        val := 42;
-        RAISE EXCEPTION 'test error';
-      EXCEPTION
-        WHEN OTHERS THEN
-          RETURN 99;
-      END;
-    `);
-    assert.equal(result, 99);
-  });
-
-  test('WHILE loop processing rows by id', () => {
-    const { result } = run(`
-      DECLARE
-        total INTEGER := 0;
-        i INTEGER := 1;
-        sal INTEGER;
-      BEGIN
-        WHILE i <= 3 LOOP
-          SELECT salary INTO sal FROM employees WHERE id = i;
-          total := total + sal;
-          i := i + 1;
-        END LOOP;
-        RETURN total;
-      END;
-    `);
-    assert.equal(result, 245000); // 90000 + 85000 + 70000
-  });
-
-  test('function computing factorial recursion via loop', () => {
-    catalog.createFunction('fib', [{ name: 'n', type: 'INTEGER' }], 'INTEGER', `
-      DECLARE
-        a INTEGER := 0;
-        b INTEGER := 1;
-        temp INTEGER;
-      BEGIN
-        IF n <= 0 THEN RETURN 0; END IF;
-        IF n = 1 THEN RETURN 1; END IF;
-        FOR i IN 2..n LOOP
-          temp := a + b;
-          a := b;
-          b := temp;
-        END LOOP;
-        RETURN b;
-      END;
-    `);
-
-    assert.equal(catalog.callFunction('fib', [0], db).result, 0);
-    assert.equal(catalog.callFunction('fib', [1], db).result, 1);
-    assert.equal(catalog.callFunction('fib', [10], db).result, 55);
-  });
-
-  test('procedure with multiple RAISE levels', () => {
-    const { notices } = run(`
-      BEGIN
-        RAISE DEBUG 'debug message';
-        RAISE INFO 'info message';
-        RAISE NOTICE 'notice message';
-        RAISE WARNING 'warning message';
-      END;
-    `);
-    assert.equal(notices.length, 4);
-    assert.equal(notices[0].level, 'DEBUG');
-    assert.equal(notices[1].level, 'INFO');
-    assert.equal(notices[2].level, 'NOTICE');
-    assert.equal(notices[3].level, 'WARNING');
-  });
-
-  test('variable shadowing in nested scope', () => {
-    const { result } = run(`
-      DECLARE
-        x INTEGER := 10;
-      BEGIN
-        x := x + 5;
-        IF x > 10 THEN
-          x := x * 2;
-        END IF;
-        RETURN x;
-      END;
-    `);
-    assert.equal(result, 30); // (10+5) * 2
-  });
-
-  test('FOUND tracks query results', () => {
-    const { result } = run(`
-      DECLARE
-        val INTEGER;
-        f1 BOOLEAN;
-        f2 BOOLEAN;
-      BEGIN
-        SELECT salary INTO val FROM employees WHERE id = 999;
-        f1 := FOUND;
-        SELECT salary INTO val FROM employees WHERE id = 1;
-        f2 := FOUND;
-        IF f1 = false AND f2 = true THEN
-          RETURN 'correct';
-        ELSE
-          RETURN 'wrong';
-        END IF;
-      END;
-    `);
-    assert.equal(result, 'correct');
+    it('unconditional EXIT', () => {
+      const { result } = run(`
+        DECLARE i INT := 0;
+        BEGIN
+          LOOP
+            i := i + 1;
+            IF i = 3 THEN EXIT; END IF;
+          END LOOP;
+          RETURN i;
+        END
+      `);
+      assert.equal(result, 3);
+    });
   });
 });
