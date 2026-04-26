@@ -2836,6 +2836,38 @@
       "completed": "2026-04-26T00:54:57.564Z",
       "duration_ms": 20000,
       "summary": "Cosine similarity correct: identical=1.0, partially similar=0.5, orthogonal=0.0. Standard embedding similarity metric."
+    },
+    {
+      "id": "T268",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test HenryDB HAVING COUNT(*) > N pattern",
+      "project": "henrydb"
+    },
+    {
+      "id": "T269",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test monkey-lang string.repeat and string.chars builtins",
+      "project": "monkey-lang",
+      "started": "2026-04-26T00:55:52.633Z",
+      "completed": "2026-04-26T00:56:10.374Z",
+      "duration_ms": 20000,
+      "summary": "3-level nested subquery works: outer WHERE IN (inner WHERE HAVING) AND WHERE IN (inner WHERE IN (innermost)). Correctly identifies Alice and Charlie as active users."
+    },
+    {
+      "id": "T270",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test HenryDB nested subquery (3 levels deep)",
+      "project": "henrydb"
+    },
+    {
+      "id": "T271",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test neural-net Layer class hierarchy",
+      "project": "monkey-lang"
     }
   ],
   "focusProjects": [
@@ -3899,6 +3931,22 @@
     {
       "time": "2026-04-26T00:54:36.253Z",
       "msg": "Added T267 (EXPLORE) after end: EXPLORE: Test HenryDB LEFT JOIN with aggregation (common analytics pattern)"
+    },
+    {
+      "time": "2026-04-26T00:55:47.029Z",
+      "msg": "Added T268 (EXPLORE) after end: EXPLORE: Test HenryDB HAVING COUNT(*) > N pattern"
+    },
+    {
+      "time": "2026-04-26T00:55:47.150Z",
+      "msg": "Added T269 (EXPLORE) after end: EXPLORE: Test monkey-lang string.repeat and string.chars builtins"
+    },
+    {
+      "time": "2026-04-26T00:55:47.291Z",
+      "msg": "Added T270 (EXPLORE) after end: EXPLORE: Test HenryDB nested subquery (3 levels deep)"
+    },
+    {
+      "time": "2026-04-26T00:55:47.412Z",
+      "msg": "Added T271 (EXPLORE) after end: EXPLORE: Test neural-net Layer class hierarchy"
     }
   ]
 }
