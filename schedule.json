@@ -3283,9 +3283,21 @@
     {
       "id": "T312",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "EXPLORE: Test HenryDB GROUP_CONCAT with ORDER BY inside",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-26T01:13:00.068Z",
+      "completed": "2026-04-26T01:13:07.796Z",
+      "duration_ms": 10000,
+      "summary": "GROUP_CONCAT doesn't support ORDER BY inside aggregate. Concatenates in insertion order. Limitation compared to PostgreSQL."
+    },
+    {
+      "id": "T313",
+      "mode": "EXPLORE",
+      "status": "in-progress",
+      "task": "EXPLORE: Test HenryDB INSERT with multiple RETURNING columns",
+      "project": "henrydb",
+      "started": "2026-04-26T01:13:22.767Z"
     }
   ],
   "focusProjects": [
@@ -4529,6 +4541,10 @@
     {
       "time": "2026-04-26T01:12:05.909Z",
       "msg": "Added T312 (EXPLORE) after end: EXPLORE: Test HenryDB GROUP_CONCAT with ORDER BY inside"
+    },
+    {
+      "time": "2026-04-26T01:13:15.602Z",
+      "msg": "Added T313 (EXPLORE) after end: EXPLORE: Test HenryDB INSERT with multiple RETURNING columns"
     }
   ]
 }
