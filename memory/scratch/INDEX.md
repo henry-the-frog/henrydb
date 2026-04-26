@@ -2,6 +2,8 @@
 
 ## Session A (2026-04-26 morning) — New Files
 - `session-a-learnings-apr26.md` — Key learnings (VM callbacks, WASM, classes, SQLite affinity, SSA, DCE)
+- `runtime-dispatch-plan.md` — Implementation plan for OpMethodCall runtime dispatch (~100 LOC)
+- `ssa-builder-improvement.md` — Plan to refactor SSA builder from string-based to structured expressions
 
 ## Session B (2026-04-25 afternoon) — New Files
 - `session-b-learnings.md` — Key learnings (type systems, SSA, prelude pattern, bugs)
