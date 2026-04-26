@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-26T00:20:22.863Z",
+  "generated": "2026-04-26T00:20:56.910Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "EXPLORE: Test HenryDB BETWEEN, IN, LIKE with wildcards",
-    "completedAt": "2026-04-26T00:20:22.863Z",
-    "taskId": "T212",
-    "summary": "All search operators work: BETWEEN/NOT BETWEEN, IN/NOT IN, LIKE % and _, GLOB *. Complete WHERE clause predicate support.",
+    "task": "EXPLORE: Test HenryDB REPLACE, INSERT OR IGNORE",
+    "completedAt": "2026-04-26T00:20:56.910Z",
+    "taskId": "T213",
+    "summary": "REPLACE and INSERT OR IGNORE both work. REPLACE: update existing + insert new. OR IGNORE: skip conflict + insert new. Full conflict resolution support (REPLACE, OR IGNORE, ON CONFLICT/UPSERT).",
     "durationMs": 30000
   },
   "schedule": {
@@ -8983,14 +8983,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 205,
+    "blocksCompleted": 206,
     "blocksTotal": 114,
     "modeDistribution": {
       "THINK": 14,
       "PLAN": 31,
       "BUILD": 66,
       "MAINTAIN": 27,
-      "EXPLORE": 67
+      "EXPLORE": 68
     }
   },
   "artifacts": [
