@@ -3568,8 +3568,63 @@
     {
       "id": "T340",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "EXPLORE: Test monkey-lang VM template literal interpolation",
+      "project": "monkey-lang",
+      "started": "2026-04-26T01:21:38.016Z",
+      "completed": "2026-04-26T01:21:43.133Z",
+      "duration_ms": 10000,
+      "summary": "Template literals: backtick strings with ${} interpolation. 'the answer is 42', 'hello world!'. Multi-variable works."
+    },
+    {
+      "id": "T341",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test HenryDB USING clause in JOIN",
+      "project": "henrydb",
+      "started": "2026-04-26T01:21:53.686Z",
+      "completed": "2026-04-26T01:21:58.165Z",
+      "duration_ms": 10000,
+      "summary": "JOIN USING(id): shorthand for ON a.id=b.id. Returns matched rows correctly."
+    },
+    {
+      "id": "T342",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test monkey-lang VM spread operator",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T343",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test HenryDB EXCEPT set operation",
+      "project": "henrydb",
+      "started": "2026-04-26T01:22:04.463Z",
+      "completed": "2026-04-26T01:22:11.471Z",
+      "duration_ms": 10000,
+      "summary": "EXCEPT: {1,2,3,4} EXCEPT {3,4,5,6} = {1,2}. Set difference. EXCEPT ALL also works."
+    },
+    {
+      "id": "T344",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test monkey-lang VM destructuring assignment",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T345",
+      "mode": "EXPLORE",
+      "status": "in-progress",
+      "task": "EXPLORE: Test HenryDB UPDATE with RETURNING",
+      "project": "henrydb",
+      "started": "2026-04-26T01:22:16.388Z"
+    },
+    {
+      "id": "T346",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test neural-net Constitutional AI",
       "project": "monkey-lang"
     }
   ],
@@ -4926,6 +4981,30 @@
     {
       "time": "2026-04-26T01:20:56.765Z",
       "msg": "Added T340 (EXPLORE) after end: EXPLORE: Test monkey-lang VM template literal interpolation"
+    },
+    {
+      "time": "2026-04-26T01:21:48.423Z",
+      "msg": "Added T341 (EXPLORE) after end: EXPLORE: Test HenryDB USING clause in JOIN"
+    },
+    {
+      "time": "2026-04-26T01:21:48.546Z",
+      "msg": "Added T342 (EXPLORE) after end: EXPLORE: Test monkey-lang VM spread operator"
+    },
+    {
+      "time": "2026-04-26T01:21:48.667Z",
+      "msg": "Added T343 (EXPLORE) after end: EXPLORE: Test HenryDB EXCEPT set operation"
+    },
+    {
+      "time": "2026-04-26T01:21:48.789Z",
+      "msg": "Added T344 (EXPLORE) after end: EXPLORE: Test monkey-lang VM destructuring assignment"
+    },
+    {
+      "time": "2026-04-26T01:21:48.910Z",
+      "msg": "Added T345 (EXPLORE) after end: EXPLORE: Test HenryDB UPDATE with RETURNING"
+    },
+    {
+      "time": "2026-04-26T01:21:49.032Z",
+      "msg": "Added T346 (EXPLORE) after end: EXPLORE: Test neural-net Constitutional AI"
     }
   ]
 }
