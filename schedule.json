@@ -2168,9 +2168,13 @@
     {
       "id": "T203",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "EXPLORE: Test monkey-lang error handling — try-catch edge cases",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-26T00:14:01.159Z",
+      "completed": "2026-04-26T00:14:21.531Z",
+      "duration_ms": 60000,
+      "summary": "Error handling works: throw (custom messages), nested try-catch (re-throw propagates), try without error (returns normal), errors from function calls propagate. 1/0=Infinity (not error). Robust error system."
     }
   ],
   "focusProjects": [
