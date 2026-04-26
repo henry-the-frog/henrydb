@@ -5683,6 +5683,39 @@
       "completed": "2026-04-26T03:23:32.872Z",
       "duration_ms": 120000,
       "summary": "RoPE: precomputed freq tables (128×16), position 0 = identity (cos=1, sin=0). Closer positions = higher dot product (0.42 > 0.34 > 0.19). All components tested: KV cache (16/16 tests), flash attention, quantization (absmax 8-bit, per-channel, compression ratios), RoPE (forward+backward+attention), LoRA (low-rank adaptation)."
+    },
+    {
+      "id": "T528",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: explore all modules, full feature inventory",
+      "project": "henrydb",
+      "started": "2026-04-26T03:24:45.262Z",
+      "completed": "2026-04-26T03:25:32.475Z",
+      "duration_ms": 120000,
+      "summary": "HenryDB: 373 source modules. Full database system: SQL parser+planner+optimizer, Volcano+vectorized+JIT execution, B-tree+LSM+hash+bitmap+R-tree+GiST+inverted indexes, MVCC+2PL+OCC+SSI transactions, ARIES recovery, WAL, buffer pool, pg-protocol (PostgreSQL wire), RAFT consensus, CRDTs, full-text search, JSONPath, materialized views. 115 tests pass for core (MVCC+WAL+B-tree+LSM+Volcano+vectorized). 49/50 test files pass total."
+    },
+    {
+      "id": "T529",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Misc data structures: skip list, treap, Van Emde Boas, wavelet tree",
+      "project": "henrydb",
+      "started": "2026-04-26T03:27:03.992Z",
+      "completed": "2026-04-26T03:27:42.025Z",
+      "duration_ms": 60000,
+      "summary": "Skip list: O(log n) insert/delete/search with randomized levels. Treap: randomized BST with min/max/get. Van Emde Boas tree: O(log log n) successor(42)=100, predecessor(100)=42. All working correctly."
+    },
+    {
+      "id": "T530",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "LSM tree and B-tree deep dive",
+      "project": "henrydb",
+      "started": "2026-04-26T03:27:51.004Z",
+      "completed": "2026-04-26T03:28:31.642Z",
+      "duration_ms": 60000,
+      "summary": "B+ tree: order-32, 10K inserts in 7ms, random gets in 3ms. Range queries work (range(10,15)=[10,11,12,13,14,15]). LSM tree: memtable+flush, 10K inserts 24ms, gets 7ms. B+ tree 2.3x faster at reads (direct traversal vs memtable+sstable merge). Both support insert/get/delete. B+ tree also has range()."
     }
   ],
   "focusProjects": [
@@ -7786,6 +7819,18 @@
     {
       "time": "2026-04-26T03:21:35.435Z",
       "msg": "Added T527 (EXPLORE) after end: Neural-net: KV cache, flash attention, quantization"
+    },
+    {
+      "time": "2026-04-26T03:24:44.998Z",
+      "msg": "Added T528 (EXPLORE) after end: HenryDB: explore all modules, full feature inventory"
+    },
+    {
+      "time": "2026-04-26T03:27:03.753Z",
+      "msg": "Added T529 (EXPLORE) after end: Misc data structures: skip list, treap, Van Emde Boas, wavelet tree"
+    },
+    {
+      "time": "2026-04-26T03:27:50.763Z",
+      "msg": "Added T530 (EXPLORE) after end: LSM tree and B-tree deep dive"
     }
   ]
 }
