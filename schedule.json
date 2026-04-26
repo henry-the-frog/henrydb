@@ -2699,6 +2699,42 @@
       "completed": "2026-04-26T00:48:13.401Z",
       "duration_ms": 30000,
       "summary": "3 CTEs chained: cat_totals (A=30,B=70,C=50), cat_avg (50), above_avg (B=70). CTEs reference each other. Correct."
+    },
+    {
+      "id": "T254",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test HenryDB subquery in SELECT (scalar subquery)",
+      "project": "henrydb",
+      "started": "2026-04-26T00:48:44.987Z",
+      "completed": "2026-04-26T00:49:02.565Z",
+      "duration_ms": 30000,
+      "summary": "3 correlated scalar subqueries in SELECT: SUM, COUNT, MAX per customer. All correct. Alice(300,2,200), Charlie(300,1,300), Bob(200,2,150)."
+    },
+    {
+      "id": "T255",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test monkey-lang prelude HOFs via VM",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T256",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test HenryDB NULLS FIRST/LAST in ORDER BY",
+      "project": "henrydb",
+      "started": "2026-04-26T00:49:08.487Z",
+      "completed": "2026-04-26T00:49:23.782Z",
+      "duration_ms": 20000,
+      "summary": "NULLS FIRST puts NULLs at start, NULLS LAST at end. Works with both ASC and DESC. Correct SQL standard NULL ordering."
+    },
+    {
+      "id": "T257",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test monkey-lang while vs for vs for-in performance",
+      "project": "monkey-lang"
     }
   ],
   "focusProjects": [
@@ -3706,6 +3742,22 @@
     {
       "time": "2026-04-26T00:47:31.822Z",
       "msg": "Added T253 (EXPLORE) after end: EXPLORE: Test HenryDB multiple CTEs in single query"
+    },
+    {
+      "time": "2026-04-26T00:48:38.403Z",
+      "msg": "Added T254 (EXPLORE) after end: EXPLORE: Test HenryDB subquery in SELECT (scalar subquery)"
+    },
+    {
+      "time": "2026-04-26T00:48:38.524Z",
+      "msg": "Added T255 (EXPLORE) after end: EXPLORE: Test monkey-lang prelude HOFs via VM"
+    },
+    {
+      "time": "2026-04-26T00:48:38.645Z",
+      "msg": "Added T256 (EXPLORE) after end: EXPLORE: Test HenryDB NULLS FIRST/LAST in ORDER BY"
+    },
+    {
+      "time": "2026-04-26T00:48:38.766Z",
+      "msg": "Added T257 (EXPLORE) after end: EXPLORE: Test monkey-lang while vs for vs for-in performance"
     }
   ]
 }
