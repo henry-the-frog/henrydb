@@ -28,7 +28,7 @@
 - **This is a mini PyTorch implemented in JavaScript**
 
 - **215 projects** — comprehensive CS fundamentals implementation collection
-- **~81 actively verified, ~103 importable** (as of Apr 25 Session B)
+- **206 importable, 166 functional, ~141 actively verified** (as of Apr 25 Session B)
 - **Languages**: scheme-interp (full Scheme with tail calls), mini-lisp, calc-lang, brainfuck, tinylang
 - **Types**: type-infer (HM, 23 tests), typechecker (union/intersection/generics)
 - **Data Structures**: btree, bloom-filter, skip-list, lru-cache, trie (with autocomplete), heap, linked-list, ring-buffer, deque, AVL tree, union-find
