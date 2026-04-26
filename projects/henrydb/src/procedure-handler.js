@@ -1,6 +1,8 @@
 // procedure-handler.js — Extracted from db.js (2026-04-23)
 // CALL procedure and user-defined function execution
 
+import { PLParser, PLInterpreter } from './plsql.js';
+
 /**
  * Execute a stored procedure by substituting parameters and running the body.
  * @param {object} db - Database instance
@@ -79,6 +81,18 @@ export function callUserFunction(db, funcDef, args) {
     } catch (e) {
       throw new Error(`Error in JS function: ${e.message}`);
     }
+  } else if (funcDef.language === 'plhenrydb' || funcDef.language === 'plpgsql') {
+    const parser = new PLParser(funcDef.body);
+    const ast = parser.parse();
+    const interp = new PLInterpreter(db);
+    // Build parameter scope
+    const params = {};
+    if (funcDef.params) {
+      funcDef.params.forEach((p, i) => {
+        params[p.name.toLowerCase()] = args[i] ?? null;
+      });
+    }
+    return interp.execute(ast, params);
   }
   throw new Error(`Unsupported function language: ${funcDef.language}`);
 }
