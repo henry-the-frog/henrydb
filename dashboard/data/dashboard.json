@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-26T00:00:33.791Z",
+  "generated": "2026-04-26T00:01:25.399Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "EXPLORE: Understand HenryDB storage engine — B-tree tables, pages, buffer pool",
-    "completedAt": "2026-04-26T00:00:33.791Z",
-    "taskId": "T190",
-    "summary": "Storage engine: slotted pages (32KB, tuple grows up, slot directory grows down — exactly like PostgreSQL). Buffer pool (419 LOC) with LRU/Clock replacers, pin/unpin, dirty tracking. Disk manager (191 LOC) with page read/write. B-tree table (265 LOC) for clustered storage. 1368 LOC total for storage layer.",
+    "task": "EXPLORE: HenryDB total subsystem LOC breakdown",
+    "completedAt": "2026-04-26T00:01:25.399Z",
+    "taskId": "T191",
+    "summary": "HenryDB subsystem LOC: Execution 7661, Parser 3453, MVCC 2580, Indexes 2528, Planning 2458, WAL 2298, Expression 2112, PG Wire 1936, Storage 1724, Core 1641, Joins 1078, PL/SQL 854, Windows 520. Source total: ~30.8K LOC. Tests: 129.5K LOC (4x source). Grand total: 209K LOC.",
     "durationMs": 120000
   },
   "schedule": {
@@ -8983,14 +8983,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 186,
+    "blocksCompleted": 187,
     "blocksTotal": 114,
     "modeDistribution": {
       "THINK": 14,
       "PLAN": 31,
       "BUILD": 66,
       "MAINTAIN": 26,
-      "EXPLORE": 49
+      "EXPLORE": 50
     }
   },
   "artifacts": [
