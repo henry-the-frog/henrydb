@@ -220,9 +220,13 @@
     {
       "id": "T17",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "Deep dive: LuaJIT allocation sinking paper - implications for monkey-lang escape analysis",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-26T14:51:52.928Z",
+      "completed": "2026-04-26T14:52:57.639Z",
+      "duration_ms": 300000,
+      "summary": "LuaJIT allocation sinking explored. Key findings: (1) sinking is JIT-only, not applicable to bytecode interpreters (2) monkey-lang escape analysis is correct but conservative — intermediate arrays from map→reduce chains marked escaping (3) interprocedural analysis could help but complex. 3/4 hypotheses confirmed."
     },
     {
       "id": "T18",

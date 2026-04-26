@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-26T14:51:44.386Z",
+  "generated": "2026-04-26T14:52:57.675Z",
   "current": {
     "status": "done",
-    "mode": "MAINTAIN",
-    "task": "Housekeeping: commit, push, dashboard",
-    "completedAt": "2026-04-26T14:51:44.386Z",
-    "taskId": "T16",
-    "summary": "Git pushed, workspace committed.",
-    "durationMs": 30000
+    "mode": "EXPLORE",
+    "task": "Deep dive: LuaJIT allocation sinking paper - implications for monkey-lang escape analysis",
+    "completedAt": "2026-04-26T14:52:57.675Z",
+    "taskId": "T17",
+    "summary": "LuaJIT allocation sinking explored. Key findings: (1) sinking is JIT-only, not applicable to bytecode interpreters (2) monkey-lang escape analysis is correct but conservative — intermediate arrays from map→reduce chains marked escaping (3) interprocedural analysis could help but complex. 3/4 hypotheses confirmed.",
+    "durationMs": 300000
   },
   "schedule": {
     "date": "2026-04-26",
@@ -7664,13 +7664,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 20,
+    "blocksCompleted": 21,
     "blocksTotal": 22,
     "modeDistribution": {
       "THINK": 4,
       "PLAN": 4,
       "BUILD": 8,
-      "MAINTAIN": 4
+      "MAINTAIN": 4,
+      "EXPLORE": 1
     }
   },
   "artifacts": [],
