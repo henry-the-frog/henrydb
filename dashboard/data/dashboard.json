@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-26T00:56:10.410Z",
+  "generated": "2026-04-26T00:56:47.080Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "EXPLORE: Test monkey-lang string.repeat and string.chars builtins",
-    "completedAt": "2026-04-26T00:56:10.410Z",
-    "taskId": "T269",
-    "summary": "3-level nested subquery works: outer WHERE IN (inner WHERE HAVING) AND WHERE IN (inner WHERE IN (innermost)). Correctly identifies Alice and Charlie as active users.",
+    "task": "EXPLORE: Test HenryDB nested subquery (3 levels deep)",
+    "completedAt": "2026-04-26T00:56:47.080Z",
+    "taskId": "T270",
+    "summary": "VM chars('hello') = ['h','e','l','l','o']. VM has import builtin (returns module with PI, E, abs, max, min, etc). Corrects earlier finding — import IS in VM.",
     "durationMs": 20000
   },
   "schedule": {
@@ -8983,14 +8983,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 253,
+    "blocksCompleted": 254,
     "blocksTotal": 114,
     "modeDistribution": {
       "THINK": 14,
       "PLAN": 31,
       "BUILD": 66,
       "MAINTAIN": 29,
-      "EXPLORE": 113
+      "EXPLORE": 114
     }
   },
   "artifacts": [
