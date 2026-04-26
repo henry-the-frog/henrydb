@@ -672,6 +672,20 @@
       "completed": "2026-04-26T16:24:42.781Z",
       "duration_ms": 300000,
       "summary": "Fixed PL/SQL expression evaluator for function calls. Recursive PL/SQL (rec_fact(5)=120) and nested PL→PL (inc(inc(40))=42) now work. 11/11 PL/SQL tests pass."
+    },
+    {
+      "id": "T63",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Add monkey-lang REPL command --wasm to compile and run WASM",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T64",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "WASM: Add import support for linking multiple WASM modules",
+      "project": "monkey-lang"
     }
   ],
   "focusProjects": [
@@ -903,6 +917,14 @@
     {
       "time": "2026-04-26T16:22:30.686Z",
       "msg": "Added T62 (BUILD) after end: Fix PL/SQL expression evaluator: handle function calls in expressions"
+    },
+    {
+      "time": "2026-04-26T16:32:36.154Z",
+      "msg": "Added T63 (BUILD) after end: Add monkey-lang REPL command --wasm to compile and run WASM"
+    },
+    {
+      "time": "2026-04-26T16:32:36.274Z",
+      "msg": "Added T64 (BUILD) after end: WASM: Add import support for linking multiple WASM modules"
     }
   ]
 }

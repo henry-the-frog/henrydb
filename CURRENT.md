@@ -1,33 +1,34 @@
 status: in-progress
-mode: BUILD/EXPLORE mix (depth pivot done)
-session: A (work session, cron-triggered)
-current_position: T55+
+mode: BUILD/EXPLORE (post-pivot, balanced)
+session: A (cron-triggered work session)
+current_position: T66+
 started: 2026-04-26T14:15:00Z
-completed:
-tasks_completed_this_session: 32
-build_count_total: 23 (20 before reset + 3 after)
-build_count_since_reset: 7
+boundary: 2026-04-26T20:15:00Z (2:15 PM MDT)
+tasks_completed: 43
+build_count_since_reset: 16
 projects: monkey-lang, henrydb
 
-## Session Summary (in progress, 10:01 AM MDT, 4h remaining)
+## Summary So Far
 
-### Major Accomplishments
-1. **VM Callback Mechanism** (callClosureSync) — 4x map, 3.9x filter, 1.5x reduce speedup
-2. **WASM Compiler** — Phase 1+: integers, functions, if/else, while, for, i64 support
-   - 120-330x speedup over bytecode VM
-   - Mandelbrot: 0.7ms WASM vs 231ms VM
-   - 301-byte WASM binary for complete Mandelbrot
-3. **Class Syntax** — Parser, compiler, inheritance, super.init, method dispatch
-   - 24 class tests
-   - Compile-time method dispatch (hash → symbol → builtin fallback)
-4. **SSA-level DCE** — Def-use chain analysis identifies dead definitions
-5. **HenryDB SQLite Affinity** — Type-aware comparisons for WHERE + ORDER BY
-6. **CI Fixed** — monkey-lang GitHub Actions running green
+### monkey-lang (new features + tests)
+- **VM Callback Mechanism** (callClosureSync): 4x map, 3.9x filter speedup
+- **WASM Compiler**: i32, i64, f64 support. 120-330x speedup on compute-intensive code
+  - While loops, for loops, if/else, comparisons, locals, function calls
+  - Mandelbrot at 330x speedup (0.7ms WASM vs 231ms VM)
+  - f64: real floating-point (pi*r^2, division, Mandelbrot)
+- **Class Syntax**: parser, compiler, inheritance (extends + super.init), method dispatch
+- **SSA-level DCE**: Def-use chain analysis for dead definition detection
+- **Tests**: 1149 → 1244 (+95 new tests)
 
-### Test Counts
-- monkey-lang: 1236 tests (was 1149, +87 today)
-- HenryDB: 4310 tests (0 failures)
+### HenryDB (new features + bug fixes)
+- **SQLite Type Affinity**: sqliteCompare for WHERE, ORDER BY, BETWEEN, set-ops
+- **PL/SQL Integration**: 854 LOC parser+interpreter wired in
+  - Factorial, IF/ELSIF, WHILE, FOR, DECLARE, RETURN, RAISE
+  - Recursive functions, nested PL→PL calls
+  - SELECT INTO, string concatenation (||)
+  - Auto-detection from DECLARE/BEGIN keywords
+- **Tests**: ~4310 → 4321 (+11 PL/SQL tests, 0 failures)
 
-### New Files Created
-- monkey-lang: ssa-dce.js, wasm.js, wasm-compiler.js, native-hof.test.js, class.test.js, wasm.test.js, bench-hof.js, benchmark.js
-- HenryDB: sqlite-compare.js
+### New Files Created Today
+monkey-lang: ssa-dce.js, wasm.js, wasm-compiler.js, native-hof.test.js, class.test.js, wasm.test.js, ssa-dce.test.js, bench-hof.js, benchmark.js
+HenryDB: sqlite-compare.js, plsql.js (copied + enhanced), plsql.test.js
