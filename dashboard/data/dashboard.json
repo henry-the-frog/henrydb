@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-26T01:02:30.391Z",
+  "generated": "2026-04-26T01:03:25.354Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "EXPLORE: Test neural-net attention mask computation",
-    "completedAt": "2026-04-26T01:02:30.391Z",
-    "taskId": "T283",
-    "summary": "Embedding layer: Embedding(vocab=100, dim=16). 3 tokens → 3×16 vectors. Different tokens produce different embeddings. Correct lookup table behavior.",
+    "task": "EXPLORE: Test monkey-lang while loop with closures",
+    "completedAt": "2026-04-26T01:03:25.354Z",
+    "taskId": "T285",
+    "summary": "Closures in while loop: let x = i creates new binding per iteration. counters[0]()=0, [1]()=1, [2]()=2. Avoids classic JS closure-in-loop bug.",
     "durationMs": 20000
   },
   "schedule": {
@@ -8983,14 +8983,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 263,
+    "blocksCompleted": 265,
     "blocksTotal": 114,
     "modeDistribution": {
       "THINK": 14,
       "PLAN": 31,
       "BUILD": 66,
       "MAINTAIN": 29,
-      "EXPLORE": 123
+      "EXPLORE": 125
     }
   },
   "artifacts": [
