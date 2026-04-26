@@ -2955,6 +2955,70 @@
       "completed": "2026-04-26T00:59:56.452Z",
       "duration_ms": 20000,
       "summary": "LIMIT+OFFSET pagination: pages of 5 from 20 items. [1-5], [6-10], [11-15], [16-20], [empty]. Beyond range returns empty array. Correct."
+    },
+    {
+      "id": "T280",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test HenryDB VACUUM analyze statistics",
+      "project": "henrydb",
+      "started": "2026-04-26T01:01:47.147Z",
+      "completed": "2026-04-26T01:02:05.289Z",
+      "duration_ms": 20000,
+      "summary": "Error messages: 'expected IDENT got =', 'no prefix parse for ;', 'expected ) got {', 'expected ( got true'. Informative error messages with expected vs actual tokens."
+    },
+    {
+      "id": "T281",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test monkey-lang error messages quality",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T282",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test HenryDB INSERT with DEFAULT keyword",
+      "project": "henrydb"
+    },
+    {
+      "id": "T283",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test neural-net attention mask computation",
+      "project": "monkey-lang",
+      "started": "2026-04-26T01:02:12.527Z",
+      "completed": "2026-04-26T01:02:30.355Z",
+      "duration_ms": 20000,
+      "summary": "Embedding layer: Embedding(vocab=100, dim=16). 3 tokens → 3×16 vectors. Different tokens produce different embeddings. Correct lookup table behavior."
+    },
+    {
+      "id": "T284",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test HenryDB common table expression materialization",
+      "project": "henrydb"
+    },
+    {
+      "id": "T285",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test monkey-lang while loop with closures",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T286",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test HenryDB table aliasing in complex queries",
+      "project": "henrydb"
+    },
+    {
+      "id": "T287",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test neural-net embedding layer",
+      "project": "monkey-lang"
     }
   ],
   "focusProjects": [
@@ -4066,6 +4130,38 @@
     {
       "time": "2026-04-26T00:59:11.306Z",
       "msg": "Added T279 (EXPLORE) after end: EXPLORE: Test HenryDB LIMIT with OFFSET pagination"
+    },
+    {
+      "time": "2026-04-26T01:01:41.358Z",
+      "msg": "Added T280 (EXPLORE) after end: EXPLORE: Test HenryDB VACUUM analyze statistics"
+    },
+    {
+      "time": "2026-04-26T01:01:41.479Z",
+      "msg": "Added T281 (EXPLORE) after end: EXPLORE: Test monkey-lang error messages quality"
+    },
+    {
+      "time": "2026-04-26T01:01:41.600Z",
+      "msg": "Added T282 (EXPLORE) after end: EXPLORE: Test HenryDB INSERT with DEFAULT keyword"
+    },
+    {
+      "time": "2026-04-26T01:01:41.722Z",
+      "msg": "Added T283 (EXPLORE) after end: EXPLORE: Test neural-net attention mask computation"
+    },
+    {
+      "time": "2026-04-26T01:01:41.843Z",
+      "msg": "Added T284 (EXPLORE) after end: EXPLORE: Test HenryDB common table expression materialization"
+    },
+    {
+      "time": "2026-04-26T01:01:41.965Z",
+      "msg": "Added T285 (EXPLORE) after end: EXPLORE: Test monkey-lang while loop with closures"
+    },
+    {
+      "time": "2026-04-26T01:01:42.086Z",
+      "msg": "Added T286 (EXPLORE) after end: EXPLORE: Test HenryDB table aliasing in complex queries"
+    },
+    {
+      "time": "2026-04-26T01:01:42.206Z",
+      "msg": "Added T287 (EXPLORE) after end: EXPLORE: Test neural-net embedding layer"
     }
   ]
 }
