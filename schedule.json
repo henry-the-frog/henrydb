@@ -2421,6 +2421,35 @@
       "status": "upcoming",
       "task": "EXPLORE: Test HenryDB multi-table DELETE and UPDATE",
       "project": "henrydb"
+    },
+    {
+      "id": "T228",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test monkey-lang enum features — can enums have values?",
+      "project": "monkey-lang",
+      "started": "2026-04-26T00:31:10.427Z",
+      "completed": "2026-04-26T00:31:33.374Z",
+      "duration_ms": 30000,
+      "summary": "Enums: access, equality comparison work. Enum values are objects (not integers), so match by number fails. Need to match by enum value: match d { Direction.East => ... }"
+    },
+    {
+      "id": "T229",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test HenryDB CHECK constraints",
+      "project": "henrydb"
+    },
+    {
+      "id": "T230",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test monkey-lang string methods — split, join, trim, upper, lower, contains",
+      "project": "monkey-lang",
+      "started": "2026-04-26T00:31:41.403Z",
+      "completed": "2026-04-26T00:32:05.623Z",
+      "duration_ms": 30000,
+      "summary": "15 string builtins working: split, join, trim, upper, lower, contains, indexOf, replace, padStart, padEnd, char, ord. startsWith/endsWith return objects (not bool). repeat creates array not string. Comprehensive string support."
     }
   ],
   "focusProjects": [
@@ -3324,6 +3353,18 @@
     {
       "time": "2026-04-26T00:29:32.712Z",
       "msg": "Added T227 (EXPLORE) after end: EXPLORE: Test HenryDB multi-table DELETE and UPDATE"
+    },
+    {
+      "time": "2026-04-26T00:31:05.012Z",
+      "msg": "Added T228 (EXPLORE) after end: EXPLORE: Test monkey-lang enum features — can enums have values?"
+    },
+    {
+      "time": "2026-04-26T00:31:05.133Z",
+      "msg": "Added T229 (EXPLORE) after end: EXPLORE: Test HenryDB CHECK constraints"
+    },
+    {
+      "time": "2026-04-26T00:31:05.254Z",
+      "msg": "Added T230 (EXPLORE) after end: EXPLORE: Test monkey-lang string methods — split, join, trim, upper, lower, contains"
     }
   ]
 }
