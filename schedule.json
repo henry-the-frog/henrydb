@@ -421,6 +421,17 @@
       "completed": "2026-04-26T15:27:30.429Z",
       "duration_ms": 300000,
       "summary": "WASM while loops + set statements. Iterative fib: 41ns/call (native perf). 5 new tests. 1230 total tests."
+    },
+    {
+      "id": "T40",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "WASM: Add for..range compilation",
+      "project": "monkey-lang",
+      "started": "2026-04-26T15:27:50.711Z",
+      "completed": "2026-04-26T15:30:20.127Z",
+      "duration_ms": 300000,
+      "summary": "WASM for-loop compilation. C-style for→block/loop. sum_range and power tests. 1232 total tests."
     }
   ],
   "focusProjects": [
@@ -568,6 +579,10 @@
     {
       "time": "2026-04-26T15:25:33.085Z",
       "msg": "Added T39 (BUILD) after end: WASM Phase 1.5: Add while loops + set statements to WASM compiler"
+    },
+    {
+      "time": "2026-04-26T15:27:44.867Z",
+      "msg": "Added T40 (BUILD) after end: WASM: Add for..range compilation"
     }
   ]
 }

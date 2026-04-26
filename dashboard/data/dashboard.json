@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-26T15:27:30.465Z",
+  "generated": "2026-04-26T15:30:20.163Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "WASM Phase 1.5: Add while loops + set statements to WASM compiler",
-    "completedAt": "2026-04-26T15:27:30.465Z",
-    "taskId": "T39",
-    "summary": "WASM while loops + set statements. Iterative fib: 41ns/call (native perf). 5 new tests. 1230 total tests.",
+    "task": "WASM: Add for..range compilation",
+    "completedAt": "2026-04-26T15:30:20.163Z",
+    "taskId": "T40",
+    "summary": "WASM for-loop compilation. C-style for→block/loop. sum_range and power tests. 1232 total tests.",
     "durationMs": 300000
   },
   "schedule": {
@@ -7817,12 +7817,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 39,
+    "blocksCompleted": 40,
     "blocksTotal": 35,
     "modeDistribution": {
       "THINK": 7,
       "PLAN": 8,
-      "BUILD": 17,
+      "BUILD": 18,
       "MAINTAIN": 5,
       "EXPLORE": 2
     }
