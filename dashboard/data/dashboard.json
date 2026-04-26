@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-26T03:28:31.680Z",
+  "generated": "2026-04-26T03:30:41.335Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "LSM tree and B-tree deep dive",
-    "completedAt": "2026-04-26T03:28:31.680Z",
-    "taskId": "T530",
-    "summary": "B+ tree: order-32, 10K inserts in 7ms, random gets in 3ms. Range queries work (range(10,15)=[10,11,12,13,14,15]). LSM tree: memtable+flush, 10K inserts 24ms, gets 7ms. B+ tree 2.3x faster at reads (direct traversal vs memtable+sstable merge). Both support insert/get/delete. B+ tree also has range().",
-    "durationMs": 60000
+    "task": "HenryDB: MVCC snapshot isolation, WAL recovery, vectorized execution",
+    "completedAt": "2026-04-26T03:30:41.335Z",
+    "taskId": "T531",
+    "summary": "MVCC snapshot isolation verified: (1) tx3 sees {balance:1000} even after tx2 committed {balance:800} — correct snapshot isolation, (2) tx4 sees {balance:800} — started after tx2, sees committed data, (3) rollback correctly discards writes. Full ACID: begin/commit/rollback with transaction-level snapshots. Also tested consistent hash ring: server removal preserves key assignments.",
+    "durationMs": 120000
   },
   "schedule": {
     "date": "2026-04-25",
@@ -8983,14 +8983,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 529,
+    "blocksCompleted": 530,
     "blocksTotal": 114,
     "modeDistribution": {
       "THINK": 15,
       "PLAN": 31,
       "BUILD": 66,
       "MAINTAIN": 38,
-      "EXPLORE": 379
+      "EXPLORE": 380
     }
   },
   "artifacts": [

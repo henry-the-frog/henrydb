@@ -5716,6 +5716,17 @@
       "completed": "2026-04-26T03:28:31.642Z",
       "duration_ms": 60000,
       "summary": "B+ tree: order-32, 10K inserts in 7ms, random gets in 3ms. Range queries work (range(10,15)=[10,11,12,13,14,15]). LSM tree: memtable+flush, 10K inserts 24ms, gets 7ms. B+ tree 2.3x faster at reads (direct traversal vs memtable+sstable merge). Both support insert/get/delete. B+ tree also has range()."
+    },
+    {
+      "id": "T531",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: MVCC snapshot isolation, WAL recovery, vectorized execution",
+      "project": "henrydb",
+      "started": "2026-04-26T03:29:36.595Z",
+      "completed": "2026-04-26T03:30:41.297Z",
+      "duration_ms": 120000,
+      "summary": "MVCC snapshot isolation verified: (1) tx3 sees {balance:1000} even after tx2 committed {balance:800} — correct snapshot isolation, (2) tx4 sees {balance:800} — started after tx2, sees committed data, (3) rollback correctly discards writes. Full ACID: begin/commit/rollback with transaction-level snapshots. Also tested consistent hash ring: server removal preserves key assignments."
     }
   ],
   "focusProjects": [
@@ -7831,6 +7842,10 @@
     {
       "time": "2026-04-26T03:27:50.763Z",
       "msg": "Added T530 (EXPLORE) after end: LSM tree and B-tree deep dive"
+    },
+    {
+      "time": "2026-04-26T03:29:36.354Z",
+      "msg": "Added T531 (EXPLORE) after end: HenryDB: MVCC snapshot isolation, WAL recovery, vectorized execution"
     }
   ]
 }
