@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-25T23:59:41.002Z",
+  "generated": "2026-04-26T00:00:33.791Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "EXPLORE: Test HenryDB EXPLAIN ANALYZE with actual timing",
-    "completedAt": "2026-04-25T23:59:41.002Z",
-    "taskId": "T188",
-    "summary": "EXPLAIN ANALYZE: PostgreSQL-style output with per-operator timing (SeqScan 1.9ms, Filter 2.6ms, Sort 2.9ms, Limit 3.0ms), buffer stats (heap_scans, buffer_reads, index_lookups), rows examined/removed, estimation accuracy. Planning 0.1ms, execution 8.5ms for 1000-row scan.",
+    "task": "EXPLORE: Understand HenryDB storage engine — B-tree tables, pages, buffer pool",
+    "completedAt": "2026-04-26T00:00:33.791Z",
+    "taskId": "T190",
+    "summary": "Storage engine: slotted pages (32KB, tuple grows up, slot directory grows down — exactly like PostgreSQL). Buffer pool (419 LOC) with LRU/Clock replacers, pin/unpin, dirty tracking. Disk manager (191 LOC) with page read/write. B-tree table (265 LOC) for clustered storage. 1368 LOC total for storage layer.",
     "durationMs": 120000
   },
   "schedule": {
@@ -8983,14 +8983,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 185,
+    "blocksCompleted": 186,
     "blocksTotal": 114,
     "modeDistribution": {
       "THINK": 14,
       "PLAN": 31,
       "BUILD": 66,
       "MAINTAIN": 26,
-      "EXPLORE": 48
+      "EXPLORE": 49
     }
   },
   "artifacts": [

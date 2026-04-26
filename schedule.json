@@ -2030,9 +2030,13 @@
     {
       "id": "T190",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "EXPLORE: Understand HenryDB storage engine — B-tree tables, pages, buffer pool",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-25T23:59:55.649Z",
+      "completed": "2026-04-26T00:00:33.754Z",
+      "duration_ms": 120000,
+      "summary": "Storage engine: slotted pages (32KB, tuple grows up, slot directory grows down — exactly like PostgreSQL). Buffer pool (419 LOC) with LRU/Clock replacers, pin/unpin, dirty tracking. Disk manager (191 LOC) with page read/write. B-tree table (265 LOC) for clustered storage. 1368 LOC total for storage layer."
     }
   ],
   "focusProjects": [
