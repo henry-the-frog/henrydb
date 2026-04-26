@@ -5,10 +5,8 @@
 
 ## Normal
 - monkey-lang: Per-function SSA → dead code elimination (SSA-level annotation, ~200 LOC)
-- monkey-lang: VM callback mechanism for native HOF builtins (prelude is 19x slower)
 - HenryDB: Fix COUNT(DISTINCT) bug in multi-join scenarios
 - HenryDB: Wire PL/SQL to procedure handler (854 LOC exists, just needs connection)
-- HenryDB: Close remaining ~1.4% fuzzer gap (mixed type comparisons + UNION type affinity)
 - monkey-lang: Class syntax (design ready, ~200 LOC implementation)
 - monkey-lang: WASM compiler Phase 1 (int+fn, ~500 LOC)
 - neural-net: Deep exploration of 38K LOC ML framework
