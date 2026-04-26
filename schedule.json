@@ -607,6 +607,16 @@
       "completed": "2026-04-26T16:03:59.396Z",
       "duration_ms": 120000,
       "summary": "6 i64 WASM tests: large multiply (10B), overflow, fibonacci, sum to 1M (500B). 1240 total tests."
+    },
+    {
+      "id": "T57",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Investigate HenryDB PL/SQL → procedure handler wiring (854 LOC exists)",
+      "started": "2026-04-26T16:04:13.723Z",
+      "completed": "2026-04-26T16:06:13.440Z",
+      "duration_ms": 120000,
+      "summary": "PL/SQL code exists: 854 LOC parser+interpreter in projects/henrydb/. Has tests. Wire-up needed: (1) copy plsql.js to src/ (2) modify callUserFunction to use PLInterpreter for plsql language (3) detect DECLARE/BEGIN in function bodies."
     }
   ],
   "focusProjects": [
@@ -814,6 +824,10 @@
     {
       "time": "2026-04-26T16:02:44.003Z",
       "msg": "Added T56 (BUILD) after end: Add i64 WASM tests + update benchmark to include i64"
+    },
+    {
+      "time": "2026-04-26T16:04:09.170Z",
+      "msg": "Added T57 (THINK) after end: Investigate HenryDB PL/SQL → procedure handler wiring (854 LOC exists)"
     }
   ]
 }
