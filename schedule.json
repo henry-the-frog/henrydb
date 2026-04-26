@@ -3977,6 +3977,57 @@
       "task": "EXPLORE: Test HenryDB window LEAD/LAG with default",
       "project": "henrydb",
       "started": "2026-04-26T01:30:02.974Z"
+    },
+    {
+      "id": "T382",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test HenryDB UPSERT (ON CONFLICT DO UPDATE)",
+      "project": "henrydb",
+      "started": "2026-04-26T01:30:23.958Z",
+      "completed": "2026-04-26T01:30:28.919Z",
+      "duration_ms": 10000,
+      "summary": "UPSERT: INSERT ON CONFLICT(key) DO UPDATE SET val=excluded.val. a updated 1→10, c inserted. excluded reference works."
+    },
+    {
+      "id": "T383",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test monkey-lang VM closures as callbacks",
+      "project": "monkey-lang",
+      "started": "2026-04-26T01:30:38.188Z",
+      "completed": "2026-04-26T01:30:45.794Z",
+      "duration_ms": 10000,
+      "summary": "Event bus pattern: makeEventBus() with on/emit closures. Register 2 callbacks, emit(5)→[10,15]. Closures as callbacks work."
+    },
+    {
+      "id": "T384",
+      "mode": "EXPLORE",
+      "status": "in-progress",
+      "task": "EXPLORE: Test HenryDB GROUPING SETS",
+      "project": "henrydb",
+      "started": "2026-04-26T01:30:50.926Z"
+    },
+    {
+      "id": "T385",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test monkey-lang VM string char/ord round-trip",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T386",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test HenryDB window FIRST_VALUE/LAST_VALUE",
+      "project": "henrydb"
+    },
+    {
+      "id": "T387",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test monkey-lang VM math builtins comprehensive",
+      "project": "monkey-lang"
     }
   ],
   "focusProjects": [
@@ -5496,6 +5547,30 @@
     {
       "time": "2026-04-26T01:28:15.570Z",
       "msg": "Added T381 (EXPLORE) after end: EXPLORE: Test HenryDB window LEAD/LAG with default"
+    },
+    {
+      "time": "2026-04-26T01:30:17.744Z",
+      "msg": "Added T382 (EXPLORE) after end: EXPLORE: Test HenryDB UPSERT (ON CONFLICT DO UPDATE)"
+    },
+    {
+      "time": "2026-04-26T01:30:17.867Z",
+      "msg": "Added T383 (EXPLORE) after end: EXPLORE: Test monkey-lang VM closures as callbacks"
+    },
+    {
+      "time": "2026-04-26T01:30:17.989Z",
+      "msg": "Added T384 (EXPLORE) after end: EXPLORE: Test HenryDB GROUPING SETS"
+    },
+    {
+      "time": "2026-04-26T01:30:18.112Z",
+      "msg": "Added T385 (EXPLORE) after end: EXPLORE: Test monkey-lang VM string char/ord round-trip"
+    },
+    {
+      "time": "2026-04-26T01:30:18.234Z",
+      "msg": "Added T386 (EXPLORE) after end: EXPLORE: Test HenryDB window FIRST_VALUE/LAST_VALUE"
+    },
+    {
+      "time": "2026-04-26T01:30:18.356Z",
+      "msg": "Added T387 (EXPLORE) after end: EXPLORE: Test monkey-lang VM math builtins comprehensive"
     }
   ]
 }
