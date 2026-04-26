@@ -74,8 +74,9 @@ describe('Window Functions', () => {
       const r = db.execute('SELECT emp, dept, amount, SUM(amount) OVER (PARTITION BY dept ORDER BY amount) AS running FROM sales');
       const eng = r.rows.filter(r => r.dept === 'Eng').sort((a, b) => a.amount - b.amount);
       assert.equal(eng[0].running, 100);   // Alice: 100
-      assert.equal(eng[1].running, 300);   // + Bob: 200
-      assert.equal(eng[2].running, 500);   // + Carol: 200
+      // RANGE framing: ties (Bob=200, Carol=200) include all tied rows
+      assert.equal(eng[1].running, 500);   // + Bob: 100+200+200 = 500 (RANGE includes ties)
+      assert.equal(eng[2].running, 500);   // + Carol: same as Bob (tied value)
     });
   });
 
