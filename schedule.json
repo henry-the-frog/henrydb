@@ -362,8 +362,12 @@
       "id": "T34",
       "mode": "BUILD",
       "task": "Compile monkey-lang integer expressions + functions to WASM",
-      "status": "upcoming",
-      "plan_ref": "T30"
+      "status": "done",
+      "plan_ref": "T30",
+      "started": "2026-04-26T15:17:34.792Z",
+      "completed": "2026-04-26T15:19:19.513Z",
+      "duration_ms": 600000,
+      "summary": "WASM compiler Phase 1 complete! Compiles integer arithmetic + functions + if/else + comparisons. fib(30): 7ms WASM vs 892ms VM = 120x speedup."
     },
     {
       "id": "T35",
