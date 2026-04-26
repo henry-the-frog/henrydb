@@ -57,17 +57,28 @@
     {
       "id": "T6",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "VM callback mechanism for native HOF builtins (prelude 19x slower than native)",
-      "task": null
+      "task": null,
+      "started": "2026-04-26T14:19:22.198Z",
+      "completed": "2026-04-26T14:20:19.418Z",
+      "duration_ms": 90000,
+      "summary": "Planned VM callback: callClosureSync method + native map/filter/reduce builtins. 2 BUILD tasks."
     },
     {
       "id": "T7",
       "mode": "BUILD",
       "status": "upcoming",
-      "task": null,
+      "task": "Implement callClosureSync in VM + native map/filter/reduce builtins",
       "plan_ref": "T6",
       "project": "monkey-lang"
+    },
+    {
+      "id": "T19",
+      "mode": "BUILD",
+      "task": "Benchmark native vs prelude HOFs, add tests",
+      "status": "upcoming",
+      "plan_ref": "T6"
     },
     {
       "id": "T8",
@@ -229,6 +240,10 @@
     {
       "time": "2026-04-26T14:17:01.438Z",
       "msg": "PLAN T2 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-04-26T14:20:14.139Z",
+      "msg": "PLAN T6 filled 2 BUILD tasks"
     }
   ]
 }

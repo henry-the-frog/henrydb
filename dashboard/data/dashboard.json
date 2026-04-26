@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-26T14:19:13.462Z",
+  "generated": "2026-04-26T14:20:19.454Z",
   "current": {
     "status": "done",
-    "mode": "THINK",
-    "task": "Reflect on CI fix. Assess monkey-lang SSA pipeline - real but unused by codegen. Worth wiring?",
-    "completedAt": "2026-04-26T14:19:13.462Z",
-    "taskId": "T5",
-    "summary": "SSA pipeline real but low-impact vs VM callbacks (19x perf gap). Keep queue order: VM callbacks first, SSA→DCE later.",
-    "durationMs": 45000
+    "mode": "PLAN",
+    "task": "",
+    "completedAt": "2026-04-26T14:20:19.454Z",
+    "taskId": "T6",
+    "summary": "Planned VM callback: callClosureSync method + native map/filter/reduce builtins. 2 BUILD tasks.",
+    "durationMs": 90000
   },
   "schedule": {
     "date": "2026-04-26",
@@ -7462,45 +7462,68 @@
       {
         "id": "T2",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "Fix monkey-lang GitHub token workflow scope + CI pipeline",
         "task": null,
-        "started": "2026-04-26T14:16:04.097Z"
+        "started": "2026-04-26T14:16:04.097Z",
+        "completed": "2026-04-26T14:17:05.762Z",
+        "duration_ms": 45000,
+        "summary": "Planned CI fix: copy workflow to repo root, push with workflow scope. Single BUILD task."
       },
       {
         "id": "T3",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "Copy CI workflow to repo root .github/workflows/, push with workflow scope token, verify CI runs",
         "plan_ref": "T2",
-        "project": "monkey-lang"
+        "project": "monkey-lang",
+        "started": "2026-04-26T14:17:18.426Z",
+        "completed": "2026-04-26T14:18:22.477Z",
+        "duration_ms": 120000,
+        "summary": "CI workflow added to repo root, pushed, GitHub Actions running green (Node 18/20/22). Urgent TODO cleared."
       },
       {
         "id": "T4",
         "mode": "MAINTAIN",
-        "status": "upcoming",
-        "task": "Housekeeping: commit, push, dashboard health, email check"
+        "status": "done",
+        "task": "Housekeeping: commit, push, dashboard health, email check",
+        "started": "2026-04-26T14:18:33.799Z",
+        "completed": "2026-04-26T14:18:46.194Z",
+        "duration_ms": 60000,
+        "summary": "Git pushed, dashboard healthy, GH notifications checked (5 items, none urgent)"
       },
       {
         "id": "T5",
         "mode": "THINK",
-        "status": "upcoming",
-        "task": "Reflect on CI fix. Assess monkey-lang SSA pipeline - real but unused by codegen. Worth wiring?"
+        "status": "done",
+        "task": "Reflect on CI fix. Assess monkey-lang SSA pipeline - real but unused by codegen. Worth wiring?",
+        "started": "2026-04-26T14:19:01.837Z",
+        "completed": "2026-04-26T14:19:13.426Z",
+        "duration_ms": 45000,
+        "summary": "SSA pipeline real but low-impact vs VM callbacks (19x perf gap). Keep queue order: VM callbacks first, SSA→DCE later."
       },
       {
         "id": "T6",
         "mode": "PLAN",
-        "status": "upcoming",
+        "status": "in-progress",
         "goal": "VM callback mechanism for native HOF builtins (prelude 19x slower than native)",
-        "task": null
+        "task": null,
+        "started": "2026-04-26T14:19:22.198Z"
       },
       {
         "id": "T7",
         "mode": "BUILD",
         "status": "upcoming",
-        "task": null,
+        "task": "Implement callClosureSync in VM + native map/filter/reduce builtins",
         "plan_ref": "T6",
         "project": "monkey-lang"
+      },
+      {
+        "id": "T19",
+        "mode": "BUILD",
+        "task": "Benchmark native vs prelude HOFs, add tests",
+        "status": "upcoming",
+        "plan_ref": "T6"
       },
       {
         "id": "T8",
@@ -7580,11 +7603,11 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 5,
-    "blocksTotal": 18,
+    "blocksCompleted": 6,
+    "blocksTotal": 19,
     "modeDistribution": {
       "THINK": 2,
-      "PLAN": 1,
+      "PLAN": 2,
       "BUILD": 1,
       "MAINTAIN": 1
     }
