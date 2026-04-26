@@ -2392,6 +2392,31 @@
       "completed": "2026-04-26T00:28:38.443Z",
       "duration_ms": 60000,
       "summary": "Total LOC across all projects: 342,017. HenryDB 212,628 (62%), all others 129,389. Top 3: HenryDB 213K, neural-net 38K, monkey-lang 22K. Remaining ~185 projects: 69K LOC."
+    },
+    {
+      "id": "T225",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test HenryDB INSERT...RETURNING and UPDATE...RETURNING",
+      "project": "henrydb",
+      "started": "2026-04-26T00:29:39.829Z",
+      "completed": "2026-04-26T00:29:59.740Z",
+      "duration_ms": 30000,
+      "summary": "INSERT/UPDATE/DELETE RETURNING all work. Returns affected rows with specified columns. AUTOINCREMENT IDs returned. Price * 1.1 computed correctly. PostgreSQL RETURNING clause fully supported."
+    },
+    {
+      "id": "T226",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: monkey-lang — test do-while loops",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T227",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test HenryDB multi-table DELETE and UPDATE",
+      "project": "henrydb"
     }
   ],
   "focusProjects": [
@@ -3283,6 +3308,18 @@
     {
       "time": "2026-04-26T00:27:58.433Z",
       "msg": "Added T224 (EXPLORE) after end: EXPLORE: Total LOC across all 215 projects"
+    },
+    {
+      "time": "2026-04-26T00:29:32.470Z",
+      "msg": "Added T225 (EXPLORE) after end: EXPLORE: Test HenryDB INSERT...RETURNING and UPDATE...RETURNING"
+    },
+    {
+      "time": "2026-04-26T00:29:32.591Z",
+      "msg": "Added T226 (EXPLORE) after end: EXPLORE: monkey-lang — test do-while loops"
+    },
+    {
+      "time": "2026-04-26T00:29:32.712Z",
+      "msg": "Added T227 (EXPLORE) after end: EXPLORE: Test HenryDB multi-table DELETE and UPDATE"
     }
   ]
 }

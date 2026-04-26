@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-26T00:29:17.367Z",
+  "generated": "2026-04-26T00:29:59.776Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "EXPLORE: Test HenryDB DISTINCT ON and ORDER BY expressions",
-    "completedAt": "2026-04-26T00:29:17.367Z",
-    "taskId": "T223",
-    "summary": "ORDER BY expression (val%2), ORDER BY column number (2), DISTINCT ON (PostgreSQL extension). All work correctly. DISTINCT ON picks first row per group.",
+    "task": "EXPLORE: Test HenryDB INSERT...RETURNING and UPDATE...RETURNING",
+    "completedAt": "2026-04-26T00:29:59.776Z",
+    "taskId": "T225",
+    "summary": "INSERT/UPDATE/DELETE RETURNING all work. Returns affected rows with specified columns. AUTOINCREMENT IDs returned. Price * 1.1 computed correctly. PostgreSQL RETURNING clause fully supported.",
     "durationMs": 30000
   },
   "schedule": {
@@ -8983,14 +8983,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 216,
+    "blocksCompleted": 217,
     "blocksTotal": 114,
     "modeDistribution": {
       "THINK": 14,
       "PLAN": 31,
       "BUILD": 66,
       "MAINTAIN": 28,
-      "EXPLORE": 77
+      "EXPLORE": 78
     }
   },
   "artifacts": [
