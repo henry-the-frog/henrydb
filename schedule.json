@@ -504,8 +504,12 @@
       "id": "T47",
       "mode": "BUILD",
       "task": "Store class methods as closures on instance hash in _compileClass",
-      "status": "upcoming",
-      "plan_ref": "T46"
+      "status": "done",
+      "plan_ref": "T46",
+      "started": "2026-04-26T15:40:44.107Z",
+      "completed": "2026-04-26T15:45:20.090Z",
+      "duration_ms": 600000,
+      "summary": "Class methods now have mangled names (ClassName__method) for collision avoidance + unmangled aliases for dot-dispatch. 1232 tests pass. Dot-dispatch still has last-wins limitation."
     },
     {
       "id": "T48",

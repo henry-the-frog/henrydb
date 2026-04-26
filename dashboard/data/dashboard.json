@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-26T15:40:37.556Z",
+  "generated": "2026-04-26T15:45:20.126Z",
   "current": {
     "status": "done",
-    "mode": "PLAN",
-    "task": "",
-    "completedAt": "2026-04-26T15:40:37.556Z",
-    "taskId": "T46",
-    "summary": "3 tasks planned",
-    "durationMs": 10000
+    "mode": "BUILD",
+    "task": "Store class methods as closures on instance hash in _compileClass",
+    "completedAt": "2026-04-26T15:45:20.126Z",
+    "taskId": "T47",
+    "summary": "Class methods now have mangled names (ClassName__method) for collision avoidance + unmangled aliases for dot-dispatch. 1232 tests pass. Dot-dispatch still has last-wins limitation.",
+    "durationMs": 600000
   },
   "schedule": {
     "date": "2026-04-26",
@@ -7970,12 +7970,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 46,
+    "blocksCompleted": 47,
     "blocksTotal": 49,
     "modeDistribution": {
       "THINK": 8,
       "PLAN": 9,
-      "BUILD": 18,
+      "BUILD": 19,
       "MAINTAIN": 7,
       "EXPLORE": 4
     }
