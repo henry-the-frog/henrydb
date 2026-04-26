@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-26T00:46:43.171Z",
+  "generated": "2026-04-26T00:47:15.256Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "EXPLORE: Test monkey-lang import of string module functions",
-    "completedAt": "2026-04-26T00:46:43.171Z",
-    "taskId": "T249",
-    "summary": "String module exists in evaluator (import('string') works) but VM doesn't have import() builtin. Module system is evaluator-only — not compiled to bytecode.",
-    "durationMs": 30000
+    "task": "EXPLORE: Test HenryDB EXISTS vs IN performance comparison",
+    "completedAt": "2026-04-26T00:47:15.256Z",
+    "taskId": "T250",
+    "summary": "EXISTS vs IN performance: IN 7.3ms, EXISTS 280ms (38x slower). EXISTS re-evaluates correlated subquery per row (5000 evaluations). IN pre-computes set once. Both return 500 matches. Key optimization: prefer IN over EXISTS for set membership.",
+    "durationMs": 60000
   },
   "schedule": {
     "date": "2026-04-25",
@@ -8983,14 +8983,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 239,
+    "blocksCompleted": 240,
     "blocksTotal": 114,
     "modeDistribution": {
       "THINK": 14,
       "PLAN": 31,
       "BUILD": 66,
       "MAINTAIN": 28,
-      "EXPLORE": 100
+      "EXPLORE": 101
     }
   },
   "artifacts": [

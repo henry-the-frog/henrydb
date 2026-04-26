@@ -2663,9 +2663,13 @@
     {
       "id": "T250",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "EXPLORE: Test HenryDB EXISTS vs IN performance comparison",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-26T00:46:56.042Z",
+      "completed": "2026-04-26T00:47:15.220Z",
+      "duration_ms": 60000,
+      "summary": "EXISTS vs IN performance: IN 7.3ms, EXISTS 280ms (38x slower). EXISTS re-evaluates correlated subquery per row (5000 evaluations). IN pre-computes set once. Both return 500 matches. Key optimization: prefer IN over EXISTS for set membership."
     }
   ],
   "focusProjects": [
