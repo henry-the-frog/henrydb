@@ -797,6 +797,27 @@ export class PLInterpreter {
       return !this._evalSimpleExpr(expr.replace(/^\s*NOT\s+/i, ''), scope);
     }
 
+    // Handle function calls: name(arg1, arg2, ...)
+    const funcCallMatch = expr.match(/^(\w+)\s*\((.*)\)$/);
+    if (funcCallMatch) {
+      const funcName = funcCallMatch[1];
+      const argsStr = funcCallMatch[2];
+      // Evaluate the args in current scope first
+      const evaluatedArgs = argsStr ? argsStr.split(',').map(a => {
+        const val = this._evalSimpleExpr(a.trim(), scope);
+        return typeof val === 'string' ? `'${val}'` : val;
+      }).join(', ') : '';
+      // Execute as SQL function call
+      try {
+        const result = this.db.execute(`SELECT ${funcName}(${evaluatedArgs}) as __result__`);
+        if (result.rows && result.rows.length > 0) {
+          return result.rows[0].__result__;
+        }
+      } catch {
+        // Not a known function, fall through
+      }
+    }
+
     // Handle unary minus (- expr where expr is not a literal number)
     const unaryMinusMatch = expr.match(/^\s*-\s*(.+)$/);
     if (unaryMinusMatch && !/^-?\d+(\.\d+)?$/.test(expr.trim())) {

@@ -158,3 +158,51 @@ describe('PL/SQL: auto-detection', () => {
     assert.strictEqual(db.execute('SELECT negate(42) as r').rows[0].r, -42);
   });
 });
+
+describe('PL/SQL: recursive functions', () => {
+  it('recursive factorial', () => {
+    const db = new Database();
+    db.execute(`
+      CREATE FUNCTION rec_fact(n INTEGER) RETURNS INTEGER
+      LANGUAGE plsql
+      AS $$
+        BEGIN
+          IF n <= 1 THEN RETURN 1; END IF;
+          RETURN n * rec_fact(n - 1);
+        END;
+      $$
+    `);
+    assert.strictEqual(db.execute('SELECT rec_fact(5) as r').rows[0].r, 120);
+    assert.strictEqual(db.execute('SELECT rec_fact(1) as r').rows[0].r, 1);
+  });
+});
+
+describe('PL/SQL: nested function calls', () => {
+  it('PL/SQL function calling PL/SQL function', () => {
+    const db = new Database();
+    db.execute(`CREATE FUNCTION inc(x INTEGER) RETURNS INTEGER
+      LANGUAGE plsql AS $$ BEGIN RETURN x + 1; END; $$`);
+    db.execute(`CREATE FUNCTION inc_twice(x INTEGER) RETURNS INTEGER
+      LANGUAGE plsql AS $$ BEGIN RETURN inc(inc(x)); END; $$`);
+    assert.strictEqual(db.execute('SELECT inc_twice(40) as r').rows[0].r, 42);
+  });
+});
+
+describe('PL/SQL: FOR loop', () => {
+  it('FOR i IN range LOOP', () => {
+    const db = new Database();
+    db.execute(`
+      CREATE FUNCTION sum_for(n INTEGER) RETURNS INTEGER
+      LANGUAGE plsql AS $$
+        DECLARE total INTEGER := 0;
+        BEGIN
+          FOR i IN 1..n LOOP
+            total := total + i;
+          END LOOP;
+          RETURN total;
+        END;
+      $$
+    `);
+    assert.strictEqual(db.execute('SELECT sum_for(10) as r').rows[0].r, 55);
+  });
+});
