@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-26T00:26:51.396Z",
+  "generated": "2026-04-26T00:27:28.071Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "EXPLORE: Test HenryDB GENERATE_SERIES with all parameter variations",
-    "completedAt": "2026-04-26T00:26:51.396Z",
-    "taskId": "T220",
-    "summary": "GENERATE_SERIES all variations: basic, step 2, negative step, column alias, in aggregate SUM(1..100)=5050. Fully functional table-valued function.",
+    "task": "EXPLORE: Test HenryDB IS NULL, IS NOT NULL with complex expressions",
+    "completedAt": "2026-04-26T00:27:28.071Z",
+    "taskId": "T221",
+    "summary": "NULL handling: IS NULL/NOT NULL, combined AND, 3-level COALESCE chain, COUNT(*) vs COUNT(col), SUM ignoring NULL. All SQL standard NULL semantics correct.",
     "durationMs": 30000
   },
   "schedule": {
@@ -8983,14 +8983,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 213,
+    "blocksCompleted": 214,
     "blocksTotal": 114,
     "modeDistribution": {
       "THINK": 14,
       "PLAN": 31,
       "BUILD": 66,
       "MAINTAIN": 28,
-      "EXPLORE": 74
+      "EXPLORE": 75
     }
   },
   "artifacts": [
