@@ -826,6 +826,14 @@ export class PLInterpreter {
       if (typeof val === 'number') return -val;
     }
 
+    // Handle string concatenation (||)
+    const concatMatch = expr.match(/^(.+)\s*\|\|\s*(.+)$/);
+    if (concatMatch) {
+      const left = this._evalSimpleExpr(concatMatch[1].trim(), scope);
+      const right = this._evalSimpleExpr(concatMatch[2].trim(), scope);
+      return String(left) + String(right);
+    }
+
     // Handle arithmetic
     const addMatch = expr.match(/^(.+)\s*([+\-])\s*([^+\-]+)$/);
     if (addMatch) {

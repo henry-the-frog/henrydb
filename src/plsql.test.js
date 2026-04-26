@@ -206,3 +206,12 @@ describe('PL/SQL: FOR loop', () => {
     assert.strictEqual(db.execute('SELECT sum_for(10) as r').rows[0].r, 55);
   });
 });
+
+describe('PL/SQL: string concatenation', () => {
+  it('concatenate with ||', () => {
+    const db = new Database();
+    db.execute(`CREATE FUNCTION greet(name TEXT) RETURNS TEXT
+      LANGUAGE plsql AS $$ BEGIN RETURN 'Hello, ' || name || '!'; END; $$`);
+    assert.strictEqual(db.execute("SELECT greet('World') as r").rows[0].r, 'Hello, World!');
+  });
+});
