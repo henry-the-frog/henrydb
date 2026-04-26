@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-26T00:18:31.288Z",
+  "generated": "2026-04-26T00:19:07.281Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "EXPLORE: Test HenryDB COALESCE, NULLIF, IIF, IFNULL",
-    "completedAt": "2026-04-26T00:18:31.288Z",
-    "taskId": "T207",
-    "summary": "All NULL-handling functions work: COALESCE (multi-arg), NULLIF (equal→NULL), IFNULL (2-arg coalesce), IIF (inline if), TYPEOF (returns integer/text/null/real). Complete NULL handling.",
+    "task": "EXPLORE: Test HenryDB date functions with time arithmetic",
+    "completedAt": "2026-04-26T00:19:07.281Z",
+    "taskId": "T209",
+    "summary": "Date functions: date('now'), datetime('now'), date('2024-01-01', '+7 days')='2024-01-08', date('+1 month') handles overflow (Jan 31→Mar 2). strftime with custom formats. julianday not implemented.",
     "durationMs": 60000
   },
   "schedule": {
@@ -8983,14 +8983,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 202,
+    "blocksCompleted": 203,
     "blocksTotal": 114,
     "modeDistribution": {
       "THINK": 14,
       "PLAN": 31,
       "BUILD": 66,
       "MAINTAIN": 27,
-      "EXPLORE": 64
+      "EXPLORE": 65
     }
   },
   "artifacts": [

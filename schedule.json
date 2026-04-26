@@ -2225,9 +2225,13 @@
     {
       "id": "T209",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "EXPLORE: Test HenryDB date functions with time arithmetic",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-26T00:18:46.004Z",
+      "completed": "2026-04-26T00:19:07.245Z",
+      "duration_ms": 60000,
+      "summary": "Date functions: date('now'), datetime('now'), date('2024-01-01', '+7 days')='2024-01-08', date('+1 month') handles overflow (Jan 31→Mar 2). strftime with custom formats. julianday not implemented."
     },
     {
       "id": "T210",
