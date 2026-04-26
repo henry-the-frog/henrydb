@@ -2904,6 +2904,49 @@
       "mode": "MAINTAIN",
       "status": "upcoming",
       "task": "MAINTAIN: Final git push and session end"
+    },
+    {
+      "id": "T275",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test HenryDB UNNEST with array data",
+      "project": "henrydb",
+      "started": "2026-04-26T00:59:16.439Z",
+      "completed": "2026-04-26T00:59:34.383Z",
+      "duration_ms": 20000,
+      "summary": "UNNEST(ARRAY[...]) works. Expands array to rows. Supports column alias. 5-element and 3-element arrays correctly produce individual rows."
+    },
+    {
+      "id": "T276",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test monkey-lang VM inspect/debug output",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T277",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test HenryDB multi-column index prefix optimization",
+      "project": "henrydb"
+    },
+    {
+      "id": "T278",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test neural-net Softmax and CrossEntropy loss",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T279",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test HenryDB LIMIT with OFFSET pagination",
+      "project": "henrydb",
+      "started": "2026-04-26T00:59:40.310Z",
+      "completed": "2026-04-26T00:59:56.452Z",
+      "duration_ms": 20000,
+      "summary": "LIMIT+OFFSET pagination: pages of 5 from 20 items. [1-5], [6-10], [11-15], [16-20], [empty]. Beyond range returns empty array. Correct."
     }
   ],
   "focusProjects": [
@@ -3995,6 +4038,26 @@
     {
       "time": "2026-04-26T00:57:50.590Z",
       "msg": "Added T274 (MAINTAIN) after end: MAINTAIN: Final git push and session end"
+    },
+    {
+      "time": "2026-04-26T00:59:10.809Z",
+      "msg": "Added T275 (EXPLORE) after end: EXPLORE: Test HenryDB UNNEST with array data"
+    },
+    {
+      "time": "2026-04-26T00:59:10.938Z",
+      "msg": "Added T276 (EXPLORE) after end: EXPLORE: Test monkey-lang VM inspect/debug output"
+    },
+    {
+      "time": "2026-04-26T00:59:11.062Z",
+      "msg": "Added T277 (EXPLORE) after end: EXPLORE: Test HenryDB multi-column index prefix optimization"
+    },
+    {
+      "time": "2026-04-26T00:59:11.183Z",
+      "msg": "Added T278 (EXPLORE) after end: EXPLORE: Test neural-net Softmax and CrossEntropy loss"
+    },
+    {
+      "time": "2026-04-26T00:59:11.306Z",
+      "msg": "Added T279 (EXPLORE) after end: EXPLORE: Test HenryDB LIMIT with OFFSET pagination"
     }
   ]
 }
