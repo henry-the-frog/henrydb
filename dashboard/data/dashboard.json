@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-26T01:16:17.428Z",
+  "generated": "2026-04-26T01:18:15.170Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "EXPLORE: Test HenryDB INSERT OR REPLACE",
-    "completedAt": "2026-04-26T01:16:17.428Z",
-    "taskId": "T321",
-    "summary": "INSERT OR REPLACE: a updated 1→99, c inserted. Same as REPLACE INTO but with INSERT OR syntax.",
-    "durationMs": 10000
+    "task": "EXPLORE: Test monkey-lang VM try/catch error handling",
+    "completedAt": "2026-04-26T01:18:15.170Z",
+    "taskId": "T324",
+    "summary": "try/catch is evaluator-only, not compiled to VM bytecode. TryExpression/ThrowStatement not handled in compiler. Would need OpTry/OpThrow opcodes.",
+    "durationMs": 15000
   },
   "schedule": {
     "date": "2026-04-25",
@@ -8983,14 +8983,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 293,
+    "blocksCompleted": 296,
     "blocksTotal": 114,
     "modeDistribution": {
       "THINK": 14,
       "PLAN": 31,
       "BUILD": 66,
       "MAINTAIN": 29,
-      "EXPLORE": 153
+      "EXPLORE": 156
     }
   },
   "artifacts": [

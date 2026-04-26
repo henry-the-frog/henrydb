@@ -3313,9 +3313,13 @@
     {
       "id": "T315",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "EXPLORE: Test HenryDB SELECT INTO (create and populate table)",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-26T01:17:20.443Z",
+      "completed": "2026-04-26T01:17:29.839Z",
+      "duration_ms": 10000,
+      "summary": "CREATE TABLE AS SELECT: creates dst from filtered src query. 2 rows (val>15). Correct."
     },
     {
       "id": "T316",
@@ -3385,6 +3389,56 @@
       "mode": "MAINTAIN",
       "status": "upcoming",
       "task": "EXPLORE: Final count and wrap-up for session boundary"
+    },
+    {
+      "id": "T323",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test HenryDB COALESCE and NULLIF functions",
+      "project": "henrydb",
+      "started": "2026-04-26T01:17:43.518Z",
+      "completed": "2026-04-26T01:17:48.082Z",
+      "duration_ms": 10000,
+      "summary": "COALESCE(a,99): [1,99,3,99]. NULLIF(a,3): [1,null,null,null]. IIF(a IS NULL,...): [found,missing,found,missing]. All NULL-handling functions correct."
+    },
+    {
+      "id": "T324",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test monkey-lang VM try/catch error handling",
+      "project": "monkey-lang",
+      "started": "2026-04-26T01:17:55.609Z",
+      "completed": "2026-04-26T01:18:15.133Z",
+      "duration_ms": 15000,
+      "summary": "try/catch is evaluator-only, not compiled to VM bytecode. TryExpression/ThrowStatement not handled in compiler. Would need OpTry/OpThrow opcodes."
+    },
+    {
+      "id": "T325",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test HenryDB date functions (DATE, TIME, DATETIME)",
+      "project": "henrydb"
+    },
+    {
+      "id": "T326",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test neural-net speculative decoding verification",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T327",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test HenryDB EXPLAIN ANALYZE output format",
+      "project": "henrydb"
+    },
+    {
+      "id": "T328",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test monkey-lang pattern matching exhaustiveness",
+      "project": "monkey-lang"
     }
   ],
   "focusProjects": [
@@ -4668,6 +4722,30 @@
     {
       "time": "2026-04-26T01:13:54.043Z",
       "msg": "Added T322 (MAINTAIN) after end: EXPLORE: Final count and wrap-up for session boundary"
+    },
+    {
+      "time": "2026-04-26T01:17:36.404Z",
+      "msg": "Added T323 (EXPLORE) after end: EXPLORE: Test HenryDB COALESCE and NULLIF functions"
+    },
+    {
+      "time": "2026-04-26T01:17:36.526Z",
+      "msg": "Added T324 (EXPLORE) after end: EXPLORE: Test monkey-lang VM try/catch error handling"
+    },
+    {
+      "time": "2026-04-26T01:17:36.647Z",
+      "msg": "Added T325 (EXPLORE) after end: EXPLORE: Test HenryDB date functions (DATE, TIME, DATETIME)"
+    },
+    {
+      "time": "2026-04-26T01:17:36.770Z",
+      "msg": "Added T326 (EXPLORE) after end: EXPLORE: Test neural-net speculative decoding verification"
+    },
+    {
+      "time": "2026-04-26T01:17:36.891Z",
+      "msg": "Added T327 (EXPLORE) after end: EXPLORE: Test HenryDB EXPLAIN ANALYZE output format"
+    },
+    {
+      "time": "2026-04-26T01:17:37.012Z",
+      "msg": "Added T328 (EXPLORE) after end: EXPLORE: Test monkey-lang pattern matching exhaustiveness"
     }
   ]
 }
