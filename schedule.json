@@ -3790,6 +3790,85 @@
       "task": "EXPLORE: Test monkey-lang VM string methods comprehensive",
       "project": "monkey-lang",
       "started": "2026-04-26T01:25:56.091Z"
+    },
+    {
+      "id": "T363",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test HenryDB ALTER TABLE ADD COLUMN",
+      "project": "henrydb",
+      "started": "2026-04-26T01:26:17.641Z",
+      "completed": "2026-04-26T01:26:22.497Z",
+      "duration_ms": 10000,
+      "summary": "ALTER TABLE ADD COLUMN: existing rows get DEFAULT 0, new rows use value. Schema evolution works."
+    },
+    {
+      "id": "T364",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test monkey-lang VM indexOf and slice builtins",
+      "project": "monkey-lang",
+      "started": "2026-04-26T01:26:29.708Z",
+      "completed": "2026-04-26T01:26:34.364Z",
+      "duration_ms": 10000,
+      "summary": "indexOf: 6 (found), -1 (miss). slice: array [2,3,4], string 'hello'. Both polymorphic."
+    },
+    {
+      "id": "T365",
+      "mode": "EXPLORE",
+      "status": "in-progress",
+      "task": "EXPLORE: Test HenryDB window NTILE function",
+      "project": "henrydb",
+      "started": "2026-04-26T01:26:39.474Z"
+    },
+    {
+      "id": "T366",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test monkey-lang VM higher-order sort",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T367",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test HenryDB GROUP BY with expression",
+      "project": "henrydb"
+    },
+    {
+      "id": "T368",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test monkey-lang VM recursive quicksort",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T369",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test HenryDB DISTINCT ON",
+      "project": "henrydb"
+    },
+    {
+      "id": "T370",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test monkey-lang VM hash merge builtin",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T371",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test HenryDB UPDATE with subquery in SET",
+      "project": "henrydb"
+    },
+    {
+      "id": "T372",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test monkey-lang VM recursive map implementation",
+      "project": "monkey-lang"
     }
   ],
   "focusProjects": [
@@ -5233,6 +5312,46 @@
     {
       "time": "2026-04-26T01:24:14.741Z",
       "msg": "Added T362 (EXPLORE) after end: EXPLORE: Test monkey-lang VM string methods comprehensive"
+    },
+    {
+      "time": "2026-04-26T01:26:11.723Z",
+      "msg": "Added T363 (EXPLORE) after end: EXPLORE: Test HenryDB ALTER TABLE ADD COLUMN"
+    },
+    {
+      "time": "2026-04-26T01:26:11.848Z",
+      "msg": "Added T364 (EXPLORE) after end: EXPLORE: Test monkey-lang VM indexOf and slice builtins"
+    },
+    {
+      "time": "2026-04-26T01:26:11.971Z",
+      "msg": "Added T365 (EXPLORE) after end: EXPLORE: Test HenryDB window NTILE function"
+    },
+    {
+      "time": "2026-04-26T01:26:12.092Z",
+      "msg": "Added T366 (EXPLORE) after end: EXPLORE: Test monkey-lang VM higher-order sort"
+    },
+    {
+      "time": "2026-04-26T01:26:12.214Z",
+      "msg": "Added T367 (EXPLORE) after end: EXPLORE: Test HenryDB GROUP BY with expression"
+    },
+    {
+      "time": "2026-04-26T01:26:12.336Z",
+      "msg": "Added T368 (EXPLORE) after end: EXPLORE: Test monkey-lang VM recursive quicksort"
+    },
+    {
+      "time": "2026-04-26T01:26:12.457Z",
+      "msg": "Added T369 (EXPLORE) after end: EXPLORE: Test HenryDB DISTINCT ON"
+    },
+    {
+      "time": "2026-04-26T01:26:12.579Z",
+      "msg": "Added T370 (EXPLORE) after end: EXPLORE: Test monkey-lang VM hash merge builtin"
+    },
+    {
+      "time": "2026-04-26T01:26:12.702Z",
+      "msg": "Added T371 (EXPLORE) after end: EXPLORE: Test HenryDB UPDATE with subquery in SET"
+    },
+    {
+      "time": "2026-04-26T01:26:12.824Z",
+      "msg": "Added T372 (EXPLORE) after end: EXPLORE: Test monkey-lang VM recursive map implementation"
     }
   ]
 }
