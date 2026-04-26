@@ -568,9 +568,13 @@
     {
       "id": "T53",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "Add WASM i64 compilation support (64-bit integers)",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-26T15:55:36.069Z",
+      "completed": "2026-04-26T16:01:13.568Z",
+      "duration_ms": 600000,
+      "summary": "WASM i64 support added. useI64 option switches all types to 64-bit. Handles 10 billion+ without overflow. Mandelbrot x1000 precision works (0.72ms). 1236 tests pass."
     },
     {
       "id": "T54",
