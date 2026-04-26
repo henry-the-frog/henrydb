@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-26T01:19:40.925Z",
+  "generated": "2026-04-26T01:20:13.409Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "EXPLORE: Test monkey-lang VM closures with mutation (cells)",
-    "completedAt": "2026-04-26T01:19:40.925Z",
-    "taskId": "T330",
-    "summary": "Mutable closures via cells: makeCounter() with inc/get closures sharing count. 3 increments → get()=3. OpMakeCell/OpSetFree working correctly.",
-    "durationMs": 10000
+    "task": "EXPLORE: Test neural-net BPE tokenizer",
+    "completedAt": "2026-04-26T01:20:13.409Z",
+    "taskId": "T332",
+    "summary": "BPE tokenizer: trains merges, encodes to token IDs (2 tokens for 'the cat'). Decode has space-handling bug ('theat' not 'the cat'). Core merge algorithm works.",
+    "durationMs": 15000
   },
   "schedule": {
     "date": "2026-04-25",
@@ -8983,14 +8983,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 301,
+    "blocksCompleted": 303,
     "blocksTotal": 114,
     "modeDistribution": {
       "THINK": 14,
       "PLAN": 31,
       "BUILD": 66,
       "MAINTAIN": 29,
-      "EXPLORE": 161
+      "EXPLORE": 163
     }
   },
   "artifacts": [

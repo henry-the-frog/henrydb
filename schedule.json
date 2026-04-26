@@ -3477,16 +3477,24 @@
     {
       "id": "T331",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "EXPLORE: Test HenryDB self-join",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-26T01:19:52.322Z",
+      "completed": "2026-04-26T01:19:56.815Z",
+      "duration_ms": 10000,
+      "summary": "Self-join: emp LEFT JOIN emp for manager hierarchy. CEO→null, VP→CEO, Dir→VP, Dev→Dir. Correct hierarchy resolution."
     },
     {
       "id": "T332",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "EXPLORE: Test neural-net BPE tokenizer",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-26T01:20:01.817Z",
+      "completed": "2026-04-26T01:20:13.372Z",
+      "duration_ms": 15000,
+      "summary": "BPE tokenizer: trains merges, encodes to token IDs (2 tokens for 'the cat'). Decode has space-handling bug ('theat' not 'the cat'). Core merge algorithm works."
     },
     {
       "id": "T333",
