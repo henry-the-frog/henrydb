@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-26T00:12:31.438Z",
+  "generated": "2026-04-26T00:13:06.729Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "EXPLORE: Test HenryDB SAVEPOINT and nested transactions",
-    "completedAt": "2026-04-26T00:12:31.438Z",
-    "taskId": "T198",
-    "summary": "SAVEPOINT + ROLLBACK TO works perfectly. Nested transaction: debit Alice (1000→800), savepoint, credit Bob (500→700), rollback to savepoint (Bob back to 500), commit (Alice 800, Bob 500). Partial rollback correctly preserves outer transaction changes.",
-    "durationMs": 120000
+    "task": "EXPLORE: Test HenryDB ALTER TABLE — add/drop columns",
+    "completedAt": "2026-04-26T00:13:06.729Z",
+    "taskId": "T200",
+    "summary": "ALTER TABLE fully works: ADD COLUMN (with DEFAULT), ADD COLUMN (nullable), RENAME COLUMN, DROP COLUMN. All operations preserve existing data correctly. Default values applied to existing rows.",
+    "durationMs": 60000
   },
   "schedule": {
     "date": "2026-04-25",
@@ -8983,14 +8983,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 195,
+    "blocksCompleted": 196,
     "blocksTotal": 114,
     "modeDistribution": {
       "THINK": 14,
       "PLAN": 31,
       "BUILD": 66,
       "MAINTAIN": 27,
-      "EXPLORE": 57
+      "EXPLORE": 58
     }
   },
   "artifacts": [
