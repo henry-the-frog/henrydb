@@ -628,6 +628,17 @@
       "completed": "2026-04-26T16:13:25.291Z",
       "duration_ms": 600000,
       "summary": "PL/SQL wired into HenryDB! factorial(5)=120, classify() with IF/ELSIF, SELECT INTO works. 854 LOC PL/SQL engine integrated. 4313 tests pass."
+    },
+    {
+      "id": "T59",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Add PL/SQL integration tests to main HenryDB test suite",
+      "project": "henrydb",
+      "started": "2026-04-26T16:14:23.580Z",
+      "completed": "2026-04-26T16:21:00.969Z",
+      "duration_ms": 600000,
+      "summary": "8 PL/SQL integration tests added. Fixed unary minus bug in expression evaluator. Fixed auto-detected PL/SQL language assignment. All tests pass."
     }
   ],
   "focusProjects": [
@@ -843,6 +854,10 @@
     {
       "time": "2026-04-26T16:06:22.161Z",
       "msg": "Added T58 (BUILD) after end: Wire PL/SQL into HenryDB: copy plsql.js, update callUserFunction"
+    },
+    {
+      "time": "2026-04-26T16:14:23.463Z",
+      "msg": "Added T59 (BUILD) after end: Add PL/SQL integration tests to main HenryDB test suite"
     }
   ]
 }

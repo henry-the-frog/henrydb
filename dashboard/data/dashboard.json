@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-26T16:13:25.326Z",
+  "generated": "2026-04-26T16:21:01.005Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Wire PL/SQL into HenryDB: copy plsql.js, update callUserFunction",
-    "completedAt": "2026-04-26T16:13:25.326Z",
-    "taskId": "T58",
-    "summary": "PL/SQL wired into HenryDB! factorial(5)=120, classify() with IF/ELSIF, SELECT INTO works. 854 LOC PL/SQL engine integrated. 4313 tests pass.",
+    "task": "Add PL/SQL integration tests to main HenryDB test suite",
+    "completedAt": "2026-04-26T16:21:01.005Z",
+    "taskId": "T59",
+    "summary": "8 PL/SQL integration tests added. Fixed unary minus bug in expression evaluator. Fixed auto-detected PL/SQL language assignment. All tests pass.",
     "durationMs": 600000
   },
   "schedule": {
@@ -7970,12 +7970,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 58,
+    "blocksCompleted": 59,
     "blocksTotal": 49,
     "modeDistribution": {
       "THINK": 10,
       "PLAN": 9,
-      "BUILD": 26,
+      "BUILD": 27,
       "MAINTAIN": 9,
       "EXPLORE": 4
     }
