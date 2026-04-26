@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-26T00:10:53.580Z",
+  "generated": "2026-04-26T00:11:56.345Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "EXPLORE: Run monkey-lang demo program and verify all features work together",
-    "completedAt": "2026-04-26T00:10:53.580Z",
-    "taskId": "T196",
-    "summary": "Demo runs 15+ features before crashing on index-of-error. Working: template literals, closures, counter factory, match expression, destructuring, comprehensions, spread/rest, sqrt/pow/floor/ceil/padStart/char/ord builtins. Crash at hash method call — known parser limitation (arr[0]() syntax).",
+    "task": "EXPLORE: Test monkey-lang compiler output — disassemble a simple program",
+    "completedAt": "2026-04-26T00:11:56.345Z",
+    "taskId": "T199",
+    "summary": "Bytecode disassembly works! Main program: 28 bytes (load const, set/get global, closure creation, call, pop). Function body: 7 bytes (get local, const, mul, return). Clean register-less stack machine. Constants: INTEGER, COMPILED_FUNCTION.",
     "durationMs": 120000
   },
   "schedule": {
@@ -8983,14 +8983,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 193,
+    "blocksCompleted": 194,
     "blocksTotal": 114,
     "modeDistribution": {
       "THINK": 14,
       "PLAN": 31,
       "BUILD": 66,
       "MAINTAIN": 27,
-      "EXPLORE": 55
+      "EXPLORE": 56
     }
   },
   "artifacts": [

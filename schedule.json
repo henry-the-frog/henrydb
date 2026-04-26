@@ -2113,6 +2113,38 @@
       "completed": "2026-04-26T00:10:18.905Z",
       "duration_ms": 180000,
       "summary": "MicroGPT: Creates successfully with embedding, PE, transformer blocks, output projection. generate() works (produces tokens). Training produces NaN loss — numerical stability issue in softmax/cross-entropy. Structure correct, gradients need debugging."
+    },
+    {
+      "id": "T198",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test HenryDB SAVEPOINT and nested transactions",
+      "project": "henrydb"
+    },
+    {
+      "id": "T199",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test monkey-lang compiler output — disassemble a simple program",
+      "project": "monkey-lang",
+      "started": "2026-04-26T00:11:21.819Z",
+      "completed": "2026-04-26T00:11:56.309Z",
+      "duration_ms": 120000,
+      "summary": "Bytecode disassembly works! Main program: 28 bytes (load const, set/get global, closure creation, call, pop). Function body: 7 bytes (get local, const, mul, return). Clean register-less stack machine. Constants: INTEGER, COMPILED_FUNCTION."
+    },
+    {
+      "id": "T200",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test HenryDB ALTER TABLE — add/drop columns",
+      "project": "henrydb"
+    },
+    {
+      "id": "T201",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test more advanced autograd — neural net training",
+      "project": "monkey-lang"
     }
   ],
   "focusProjects": [
@@ -2896,6 +2928,22 @@
     {
       "time": "2026-04-26T00:08:21.084Z",
       "msg": "Added T197 (EXPLORE) after end: EXPLORE: Test neural-net MicroGPT — can it train on a small corpus?"
+    },
+    {
+      "time": "2026-04-26T00:11:12.640Z",
+      "msg": "Added T198 (EXPLORE) after end: EXPLORE: Test HenryDB SAVEPOINT and nested transactions"
+    },
+    {
+      "time": "2026-04-26T00:11:12.760Z",
+      "msg": "Added T199 (EXPLORE) after end: EXPLORE: Test monkey-lang compiler output — disassemble a simple program"
+    },
+    {
+      "time": "2026-04-26T00:11:12.880Z",
+      "msg": "Added T200 (EXPLORE) after end: EXPLORE: Test HenryDB ALTER TABLE — add/drop columns"
+    },
+    {
+      "time": "2026-04-26T00:11:17.904Z",
+      "msg": "Added T201 (EXPLORE) after end: EXPLORE: Test more advanced autograd — neural net training"
     }
   ]
 }
