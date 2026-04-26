@@ -87,3 +87,30 @@ OpMethodCall nameConstIdx numArgs
 - Class method `speak` stored on hash → found at level 1
 - User function `helper` in globals → found at level 3
 - Unknown method → error
+
+### Additional Refinements (from T71 THINK)
+
+#### Method Storage Optimization
+Instead of storing closures on the hash (memory overhead per instance), consider:
+- **Prototype chain**: Store methods on a shared "class prototype" hash
+- Instance hash has `__proto__` slot pointing to class prototype
+- Lookup: instance slots → prototype slots → builtin → global
+- This is how V8/SpiderMonkey do it (hidden class + prototype chain)
+
+#### Compile-Time Optimization
+The compiler already knows the class hierarchy. For monomorphic call sites:
+- If static analysis can determine the receiver type → emit direct call
+- Only fall back to OpMethodCall for polymorphic or unknown receivers
+- This is basically inline caching (already have IC infrastructure in shape.js)
+
+#### Priority Order for Implementation
+1. **Phase 1**: Store methods on instance hash + OpMethodCall (simple, works, ~100 LOC)
+2. **Phase 2**: Shared prototype (reduces memory, ~50 LOC additional)
+3. **Phase 3**: Inline caching for method dispatch (performance, ~100 LOC)
+
+Phase 1 is sufficient for correctness. Phase 2 matters if many instances exist. Phase 3 matters for hot loops calling methods.
+
+### Risk Assessment
+- **Low risk**: OpMethodCall is a new opcode, doesn't touch existing dispatch
+- **Medium risk**: Storing methods on hash during class compilation — must not break existing instance creation
+- **Testing**: Need tests for same-method-name different classes, inheritance override, builtin fallback

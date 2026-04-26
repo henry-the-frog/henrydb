@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-26T16:58:38.942Z",
+  "generated": "2026-04-26T16:59:06.161Z",
   "current": {
     "status": "done",
-    "mode": "EXPLORE",
-    "task": "Investigate monkey-lang constant propagation (SCCP) accuracy with complex programs",
-    "completedAt": "2026-04-26T16:58:38.942Z",
-    "taskId": "T70",
-    "summary": "SCCP bug found: propagateConstants uses toSSA which gives empty results for function bodies. Needs perFunctionSSA. SCCP is currently useless for real programs.",
-    "durationMs": 300000
+    "mode": "THINK",
+    "task": "Design runtime method dispatch for class polymorphism (OpMethodCall)",
+    "completedAt": "2026-04-26T16:59:06.161Z",
+    "taskId": "T71",
+    "summary": "Design refined: 3-phase implementation (instance methods → shared prototype → inline caching). Phase 1 is ~100 LOC, sufficient for correctness.",
+    "durationMs": 180000
   },
   "schedule": {
     "date": "2026-04-26",
@@ -7970,10 +7970,10 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 66,
+    "blocksCompleted": 67,
     "blocksTotal": 49,
     "modeDistribution": {
-      "THINK": 11,
+      "THINK": 12,
       "PLAN": 9,
       "BUILD": 29,
       "MAINTAIN": 11,
