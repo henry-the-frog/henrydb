@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-26T00:19:07.281Z",
+  "generated": "2026-04-26T00:20:22.863Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "EXPLORE: Test HenryDB date functions with time arithmetic",
-    "completedAt": "2026-04-26T00:19:07.281Z",
-    "taskId": "T209",
-    "summary": "Date functions: date('now'), datetime('now'), date('2024-01-01', '+7 days')='2024-01-08', date('+1 month') handles overflow (Jan 31→Mar 2). strftime with custom formats. julianday not implemented.",
-    "durationMs": 60000
+    "task": "EXPLORE: Test HenryDB BETWEEN, IN, LIKE with wildcards",
+    "completedAt": "2026-04-26T00:20:22.863Z",
+    "taskId": "T212",
+    "summary": "All search operators work: BETWEEN/NOT BETWEEN, IN/NOT IN, LIKE % and _, GLOB *. Complete WHERE clause predicate support.",
+    "durationMs": 30000
   },
   "schedule": {
     "date": "2026-04-25",
@@ -8983,14 +8983,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 203,
+    "blocksCompleted": 205,
     "blocksTotal": 114,
     "modeDistribution": {
       "THINK": 14,
       "PLAN": 31,
       "BUILD": 66,
       "MAINTAIN": 27,
-      "EXPLORE": 65
+      "EXPLORE": 67
     }
   },
   "artifacts": [

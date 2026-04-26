@@ -2243,6 +2243,35 @@
       "completed": "2026-04-26T00:17:57.892Z",
       "duration_ms": 120000,
       "summary": "Monster query: 2 CTEs + multiple JOINs + Window (RANK PARTITION BY) + CASE + WHERE + ORDER BY. All features work together in a single complex query. CTE stats computed correctly, window function ranks, CASE expression evaluated. HenryDB handles production-complexity SQL."
+    },
+    {
+      "id": "T211",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test HenryDB GROUP_CONCAT and STRING_AGG",
+      "project": "henrydb",
+      "started": "2026-04-26T00:19:31.040Z",
+      "completed": "2026-04-26T00:19:49.682Z",
+      "duration_ms": 30000,
+      "summary": "GROUP_CONCAT works with default separator (comma) and custom separator (' | '). Correctly aggregates per-group strings."
+    },
+    {
+      "id": "T212",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test HenryDB BETWEEN, IN, LIKE with wildcards",
+      "project": "henrydb",
+      "started": "2026-04-26T00:19:57.905Z",
+      "completed": "2026-04-26T00:20:22.827Z",
+      "duration_ms": 30000,
+      "summary": "All search operators work: BETWEEN/NOT BETWEEN, IN/NOT IN, LIKE % and _, GLOB *. Complete WHERE clause predicate support."
+    },
+    {
+      "id": "T213",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test HenryDB REPLACE, INSERT OR IGNORE",
+      "project": "henrydb"
     }
   ],
   "focusProjects": [
@@ -3078,6 +3107,18 @@
     {
       "time": "2026-04-26T00:17:21.940Z",
       "msg": "Added T210 (EXPLORE) after end: EXPLORE: What is the most complex single SQL query HenryDB can handle?"
+    },
+    {
+      "time": "2026-04-26T00:19:23.698Z",
+      "msg": "Added T211 (EXPLORE) after end: EXPLORE: Test HenryDB GROUP_CONCAT and STRING_AGG"
+    },
+    {
+      "time": "2026-04-26T00:19:23.819Z",
+      "msg": "Added T212 (EXPLORE) after end: EXPLORE: Test HenryDB BETWEEN, IN, LIKE with wildcards"
+    },
+    {
+      "time": "2026-04-26T00:19:23.939Z",
+      "msg": "Added T213 (EXPLORE) after end: EXPLORE: Test HenryDB REPLACE, INSERT OR IGNORE"
     }
   ]
 }
