@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-26T01:20:13.409Z",
+  "generated": "2026-04-26T01:20:44.981Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "EXPLORE: Test neural-net BPE tokenizer",
-    "completedAt": "2026-04-26T01:20:13.409Z",
-    "taskId": "T332",
-    "summary": "BPE tokenizer: trains merges, encodes to token IDs (2 tokens for 'the cat'). Decode has space-handling bug ('theat' not 'the cat'). Core merge algorithm works.",
-    "durationMs": 15000
+    "task": "EXPLORE: Test monkey-lang VM with 1000 recursive fibonacci",
+    "completedAt": "2026-04-26T01:20:44.981Z",
+    "taskId": "T334",
+    "summary": "fib(30)=832040 in 922ms. ~1.8M recursive VM calls without stack overflow. Deep recursion handles well.",
+    "durationMs": 10000
   },
   "schedule": {
     "date": "2026-04-25",
@@ -8983,14 +8983,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 303,
+    "blocksCompleted": 305,
     "blocksTotal": 114,
     "modeDistribution": {
       "THINK": 14,
       "PLAN": 31,
       "BUILD": 66,
       "MAINTAIN": 29,
-      "EXPLORE": 163
+      "EXPLORE": 165
     }
   },
   "artifacts": [

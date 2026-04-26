@@ -3499,16 +3499,24 @@
     {
       "id": "T333",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "EXPLORE: Test HenryDB DELETE with complex WHERE",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-26T01:20:27.544Z",
+      "completed": "2026-04-26T01:20:32.768Z",
+      "duration_ms": 10000,
+      "summary": "DELETE with AND+IN+RETURNING: deleted 2 rows (login,logout), kept 3. RETURNING shows deleted rows. Complex WHERE predicates work."
     },
     {
       "id": "T334",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "EXPLORE: Test monkey-lang VM with 1000 recursive fibonacci",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-26T01:20:38.671Z",
+      "completed": "2026-04-26T01:20:44.944Z",
+      "duration_ms": 10000,
+      "summary": "fib(30)=832040 in 922ms. ~1.8M recursive VM calls without stack overflow. Deep recursion handles well."
     }
   ],
   "focusProjects": [
