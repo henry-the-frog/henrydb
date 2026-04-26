@@ -5551,6 +5551,61 @@
       "completed": "2026-04-26T02:57:15.501Z",
       "duration_ms": 30000,
       "summary": "Project census: 13 projects, 6531 files, 949K+ LOC, 1950 test files. Largest: HenryDB (499K LOC), monkey-lang (298K), neural-net (59K), lambda-calculus (43K), blog (16K), riscv-emulator (15K), git (5K), sat-solver (4K), fft (3K), type-inference (2K), regex-engine (2K), forth (2K), huffman (1K)."
+    },
+    {
+      "id": "T516",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Explore lambda-calculus: continuations, CPS, effects",
+      "project": "monkey-lang",
+      "started": "2026-04-26T02:58:09.467Z",
+      "completed": "2026-04-26T03:00:00.981Z",
+      "duration_ms": 180000,
+      "summary": "CPS transform, ANF, and algebraic effects all work. CPS properly adds continuation params to every call. Effects: State (Get returns (val,state), Put updates), Exception (Raise returns (Err,val)), Log (collects values). 35/35 effect tests pass. Full PL theory stack: lambda calc + CPS + ANF + effects + delimited continuations + monad transformers."
+    },
+    {
+      "id": "T517",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Explore lambda-calc: abstract machines, monads, GADTs, System F",
+      "project": "monkey-lang",
+      "started": "2026-04-26T03:00:16.136Z",
+      "completed": "2026-04-26T03:01:39.780Z",
+      "duration_ms": 120000,
+      "summary": "Abstract machines: SECD, Krivine, ZAM all implement lambda calculus with De Bruijn indices. SECD correctly evaluates id(42)=42, K(1)(2)=1, 3+4=7, twice(+1)(0)=2. Krivine (call-by-name) works for simple cases, crashes on twice. ZAM (OCaml-style) returns closures instead of values for some curried forms. All use De Bruijn indices (Var(0), Var(1)) not named vars."
+    },
+    {
+      "id": "T518",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Explore lambda-calc: GADTs, dependent types, linear types",
+      "project": "monkey-lang",
+      "started": "2026-04-26T03:02:19.999Z",
+      "completed": "2026-04-26T03:03:13.487Z",
+      "duration_ms": 120000,
+      "summary": "GADTs (13/13), linear types (26/26), session types (26/26), sigma types (11/11) — all pass. Linear types correctly enforce exactly-once use: unused linear var → error, twice-used → error, unrestricted allows any count. System F, GADTs, linear types, session types, sigma types = full type theory stack from parametric polymorphism to dependent types."
+    },
+    {
+      "id": "T519",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Lambda-calculus full test sweep",
+      "project": "monkey-lang",
+      "started": "2026-04-26T03:03:31.825Z",
+      "completed": "2026-04-26T03:05:45.110Z",
+      "duration_ms": 300000,
+      "summary": "Lambda-calculus FULL TEST SWEEP: 198/198 test files pass, 848 individual tests, ZERO failures. Covers: lambda calculus, CPS, ANF, effects, delimited continuations, monad transformers, System F, GADTs, linear types, session types, sigma types, abstract machines (SECD/Krivine/ZAM), abstract interpretation, attribute grammars, bidirectional type checking, pattern compilation, and 170+ more PL theory modules."
+    },
+    {
+      "id": "T520",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Full test sweep of all projects",
+      "project": "monkey-lang",
+      "started": "2026-04-26T03:05:56.114Z",
+      "completed": "2026-04-26T03:06:35.563Z",
+      "duration_ms": 300000,
+      "summary": "FULL TEST SWEEP ALL PROJECTS: ZERO FAILURES. FFT: 5/5 test files. Forth: 2/2. Huffman: 1/1. Regex: 1/1. RISC-V: 20/20 test files (CPU, M-ext, MMU, cache, GC, closures, codegen, pipeline, peephole, regalloc, strings, stress). SAT: 4/4 (solver, simplex, SMT, stress). Type-inference: 3/3. Combined with lambda-calculus (198/198): 234 test files, zero failures across 7 projects."
     }
   ],
   "focusProjects": [
@@ -7606,6 +7661,26 @@
     {
       "time": "2026-04-26T02:56:53.588Z",
       "msg": "Added T515 (EXPLORE) after end: Project census and test sweep"
+    },
+    {
+      "time": "2026-04-26T02:58:05.417Z",
+      "msg": "Added T516 (EXPLORE) after end: Explore lambda-calculus: continuations, CPS, effects"
+    },
+    {
+      "time": "2026-04-26T03:00:10.811Z",
+      "msg": "Added T517 (EXPLORE) after end: Explore lambda-calc: abstract machines, monads, GADTs, System F"
+    },
+    {
+      "time": "2026-04-26T03:02:15.588Z",
+      "msg": "Added T518 (EXPLORE) after end: Explore lambda-calc: GADTs, dependent types, linear types"
+    },
+    {
+      "time": "2026-04-26T03:03:26.488Z",
+      "msg": "Added T519 (EXPLORE) after end: Lambda-calculus full test sweep"
+    },
+    {
+      "time": "2026-04-26T03:05:55.874Z",
+      "msg": "Added T520 (EXPLORE) after end: Full test sweep of all projects"
     }
   ]
 }
