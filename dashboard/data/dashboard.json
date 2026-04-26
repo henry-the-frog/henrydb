@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-26T14:40:27.826Z",
+  "generated": "2026-04-26T14:41:00.305Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Add sqliteCompare function + use in WHERE COMPARE (LT/GT/LE/GE)",
-    "completedAt": "2026-04-26T14:40:27.826Z",
-    "taskId": "T11",
-    "summary": "Added sqliteCompare (NULL<num<text<blob). Updated WHERE COMPARE (LT/GT/LE/GE), BETWEEN, 4x ORDER BY sites, set-ops. Fixed fuzzer harness parseFloat bug. All fuzzer tests pass.",
-    "durationMs": 300000
+    "task": "Use sqliteCompare in UNION/set-ops ORDER BY + run diff fuzzer to measure improvement",
+    "completedAt": "2026-04-26T14:41:00.305Z",
+    "taskId": "T20",
+    "summary": "Set-ops already updated in T11. Verified: mixed type comparisons match SQLite (int < string). All 84 diff fuzzer tests pass.",
+    "durationMs": 60000
   },
   "schedule": {
     "date": "2026-04-26",
@@ -7630,12 +7630,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 12,
+    "blocksCompleted": 13,
     "blocksTotal": 20,
     "modeDistribution": {
       "THINK": 3,
       "PLAN": 3,
-      "BUILD": 4,
+      "BUILD": 5,
       "MAINTAIN": 2
     }
   },
