@@ -2560,6 +2560,42 @@
       "completed": "2026-04-26T00:38:09.735Z",
       "duration_ms": 30000,
       "summary": "All 10 VM math builtins verified: abs, min, max, floor, ceil, sqrt, pow, sin, cos, float. All correct values."
+    },
+    {
+      "id": "T241",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test HenryDB multi-table UPDATE and DELETE with JOIN",
+      "project": "henrydb"
+    },
+    {
+      "id": "T242",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test monkey-lang break and continue in loops",
+      "project": "monkey-lang",
+      "started": "2026-04-26T00:40:19.265Z",
+      "completed": "2026-04-26T00:40:35.587Z",
+      "duration_ms": 30000,
+      "summary": "break and continue work: break exits loop (sum 0..4 = 10), continue skips even iterations (sum odd 1..9 = 25). Both correct in while and for loops."
+    },
+    {
+      "id": "T243",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test HenryDB CREATE TABLE AS SELECT",
+      "project": "henrydb",
+      "started": "2026-04-26T00:40:40.563Z",
+      "completed": "2026-04-26T00:40:55.324Z",
+      "duration_ms": 30000,
+      "summary": "CREATE TABLE AS SELECT works. Creates real table from GROUP BY query. Table is fully functional (INSERT works after creation)."
+    },
+    {
+      "id": "T244",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test monkey-lang hash methods — keys, values, pairs",
+      "project": "monkey-lang"
     }
   ],
   "focusProjects": [
@@ -3515,6 +3551,22 @@
     {
       "time": "2026-04-26T00:37:36.715Z",
       "msg": "Added T240 (EXPLORE) after end: EXPLORE: Test monkey-lang math builtins — abs, min, max, floor, ceil, sqrt, pow, sin, cos"
+    },
+    {
+      "time": "2026-04-26T00:40:14.196Z",
+      "msg": "Added T241 (EXPLORE) after end: EXPLORE: Test HenryDB multi-table UPDATE and DELETE with JOIN"
+    },
+    {
+      "time": "2026-04-26T00:40:14.317Z",
+      "msg": "Added T242 (EXPLORE) after end: EXPLORE: Test monkey-lang break and continue in loops"
+    },
+    {
+      "time": "2026-04-26T00:40:14.438Z",
+      "msg": "Added T243 (EXPLORE) after end: EXPLORE: Test HenryDB CREATE TABLE AS SELECT"
+    },
+    {
+      "time": "2026-04-26T00:40:14.559Z",
+      "msg": "Added T244 (EXPLORE) after end: EXPLORE: Test monkey-lang hash methods — keys, values, pairs"
     }
   ]
 }
