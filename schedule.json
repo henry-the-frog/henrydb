@@ -2487,6 +2487,31 @@
       "completed": "2026-04-26T00:35:29.436Z",
       "duration_ms": 60000,
       "summary": "Final census: 80 files, 22.7K LOC (13.5K source + 9.3K test), 41 AST nodes, 38 opcodes, 72 functions (55+17), 68 typechecker tests, 1149 tests, 7 optimization passes, debugger 555 LOC, GC 547 LOC."
+    },
+    {
+      "id": "T234",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test monkey-lang sort, reverse, flatten, unique, compact builtins",
+      "project": "monkey-lang",
+      "started": "2026-04-26T00:35:58.781Z",
+      "completed": "2026-04-26T00:36:36.856Z",
+      "duration_ms": 30000,
+      "summary": "Evaluator builtins: sort, reverse, flatten, unique, keys, values, sum work. isEmpty/count/compact/zip/enumerate are VM-only (not in evaluator). Evaluator has fewer builtins than VM (55 VM vs ~40 evaluator)."
+    },
+    {
+      "id": "T235",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test HenryDB NATURAL JOIN and self-join",
+      "project": "henrydb"
+    },
+    {
+      "id": "T236",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: What is the biggest test file in monkey-lang and what does it test?",
+      "project": "monkey-lang"
     }
   ],
   "focusProjects": [
@@ -3414,6 +3439,18 @@
     {
       "time": "2026-04-26T00:32:59.562Z",
       "msg": "Added T233 (EXPLORE) after end: EXPLORE: Final monkey-lang feature count — comprehensive census"
+    },
+    {
+      "time": "2026-04-26T00:35:51.052Z",
+      "msg": "Added T234 (EXPLORE) after end: EXPLORE: Test monkey-lang sort, reverse, flatten, unique, compact builtins"
+    },
+    {
+      "time": "2026-04-26T00:35:51.193Z",
+      "msg": "Added T235 (EXPLORE) after end: EXPLORE: Test HenryDB NATURAL JOIN and self-join"
+    },
+    {
+      "time": "2026-04-26T00:35:51.314Z",
+      "msg": "Added T236 (EXPLORE) after end: EXPLORE: What is the biggest test file in monkey-lang and what does it test?"
     }
   ]
 }

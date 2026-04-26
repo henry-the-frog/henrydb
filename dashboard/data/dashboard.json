@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-26T00:35:29.472Z",
+  "generated": "2026-04-26T00:36:36.892Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "EXPLORE: Final monkey-lang feature count — comprehensive census",
-    "completedAt": "2026-04-26T00:35:29.472Z",
-    "taskId": "T233",
-    "summary": "Final census: 80 files, 22.7K LOC (13.5K source + 9.3K test), 41 AST nodes, 38 opcodes, 72 functions (55+17), 68 typechecker tests, 1149 tests, 7 optimization passes, debugger 555 LOC, GC 547 LOC.",
-    "durationMs": 60000
+    "task": "EXPLORE: Test monkey-lang sort, reverse, flatten, unique, compact builtins",
+    "completedAt": "2026-04-26T00:36:36.892Z",
+    "taskId": "T234",
+    "summary": "Evaluator builtins: sort, reverse, flatten, unique, keys, values, sum work. isEmpty/count/compact/zip/enumerate are VM-only (not in evaluator). Evaluator has fewer builtins than VM (55 VM vs ~40 evaluator).",
+    "durationMs": 30000
   },
   "schedule": {
     "date": "2026-04-25",
@@ -8983,14 +8983,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 224,
+    "blocksCompleted": 225,
     "blocksTotal": 114,
     "modeDistribution": {
       "THINK": 14,
       "PLAN": 31,
       "BUILD": 66,
       "MAINTAIN": 28,
-      "EXPLORE": 85
+      "EXPLORE": 86
     }
   },
   "artifacts": [
