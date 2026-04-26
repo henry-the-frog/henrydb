@@ -491,10 +491,35 @@
     {
       "id": "T46",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Fix class method collision via hash-based method dispatch",
       "task": null,
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-26T15:40:30.494Z",
+      "completed": "2026-04-26T15:40:37.520Z",
+      "duration_ms": 10000,
+      "summary": "3 tasks planned"
+    },
+    {
+      "id": "T47",
+      "mode": "BUILD",
+      "task": "Store class methods as closures on instance hash in _compileClass",
+      "status": "upcoming",
+      "plan_ref": "T46"
+    },
+    {
+      "id": "T48",
+      "mode": "BUILD",
+      "task": "Change parseMethodCall to index-based dispatch + VM builtin fallback",
+      "status": "upcoming",
+      "plan_ref": "T46"
+    },
+    {
+      "id": "T49",
+      "mode": "BUILD",
+      "task": "Update tests for hash-based method dispatch",
+      "status": "upcoming",
+      "plan_ref": "T46"
     }
   ],
   "focusProjects": [
@@ -670,6 +695,10 @@
     {
       "time": "2026-04-26T15:39:49.828Z",
       "msg": "Added T46 (PLAN) after end: Fix class method collision via hash-based method dispatch"
+    },
+    {
+      "time": "2026-04-26T15:40:30.638Z",
+      "msg": "PLAN T46 filled 3 BUILD tasks"
     }
   ]
 }

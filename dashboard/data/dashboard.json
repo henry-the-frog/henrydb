@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-26T15:40:22.249Z",
+  "generated": "2026-04-26T15:40:37.556Z",
   "current": {
     "status": "done",
-    "mode": "THINK",
-    "task": "Design fix for class method collision: hash-based dispatch vs name mangling",
-    "completedAt": "2026-04-26T15:40:22.249Z",
-    "taskId": "T45",
-    "summary": "Decision: Store methods on instance hash + change parseMethodCall to index-based dispatch + VM fallback for builtins. Most correct solution.",
-    "durationMs": 120000
+    "mode": "PLAN",
+    "task": "",
+    "completedAt": "2026-04-26T15:40:37.556Z",
+    "taskId": "T46",
+    "summary": "3 tasks planned",
+    "durationMs": 10000
   },
   "schedule": {
     "date": "2026-04-26",
@@ -7787,41 +7787,194 @@
       {
         "id": "T30",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "WASM compiler Phase 1: integer + function compilation",
         "task": null,
-        "started": "2026-04-26T15:16:06.233Z"
+        "started": "2026-04-26T15:16:06.233Z",
+        "completed": "2026-04-26T15:16:25.464Z",
+        "duration_ms": 30000,
+        "summary": "WASM Phase 1 plan: 3 tasks — binary encoder, AST→WASM compiler, tests with Node runtime verification"
       },
       {
         "id": "T33",
         "mode": "BUILD",
         "task": "Implement WASM binary encoder (LEB128, sections, module structure)",
-        "status": "upcoming",
-        "plan_ref": "T30"
+        "status": "done",
+        "plan_ref": "T30",
+        "started": "2026-04-26T15:16:32.011Z",
+        "completed": "2026-04-26T15:17:27.431Z",
+        "duration_ms": 300000,
+        "summary": "WASM encoder built. Valid binary: 41-byte add(a,b) module runs in Node WASM runtime. LEB128 + sections + module builder."
       },
       {
         "id": "T34",
         "mode": "BUILD",
         "task": "Compile monkey-lang integer expressions + functions to WASM",
-        "status": "upcoming",
-        "plan_ref": "T30"
+        "status": "done",
+        "plan_ref": "T30",
+        "started": "2026-04-26T15:17:34.792Z",
+        "completed": "2026-04-26T15:19:19.513Z",
+        "duration_ms": 600000,
+        "summary": "WASM compiler Phase 1 complete! Compiles integer arithmetic + functions + if/else + comparisons. fib(30): 7ms WASM vs 892ms VM = 120x speedup."
       },
       {
         "id": "T35",
         "mode": "BUILD",
         "task": "Add WASM tests: arithmetic, function calls, verify with Node WASM runtime",
+        "status": "done",
+        "plan_ref": "T30",
+        "started": "2026-04-26T15:19:34.685Z",
+        "completed": "2026-04-26T15:20:39.895Z",
+        "duration_ms": 180000,
+        "summary": "26 WASM tests covering arithmetic, comparisons, if/else, locals, function calls, recursion (fib/fact), return, main expression. 1225 total tests, all pass."
+      },
+      {
+        "id": "T36",
+        "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Update TODO.md, write session learnings scratch note, clean up",
+        "started": "2026-04-26T15:21:12.768Z",
+        "completed": "2026-04-26T15:22:02.350Z",
+        "duration_ms": 120000,
+        "summary": "TODO updated (removed completed items, added new). Session learnings scratch note written (VM callbacks, WASM, classes, SQLite affinity, SSA, DCE)."
+      },
+      {
+        "id": "T37",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Plan next depth work: HenryDB COUNT(DISTINCT) multi-join bug investigation",
+        "started": "2026-04-26T15:22:08.640Z",
+        "completed": "2026-04-26T15:24:04.372Z",
+        "duration_ms": 180000,
+        "summary": "Investigated COUNT(DISTINCT) multi-join: all tested scenarios match SQLite. Bug may have been fixed previously or was very specific. Tested: 2-way join, 3-way join, GROUP BY, HAVING, NULL values, duplicate products. All correct."
+      },
+      {
+        "id": "T38",
+        "mode": "PLAN",
+        "status": "done",
+        "goal": "Fix HenryDB COUNT(DISTINCT) multi-join bug",
+        "task": null,
+        "started": "2026-04-26T15:24:29.530Z",
+        "completed": "2026-04-26T15:24:29.673Z",
+        "duration_ms": 5000,
+        "summary": "Bug not reproducible — skipped"
+      },
+      {
+        "id": "T39",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "WASM Phase 1.5: Add while loops + set statements to WASM compiler",
+        "project": "monkey-lang",
+        "started": "2026-04-26T15:25:38.584Z",
+        "completed": "2026-04-26T15:27:30.429Z",
+        "duration_ms": 300000,
+        "summary": "WASM while loops + set statements. Iterative fib: 41ns/call (native perf). 5 new tests. 1230 total tests."
+      },
+      {
+        "id": "T40",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "WASM: Add for..range compilation",
+        "project": "monkey-lang",
+        "started": "2026-04-26T15:27:50.711Z",
+        "completed": "2026-04-26T15:30:20.127Z",
+        "duration_ms": 300000,
+        "summary": "WASM for-loop compilation. C-style for→block/loop. sum_range and power tests. 1232 total tests."
+      },
+      {
+        "id": "T41",
+        "mode": "MAINTAIN",
+        "status": "done",
+        "task": "[DEPTH PIVOT] Full test sweep of monkey-lang",
+        "project": "monkey-lang",
+        "started": "2026-04-26T15:30:38.354Z",
+        "completed": "2026-04-26T15:30:56.238Z",
+        "duration_ms": 60000,
+        "summary": "Full monkey-lang sweep: 1232/1232 tests pass. Zero failures. Clean."
+      },
+      {
+        "id": "T42",
+        "mode": "EXPLORE",
+        "status": "done",
+        "task": "[DEPTH PIVOT] Stress-test WASM compiler edge cases - find bugs",
+        "project": "monkey-lang",
+        "started": "2026-04-26T15:31:05.027Z",
+        "completed": "2026-04-26T15:32:40.152Z",
+        "duration_ms": 600000,
+        "summary": "WASM stress test: 1 bug found (empty fn body crash) and fixed. 5 edge cases tested: deep nesting, forward refs, i32 max, overflow all OK. 20% insight rate."
+      },
+      {
+        "id": "T43",
+        "mode": "EXPLORE",
+        "status": "done",
+        "task": "[DEPTH PIVOT] Stress-test class compilation edge cases - find bugs",
+        "project": "monkey-lang",
+        "started": "2026-04-26T15:32:47.664Z",
+        "completed": "2026-04-26T15:33:23.930Z",
+        "duration_ms": 300000,
+        "summary": "Class stress test: 1 known limitation confirmed (method name collision between classes). Other hypotheses all passed: 3-level super.init works, no-init methods work, instance isolation correct, method→method calls work."
+      },
+      {
+        "id": "T44",
+        "mode": "MAINTAIN",
+        "status": "done",
+        "task": "[DEPTH PIVOT] Full test sweep of HenryDB",
+        "project": "henrydb",
+        "started": "2026-04-26T15:33:32.221Z",
+        "completed": "2026-04-26T15:39:26.231Z",
+        "duration_ms": 120000,
+        "summary": "HenryDB sweep: 4310/4310 pass, 3 skipped, 0 failures. Clean."
+      },
+      {
+        "id": "T45",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Design fix for class method collision: hash-based dispatch vs name mangling",
+        "project": "monkey-lang",
+        "started": "2026-04-26T15:39:55.077Z",
+        "completed": "2026-04-26T15:40:22.214Z",
+        "duration_ms": 120000,
+        "summary": "Decision: Store methods on instance hash + change parseMethodCall to index-based dispatch + VM fallback for builtins. Most correct solution."
+      },
+      {
+        "id": "T46",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "Fix class method collision via hash-based method dispatch",
+        "task": null,
+        "project": "monkey-lang",
+        "started": "2026-04-26T15:40:30.494Z"
+      },
+      {
+        "id": "T47",
+        "mode": "BUILD",
+        "task": "Store class methods as closures on instance hash in _compileClass",
         "status": "upcoming",
-        "plan_ref": "T30"
+        "plan_ref": "T46"
+      },
+      {
+        "id": "T48",
+        "mode": "BUILD",
+        "task": "Change parseMethodCall to index-based dispatch + VM builtin fallback",
+        "status": "upcoming",
+        "plan_ref": "T46"
+      },
+      {
+        "id": "T49",
+        "mode": "BUILD",
+        "task": "Update tests for hash-based method dispatch",
+        "status": "upcoming",
+        "plan_ref": "T46"
       }
     ]
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 45,
-    "blocksTotal": 35,
+    "blocksCompleted": 46,
+    "blocksTotal": 49,
     "modeDistribution": {
       "THINK": 8,
-      "PLAN": 8,
+      "PLAN": 9,
       "BUILD": 18,
       "MAINTAIN": 7,
       "EXPLORE": 4
