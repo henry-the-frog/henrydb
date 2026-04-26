@@ -1,11 +1,13 @@
 {
-  "generated": "2026-04-26T01:24:42.739Z",
+  "generated": "2026-04-26T01:25:20.537Z",
   "current": {
-    "status": "in-progress",
+    "status": "done",
     "mode": "EXPLORE",
-    "task": "EXPLORE: Test HenryDB aggregate SUM/AVG on empty table",
-    "startedAt": "2026-04-26T01:24:42.739Z",
-    "taskId": "T355"
+    "task": "EXPLORE: Test HenryDB correlated scalar subquery",
+    "completedAt": "2026-04-26T01:25:20.537Z",
+    "taskId": "T357",
+    "summary": "Correlated scalar subquery: (SELECT AVG(salary) WHERE dept_id=d.id) per department. Eng=110, Sales=85, HR=70.",
+    "durationMs": 10000
   },
   "schedule": {
     "date": "2026-04-25",
@@ -8981,14 +8983,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 319,
+    "blocksCompleted": 321,
     "blocksTotal": 114,
     "modeDistribution": {
       "THINK": 14,
       "PLAN": 31,
       "BUILD": 66,
       "MAINTAIN": 29,
-      "EXPLORE": 179
+      "EXPLORE": 181
     }
   },
   "artifacts": [

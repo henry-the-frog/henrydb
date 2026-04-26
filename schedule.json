@@ -3728,16 +3728,24 @@
     {
       "id": "T356",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "EXPLORE: Test monkey-lang VM for loop with break/continue",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-26T01:24:55.001Z",
+      "completed": "2026-04-26T01:25:06.836Z",
+      "duration_ms": 15000,
+      "summary": "break/continue in while: skips 3 (continue), breaks at 7 (break) → [1,2,4,5,6]. C-style for has variable scoping issue."
     },
     {
       "id": "T357",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "EXPLORE: Test HenryDB correlated scalar subquery",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-26T01:25:15.107Z",
+      "completed": "2026-04-26T01:25:20.500Z",
+      "duration_ms": 10000,
+      "summary": "Correlated scalar subquery: (SELECT AVG(salary) WHERE dept_id=d.id) per department. Eng=110, Sales=85, HR=70."
     },
     {
       "id": "T358",
