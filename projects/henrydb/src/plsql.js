@@ -68,6 +68,18 @@ export class PLParser {
     const name = this._advance(); // variable name
     const dataType = this._advance(); // type
     let defaultValue = null;
+    let cursorQuery = null;
+
+    // Check for CURSOR FOR <query>
+    if (dataType === 'CURSOR' && this._peek() === 'FOR') {
+      this._advance(); // skip FOR
+      const queryParts = [];
+      while (this._peek() !== ';' && this._peek() !== null) {
+        queryParts.push(this._advance());
+      }
+      this._expect(';');
+      return { type: 'declaration', name, dataType: 'CURSOR', cursorQuery: queryParts.join(' ') };
+    }
 
     if (this._peek() === ':=') {
       this._advance(); // skip :=
@@ -89,6 +101,11 @@ export class PLParser {
     if (token === 'RAISE') return this._parseRaise();
     if (token === 'EXECUTE') return this._parseExecute();
     if (token === 'PERFORM') return this._parsePerform();
+    if (token === 'OPEN') return this._parseOpen();
+    if (token === 'FETCH') return this._parseFetch();
+    if (token === 'CLOSE') return this._parseClose();
+    if (token === 'EXIT') return this._parseExit();
+    if (token === 'LOOP') return this._parseLoop();
     if (token === 'NULL') { this._advance(); this._expect(';'); return { type: 'null_stmt' }; }
 
     // Check for SELECT ... INTO
@@ -192,6 +209,56 @@ export class PLParser {
     this._expect(';');
     
     return { type: 'case', subject, branches, elseStatements };
+  }
+
+  _parseOpen() {
+    this._advance(); // OPEN
+    const cursorName = this._advance();
+    this._expect(';');
+    return { type: 'open_cursor', cursor: cursorName };
+  }
+
+  _parseFetch() {
+    this._advance(); // FETCH
+    const cursorName = this._advance();
+    this._expect('INTO');
+    const targetName = this._advance();
+    this._expect(';');
+    return { type: 'fetch_cursor', cursor: cursorName, target: targetName };
+  }
+
+  _parseClose() {
+    this._advance(); // CLOSE
+    const cursorName = this._advance();
+    this._expect(';');
+    return { type: 'close_cursor', cursor: cursorName };
+  }
+
+  _parseExit() {
+    this._advance(); // EXIT
+    if (this._peek() === 'WHEN') {
+      this._advance(); // WHEN
+      const condParts = [];
+      while (this._peek() !== ';' && this._peek() !== null) {
+        condParts.push(this._advance());
+      }
+      this._expect(';');
+      return { type: 'exit_when', condition: condParts.join(' ') };
+    }
+    this._expect(';');
+    return { type: 'exit' };
+  }
+
+  _parseLoop() {
+    this._advance(); // LOOP
+    const statements = [];
+    while (this._peek() !== 'END' && this._peek() !== null) {
+      statements.push(this._parseStatement());
+    }
+    this._expect('END');
+    this._expect('LOOP');
+    this._expect(';');
+    return { type: 'loop', statements };
   }
 
   _parseFor() {
@@ -457,7 +524,7 @@ export class PLParser {
       }
 
       // Punctuation
-      if ('();,'.includes(src[i])) {
+      if ('();,.'.includes(src[i])) {
         tokens.push(src[i++]);
         continue;
       }
@@ -533,8 +600,10 @@ export class PLParser {
 export class PLInterpreter {
   constructor(db) {
     this.db = db;
-    this.notices = []; // RAISE NOTICE messages
-    this._maxIterations = 10000; // Loop safety limit
+    this.notices = [];
+    this._maxIterations = 10000;
+    this._cursors = new Map(); // cursor name → {query, rows, position}
+    this._lastFetchEmpty = false;
   }
 
   /**
@@ -554,8 +623,16 @@ export class PLInterpreter {
     // Process declarations
     for (const decl of ast.declarations) {
       const name = decl.name.toLowerCase();
-      const value = decl.defaultValue ? this._evalExpr(decl.defaultValue, scope) : null;
-      scope.set(name, value);
+      if (decl.dataType === 'CURSOR') {
+        // Register cursor query but don't execute yet
+        this._cursors.set(name, { query: decl.cursorQuery, rows: null, position: -1 });
+        scope.set(name, null);
+      } else if (decl.dataType === 'RECORD') {
+        scope.set(name, {}); // RECORD = empty object
+      } else {
+        const value = decl.defaultValue ? this._evalExpr(decl.defaultValue, scope) : null;
+        scope.set(name, value);
+      }
     }
 
     // Execute statements
@@ -598,6 +675,33 @@ export class PLInterpreter {
 
       case 'dml':
         return this._executeDML(stmt, scope);
+
+      case 'open_cursor':
+        return this._executeOpenCursor(stmt, scope);
+
+      case 'fetch_cursor':
+        return this._executeFetchCursor(stmt, scope);
+
+      case 'close_cursor':
+        return this._executeCloseCursor(stmt, scope);
+
+      case 'exit_when': {
+        const cond = stmt.condition.trim().toUpperCase();
+        if (cond === 'NOT FOUND') {
+          if (this._lastFetchEmpty) throw new PLExit();
+        } else {
+          // General condition
+          const val = this._evalExprStr(cond, scope);
+          if (val) throw new PLExit();
+        }
+        return;
+      }
+
+      case 'exit':
+        throw new PLExit();
+
+      case 'loop':
+        return this._executeLoop(stmt, scope);
 
       case 'return':
         throw new PLReturn(stmt.value ? this._evalExpr(stmt.value, scope) : undefined);
@@ -675,6 +779,63 @@ export class PLInterpreter {
       }
     }
     this.db.execute(sql);
+  }
+
+  _executeOpenCursor(stmt, scope) {
+    const name = stmt.cursor.toLowerCase();
+    const cursor = this._cursors.get(name);
+    if (!cursor) throw new PLRaise('INVALID_CURSOR', `cursor ${name} not found`);
+    // Execute the query and store results
+    const result = this.db.execute(cursor.query);
+    cursor.rows = result.rows || [];
+    cursor.position = 0;
+    this._lastFetchEmpty = false;
+  }
+
+  _executeFetchCursor(stmt, scope) {
+    const name = stmt.cursor.toLowerCase();
+    const cursor = this._cursors.get(name);
+    if (!cursor) throw new PLRaise('INVALID_CURSOR', `cursor ${name} not found`);
+    if (cursor.rows === null) throw new PLRaise('INVALID_CURSOR', `cursor ${name} not open`);
+    
+    const targetName = stmt.target.toLowerCase();
+    
+    if (cursor.position >= cursor.rows.length) {
+      this._lastFetchEmpty = true;
+      // Set target to null/empty
+      scope.set(targetName, null);
+    } else {
+      this._lastFetchEmpty = false;
+      const row = cursor.rows[cursor.position];
+      cursor.position++;
+      // Store row as a record (object with lowercase keys)
+      const record = {};
+      for (const [k, v] of Object.entries(row)) {
+        record[k.toLowerCase()] = v;
+      }
+      scope.set(targetName, record);
+    }
+  }
+
+  _executeCloseCursor(stmt, scope) {
+    const name = stmt.cursor.toLowerCase();
+    const cursor = this._cursors.get(name);
+    if (!cursor) throw new PLRaise('INVALID_CURSOR', `cursor ${name} not found`);
+    cursor.rows = null;
+    cursor.position = -1;
+  }
+
+  _executeLoop(stmt, scope) {
+    let iterations = 0;
+    while (iterations < this._maxIterations) {
+      try {
+        this._executeStatements(stmt.statements, scope);
+      } catch (e) {
+        if (e instanceof PLExit) break;
+        throw e;
+      }
+      iterations++;
+    }
   }
 
   _executeCase(stmt, scope) {
@@ -825,7 +986,18 @@ export class PLInterpreter {
         while (i < expr.length && /[a-zA-Z0-9_]/.test(expr[i])) word += expr[i++];
         const lower = word.toLowerCase();
         if (scope.has(lower)) {
-          const value = scope.get(lower);
+          let value = scope.get(lower);
+          // Handle record field access: rec.field or rec . field
+          let lookAhead = i;
+          while (lookAhead < expr.length && expr[lookAhead] === ' ') lookAhead++;
+          if (typeof value === 'object' && value !== null && expr[lookAhead] === '.') {
+            lookAhead++; // skip dot
+            while (lookAhead < expr.length && expr[lookAhead] === ' ') lookAhead++;
+            let field = '';
+            while (lookAhead < expr.length && /[a-zA-Z0-9_]/.test(expr[lookAhead])) field += expr[lookAhead++];
+            value = value[field.toLowerCase()] ?? null;
+            i = lookAhead; // advance past the field access
+          }
           if (value === null) result += 'null';
           else if (typeof value === 'string') result += `'${value}'`;
           else result += String(value);
@@ -952,6 +1124,10 @@ export class PLInterpreter {
  */
 class PLReturn {
   constructor(value) { this.value = value; }
+}
+
+class PLExit {
+  // Thrown to break out of LOOP
 }
 
 export class PLRaise extends Error {
