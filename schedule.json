@@ -5672,6 +5672,17 @@
       "completed": "2026-04-26T03:16:48.564Z",
       "duration_ms": 120000,
       "summary": "DPO: dpoLoss correctly computes preference loss. 100% accuracy when model prefers chosen tokens. Returns loss, chosenRewards, rejectedRewards, accuracy, margin. MoE: 4 experts with top-2 routing, correct output shape (6x8), no NaN values. All 4 test files pass (DPO, MoE, reward model, mixture of agents)."
+    },
+    {
+      "id": "T527",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Neural-net: KV cache, flash attention, quantization",
+      "project": "henrydb",
+      "started": "2026-04-26T03:21:35.675Z",
+      "completed": "2026-04-26T03:23:32.872Z",
+      "duration_ms": 120000,
+      "summary": "RoPE: precomputed freq tables (128×16), position 0 = identity (cos=1, sin=0). Closer positions = higher dot product (0.42 > 0.34 > 0.19). All components tested: KV cache (16/16 tests), flash attention, quantization (absmax 8-bit, per-channel, compression ratios), RoPE (forward+backward+attention), LoRA (low-rank adaptation)."
     }
   ],
   "focusProjects": [
@@ -7771,6 +7782,10 @@
     {
       "time": "2026-04-26T03:15:01.369Z",
       "msg": "Added T526 (EXPLORE) after end: Neural-net: RLHF, DPO, mixture of experts"
+    },
+    {
+      "time": "2026-04-26T03:21:35.435Z",
+      "msg": "Added T527 (EXPLORE) after end: Neural-net: KV cache, flash attention, quantization"
     }
   ]
 }
