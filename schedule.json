@@ -3144,6 +3144,63 @@
       "completed": "2026-04-26T01:07:23.519Z",
       "duration_ms": 10000,
       "summary": "Multi-column ORDER BY with mixed ASC/DESC: b DESC → z,y,x. Secondary sort a ASC applied within ties."
+    },
+    {
+      "id": "T299",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test HenryDB query with 5+ JOINs",
+      "project": "henrydb",
+      "started": "2026-04-26T01:07:55.840Z",
+      "completed": "2026-04-26T01:08:03.483Z",
+      "duration_ms": 10000,
+      "summary": "5-way JOIN chain: t1→t2→t3→t4→t5. Correctly traverses 5 tables and returns values."
+    },
+    {
+      "id": "T300",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test monkey-lang string operations comprehensive (15+ builtins)",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T301",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test neural-net LoRA implementation",
+      "project": "monkey-lang",
+      "started": "2026-04-26T01:08:11.506Z",
+      "completed": "2026-04-26T01:08:22.691Z",
+      "duration_ms": 20000,
+      "summary": "LoRA works! Rank-4 on 64×64: 512 params instead of 4096 (87.5% reduction). Forward pass produces correct shape. alpha=8, scaling=2.0. The LLM fine-tuning technique implemented from scratch."
+    },
+    {
+      "id": "T302",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test HenryDB subquery in FROM clause",
+      "project": "henrydb"
+    },
+    {
+      "id": "T303",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: monkey-lang — test VM builtins count verification",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T304",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test neural-net multi-head attention",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T305",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test HenryDB complex HAVING with aggregation combos",
+      "project": "henrydb"
     }
   ],
   "focusProjects": [
@@ -4331,6 +4388,34 @@
     {
       "time": "2026-04-26T01:04:29.115Z",
       "msg": "Added T298 (EXPLORE) after end: EXPLORE: Test monkey-lang hash iteration"
+    },
+    {
+      "time": "2026-04-26T01:07:46.233Z",
+      "msg": "Added T299 (EXPLORE) after end: EXPLORE: Test HenryDB query with 5+ JOINs"
+    },
+    {
+      "time": "2026-04-26T01:07:46.355Z",
+      "msg": "Added T300 (EXPLORE) after end: EXPLORE: Test monkey-lang string operations comprehensive (15+ builtins)"
+    },
+    {
+      "time": "2026-04-26T01:07:46.476Z",
+      "msg": "Added T301 (EXPLORE) after end: EXPLORE: Test neural-net LoRA implementation"
+    },
+    {
+      "time": "2026-04-26T01:07:46.598Z",
+      "msg": "Added T302 (EXPLORE) after end: EXPLORE: Test HenryDB subquery in FROM clause"
+    },
+    {
+      "time": "2026-04-26T01:07:46.719Z",
+      "msg": "Added T303 (EXPLORE) after end: EXPLORE: monkey-lang — test VM builtins count verification"
+    },
+    {
+      "time": "2026-04-26T01:07:46.840Z",
+      "msg": "Added T304 (EXPLORE) after end: EXPLORE: Test neural-net multi-head attention"
+    },
+    {
+      "time": "2026-04-26T01:07:46.962Z",
+      "msg": "Added T305 (EXPLORE) after end: EXPLORE: Test HenryDB complex HAVING with aggregation combos"
     }
   ]
 }
