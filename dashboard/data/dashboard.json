@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-26T00:11:56.345Z",
+  "generated": "2026-04-26T00:12:31.438Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "EXPLORE: Test monkey-lang compiler output — disassemble a simple program",
-    "completedAt": "2026-04-26T00:11:56.345Z",
-    "taskId": "T199",
-    "summary": "Bytecode disassembly works! Main program: 28 bytes (load const, set/get global, closure creation, call, pop). Function body: 7 bytes (get local, const, mul, return). Clean register-less stack machine. Constants: INTEGER, COMPILED_FUNCTION.",
+    "task": "EXPLORE: Test HenryDB SAVEPOINT and nested transactions",
+    "completedAt": "2026-04-26T00:12:31.438Z",
+    "taskId": "T198",
+    "summary": "SAVEPOINT + ROLLBACK TO works perfectly. Nested transaction: debit Alice (1000→800), savepoint, credit Bob (500→700), rollback to savepoint (Bob back to 500), commit (Alice 800, Bob 500). Partial rollback correctly preserves outer transaction changes.",
     "durationMs": 120000
   },
   "schedule": {
@@ -8983,14 +8983,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 194,
+    "blocksCompleted": 195,
     "blocksTotal": 114,
     "modeDistribution": {
       "THINK": 14,
       "PLAN": 31,
       "BUILD": 66,
       "MAINTAIN": 27,
-      "EXPLORE": 56
+      "EXPLORE": 57
     }
   },
   "artifacts": [

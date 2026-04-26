@@ -2117,9 +2117,13 @@
     {
       "id": "T198",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "EXPLORE: Test HenryDB SAVEPOINT and nested transactions",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-26T00:12:07.009Z",
+      "completed": "2026-04-26T00:12:31.402Z",
+      "duration_ms": 120000,
+      "summary": "SAVEPOINT + ROLLBACK TO works perfectly. Nested transaction: debit Alice (1000→800), savepoint, credit Bob (500→700), rollback to savepoint (Bob back to 500), commit (Alice 800, Bob 500). Partial rollback correctly preserves outer transaction changes."
     },
     {
       "id": "T199",
