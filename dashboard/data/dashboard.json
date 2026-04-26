@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-26T00:47:15.256Z",
+  "generated": "2026-04-26T00:48:13.437Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "EXPLORE: Test HenryDB EXISTS vs IN performance comparison",
-    "completedAt": "2026-04-26T00:47:15.256Z",
-    "taskId": "T250",
-    "summary": "EXISTS vs IN performance: IN 7.3ms, EXISTS 280ms (38x slower). EXISTS re-evaluates correlated subquery per row (5000 evaluations). IN pre-computes set once. Both return 500 matches. Key optimization: prefer IN over EXISTS for set membership.",
-    "durationMs": 60000
+    "task": "EXPLORE: Test HenryDB multiple CTEs in single query",
+    "completedAt": "2026-04-26T00:48:13.437Z",
+    "taskId": "T253",
+    "summary": "3 CTEs chained: cat_totals (A=30,B=70,C=50), cat_avg (50), above_avg (B=70). CTEs reference each other. Correct.",
+    "durationMs": 30000
   },
   "schedule": {
     "date": "2026-04-25",
@@ -8983,14 +8983,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 240,
+    "blocksCompleted": 242,
     "blocksTotal": 114,
     "modeDistribution": {
       "THINK": 14,
       "PLAN": 31,
       "BUILD": 66,
       "MAINTAIN": 28,
-      "EXPLORE": 101
+      "EXPLORE": 103
     }
   },
   "artifacts": [
