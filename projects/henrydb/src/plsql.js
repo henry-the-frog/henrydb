@@ -84,6 +84,7 @@ export class PLParser {
     if (token === 'IF') return this._parseIf();
     if (token === 'WHILE') return this._parseWhile();
     if (token === 'FOR') return this._parseFor();
+    if (token === 'CASE') return this._parseCase();
     if (token === 'RETURN') return this._parseReturn();
     if (token === 'RAISE') return this._parseRaise();
     if (token === 'EXECUTE') return this._parseExecute();
@@ -150,6 +151,44 @@ export class PLParser {
     this._expect(';');
 
     return { type: 'while', condition, statements };
+  }
+
+  _parseCase() {
+    this._advance(); // consume CASE
+    
+    // Determine if simple CASE (CASE expr WHEN ...) or searched CASE (CASE WHEN ...)
+    let subject = null;
+    if (this._peek() !== 'WHEN') {
+      // Simple CASE: parse the subject expression
+      subject = this._parseExpression();
+    }
+    
+    const branches = [];
+    while (this._peek() === 'WHEN') {
+      this._advance(); // consume WHEN
+      const condition = this._parseExpression();
+      this._expect('THEN');
+      const statements = [];
+      while (!['WHEN', 'ELSE', 'END'].includes(this._peek())) {
+        statements.push(this._parseStatement());
+      }
+      branches.push({ condition, statements });
+    }
+    
+    let elseStatements = null;
+    if (this._peek() === 'ELSE') {
+      this._advance(); // consume ELSE
+      elseStatements = [];
+      while (this._peek() !== 'END') {
+        elseStatements.push(this._parseStatement());
+      }
+    }
+    
+    this._expect('END');
+    this._expect('CASE');
+    this._expect(';');
+    
+    return { type: 'case', subject, branches, elseStatements };
   }
 
   _parseFor() {
@@ -272,7 +311,7 @@ export class PLParser {
 
   _parseExpression() {
     // Simple expression parser: collect tokens until ; , THEN LOOP INTO END ELSIF ELSE ..
-    const stopTokens = [';', ',', 'THEN', 'LOOP', 'INTO', 'END', 'ELSIF', 'ELSE', '..'];
+    const stopTokens = [';', ',', 'THEN', 'LOOP', 'INTO', 'END', 'ELSIF', 'ELSE', '..', 'WHEN'];
     const parts = [];
     let parenDepth = 0;
 
@@ -540,6 +579,9 @@ export class PLInterpreter {
       case 'for':
         return this._executeFor(stmt, scope);
 
+      case 'case':
+        return this._executeCase(stmt, scope);
+
       case 'return':
         throw new PLReturn(stmt.value ? this._evalExpr(stmt.value, scope) : undefined);
 
@@ -594,6 +636,34 @@ export class PLInterpreter {
         throw e;
       }
     }
+  }
+
+  _executeCase(stmt, scope) {
+    if (stmt.subject !== null) {
+      // Simple CASE: compare subject against each WHEN value
+      const subjectVal = this._evalExpr(stmt.subject, scope);
+      for (const branch of stmt.branches) {
+        const whenVal = this._evalExpr(branch.condition, scope);
+        if (subjectVal === whenVal || (subjectVal !== null && String(subjectVal) === String(whenVal))) {
+          return this._executeStatements(branch.statements, scope);
+        }
+      }
+    } else {
+      // Searched CASE: evaluate each WHEN condition as boolean
+      for (const branch of stmt.branches) {
+        const condVal = this._evalExpr(branch.condition, scope);
+        if (condVal) {
+          return this._executeStatements(branch.statements, scope);
+        }
+      }
+    }
+    
+    // ELSE branch
+    if (stmt.elseStatements) {
+      return this._executeStatements(stmt.elseStatements, scope);
+    }
+    // PL/pgSQL raises CASE_NOT_FOUND if no branch matched and no ELSE
+    throw new PLRaise('CASE_NOT_FOUND', 'case not found');
   }
 
   _executeFor(stmt, scope) {
