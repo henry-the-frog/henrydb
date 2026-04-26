@@ -82,3 +82,38 @@
 4. Wire PL/SQL to procedure handler (implementation exists)
 5. Fix COUNT(DISTINCT) bug in multi-join scenarios
 6. WASM compiler (4-phase design, ~4300 LOC, 2-3 weeks)
+
+## 2026-04-26 (Sunday Session A)
+
+### Major Milestone: WASM Compiler for monkey-lang
+- Built a complete WASM compiler in ~300 LOC that produces 120-330x speedup
+- Supports i32, i64, f64 numeric types
+- Mandelbrot benchmark: 0.7ms WASM vs 231ms VM (80x60 grid)
+- `--wasm-emit` flag writes .wasm binaries loadable in browsers (73 bytes for fibonacci)
+- Key insight: WASM is stack-based like our bytecode VM, so compilation model maps directly
+
+### Class Syntax Added
+- Full class support: parser, compiler, inheritance (extends + super.init), method dispatch
+- Methods compiled as scope-level functions (simple but collides between classes)
+- 24 class tests
+
+### PL/SQL Integrated into HenryDB
+- 854 LOC parser+interpreter wired into callUserFunction (just 10 lines of integration)
+- Supports: DECLARE, BEGIN/END, IF/ELSIF, WHILE, FOR, RETURN, RAISE, SELECT INTO
+- Recursive functions and nested PL→PL calls work
+- Auto-detects PL/SQL from DECLARE/BEGIN keywords
+
+### VM Callback Mechanism (callClosureSync)
+- Re-entrant VM execution via _frameFloor
+- Native HOF builtins: 4x map, 3.9x filter, 1.5x reduce speedup
+
+### Technical Lessons
+- WASM i64 comparisons produce i32, need i64.extend_i32_s to convert back
+- WASM f64 conditions need i32.wrap or f64.eq 0.0 conversion for br_if
+- ShapedHash uses hidden classes with shape.transition() for new properties
+- parseFloat('0') || '0' returns '0' because 0 is falsy — use !isNaN(n) ? n : result
+- Always check opcode value table for collisions before adding new opcodes
+
+### Test Counts
+- monkey-lang: 1149 → 1244 (+95)
+- HenryDB: ~4310 → 4321 (+11 PL/SQL)
