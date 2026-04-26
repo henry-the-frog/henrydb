@@ -17,6 +17,7 @@ import { installPgCatalog } from './pg-catalog.js';
 import { installSetOperations } from './set-operations.js';
 import { installExpressionEvaluator } from './expression-evaluator.js';
 import { sqliteCompare } from './sqlite-compare.js';
+import { PLParser, PLInterpreter } from './plsql.js';
 
 export class Database {
   constructor(options = {}) {
@@ -3321,16 +3322,19 @@ export class Database {
     if (this._functions.has(name) && !ast.orReplace) {
       throw new Error(`Function "${name}" already exists`);
     }
-    // Parse the body SQL expression once
-    let bodyAst;
-    try {
-      bodyAst = parse(ast.body);
-    } catch {
-      // If it doesn't parse as a full statement, try wrapping in SELECT
+    // Parse the body SQL expression once (may fail for PL/SQL bodies — that's OK)
+    let bodyAst = null;
+    const isPLSQL = (ast.language === 'plsql' || ast.language === 'plpgsql' ||
+                     /^\s*(DECLARE|BEGIN)\b/i.test(ast.body));
+    if (!isPLSQL) {
       try {
-        bodyAst = parse('SELECT ' + ast.body);
-      } catch (e2) {
-        throw new Error(`Invalid function body: ${e2.message}`);
+        bodyAst = parse(ast.body);
+      } catch {
+        try {
+          bodyAst = parse('SELECT ' + ast.body);
+        } catch (e2) {
+          throw new Error(`Invalid function body: ${e2.message}`);
+        }
       }
     }
     this._functions.set(name, {
@@ -3702,6 +3706,19 @@ export class Database {
       const result = this._select(ast);
       if (!result.rows || result.rows.length === 0) return null;
       return Object.values(result.rows[0])[0];
+    }
+    
+    if (funcDef.language === 'plsql' || funcDef.language === 'plpgsql' ||
+        /^\s*(DECLARE|BEGIN)\b/i.test(funcDef.body)) {
+      // PL/SQL procedural function
+      const plParser = new PLParser(funcDef.body);
+      const ast = plParser.parse();
+      const interp = new PLInterpreter(this);
+      const params = {};
+      for (let i = 0; i < funcDef.params.length; i++) {
+        params[funcDef.params[i].name] = argValues[i] !== undefined ? argValues[i] : null;
+      }
+      return interp.execute(ast, params);
     }
     
     throw new Error(`Unsupported function language: ${funcDef.language}`);

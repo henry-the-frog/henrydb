@@ -1943,6 +1943,12 @@ export function parse(sql) {
         advance(); // RETURNS
         returnType = advance().value.toUpperCase();
       }
+      // Optional: LANGUAGE specifier (can appear before or after body)
+      let language = 'sql';
+      if (isKeyword('LANGUAGE')) {
+        advance();
+        language = advance().value.toLowerCase();
+      }
       // Parse body: AS $$ body $$ or AS 'body'
       expect('KEYWORD', 'AS');
       let body;
@@ -1962,8 +1968,7 @@ export function parse(sql) {
       } else {
         throw new Error('Expected function body after AS');
       }
-      // Optional: LANGUAGE specifier (ignore for now)
-      let language = 'sql';
+      // LANGUAGE may also appear after body (backward compat)
       if (isKeyword('LANGUAGE')) {
         advance();
         language = advance().value.toLowerCase();
