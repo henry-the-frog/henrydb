@@ -6,9 +6,14 @@
 ## Normal
 - HenryDB: Fix COUNT(DISTINCT) bug in multi-join scenarios
 - HenryDB: Wire PL/SQL to procedure handler (854 LOC exists, just needs connection)
-- monkey-lang: Class syntax (design ready, ~200 LOC implementation)
-- monkey-lang: WASM compiler Phase 1 (int+fn, ~500 LOC)
+- monkey-lang: WASM Phase 2 (strings, closures, arrays)
+- monkey-lang: Wire SSA DCE analysis into compilation pipeline (currently standalone)
+- monkey-lang: super.method() for non-init methods (currently only super.init works)
 - neural-net: Deep exploration of 38K LOC ML framework
+
+## Low
+- monkey-lang: Module resolution for import statements
+- HenryDB: Unified cost model across all 4 execution engines
 
 ## Low
 - HenryDB: Add json_each table-valued function
