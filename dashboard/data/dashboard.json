@@ -1,11 +1,13 @@
 {
-  "generated": "2026-04-26T01:29:20.926Z",
+  "generated": "2026-04-26T01:29:38.088Z",
   "current": {
-    "status": "in-progress",
+    "status": "done",
     "mode": "EXPLORE",
-    "task": "EXPLORE: Test monkey-lang VM hash keys/values builtins",
-    "startedAt": "2026-04-26T01:29:20.926Z",
-    "taskId": "T378"
+    "task": "EXPLORE: Test HenryDB INSERT from SELECT",
+    "completedAt": "2026-04-26T01:29:38.088Z",
+    "taskId": "T379",
+    "summary": "INSERT INTO dst SELECT * FROM src WHERE id>=2: copies 2 rows. Cross-table data movement.",
+    "durationMs": 10000
   },
   "schedule": {
     "date": "2026-04-25",
@@ -8981,14 +8983,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 333,
+    "blocksCompleted": 334,
     "blocksTotal": 114,
     "modeDistribution": {
       "THINK": 14,
       "PLAN": 31,
       "BUILD": 66,
       "MAINTAIN": 29,
-      "EXPLORE": 193
+      "EXPLORE": 194
     }
   },
   "artifacts": [
