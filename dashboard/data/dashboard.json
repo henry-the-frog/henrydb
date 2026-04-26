@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-26T15:22:02.387Z",
+  "generated": "2026-04-26T15:24:04.408Z",
   "current": {
     "status": "done",
-    "mode": "MAINTAIN",
-    "task": "Update TODO.md, write session learnings scratch note, clean up",
-    "completedAt": "2026-04-26T15:22:02.387Z",
-    "taskId": "T36",
-    "summary": "TODO updated (removed completed items, added new). Session learnings scratch note written (VM callbacks, WASM, classes, SQLite affinity, SSA, DCE).",
-    "durationMs": 120000
+    "mode": "THINK",
+    "task": "Plan next depth work: HenryDB COUNT(DISTINCT) multi-join bug investigation",
+    "completedAt": "2026-04-26T15:24:04.408Z",
+    "taskId": "T37",
+    "summary": "Investigated COUNT(DISTINCT) multi-join: all tested scenarios match SQLite. Bug may have been fixed previously or was very specific. Tested: 2-way join, 3-way join, GROUP BY, HAVING, NULL values, duplicate products. All correct.",
+    "durationMs": 180000
   },
   "schedule": {
     "date": "2026-04-26",
@@ -7817,10 +7817,10 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 36,
+    "blocksCompleted": 37,
     "blocksTotal": 35,
     "modeDistribution": {
-      "THINK": 6,
+      "THINK": 7,
       "PLAN": 7,
       "BUILD": 16,
       "MAINTAIN": 5,

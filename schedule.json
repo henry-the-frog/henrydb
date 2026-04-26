@@ -393,8 +393,12 @@
     {
       "id": "T37",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Plan next depth work: HenryDB COUNT(DISTINCT) multi-join bug investigation"
+      "status": "done",
+      "task": "Plan next depth work: HenryDB COUNT(DISTINCT) multi-join bug investigation",
+      "started": "2026-04-26T15:22:08.640Z",
+      "completed": "2026-04-26T15:24:04.372Z",
+      "duration_ms": 180000,
+      "summary": "Investigated COUNT(DISTINCT) multi-join: all tested scenarios match SQLite. Bug may have been fixed previously or was very specific. Tested: 2-way join, 3-way join, GROUP BY, HAVING, NULL values, duplicate products. All correct."
     },
     {
       "id": "T38",
