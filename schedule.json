@@ -3298,6 +3298,77 @@
       "task": "EXPLORE: Test HenryDB INSERT with multiple RETURNING columns",
       "project": "henrydb",
       "started": "2026-04-26T01:13:22.767Z"
+    },
+    {
+      "id": "T314",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test monkey-lang VM with comprehensive prelude program",
+      "project": "monkey-lang",
+      "started": "2026-04-26T01:14:04.776Z",
+      "completed": "2026-04-26T01:14:14.467Z",
+      "duration_ms": 20000,
+      "summary": "Comprehensive prelude: map→filter→reduce→scan→chunk→zip→any→all→find chained in one program. total=60, has_big=true, all_pos=true, first_big=8, 4 chunks, 10 pairs. All correct."
+    },
+    {
+      "id": "T315",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test HenryDB SELECT INTO (create and populate table)",
+      "project": "henrydb"
+    },
+    {
+      "id": "T316",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test neural-net SwiGLU activation",
+      "project": "monkey-lang",
+      "started": "2026-04-26T01:14:22.403Z",
+      "completed": "2026-04-26T01:14:30.833Z",
+      "duration_ms": 10000,
+      "summary": "SwiGLU activation: splits into gate+value, SiLU(gate)×value. 6→3 dim reduction. Used in LLaMA/Mistral/Gemma. Correct output."
+    },
+    {
+      "id": "T317",
+      "mode": "EXPLORE",
+      "status": "in-progress",
+      "task": "EXPLORE: Test HenryDB WHERE with mixed AND/OR/NOT precedence",
+      "project": "henrydb",
+      "started": "2026-04-26T01:14:40.009Z"
+    },
+    {
+      "id": "T318",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test monkey-lang VM import string module functions",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T319",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test HenryDB OVER (PARTITION BY a, b ORDER BY c) multi-partition",
+      "project": "henrydb"
+    },
+    {
+      "id": "T320",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test monkey-lang operator precedence edge cases",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T321",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test HenryDB INSERT OR REPLACE",
+      "project": "henrydb"
+    },
+    {
+      "id": "T322",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "EXPLORE: Final count and wrap-up for session boundary"
     }
   ],
   "focusProjects": [
@@ -4545,6 +4616,42 @@
     {
       "time": "2026-04-26T01:13:15.602Z",
       "msg": "Added T313 (EXPLORE) after end: EXPLORE: Test HenryDB INSERT with multiple RETURNING columns"
+    },
+    {
+      "time": "2026-04-26T01:13:53.069Z",
+      "msg": "Added T314 (EXPLORE) after end: EXPLORE: Test monkey-lang VM with comprehensive prelude program"
+    },
+    {
+      "time": "2026-04-26T01:13:53.190Z",
+      "msg": "Added T315 (EXPLORE) after end: EXPLORE: Test HenryDB SELECT INTO (create and populate table)"
+    },
+    {
+      "time": "2026-04-26T01:13:53.311Z",
+      "msg": "Added T316 (EXPLORE) after end: EXPLORE: Test neural-net SwiGLU activation"
+    },
+    {
+      "time": "2026-04-26T01:13:53.432Z",
+      "msg": "Added T317 (EXPLORE) after end: EXPLORE: Test HenryDB WHERE with mixed AND/OR/NOT precedence"
+    },
+    {
+      "time": "2026-04-26T01:13:53.553Z",
+      "msg": "Added T318 (EXPLORE) after end: EXPLORE: Test monkey-lang VM import string module functions"
+    },
+    {
+      "time": "2026-04-26T01:13:53.675Z",
+      "msg": "Added T319 (EXPLORE) after end: EXPLORE: Test HenryDB OVER (PARTITION BY a, b ORDER BY c) multi-partition"
+    },
+    {
+      "time": "2026-04-26T01:13:53.799Z",
+      "msg": "Added T320 (EXPLORE) after end: EXPLORE: Test monkey-lang operator precedence edge cases"
+    },
+    {
+      "time": "2026-04-26T01:13:53.921Z",
+      "msg": "Added T321 (EXPLORE) after end: EXPLORE: Test HenryDB INSERT OR REPLACE"
+    },
+    {
+      "time": "2026-04-26T01:13:54.043Z",
+      "msg": "Added T322 (MAINTAIN) after end: EXPLORE: Final count and wrap-up for session boundary"
     }
   ]
 }
