@@ -1,34 +1,36 @@
 status: in-progress
-mode: BUILD/EXPLORE (post-pivot, balanced)
+mode: THINK/EXPLORE/MAINTAIN (BUILD cap reached at 29)
 session: A (cron-triggered work session)
-current_position: T66+
+current_task: T65 (session retrospective)
 started: 2026-04-26T14:15:00Z
 boundary: 2026-04-26T20:15:00Z (2:15 PM MDT)
-tasks_completed: 43
-build_count_since_reset: 16
+tasks_completed: ~50
+build_count: 29 (cap reached, depth pivot active)
 projects: monkey-lang, henrydb
 
-## Summary So Far
+## Session A Accomplishments
 
-### monkey-lang (new features + tests)
+### monkey-lang
 - **VM Callback Mechanism** (callClosureSync): 4x map, 3.9x filter speedup
-- **WASM Compiler**: i32, i64, f64 support. 120-330x speedup on compute-intensive code
+- **WASM Compiler Phase 1+2**: i32/i64/f64, 130-330x speedup
   - While loops, for loops, if/else, comparisons, locals, function calls
-  - Mandelbrot at 330x speedup (0.7ms WASM vs 231ms VM)
-  - f64: real floating-point (pi*r^2, division, Mandelbrot)
-- **Class Syntax**: parser, compiler, inheritance (extends + super.init), method dispatch
-- **SSA-level DCE**: Def-use chain analysis for dead definition detection
-- **Tests**: 1149 → 1244 (+95 new tests)
+  - .wasm emit, HTML loader for browsers
+  - Comprehensive benchmark suite
+- **Class Syntax**: parser, compiler, inheritance (extends + super.init)
+- **SSA-level DCE**: Def-use chain analysis
+- **Tests**: 1149 → 1245 (+96 tests)
+- **README**: Updated with WASM + class docs
+- **Examples**: classes.monkey, comprehensive.monkey
 
-### HenryDB (new features + bug fixes)
-- **SQLite Type Affinity**: sqliteCompare for WHERE, ORDER BY, BETWEEN, set-ops
-- **PL/SQL Integration**: 854 LOC parser+interpreter wired in
-  - Factorial, IF/ELSIF, WHILE, FOR, DECLARE, RETURN, RAISE
-  - Recursive functions, nested PL→PL calls
-  - SELECT INTO, string concatenation (||)
-  - Auto-detection from DECLARE/BEGIN keywords
-- **Tests**: ~4310 → 4321 (+11 PL/SQL tests, 0 failures)
+### HenryDB
+- **SQLite Type Affinity**: sqliteCompare for WHERE/ORDER BY
+- **PL/SQL Integration**: 854 LOC parser+interpreter
+- **Tests**: ~4310 → 4321 (+11 tests)
 
-### New Files Created Today
-monkey-lang: ssa-dce.js, wasm.js, wasm-compiler.js, native-hof.test.js, class.test.js, wasm.test.js, ssa-dce.test.js, bench-hof.js, benchmark.js
-HenryDB: sqlite-compare.js, plsql.js (copied + enhanced), plsql.test.js
+### Exploration Results
+- GC stress test: 100K allocations, 6 collections
+- Tail call: mutual recursion 100K deep works
+- SCCP: basic propagation works, misses phi-constant optimization
+- Optimizer: 6-10% bytecode reduction
+- VM performance: ~33 MIPS estimated
+- Enum + match, try/catch, closures, modules: all verified working
