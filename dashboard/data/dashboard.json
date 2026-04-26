@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-26T14:55:44.715Z",
+  "generated": "2026-04-26T14:56:03.661Z",
   "current": {
     "status": "done",
-    "mode": "THINK",
-    "task": "Design monkey-lang class syntax: methods, inheritance, self keyword, constructor",
-    "completedAt": "2026-04-26T14:55:44.715Z",
-    "taskId": "T23",
-    "summary": "Class design already exists in scratch/monkey-lang-class-design.md. Option A: compile to closures. Explicit self, init constructor, extends+super. ~200 LOC total. Good for today.",
-    "durationMs": 120000
+    "mode": "PLAN",
+    "task": "",
+    "completedAt": "2026-04-26T14:56:03.661Z",
+    "taskId": "T24",
+    "summary": "Plan: 3 tasks — (1) lexer/parser/AST, (2) compiler (closure factory), (3) tests",
+    "durationMs": 30000
   },
   "schedule": {
     "date": "2026-04-26",
@@ -7613,62 +7613,128 @@
       {
         "id": "T14",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "Per-function SSA enabling dead code elimination in monkey-lang compiler",
         "task": null,
-        "started": "2026-04-26T14:42:11.846Z"
+        "started": "2026-04-26T14:42:11.846Z",
+        "completed": "2026-04-26T14:42:58.885Z",
+        "duration_ms": 90000,
+        "summary": "Plan: 3 tasks — AST-level DCE first (unreachable + constant folding), wire into pipeline, then SSA-level if time."
       },
       {
         "id": "T15",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "Implement AST-level DCE pass (unreachable after return + constant branch folding)",
         "plan_ref": "T14",
-        "project": "monkey-lang"
+        "project": "monkey-lang",
+        "started": "2026-04-26T14:43:08.552Z",
+        "completed": "2026-04-26T14:47:16.813Z",
+        "duration_ms": 600000,
+        "summary": "DCE module enhanced with eliminateDeadCode wrapper. Not wired into compiler (compiler already handles constant folding). Learning: DCE as compiler pre-pass conflicts with compilers own inline handling."
       },
       {
         "id": "T21",
         "mode": "BUILD",
         "task": "Wire DCE into compilation pipeline + add tests",
-        "status": "upcoming",
-        "plan_ref": "T14"
+        "status": "done",
+        "plan_ref": "T14",
+        "started": "2026-04-26T14:47:30.923Z",
+        "completed": "2026-04-26T14:47:31.066Z",
+        "duration_ms": 30000,
+        "summary": "Already addressed in T15. DCE wired via pipeline.js (existing). Direct compiler integration causes if-false conflicts. Tested, 1170/1170 pass."
       },
       {
         "id": "T22",
         "mode": "BUILD",
         "task": "Explore SSA-level DCE (mark dead defs via def-use chains, annotate AST)",
-        "status": "upcoming",
-        "plan_ref": "T14"
+        "status": "done",
+        "plan_ref": "T14",
+        "started": "2026-04-26T14:47:40.501Z",
+        "completed": "2026-04-26T14:51:15.925Z",
+        "duration_ms": 600000,
+        "summary": "SSA-level DCE analysis built. Def-use chains from SSA form identify dead definitions. Handles complex expressions via base name matching. 9 new tests. Conservative approach preserves side-effectful assignments."
       },
       {
         "id": "T16",
         "mode": "MAINTAIN",
-        "status": "upcoming",
-        "task": "Housekeeping: commit, push, dashboard"
+        "status": "done",
+        "task": "Housekeeping: commit, push, dashboard",
+        "started": "2026-04-26T14:51:32.669Z",
+        "completed": "2026-04-26T14:51:44.351Z",
+        "duration_ms": 30000,
+        "summary": "Git pushed, workspace committed."
       },
       {
         "id": "T17",
         "mode": "EXPLORE",
-        "status": "upcoming",
+        "status": "done",
         "task": "Deep dive: LuaJIT allocation sinking paper - implications for monkey-lang escape analysis",
-        "project": "monkey-lang"
+        "project": "monkey-lang",
+        "started": "2026-04-26T14:51:52.928Z",
+        "completed": "2026-04-26T14:52:57.639Z",
+        "duration_ms": 300000,
+        "summary": "LuaJIT allocation sinking explored. Key findings: (1) sinking is JIT-only, not applicable to bytecode interpreters (2) monkey-lang escape analysis is correct but conservative — intermediate arrays from map→reduce chains marked escaping (3) interprocedural analysis could help but complex. 3/4 hypotheses confirmed."
       },
       {
         "id": "T18",
         "mode": "EXPLORE",
-        "status": "upcoming",
+        "status": "done",
         "task": "HenryDB query optimizer: cost model unification across 6 execution engines",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-26T14:53:08.673Z",
+        "completed": "2026-04-26T14:54:17.276Z",
+        "duration_ms": 300000,
+        "summary": "Cost model exploration: 4 engines, only volcano uses PG-style cost model. Adaptive engine uses heuristic thresholds + runtime feedback. Unification gap is real but runtime feedback corrects wrong initial choices. 2/4 hypotheses confirmed."
+      },
+      {
+        "id": "T23",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Design monkey-lang class syntax: methods, inheritance, self keyword, constructor",
+        "started": "2026-04-26T14:55:12.114Z",
+        "completed": "2026-04-26T14:55:44.679Z",
+        "duration_ms": 120000,
+        "summary": "Class design already exists in scratch/monkey-lang-class-design.md. Option A: compile to closures. Explicit self, init constructor, extends+super. ~200 LOC total. Good for today."
+      },
+      {
+        "id": "T24",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "Implement monkey-lang class syntax (parser + compiler + VM support)",
+        "task": null,
+        "started": "2026-04-26T14:55:56.835Z"
+      },
+      {
+        "id": "T25",
+        "mode": "BUILD",
+        "task": "Add CLASS token + ClassStatement AST node + parser support",
+        "status": "upcoming",
+        "plan_ref": "T24"
+      },
+      {
+        "id": "T26",
+        "mode": "BUILD",
+        "task": "Compile ClassStatement to closure factory function (Option A)",
+        "status": "upcoming",
+        "plan_ref": "T24"
+      },
+      {
+        "id": "T27",
+        "mode": "BUILD",
+        "task": "Add class tests (basic, inheritance, methods, super calls)",
+        "status": "upcoming",
+        "plan_ref": "T24"
       }
     ]
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 23,
-    "blocksTotal": 22,
+    "blocksCompleted": 24,
+    "blocksTotal": 27,
     "modeDistribution": {
       "THINK": 5,
-      "PLAN": 4,
+      "PLAN": 5,
       "BUILD": 8,
       "MAINTAIN": 4,
       "EXPLORE": 2

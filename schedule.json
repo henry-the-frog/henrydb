@@ -252,9 +252,34 @@
     {
       "id": "T24",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Implement monkey-lang class syntax (parser + compiler + VM support)",
-      "task": null
+      "task": null,
+      "started": "2026-04-26T14:55:56.835Z",
+      "completed": "2026-04-26T14:56:03.626Z",
+      "duration_ms": 30000,
+      "summary": "Plan: 3 tasks — (1) lexer/parser/AST, (2) compiler (closure factory), (3) tests"
+    },
+    {
+      "id": "T25",
+      "mode": "BUILD",
+      "task": "Add CLASS token + ClassStatement AST node + parser support",
+      "status": "upcoming",
+      "plan_ref": "T24"
+    },
+    {
+      "id": "T26",
+      "mode": "BUILD",
+      "task": "Compile ClassStatement to closure factory function (Option A)",
+      "status": "upcoming",
+      "plan_ref": "T24"
+    },
+    {
+      "id": "T27",
+      "mode": "BUILD",
+      "task": "Add class tests (basic, inheritance, methods, super calls)",
+      "status": "upcoming",
+      "plan_ref": "T24"
     }
   ],
   "focusProjects": [
@@ -362,6 +387,10 @@
     {
       "time": "2026-04-26T14:55:05.974Z",
       "msg": "Added T24 (PLAN) after end: Implement monkey-lang class syntax (parser + compiler + VM support)"
+    },
+    {
+      "time": "2026-04-26T14:55:56.978Z",
+      "msg": "PLAN T24 filled 3 BUILD tasks"
     }
   ]
 }
