@@ -1,5 +1,8 @@
 # Scratch Notes Index
 
+## Session A (2026-04-26 morning) — New Files
+- `session-a-learnings-apr26.md` — Key learnings (VM callbacks, WASM, classes, SQLite affinity, SSA, DCE)
+
 ## Session B (2026-04-25 afternoon) — New Files
 - `session-b-learnings.md` — Key learnings (type systems, SSA, prelude pattern, bugs)
 - `session-b-depth-findings.md` — Depth exploration findings
