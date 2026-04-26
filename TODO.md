@@ -1,7 +1,7 @@
 # TODO.md
 
 ## Urgent
-- monkey-lang: GitHub token needs `workflow` scope for CI (since 2026-04-25)
+(none)
 
 ## Normal
 - monkey-lang: Per-function SSA → dead code elimination (SSA-level annotation, ~200 LOC)
