@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-26T15:19:19.548Z",
+  "generated": "2026-04-26T15:20:39.931Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Compile monkey-lang integer expressions + functions to WASM",
-    "completedAt": "2026-04-26T15:19:19.548Z",
-    "taskId": "T34",
-    "summary": "WASM compiler Phase 1 complete! Compiles integer arithmetic + functions + if/else + comparisons. fib(30): 7ms WASM vs 892ms VM = 120x speedup.",
-    "durationMs": 600000
+    "task": "Add WASM tests: arithmetic, function calls, verify with Node WASM runtime",
+    "completedAt": "2026-04-26T15:20:39.931Z",
+    "taskId": "T35",
+    "summary": "26 WASM tests covering arithmetic, comparisons, if/else, locals, function calls, recursion (fib/fact), return, main expression. 1225 total tests, all pass.",
+    "durationMs": 180000
   },
   "schedule": {
     "date": "2026-04-26",
@@ -7817,12 +7817,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 34,
+    "blocksCompleted": 35,
     "blocksTotal": 35,
     "modeDistribution": {
       "THINK": 6,
       "PLAN": 7,
-      "BUILD": 15,
+      "BUILD": 16,
       "MAINTAIN": 4,
       "EXPLORE": 2
     }
