@@ -3093,37 +3093,57 @@
     {
       "id": "T294",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "EXPLORE: Test neural-net LayerNorm",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-26T01:06:17.919Z",
+      "completed": "2026-04-26T01:06:25.397Z",
+      "duration_ms": 10000,
+      "summary": "LayerNorm: normalizes [1,2,3,4] to [-1.34,-0.45,0.45,1.34]. Mean≈0, Variance≈1. Correct standard normalization."
     },
     {
       "id": "T295",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "EXPLORE: Test HenryDB CAST with different types",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-26T01:06:33.760Z",
+      "completed": "2026-04-26T01:06:40.819Z",
+      "duration_ms": 10000,
+      "summary": "CAST: INT→TEXT '42', TEXT→INT 123, REAL→INT 3 (truncates), INT→REAL 42.0. All type conversions correct."
     },
     {
       "id": "T296",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "EXPLORE: Test monkey-lang boolean operations (and, or, not)",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-26T01:06:01.560Z",
+      "completed": "2026-04-26T01:06:09.321Z",
+      "duration_ms": 10000,
+      "summary": "Boolean ops: && (false), || (true), ! (false), complex (true). Short-circuit: false && side-effect doesn't execute."
     },
     {
       "id": "T297",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "EXPLORE: Test HenryDB multiple ORDER BY columns",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-26T01:06:48.994Z",
+      "completed": "2026-04-26T01:07:07.733Z",
+      "duration_ms": 10000,
+      "summary": "for-in loop doesn't work in VM (parse error). Use evaluator for-in: for (x in keys(hash)). VM loop uses C-style for."
     },
     {
       "id": "T298",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "EXPLORE: Test monkey-lang hash iteration",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-26T01:07:15.555Z",
+      "completed": "2026-04-26T01:07:23.519Z",
+      "duration_ms": 10000,
+      "summary": "Multi-column ORDER BY with mixed ASC/DESC: b DESC → z,y,x. Secondary sort a ASC applied within ties."
     }
   ],
   "focusProjects": [

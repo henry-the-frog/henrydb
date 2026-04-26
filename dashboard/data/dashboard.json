@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-26T01:05:42.035Z",
+  "generated": "2026-04-26T01:07:23.555Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "EXPLORE: Test HenryDB MAX/MIN with strings",
-    "completedAt": "2026-04-26T01:05:42.035Z",
-    "taskId": "T293",
-    "summary": "MAX/MIN strings: MAX='c', MIN='a'. Multi-column ORDER BY (val ASC, name DESC) correctly applies secondary sort. All correct.",
+    "task": "EXPLORE: Test monkey-lang hash iteration",
+    "completedAt": "2026-04-26T01:07:23.555Z",
+    "taskId": "T298",
+    "summary": "Multi-column ORDER BY with mixed ASC/DESC: b DESC → z,y,x. Secondary sort a ASC applied within ties.",
     "durationMs": 10000
   },
   "schedule": {
@@ -8983,14 +8983,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 270,
+    "blocksCompleted": 275,
     "blocksTotal": 114,
     "modeDistribution": {
       "THINK": 14,
       "PLAN": 31,
       "BUILD": 66,
       "MAINTAIN": 29,
-      "EXPLORE": 130
+      "EXPLORE": 135
     }
   },
   "artifacts": [
