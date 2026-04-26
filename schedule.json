@@ -200,8 +200,12 @@
       "id": "T22",
       "mode": "BUILD",
       "task": "Explore SSA-level DCE (mark dead defs via def-use chains, annotate AST)",
-      "status": "upcoming",
-      "plan_ref": "T14"
+      "status": "done",
+      "plan_ref": "T14",
+      "started": "2026-04-26T14:47:40.501Z",
+      "completed": "2026-04-26T14:51:15.925Z",
+      "duration_ms": 600000,
+      "summary": "SSA-level DCE analysis built. Def-use chains from SSA form identify dead definitions. Handles complex expressions via base name matching. 9 new tests. Conservative approach preserves side-effectful assignments."
     },
     {
       "id": "T16",
