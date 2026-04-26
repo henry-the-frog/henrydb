@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-26T16:06:13.476Z",
+  "generated": "2026-04-26T16:13:25.326Z",
   "current": {
     "status": "done",
-    "mode": "THINK",
-    "task": "Investigate HenryDB PL/SQL → procedure handler wiring (854 LOC exists)",
-    "completedAt": "2026-04-26T16:06:13.476Z",
-    "taskId": "T57",
-    "summary": "PL/SQL code exists: 854 LOC parser+interpreter in projects/henrydb/. Has tests. Wire-up needed: (1) copy plsql.js to src/ (2) modify callUserFunction to use PLInterpreter for plsql language (3) detect DECLARE/BEGIN in function bodies.",
-    "durationMs": 120000
+    "mode": "BUILD",
+    "task": "Wire PL/SQL into HenryDB: copy plsql.js, update callUserFunction",
+    "completedAt": "2026-04-26T16:13:25.326Z",
+    "taskId": "T58",
+    "summary": "PL/SQL wired into HenryDB! factorial(5)=120, classify() with IF/ELSIF, SELECT INTO works. 854 LOC PL/SQL engine integrated. 4313 tests pass.",
+    "durationMs": 600000
   },
   "schedule": {
     "date": "2026-04-26",
@@ -7970,12 +7970,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 57,
+    "blocksCompleted": 58,
     "blocksTotal": 49,
     "modeDistribution": {
       "THINK": 10,
       "PLAN": 9,
-      "BUILD": 25,
+      "BUILD": 26,
       "MAINTAIN": 9,
       "EXPLORE": 4
     }

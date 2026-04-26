@@ -617,6 +617,17 @@
       "completed": "2026-04-26T16:06:13.440Z",
       "duration_ms": 120000,
       "summary": "PL/SQL code exists: 854 LOC parser+interpreter in projects/henrydb/. Has tests. Wire-up needed: (1) copy plsql.js to src/ (2) modify callUserFunction to use PLInterpreter for plsql language (3) detect DECLARE/BEGIN in function bodies."
+    },
+    {
+      "id": "T58",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Wire PL/SQL into HenryDB: copy plsql.js, update callUserFunction",
+      "project": "henrydb",
+      "started": "2026-04-26T16:06:22.297Z",
+      "completed": "2026-04-26T16:13:25.291Z",
+      "duration_ms": 600000,
+      "summary": "PL/SQL wired into HenryDB! factorial(5)=120, classify() with IF/ELSIF, SELECT INTO works. 854 LOC PL/SQL engine integrated. 4313 tests pass."
     }
   ],
   "focusProjects": [
@@ -828,6 +839,10 @@
     {
       "time": "2026-04-26T16:04:09.170Z",
       "msg": "Added T57 (THINK) after end: Investigate HenryDB PL/SQL → procedure handler wiring (854 LOC exists)"
+    },
+    {
+      "time": "2026-04-26T16:06:22.161Z",
+      "msg": "Added T58 (BUILD) after end: Wire PL/SQL into HenryDB: copy plsql.js, update callUserFunction"
     }
   ]
 }
