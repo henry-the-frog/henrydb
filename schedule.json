@@ -3257,6 +3257,35 @@
       "completed": "2026-04-26T01:11:22.664Z",
       "duration_ms": 10000,
       "summary": "Aggregate FILTER clause (SQL:2003): COUNT(*) FILTER(WHERE cat='A')=2, SUM FILTER(WHERE cat='B')=7. Conditional aggregation in single query."
+    },
+    {
+      "id": "T310",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test HenryDB RIGHT JOIN",
+      "project": "henrydb",
+      "started": "2026-04-26T01:12:15.608Z",
+      "completed": "2026-04-26T01:12:24.541Z",
+      "duration_ms": 10000,
+      "summary": "RIGHT JOIN: matched (b,x), (c,y), unmatched right (NULL,z). NULL for missing left values. Correct."
+    },
+    {
+      "id": "T311",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test monkey-lang VM compact, enumerate, zip in one program",
+      "project": "monkey-lang",
+      "started": "2026-04-26T01:12:33.528Z",
+      "completed": "2026-04-26T01:12:41.863Z",
+      "duration_ms": 10000,
+      "summary": "VM builtins: zip [[1,a],[2,b],[3,c]], enumerate [[0,x],[1,y],[2,z]], compact [1,2,3], isEmpty true/false. All correct."
+    },
+    {
+      "id": "T312",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test HenryDB GROUP_CONCAT with ORDER BY inside",
+      "project": "henrydb"
     }
   ],
   "focusProjects": [
@@ -4488,6 +4517,18 @@
     {
       "time": "2026-04-26T01:10:47.238Z",
       "msg": "Added T309 (EXPLORE) after end: EXPLORE: Test HenryDB aggregate FILTER clause"
+    },
+    {
+      "time": "2026-04-26T01:12:05.666Z",
+      "msg": "Added T310 (EXPLORE) after end: EXPLORE: Test HenryDB RIGHT JOIN"
+    },
+    {
+      "time": "2026-04-26T01:12:05.787Z",
+      "msg": "Added T311 (EXPLORE) after end: EXPLORE: Test monkey-lang VM compact, enumerate, zip in one program"
+    },
+    {
+      "time": "2026-04-26T01:12:05.909Z",
+      "msg": "Added T312 (EXPLORE) after end: EXPLORE: Test HenryDB GROUP_CONCAT with ORDER BY inside"
     }
   ]
 }
