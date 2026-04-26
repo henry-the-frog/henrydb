@@ -15,7 +15,7 @@
 
 ## Low
 - HenryDB: Add json_each table-valued function
-- HenryDB: Add LATERAL joins
+- ~~HenryDB: Add LATERAL joins~~ (already works!)
 - ~~HenryDB: Add recursive CTEs~~ (already works!)
 - HenryDB: UPDATE OF column syntax for triggers
 - monkey-lang: Concurrency (goroutines/channels, major addition)
