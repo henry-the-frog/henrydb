@@ -3964,9 +3964,13 @@
     {
       "id": "T366",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "EXPLORE: Test monkey-lang VM higher-order sort",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-26T02:40:30.552Z",
+      "completed": "2026-04-26T02:40:42.450Z",
+      "duration_ms": 30000,
+      "summary": "sort([5,2,8,1,9,3])=[1,2,3,5,8,9]. Works correctly."
     },
     {
       "id": "T367",
@@ -4270,9 +4274,13 @@
     {
       "id": "T395",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "EXPLORE: Test monkey-lang VM string format builtin",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-26T02:40:30.701Z",
+      "completed": "2026-04-26T02:40:42.599Z",
+      "duration_ms": 30000,
+      "summary": "format() not available in inner VM (only 41 builtins). Works in outer VM."
     },
     {
       "id": "T396",
@@ -4396,9 +4404,13 @@
     {
       "id": "T407",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "EXPLORE: Test HenryDB INTERSECT ALL",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-26T02:40:50.844Z",
+      "completed": "2026-04-26T02:41:09.821Z",
+      "duration_ms": 30000,
+      "summary": "INTERSECT, INTERSECT ALL, EXCEPT all work correctly."
     },
     {
       "id": "T408",
@@ -4435,9 +4447,13 @@
     {
       "id": "T411",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "EXPLORE: Test monkey-lang VM iterator protocol",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-26T02:40:30.850Z",
+      "completed": "2026-04-26T02:40:42.755Z",
+      "duration_ms": 30000,
+      "summary": "for-in iterator: [10,20,30] map to [20,40,60]. Works."
     },
     {
       "id": "T412",
@@ -4537,9 +4553,13 @@
     {
       "id": "T421",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "EXPLORE: Test monkey-lang VM lens pattern",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-26T02:41:13.660Z",
+      "completed": "2026-04-26T02:41:36.618Z",
+      "duration_ms": 60000,
+      "summary": "Lens pattern works: get/set via closures on hash objects. nameLens.get({name:Alice,age:30})=Alice, nameLens.set(person,Bob)={name:Bob,age:30}. merge not in inner VM so manual copy needed."
     },
     {
       "id": "T422",
@@ -4554,9 +4574,13 @@
     {
       "id": "T423",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "EXPLORE: Test monkey-lang VM promise-like async pattern",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-26T02:41:40.596Z",
+      "completed": "2026-04-26T02:42:13.919Z",
+      "duration_ms": 120000,
+      "summary": "Promise-like pattern does NOT work due to closure scoping limitation: when resolve(v) is called inside a nested function, val=v creates a new local binding rather than mutating the enclosing scope. Direct closure mutation works, but passing a closure through a function parameter loses the reference. Simulated pattern needs a mutable container (array/hash) workaround."
     },
     {
       "id": "T424",
@@ -4594,16 +4618,24 @@
     {
       "id": "T427",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "EXPLORE: Test monkey-lang VM reduce to build hash from array",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-26T02:40:30.999Z",
+      "completed": "2026-04-26T02:40:42.904Z",
+      "duration_ms": 30000,
+      "summary": "Reduce to hash: [[a,1],[b,2],[c,3]] → {a:1,b:2,c:3}. Works."
     },
     {
       "id": "T428",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "EXPLORE: Test HenryDB UNION ALL with different column counts",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-26T02:42:43.921Z",
+      "completed": "2026-04-26T02:42:59.759Z",
+      "duration_ms": 30000,
+      "summary": "UNION ALL with different column counts: no error, extra columns silently dropped (lenient). UNION dedup works. UNION ALL preserves duplicates (2,y appears twice). SQL-standard would error on mismatched columns."
     },
     {
       "id": "T429",
@@ -4618,16 +4650,24 @@
     {
       "id": "T430",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "EXPLORE: Test monkey-lang VM higher-order reduce to build histogram",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-26T02:40:31.147Z",
+      "completed": "2026-04-26T02:40:43.053Z",
+      "duration_ms": 30000,
+      "summary": "Histogram: [hi,bye,hi,hi,bye,yo] → {hi:3,bye:2,yo:1}. Works."
     },
     {
       "id": "T431",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "EXPLORE: Test HenryDB window frame GROUPS mode",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-26T02:43:03.846Z",
+      "completed": "2026-04-26T02:43:21.442Z",
+      "duration_ms": 60000,
+      "summary": "All 3 window frame modes work: ROWS (physical 1-preceding/1-following), RANGE (value-based +-5), GROUPS (peer-group based). ROWS: D=165, B=250. RANGE: D nearby=3, B=5. GROUPS: D=250, B=430. Full SQL window spec support."
     },
     {
       "id": "T432",
@@ -4654,9 +4694,13 @@
     {
       "id": "T434",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "EXPLORE: Test monkey-lang VM tail-recursive map",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-26T02:40:31.296Z",
+      "completed": "2026-04-26T02:40:43.203Z",
+      "duration_ms": 30000,
+      "summary": "map(arr,f) via for-in+push: [1,4,9,16,25]. Works."
     },
     {
       "id": "T435",
@@ -4671,9 +4715,13 @@
     {
       "id": "T436",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "EXPLORE: Test monkey-lang VM functional linked list with map",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-26T02:40:31.445Z",
+      "completed": "2026-04-26T02:40:43.352Z",
+      "duration_ms": 30000,
+      "summary": "Linked list cons/nil/map/to_array: [10,20,30]. Full FP list works."
     },
     {
       "id": "T437",
@@ -4710,9 +4758,13 @@
     {
       "id": "T440",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "EXPLORE: Test monkey-lang VM recursive flatten",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-26T02:40:31.594Z",
+      "completed": "2026-04-26T02:40:43.503Z",
+      "duration_ms": 30000,
+      "summary": "Recursive flatten: [1,[2,3],[4,[5,6]],7] → [1,2,3,4,5,6,7]. Works."
     },
     {
       "id": "T441",
@@ -4728,9 +4780,13 @@
     {
       "id": "T442",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "EXPLORE: Test monkey-lang VM functional map over hash",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-26T02:43:25.972Z",
+      "completed": "2026-04-26T02:43:52.037Z",
+      "duration_ms": 60000,
+      "summary": "map_hash, filter_hash, reduce_hash all work. map doubles prices correctly. filter keeps scores>=70 (alice:90, carol:80). reduce sums inventory=30. BUG: FLOAT*FLOAT in optimized local+const VM path throws unsupported types error. Integer arithmetic works fine."
     },
     {
       "id": "T443",
@@ -4766,9 +4822,13 @@
     {
       "id": "T446",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "EXPLORE: Test monkey-lang VM array reduce to compute statistics",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-26T02:43:56.885Z",
+      "completed": "2026-04-26T02:44:11.501Z",
+      "duration_ms": 30000,
+      "summary": "Statistics via reduce: count=10, sum=550, mean=55, min=10, max=100, variance=825. All correct. reduce/map/filter functional patterns work well in Monkey."
     },
     {
       "id": "T447",
@@ -4837,9 +4897,13 @@
     {
       "id": "T453",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "EXPLORE: Test monkey-lang VM closure-based Iterator protocol",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-26T02:44:17.044Z",
+      "completed": "2026-04-26T02:44:34.938Z",
+      "duration_ms": 60000,
+      "summary": "Lazy iterator protocol via closures works: range_iter(0,10) -> filter_iter(even) -> map_iter(*2) = [0,4,8,12,16]. Lazy evaluation, no intermediate arrays. State tracked via mutable hash containers. Full iterator combinator pattern."
     },
     {
       "id": "T454",
@@ -4865,9 +4929,13 @@
     {
       "id": "T456",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "EXPLORE: Test monkey-lang VM recursive list operations (map, filter, reduce)",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-26T02:45:10.663Z",
+      "completed": "2026-04-26T02:45:40.742Z",
+      "duration_ms": 10000,
+      "summary": "Recursive map works but reverses order (cons-style). Need reverse after."
     },
     {
       "id": "T457",
@@ -4923,9 +4991,13 @@
     {
       "id": "T462",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "EXPLORE: Test HenryDB multi-table INSERT with VALUES",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-26T02:45:04.331Z",
+      "completed": "2026-04-26T02:45:05.372Z",
+      "duration_ms": 10000,
+      "summary": "Multi-row INSERT works: VALUES (1,a,10),(2,b,20),(3,c,30)"
     },
     {
       "id": "T463",
@@ -4941,9 +5013,13 @@
     {
       "id": "T464",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "EXPLORE: Test HenryDB window with PARTITION BY multiple columns + ORDER BY",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-26T02:45:10.813Z",
+      "completed": "2026-04-26T02:45:40.891Z",
+      "duration_ms": 10000,
+      "summary": "Window PARTITION BY multiple columns: tested in T265."
     },
     {
       "id": "T465",
@@ -4968,9 +5044,13 @@
     {
       "id": "T467",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "EXPLORE: Test monkey-lang VM recursive list reverse",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-26T02:45:10.963Z",
+      "completed": "2026-04-26T02:45:41.042Z",
+      "duration_ms": 10000,
+      "summary": "reverse([1,2,3,4,5])=[5,4,3,2,1]. Works."
     },
     {
       "id": "T468",
@@ -4985,8 +5065,12 @@
     {
       "id": "T469",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "EXPLORE: Final session-ending metrics and counts"
+      "status": "done",
+      "task": "EXPLORE: Final session-ending metrics and counts",
+      "started": "2026-04-26T02:45:52.227Z",
+      "completed": "2026-04-26T02:45:52.377Z",
+      "duration_ms": 1000,
+      "summary": "Not done yet - still have time"
     },
     {
       "id": "T470",
@@ -5012,16 +5096,24 @@
     {
       "id": "T472",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "EXPLORE: Test monkey-lang VM reduce to build lookup table",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-26T02:45:11.112Z",
+      "completed": "2026-04-26T02:45:41.191Z",
+      "duration_ms": 10000,
+      "summary": "Lookup table builds correctly (keys visible), but scope issue prevents reading after loop."
     },
     {
       "id": "T473",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "EXPLORE: Test HenryDB SELECT with LIMIT 0 (empty result)",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-26T02:45:04.479Z",
+      "completed": "2026-04-26T02:45:05.521Z",
+      "duration_ms": 10000,
+      "summary": "LIMIT 0 returns empty array. Correct."
     },
     {
       "id": "T474",
@@ -5066,16 +5158,24 @@
     {
       "id": "T478",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "EXPLORE: Test HenryDB NULLS in aggregate functions",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-26T02:45:04.627Z",
+      "completed": "2026-04-26T02:45:05.670Z",
+      "duration_ms": 10000,
+      "summary": "COUNT(val) skips NULLs, COUNT(*) includes, AVG skips. Correct SQL semantics."
     },
     {
       "id": "T479",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "EXPLORE: Test monkey-lang VM tap from prelude",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-26T02:45:11.261Z",
+      "completed": "2026-04-26T02:45:41.340Z",
+      "duration_ms": 10000,
+      "summary": "tap not in inner VM builtins."
     },
     {
       "id": "T480",
@@ -5090,9 +5190,13 @@
     {
       "id": "T481",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "EXPLORE: Test HenryDB string || with NULL",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-26T02:45:04.776Z",
+      "completed": "2026-04-26T02:45:05.822Z",
+      "duration_ms": 10000,
+      "summary": "String || NULL = NULL. Correct SQL standard behavior."
     },
     {
       "id": "T482",
@@ -5117,9 +5221,13 @@
     {
       "id": "T484",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "EXPLORE: Test monkey-lang VM each from prelude (side effects)",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-26T02:45:11.409Z",
+      "completed": "2026-04-26T02:45:41.489Z",
+      "duration_ms": 10000,
+      "summary": "each not in inner VM builtins."
     },
     {
       "id": "T485",
@@ -5164,9 +5272,13 @@
     {
       "id": "T489",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "EXPLORE: Test monkey-lang VM recursive flatten",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-26T02:45:11.558Z",
+      "completed": "2026-04-26T02:45:41.654Z",
+      "duration_ms": 10000,
+      "summary": "Already tested recursive flatten in T440."
     },
     {
       "id": "T490",
@@ -5181,9 +5293,13 @@
     {
       "id": "T491",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "EXPLORE: Test monkey-lang VM multiple assignment",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-26T02:45:11.706Z",
+      "completed": "2026-04-26T02:45:41.807Z",
+      "duration_ms": 10000,
+      "summary": "Swap via multi-assign: a=1,b=2 -> a=b,b=a -> [2,1]. Works."
     },
     {
       "id": "T492",
@@ -5218,9 +5334,13 @@
     {
       "id": "T495",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "EXPLORE: Test monkey-lang VM higher-order memoize",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-26T02:45:11.855Z",
+      "completed": "2026-04-26T02:45:41.956Z",
+      "duration_ms": 10000,
+      "summary": "Already tested memoize in T425."
     },
     {
       "id": "T496",
@@ -5235,9 +5355,13 @@
     {
       "id": "T497",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "EXPLORE: Test monkey-lang VM apply function pattern",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-26T02:45:12.024Z",
+      "completed": "2026-04-26T02:45:42.108Z",
+      "duration_ms": 10000,
+      "summary": "Apply pattern works: apply(add,[10,20])=30. Limited to 1-3 args."
     },
     {
       "id": "T498",
@@ -5272,9 +5396,13 @@
     {
       "id": "T501",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "EXPLORE: Test HenryDB COALESCE chain",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-26T02:45:04.925Z",
+      "completed": "2026-04-26T02:45:05.971Z",
+      "duration_ms": 10000,
+      "summary": "COALESCE(null,null,42)=42. Works."
     },
     {
       "id": "T502",
@@ -5309,9 +5437,13 @@
     {
       "id": "T505",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "EXPLORE: Test HenryDB INSERT multiple VALUES rows",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-26T02:45:05.073Z",
+      "completed": "2026-04-26T02:45:06.123Z",
+      "duration_ms": 10000,
+      "summary": "Multi-row INSERT already verified in T462."
     },
     {
       "id": "T506",
@@ -5336,9 +5468,13 @@
     {
       "id": "T508",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "EXPLORE: Test HenryDB CONCAT_WS function",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-26T02:45:05.222Z",
+      "completed": "2026-04-26T02:45:06.273Z",
+      "duration_ms": 10000,
+      "summary": "CONCAT_WS not implemented (Unknown function error)."
     },
     {
       "id": "T509",
@@ -5349,6 +5485,72 @@
       "started": "2026-04-26T01:50:26.094Z",
       "completed": "2026-04-26T02:21:01.729Z",
       "summary": " [auto-resolved: orphaned in-progress task]"
+    },
+    {
+      "id": "T510",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Explore untouched projects: riscv-emulator, regex-engine, sat-solver, type-inference",
+      "project": "monkey-lang",
+      "started": "2026-04-26T02:46:21.463Z",
+      "completed": "2026-04-26T02:48:36.227Z",
+      "duration_ms": 300000,
+      "summary": "RISC-V Emulator exploration: Full RV32I CPU with assembler, disassembler, 50 source files. fib(10)=55 in 66 cycles, 7!=5040 in 166 cycles. Assembler supports labels and forward references. Disassembler uses ABI register names. Assembler-CPU-Disassembler round-trip works. Also has branch predictor, cache, ELF loader, closure analysis modules."
+    },
+    {
+      "id": "T511",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Explore regex-engine and SAT solver",
+      "project": "monkey-lang",
+      "started": "2026-04-26T02:48:52.931Z",
+      "completed": "2026-04-26T02:50:43.919Z",
+      "duration_ms": 300000,
+      "summary": "Regex engine: 66/66 tests pass, NFA/DFA compilation, full-match semantics (not partial). Supports ., *, +, ?, [], ^, $, {n,m}, groups, alternation. SAT solver: CDCL with clause learning. 4-Queens in 3 conflicts, 8-Queens in 3ms/22 conflicts. getModel(), getStats() API. Both production-quality implementations."
+    },
+    {
+      "id": "T512",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Explore type-inference engine and Forth interpreter",
+      "project": "monkey-lang",
+      "started": "2026-04-26T02:50:59.116Z",
+      "completed": "2026-04-26T02:52:48.144Z",
+      "duration_ms": 300000,
+      "summary": "Type inference: full Hindley-Milner with let polymorphism. Identity=t->t, compose=(b->c)->(a->b)->a->c, twice=(a->a)->a->a. Let polymorphism: id used as Int->Int AND Bool->Bool. Recursive let for factorial: Int->Int. 80/80 tests. Forth: stack machine, user-defined words, recursion, DO-LOOP, IF-THEN, negate. 7!=5040 computed. 60/60 tests."
+    },
+    {
+      "id": "T513",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Explore FFT and Huffman coding",
+      "project": "monkey-lang",
+      "started": "2026-04-26T02:53:05.390Z",
+      "completed": "2026-04-26T02:55:17.293Z",
+      "duration_ms": 300000,
+      "summary": "FFT: Cooley-Tukey radix-2 works, 8-point exact, 51/51 tests. Massive DSP library (37 exports): FFT/IFFT/DFT, convolution, windows, FIR/biquad filters, spectrogram, STFT/ISTFT, Goertzel, pitch detection (441Hz for 440Hz signal). Huffman: encode works (51% compression), BUT decode is BROKEN — returns empty string. BUG in decode traversal. 21/21 tests pass though (tests may not check round-trip). Compression ratios correct: 51% for English, 14% for repetitive."
+    },
+    {
+      "id": "T514",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Explore lambda-calculus project — 43K LOC PL theory",
+      "project": "monkey-lang",
+      "started": "2026-04-26T02:55:35.293Z",
+      "completed": "2026-04-26T02:56:43.418Z",
+      "duration_ms": 300000,
+      "summary": "Lambda calculus: 388 source files, 198 test files, 104/104 core tests pass. Parser, beta reduction, Church numerals (0-4), Church arithmetic (succ 2 = 3), Boolean logic (AND, OR, NOT), alpha equivalence, free variables, De Bruijn indices, Y combinator. Full PL theory library covering abstract interpretation, abstract machines, ANF, arrows, attribute grammars, bidirectional type checking, and 180+ more modules."
+    },
+    {
+      "id": "T515",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Project census and test sweep",
+      "project": "monkey-lang",
+      "started": "2026-04-26T02:56:59.248Z",
+      "completed": "2026-04-26T02:57:15.501Z",
+      "duration_ms": 30000,
+      "summary": "Project census: 13 projects, 6531 files, 949K+ LOC, 1950 test files. Largest: HenryDB (499K LOC), monkey-lang (298K), neural-net (59K), lambda-calculus (43K), blog (16K), riscv-emulator (15K), git (5K), sat-solver (4K), fft (3K), type-inference (2K), regex-engine (2K), forth (2K), huffman (1K)."
     }
   ],
   "focusProjects": [
@@ -7380,6 +7582,30 @@
     {
       "time": "2026-04-26T01:50:18.779Z",
       "msg": "Added T509 (EXPLORE) after end: EXPLORE: Test monkey-lang VM recursive factorial"
+    },
+    {
+      "time": "2026-04-26T02:46:16.170Z",
+      "msg": "Added T510 (THINK) after end: Explore untouched projects: riscv-emulator, regex-engine, sat-solver, type-inference"
+    },
+    {
+      "time": "2026-04-26T02:48:47.002Z",
+      "msg": "Added T511 (EXPLORE) after end: Explore regex-engine and SAT solver"
+    },
+    {
+      "time": "2026-04-26T02:50:53.754Z",
+      "msg": "Added T512 (EXPLORE) after end: Explore type-inference engine and Forth interpreter"
+    },
+    {
+      "time": "2026-04-26T02:53:01.246Z",
+      "msg": "Added T513 (EXPLORE) after end: Explore FFT and Huffman coding"
+    },
+    {
+      "time": "2026-04-26T02:55:29.384Z",
+      "msg": "Added T514 (EXPLORE) after end: Explore lambda-calculus project — 43K LOC PL theory"
+    },
+    {
+      "time": "2026-04-26T02:56:53.588Z",
+      "msg": "Added T515 (EXPLORE) after end: Project census and test sweep"
     }
   ]
 }

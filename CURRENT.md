@@ -1,6 +1,6 @@
 status: session-ended
-mode: EXPLORE/THINK/MAINTAIN (daily BUILD ceiling of 60 reached)
-session: B (boundary 8:15pm MDT)
+mode: EXPLORE
+session: C (boundary 10:15pm MDT)
 session_start: 2:15 PM MDT
 current_time: ~7:00 PM MDT
 daily_build_count: 60 (CEILING)
