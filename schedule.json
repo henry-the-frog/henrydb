@@ -4327,6 +4327,57 @@
       "status": "upcoming",
       "task": "EXPLORE: Test HenryDB complex 10-table analytics report",
       "project": "henrydb"
+    },
+    {
+      "id": "T419",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test monkey-lang VM trampolining (stack-safe recursion)",
+      "project": "monkey-lang",
+      "started": "2026-04-26T01:38:07.890Z",
+      "completed": "2026-04-26T01:38:13.393Z",
+      "duration_ms": 10000,
+      "summary": "Trampolining: stack-safe recursion via thunks. countDown(10000)→'done'. type()=='CLOSURE' detects thunks. CPS without stack overflow."
+    },
+    {
+      "id": "T420",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test HenryDB window frame EXCLUDE CURRENT ROW",
+      "project": "henrydb",
+      "started": "2026-04-26T01:38:20.300Z",
+      "completed": "2026-04-26T01:38:27.009Z",
+      "duration_ms": 10000,
+      "summary": "EXCLUDE CURRENT ROW: window averaging neighbors only. Row 3: avg(20,40)=30 (excludes 30). SQL:2003 frame exclusion."
+    },
+    {
+      "id": "T421",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test monkey-lang VM lens pattern",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T422",
+      "mode": "EXPLORE",
+      "status": "in-progress",
+      "task": "EXPLORE: Test HenryDB HAVING without GROUP BY",
+      "project": "henrydb",
+      "started": "2026-04-26T01:38:33.700Z"
+    },
+    {
+      "id": "T423",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test monkey-lang VM promise-like async pattern",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T424",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test HenryDB multi-column UNIQUE constraint",
+      "project": "henrydb"
     }
   ],
   "focusProjects": [
@@ -5994,6 +6045,30 @@
     {
       "time": "2026-04-26T01:37:02.482Z",
       "msg": "Added T418 (EXPLORE) after end: EXPLORE: Test HenryDB complex 10-table analytics report"
+    },
+    {
+      "time": "2026-04-26T01:38:00.989Z",
+      "msg": "Added T419 (EXPLORE) after end: EXPLORE: Test monkey-lang VM trampolining (stack-safe recursion)"
+    },
+    {
+      "time": "2026-04-26T01:38:01.116Z",
+      "msg": "Added T420 (EXPLORE) after end: EXPLORE: Test HenryDB window frame EXCLUDE CURRENT ROW"
+    },
+    {
+      "time": "2026-04-26T01:38:01.239Z",
+      "msg": "Added T421 (EXPLORE) after end: EXPLORE: Test monkey-lang VM lens pattern"
+    },
+    {
+      "time": "2026-04-26T01:38:01.361Z",
+      "msg": "Added T422 (EXPLORE) after end: EXPLORE: Test HenryDB HAVING without GROUP BY"
+    },
+    {
+      "time": "2026-04-26T01:38:01.483Z",
+      "msg": "Added T423 (EXPLORE) after end: EXPLORE: Test monkey-lang VM promise-like async pattern"
+    },
+    {
+      "time": "2026-04-26T01:38:01.605Z",
+      "msg": "Added T424 (EXPLORE) after end: EXPLORE: Test HenryDB multi-column UNIQUE constraint"
     }
   ]
 }
