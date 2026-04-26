@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-26T00:13:06.729Z",
+  "generated": "2026-04-26T00:13:47.385Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "EXPLORE: Test HenryDB ALTER TABLE — add/drop columns",
-    "completedAt": "2026-04-26T00:13:06.729Z",
-    "taskId": "T200",
-    "summary": "ALTER TABLE fully works: ADD COLUMN (with DEFAULT), ADD COLUMN (nullable), RENAME COLUMN, DROP COLUMN. All operations preserve existing data correctly. Default values applied to existing rows.",
+    "task": "EXPLORE: Test HenryDB INTERSECT and EXCEPT",
+    "completedAt": "2026-04-26T00:13:47.385Z",
+    "taskId": "T202",
+    "summary": "All set operations correct: UNION (7 unique), INTERSECT ({3,4,5}), EXCEPT ({1,2}), UNION ALL (10 with duplicates). Proper set semantics.",
     "durationMs": 60000
   },
   "schedule": {
@@ -8983,14 +8983,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 196,
+    "blocksCompleted": 197,
     "blocksTotal": 114,
     "modeDistribution": {
       "THINK": 14,
       "PLAN": 31,
       "BUILD": 66,
       "MAINTAIN": 27,
-      "EXPLORE": 58
+      "EXPLORE": 59
     }
   },
   "artifacts": [
