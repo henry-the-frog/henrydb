@@ -114,6 +114,19 @@
 - parseFloat('0') || '0' returns '0' because 0 is falsy — use !isNaN(n) ? n : result
 - Always check opcode value table for collisions before adding new opcodes
 
+### Exploration Results
+- VM performance: ~33 MIPS estimated (vs WASM ~4000 MIPS native)
+- GC: 100K allocations → 6 collections, generational collection works
+- Tail call optimization: mutual recursion 100K deep works (is_even/is_odd)
+- SCCP: basic propagation works, misses phi-constant optimization (SSA builder limitation)
+- Optimizer: 6-10% bytecode reduction on real programs (constant folding is main win)
+- Enum + match expressions, try/catch, closures, modules: all verified working
+
+### Tomorrow's Focus
+1. Runtime method dispatch (OpMethodCall) — design complete in scratch/runtime-dispatch-plan.md
+2. WASM Phase 2: string support (linear memory)
+3. Wire SSA DCE into compilation pipeline
+
 ### Test Counts
-- monkey-lang: 1149 → 1244 (+95)
+- monkey-lang: 1149 → 1245 (+96)
 - HenryDB: ~4310 → 4321 (+11 PL/SQL)
