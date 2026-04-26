@@ -176,10 +176,14 @@
     {
       "id": "T15",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "Implement AST-level DCE pass (unreachable after return + constant branch folding)",
       "plan_ref": "T14",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-26T14:43:08.552Z",
+      "completed": "2026-04-26T14:47:16.813Z",
+      "duration_ms": 600000,
+      "summary": "DCE module enhanced with eliminateDeadCode wrapper. Not wired into compiler (compiler already handles constant folding). Learning: DCE as compiler pre-pass conflicts with compilers own inline handling."
     },
     {
       "id": "T21",
