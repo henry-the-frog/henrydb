@@ -231,9 +231,13 @@
     {
       "id": "T18",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "HenryDB query optimizer: cost model unification across 6 execution engines",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-26T14:53:08.673Z",
+      "completed": "2026-04-26T14:54:17.276Z",
+      "duration_ms": 300000,
+      "summary": "Cost model exploration: 4 engines, only volcano uses PG-style cost model. Adaptive engine uses heuristic thresholds + runtime feedback. Unification gap is real but runtime feedback corrects wrong initial choices. 2/4 hypotheses confirmed."
     }
   ],
   "focusProjects": [
