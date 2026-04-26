@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-26T00:43:44.748Z",
+  "generated": "2026-04-26T00:45:02.633Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "EXPLORE: Test HenryDB multi-table UPDATE and DELETE with JOIN",
-    "completedAt": "2026-04-26T00:43:44.748Z",
-    "taskId": "T241",
-    "summary": "UPDATE SET salary = salary * 1.1 WHERE dept_id = (subquery) works. DELETE WHERE dept_id = (subquery) works. JS float precision artifacts present but results correct.",
+    "task": "EXPLORE: Test HenryDB correlated subqueries",
+    "completedAt": "2026-04-26T00:45:02.633Z",
+    "taskId": "T247",
+    "summary": "Correlated subquery works: WHERE salary > (SELECT AVG(salary) WHERE dept = outer.dept). Correctly identifies employees above their department average.",
     "durationMs": 30000
   },
   "schedule": {
@@ -8983,14 +8983,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 235,
+    "blocksCompleted": 237,
     "blocksTotal": 114,
     "modeDistribution": {
       "THINK": 14,
       "PLAN": 31,
       "BUILD": 66,
       "MAINTAIN": 28,
-      "EXPLORE": 96
+      "EXPLORE": 98
     }
   },
   "artifacts": [
