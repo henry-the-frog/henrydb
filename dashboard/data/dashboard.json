@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-26T15:45:20.126Z",
+  "generated": "2026-04-26T15:50:07.613Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Store class methods as closures on instance hash in _compileClass",
-    "completedAt": "2026-04-26T15:45:20.126Z",
-    "taskId": "T47",
-    "summary": "Class methods now have mangled names (ClassName__method) for collision avoidance + unmangled aliases for dot-dispatch. 1232 tests pass. Dot-dispatch still has last-wins limitation.",
+    "task": "Change parseMethodCall to index-based dispatch + VM builtin fallback",
+    "completedAt": "2026-04-26T15:50:07.613Z",
+    "taskId": "T48",
+    "summary": "Compile-time method dispatch: dot-calls resolve to symbols/builtins at compile time. arr.len() works (builtin), rex.speak() works (class method). Collision still exists for dot-syntax but Cat__speak(cat) works for explicit dispatch. 1232 tests pass.",
     "durationMs": 600000
   },
   "schedule": {
@@ -7970,12 +7970,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 47,
+    "blocksCompleted": 48,
     "blocksTotal": 49,
     "modeDistribution": {
       "THINK": 8,
       "PLAN": 9,
-      "BUILD": 19,
+      "BUILD": 20,
       "MAINTAIN": 7,
       "EXPLORE": 4
     }

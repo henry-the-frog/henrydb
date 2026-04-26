@@ -515,8 +515,12 @@
       "id": "T48",
       "mode": "BUILD",
       "task": "Change parseMethodCall to index-based dispatch + VM builtin fallback",
-      "status": "upcoming",
-      "plan_ref": "T46"
+      "status": "done",
+      "plan_ref": "T46",
+      "started": "2026-04-26T15:45:40.520Z",
+      "completed": "2026-04-26T15:50:07.578Z",
+      "duration_ms": 600000,
+      "summary": "Compile-time method dispatch: dot-calls resolve to symbols/builtins at compile time. arr.len() works (builtin), rex.speak() works (class method). Collision still exists for dot-syntax but Cat__speak(cat) works for explicit dispatch. 1232 tests pass."
     },
     {
       "id": "T49",
