@@ -3217,6 +3217,42 @@
       "completed": "2026-04-26T01:10:21.206Z",
       "duration_ms": 10000,
       "summary": "HAVING with COUNT(*)>=2 AND SUM>150: filters groups by multiple aggregate conditions. All 3 customers pass (all have 2+ orders and >150 total)."
+    },
+    {
+      "id": "T306",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test neural-net DPO (Direct Preference Optimization)",
+      "project": "monkey-lang",
+      "started": "2026-04-26T01:10:56.258Z",
+      "completed": "2026-04-26T01:11:06.309Z",
+      "duration_ms": 20000,
+      "summary": "DPO (Direct Preference Optimization) works. Beta=0.1, computes loss from chosen/rejected/reference logprobs. Rafailov et al. 2023 technique for LLM alignment."
+    },
+    {
+      "id": "T307",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test HenryDB window frame ROWS vs RANGE vs GROUPS semantics",
+      "project": "henrydb"
+    },
+    {
+      "id": "T308",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test monkey-lang VM with prelude performance (simple benchmarks)",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T309",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test HenryDB aggregate FILTER clause",
+      "project": "henrydb",
+      "started": "2026-04-26T01:11:14.202Z",
+      "completed": "2026-04-26T01:11:22.664Z",
+      "duration_ms": 10000,
+      "summary": "Aggregate FILTER clause (SQL:2003): COUNT(*) FILTER(WHERE cat='A')=2, SUM FILTER(WHERE cat='B')=7. Conditional aggregation in single query."
     }
   ],
   "focusProjects": [
@@ -4432,6 +4468,22 @@
     {
       "time": "2026-04-26T01:07:46.962Z",
       "msg": "Added T305 (EXPLORE) after end: EXPLORE: Test HenryDB complex HAVING with aggregation combos"
+    },
+    {
+      "time": "2026-04-26T01:10:46.874Z",
+      "msg": "Added T306 (EXPLORE) after end: EXPLORE: Test neural-net DPO (Direct Preference Optimization)"
+    },
+    {
+      "time": "2026-04-26T01:10:46.995Z",
+      "msg": "Added T307 (EXPLORE) after end: EXPLORE: Test HenryDB window frame ROWS vs RANGE vs GROUPS semantics"
+    },
+    {
+      "time": "2026-04-26T01:10:47.117Z",
+      "msg": "Added T308 (EXPLORE) after end: EXPLORE: Test monkey-lang VM with prelude performance (simple benchmarks)"
+    },
+    {
+      "time": "2026-04-26T01:10:47.238Z",
+      "msg": "Added T309 (EXPLORE) after end: EXPLORE: Test HenryDB aggregate FILTER clause"
     }
   ]
 }

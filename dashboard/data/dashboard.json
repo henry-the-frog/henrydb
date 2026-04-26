@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-26T01:10:21.243Z",
+  "generated": "2026-04-26T01:11:22.700Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "EXPLORE: Test HenryDB complex HAVING with aggregation combos",
-    "completedAt": "2026-04-26T01:10:21.243Z",
-    "taskId": "T305",
-    "summary": "HAVING with COUNT(*)>=2 AND SUM>150: filters groups by multiple aggregate conditions. All 3 customers pass (all have 2+ orders and >150 total).",
+    "task": "EXPLORE: Test HenryDB aggregate FILTER clause",
+    "completedAt": "2026-04-26T01:11:22.700Z",
+    "taskId": "T309",
+    "summary": "Aggregate FILTER clause (SQL:2003): COUNT(*) FILTER(WHERE cat='A')=2, SUM FILTER(WHERE cat='B')=7. Conditional aggregation in single query.",
     "durationMs": 10000
   },
   "schedule": {
@@ -8983,14 +8983,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 281,
+    "blocksCompleted": 283,
     "blocksTotal": 114,
     "modeDistribution": {
       "THINK": 14,
       "PLAN": 31,
       "BUILD": 66,
       "MAINTAIN": 29,
-      "EXPLORE": 141
+      "EXPLORE": 143
     }
   },
   "artifacts": [
