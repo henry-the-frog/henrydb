@@ -3694,6 +3694,85 @@
       "task": "EXPLORE: Test monkey-lang VM rest parameters",
       "project": "monkey-lang",
       "started": "2026-04-26T01:23:57.217Z"
+    },
+    {
+      "id": "T353",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test HenryDB GLOB pattern",
+      "project": "henrydb",
+      "started": "2026-04-26T01:24:20.920Z",
+      "completed": "2026-04-26T01:24:26.730Z",
+      "duration_ms": 10000,
+      "summary": "GLOB pattern: hel* matches hello/help/helm. h?l? matches hello/help/helm. GLOB is case-sensitive (vs LIKE case-insensitive)."
+    },
+    {
+      "id": "T354",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "EXPLORE: Test monkey-lang VM type() builtin",
+      "project": "monkey-lang",
+      "started": "2026-04-26T01:24:33.333Z",
+      "completed": "2026-04-26T01:24:37.804Z",
+      "duration_ms": 10000,
+      "summary": "type() builtin: INTEGER, STRING, BOOLEAN, ARRAY, CLOSURE, NULL, HASH. Runtime type introspection."
+    },
+    {
+      "id": "T355",
+      "mode": "EXPLORE",
+      "status": "in-progress",
+      "task": "EXPLORE: Test HenryDB aggregate SUM/AVG on empty table",
+      "project": "henrydb",
+      "started": "2026-04-26T01:24:42.702Z"
+    },
+    {
+      "id": "T356",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test monkey-lang VM for loop with break/continue",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T357",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test HenryDB correlated scalar subquery",
+      "project": "henrydb"
+    },
+    {
+      "id": "T358",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test monkey-lang VM recursive data structures",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T359",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test HenryDB REPLACE INTO",
+      "project": "henrydb"
+    },
+    {
+      "id": "T360",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test monkey-lang VM sort with custom comparator",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T361",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test HenryDB multi-table DELETE with USING",
+      "project": "henrydb"
+    },
+    {
+      "id": "T362",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "EXPLORE: Test monkey-lang VM string methods comprehensive",
+      "project": "monkey-lang"
     }
   ],
   "focusProjects": [
@@ -5097,6 +5176,46 @@
     {
       "time": "2026-04-26T01:22:55.176Z",
       "msg": "Added T352 (EXPLORE) after end: EXPLORE: Test monkey-lang VM rest parameters"
+    },
+    {
+      "time": "2026-04-26T01:24:13.646Z",
+      "msg": "Added T353 (EXPLORE) after end: EXPLORE: Test HenryDB GLOB pattern"
+    },
+    {
+      "time": "2026-04-26T01:24:13.767Z",
+      "msg": "Added T354 (EXPLORE) after end: EXPLORE: Test monkey-lang VM type() builtin"
+    },
+    {
+      "time": "2026-04-26T01:24:13.889Z",
+      "msg": "Added T355 (EXPLORE) after end: EXPLORE: Test HenryDB aggregate SUM/AVG on empty table"
+    },
+    {
+      "time": "2026-04-26T01:24:14.011Z",
+      "msg": "Added T356 (EXPLORE) after end: EXPLORE: Test monkey-lang VM for loop with break/continue"
+    },
+    {
+      "time": "2026-04-26T01:24:14.132Z",
+      "msg": "Added T357 (EXPLORE) after end: EXPLORE: Test HenryDB correlated scalar subquery"
+    },
+    {
+      "time": "2026-04-26T01:24:14.254Z",
+      "msg": "Added T358 (EXPLORE) after end: EXPLORE: Test monkey-lang VM recursive data structures"
+    },
+    {
+      "time": "2026-04-26T01:24:14.376Z",
+      "msg": "Added T359 (EXPLORE) after end: EXPLORE: Test HenryDB REPLACE INTO"
+    },
+    {
+      "time": "2026-04-26T01:24:14.497Z",
+      "msg": "Added T360 (EXPLORE) after end: EXPLORE: Test monkey-lang VM sort with custom comparator"
+    },
+    {
+      "time": "2026-04-26T01:24:14.619Z",
+      "msg": "Added T361 (EXPLORE) after end: EXPLORE: Test HenryDB multi-table DELETE with USING"
+    },
+    {
+      "time": "2026-04-26T01:24:14.741Z",
+      "msg": "Added T362 (EXPLORE) after end: EXPLORE: Test monkey-lang VM string methods comprehensive"
     }
   ]
 }
