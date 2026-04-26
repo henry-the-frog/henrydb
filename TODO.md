@@ -4,7 +4,6 @@
 (none)
 
 ## Normal
-- HenryDB: Fix COUNT(DISTINCT) bug in multi-join scenarios
 - HenryDB: Wire PL/SQL to procedure handler (854 LOC exists, just needs connection)
 - monkey-lang: WASM Phase 2 (strings, closures, arrays)
 - monkey-lang: Wire SSA DCE analysis into compilation pipeline (currently standalone)
