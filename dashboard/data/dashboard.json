@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-26T01:15:26.783Z",
+  "generated": "2026-04-26T01:16:17.428Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "EXPLORE: Test HenryDB OVER (PARTITION BY a, b ORDER BY c) multi-partition",
-    "completedAt": "2026-04-26T01:15:26.783Z",
-    "taskId": "T319",
-    "summary": "Multi-column PARTITION BY: SUM OVER(region,quarter) and RANK OVER(region) in same query. Both partitions computed correctly.",
+    "task": "EXPLORE: Test HenryDB INSERT OR REPLACE",
+    "completedAt": "2026-04-26T01:16:17.428Z",
+    "taskId": "T321",
+    "summary": "INSERT OR REPLACE: a updated 1→99, c inserted. Same as REPLACE INTO but with INSERT OR syntax.",
     "durationMs": 10000
   },
   "schedule": {
@@ -8983,14 +8983,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 291,
+    "blocksCompleted": 293,
     "blocksTotal": 114,
     "modeDistribution": {
       "THINK": 14,
       "PLAN": 31,
       "BUILD": 66,
       "MAINTAIN": 29,
-      "EXPLORE": 151
+      "EXPLORE": 153
     }
   },
   "artifacts": [
