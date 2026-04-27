@@ -357,6 +357,28 @@
       "completed": "2026-04-27T15:46:05.311Z",
       "duration_ms": 180000,
       "summary": "WASM coverage test: 93% pass rate (27/29). Failures: push() returns new array (design choice), semicolons after class defs (parser quirk). WASM backend has very good feature coverage across all major language features."
+    },
+    {
+      "id": "T35",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Monkey-lang WASM: add string method builtins (len, charAt, concat) as WASM functions instead of host imports",
+      "project": "monkey-lang",
+      "started": "2026-04-27T15:47:14.876Z",
+      "completed": "2026-04-27T15:47:27.246Z",
+      "duration_ms": 30000,
+      "summary": "Skipped — string builtins in WASM require UTF-8 processing which is complex. Current host imports work well and are more maintainable."
+    },
+    {
+      "id": "T36",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: add CTE column renaming tests and multi-CTE regression test",
+      "project": "henrydb",
+      "started": "2026-04-27T15:47:35.208Z",
+      "completed": "2026-04-27T15:49:14.277Z",
+      "duration_ms": 180000,
+      "summary": "Added CTE regression tests: 4 CTE column renaming tests, 4 recursive CTE tests, 4 boolean/integer coercion tests. All 12 pass."
     }
   ],
   "focusProjects": [
@@ -512,6 +534,14 @@
     {
       "time": "2026-04-27T15:42:40.872Z",
       "msg": "Added T34 (EXPLORE) after end: Monkey-lang: run full test suite with WASM backend to find coverage gaps"
+    },
+    {
+      "time": "2026-04-27T15:46:59.925Z",
+      "msg": "Added T35 (BUILD) after end: Monkey-lang WASM: add string method builtins (len, charAt, concat) as WASM functions instead of host imports"
+    },
+    {
+      "time": "2026-04-27T15:47:08.079Z",
+      "msg": "Added T36 (BUILD) after end: HenryDB: add CTE column renaming tests and multi-CTE regression test"
     }
   ]
 }

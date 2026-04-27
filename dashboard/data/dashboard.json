@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-27T15:46:05.345Z",
+  "generated": "2026-04-27T15:49:14.311Z",
   "current": {
     "status": "done",
-    "mode": "EXPLORE",
-    "task": "Monkey-lang: run full test suite with WASM backend to find coverage gaps",
-    "completedAt": "2026-04-27T15:46:05.345Z",
-    "taskId": "T34",
-    "summary": "WASM coverage test: 93% pass rate (27/29). Failures: push() returns new array (design choice), semicolons after class defs (parser quirk). WASM backend has very good feature coverage across all major language features.",
+    "mode": "BUILD",
+    "task": "HenryDB: add CTE column renaming tests and multi-CTE regression test",
+    "completedAt": "2026-04-27T15:49:14.311Z",
+    "taskId": "T36",
+    "summary": "Added CTE regression tests: 4 CTE column renaming tests, 4 recursive CTE tests, 4 boolean/integer coercion tests. All 12 pass.",
     "durationMs": 180000
   },
   "schedule": {
@@ -7744,12 +7744,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 30,
+    "blocksCompleted": 32,
     "blocksTotal": 29,
     "modeDistribution": {
       "THINK": 5,
       "PLAN": 4,
-      "BUILD": 13,
+      "BUILD": 15,
       "MAINTAIN": 4,
       "EXPLORE": 4
     }
