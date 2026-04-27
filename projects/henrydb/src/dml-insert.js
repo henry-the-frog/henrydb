@@ -352,7 +352,16 @@ export function insertSelect(db, ast) {
   return { type: 'OK', message: `${inserted} row(s) inserted`, count: inserted };
 }
 
+const MAX_TRIGGER_DEPTH = 32;
+let _triggerDepth = 0;
+
 export function fireTriggers(db, timing, event, tableName, rowValues, schema, oldRowValues) {
+  _triggerDepth++;
+  if (_triggerDepth > MAX_TRIGGER_DEPTH) {
+    _triggerDepth--;
+    throw new Error(`Trigger recursion depth exceeded (max ${MAX_TRIGGER_DEPTH})`);
+  }
+  try {
   for (const trigger of db.triggers) {
     if (trigger.timing === timing && trigger.event === event && trigger.table === tableName) {
       // UPDATE OF columns check: only fire if at least one specified column changed
@@ -436,6 +445,9 @@ export function fireTriggers(db, timing, event, tableName, rowValues, schema, ol
         throw new Error(`Trigger ${trigger.name} failed: ${e.message}`);
       }
     }
+  }
+  } finally {
+    _triggerDepth--;
   }
 }
 
