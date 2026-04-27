@@ -2042,21 +2042,61 @@
     {
       "id": "T192",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Git push all repos",
-      "started": "2026-04-27T21:56:14.385Z"
+      "started": "2026-04-27T21:56:14.385Z",
+      "completed": "2026-04-27T21:56:46.081Z",
+      "duration_ms": 30000,
+      "summary": "Git push all repos"
     },
     {
       "id": "T193",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Session B evening summary + reflection"
+      "status": "done",
+      "task": "Session B evening summary + reflection",
+      "started": "2026-04-27T21:56:59.386Z",
+      "completed": "2026-04-27T21:57:25.229Z",
+      "duration_ms": 60000,
+      "summary": "Session B assessment: 10 features built, 3 bugs found (1 critical fixed, 1 important logged), 59+ new tests. Projects very mature. Remaining time: focus on Y-combinator bug fix."
     },
     {
       "id": "T194",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Final git push + session end"
+      "status": "done",
+      "task": "Final git push + session end",
+      "started": "2026-04-27T21:57:51.421Z",
+      "completed": "2026-04-27T21:57:51.564Z",
+      "duration_ms": 1000,
+      "summary": "Not closing - continuing to Y-combinator bug"
+    },
+    {
+      "id": "T195",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Deep debug Y-combinator bug: trace closure creation and call_indirect for wrapped closure parameters",
+      "project": "monkey-lang",
+      "started": "2026-04-27T21:58:00.986Z",
+      "completed": "2026-04-27T22:04:09.888Z",
+      "duration_ms": 600000,
+      "summary": "FOUND AND FIXED Y-combinator bug! Root cause: SelfExpression AST node treated self as class keyword everywhere. Fix: check scope binding in SelfExpression handler + capture SelfExpression in _findCaptures. Y-combinator factorial now returns 120 (was 655580). 386/386 WASM tests pass, 0 skipped."
+    },
+    {
+      "id": "T196",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Fix Y-combinator closure parameter capture bug",
+      "project": "monkey-lang",
+      "started": "2026-04-27T22:04:39.283Z",
+      "completed": "2026-04-27T22:04:39.427Z",
+      "duration_ms": 1000,
+      "summary": "Bug already fixed in T195"
+    },
+    {
+      "id": "T197",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Final git push + session close",
+      "started": "2026-04-27T22:04:54.110Z"
     }
   ],
   "focusProjects": [
@@ -2916,6 +2956,18 @@
     {
       "time": "2026-04-27T21:54:21.361Z",
       "msg": "Added T194 (MAINTAIN) after end: Final git push + session end"
+    },
+    {
+      "time": "2026-04-27T21:57:35.234Z",
+      "msg": "Added T195 (EXPLORE) after end: Deep debug Y-combinator bug: trace closure creation and call_indirect for wrapped closure parameters"
+    },
+    {
+      "time": "2026-04-27T21:57:35.351Z",
+      "msg": "Added T196 (BUILD) after end: Fix Y-combinator closure parameter capture bug"
+    },
+    {
+      "time": "2026-04-27T21:57:35.467Z",
+      "msg": "Added T197 (MAINTAIN) after end: Final git push + session close"
     }
   ]
 }

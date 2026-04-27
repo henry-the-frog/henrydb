@@ -1,7 +1,7 @@
 # TODO.md
 
 ## Urgent
-- monkey-lang: WASM Y-combinator bug — closure parameter captured by inner closure returns heap pointer (131108) instead of actual value. Closure env pointer corrupted when passed through multiple HOF layers. (since 2026-04-27)
+(none)
 
 ## Normal
 - HenryDB: Unified cost model across all 4 execution engines
