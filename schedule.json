@@ -114,8 +114,12 @@
       "id": "T22",
       "mode": "BUILD",
       "task": "HenryDB: fix typeof() for string literals and CAST() for string→integer",
-      "status": "upcoming",
-      "plan_ref": "T6"
+      "status": "done",
+      "plan_ref": "T6",
+      "started": "2026-04-27T14:59:09.513Z",
+      "completed": "2026-04-27T14:59:34.438Z",
+      "duration_ms": 60000,
+      "summary": "typeof() and CAST() already work correctly. The earlier test failures were due to using double quotes (SQL identifiers) instead of single quotes (string literals). No code changes needed."
     },
     {
       "id": "T8",

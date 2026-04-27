@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-27T14:58:43.944Z",
+  "generated": "2026-04-27T14:59:34.535Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "HenryDB: fix cross-type comparisons (numeric affinity coercion for = > < operators)",
-    "completedAt": "2026-04-27T14:58:43.944Z",
-    "taskId": "T21",
-    "summary": "Fixed cross-type comparisons: extended numeric affinity coercion from EQ/NE to all comparison operators (LT/GT/LE/GE). Applied to both expression-evaluator and volcano-planner. 10>'9' now correctly returns 1. 94 fuzzer tests pass.",
-    "durationMs": 300000
+    "task": "HenryDB: fix typeof() for string literals and CAST() for string→integer",
+    "completedAt": "2026-04-27T14:59:34.535Z",
+    "taskId": "T22",
+    "summary": "typeof() and CAST() already work correctly. The earlier test failures were due to using double quotes (SQL identifiers) instead of single quotes (string literals). No code changes needed.",
+    "durationMs": 60000
   },
   "schedule": {
     "date": "2026-04-27",
@@ -7635,12 +7635,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 10,
+    "blocksCompleted": 11,
     "blocksTotal": 22,
     "modeDistribution": {
       "THINK": 2,
       "PLAN": 2,
-      "BUILD": 5,
+      "BUILD": 6,
       "MAINTAIN": 1
     }
   },
