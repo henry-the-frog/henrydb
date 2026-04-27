@@ -1,5 +1,6 @@
-// cost-model.js — Parametric cost estimation for volcano operators
+// cost-model.js — Parametric cost estimation for query execution
 // Uses PostgreSQL-style cost parameters for I/O and CPU costs.
+// Supports engine-specific cost estimation (volcano, codegen, vectorized).
 
 // Default cost parameters (configurable via setCostParams)
 let SEQ_PAGE_COST = 1.0;       // sequential page read
@@ -9,6 +10,35 @@ let CPU_INDEX_TUPLE_COST = 0.005; // process one index entry
 let CPU_OPERATOR_COST = 0.0025;   // evaluate one predicate
 let HASH_BUILD_COST = 0.02;      // hash one tuple (build phase)
 let DEFAULT_PAGE_SIZE = 100;      // rows per page (for I/O estimation)
+
+// Engine-specific cost multipliers
+// These model the overhead/efficiency of each execution engine
+const ENGINE_COSTS = {
+  volcano: {
+    // Baseline: per-tuple virtual function calls, iterator protocol overhead
+    cpuMultiplier: 1.0,       // reference point
+    startupCost: 0,           // negligible startup
+    perTupleOverhead: 0.005,  // virtual dispatch per tuple
+    batchSize: 1,             // processes one row at a time
+    description: 'Pull-based iterator model',
+  },
+  codegen: {
+    // Compiled pipeline: eliminates virtual dispatch, tight inner loops
+    cpuMultiplier: 0.2,       // 5x faster CPU work (JIT-compiled tight loops)
+    startupCost: 5.0,         // compilation overhead (proportional to plan complexity)
+    perTupleOverhead: 0.0005, // minimal per-tuple overhead (no virtual dispatch)
+    batchSize: 1,             // still row-at-a-time, but compiled
+    description: 'JIT-compiled pipeline',
+  },
+  vectorized: {
+    // Batch processing: SIMD-friendly, good cache utilization
+    cpuMultiplier: 0.3,       // 3x faster CPU work (batch operations)
+    startupCost: 1.0,         // materialization setup
+    perTupleOverhead: 0.001,  // amortized batch overhead
+    batchSize: 1024,          // processes in batches
+    description: 'Vectorized batch processing',
+  },
+};
 
 /**
  * Set cost model parameters (e.g., from SET commands).
@@ -38,6 +68,63 @@ export function getCostParams() {
  */
 export function estimateCost(root, tableStats = new Map()) {
   return _estimate(root, tableStats);
+}
+
+/**
+ * Estimate cost for all execution engines and return comparative analysis.
+ * 
+ * @param {Iterator} root — root of the iterator tree
+ * @param {Map} [tableStats] — optional table statistics
+ * @returns {object} — { volcano: {cost, rows}, codegen: {cost, rows, compileCost}, vectorized: {cost, rows}, cheapest: string }
+ */
+export function estimateMultiEngineCost(root, tableStats = new Map()) {
+  const baseCost = _estimate(root, tableStats);
+  const results = {};
+  
+  for (const [engine, params] of Object.entries(ENGINE_COSTS)) {
+    const cpuCost = baseCost.cost * params.cpuMultiplier;
+    const tupleOverhead = baseCost.rows * params.perTupleOverhead;
+    const totalCost = params.startupCost + cpuCost + tupleOverhead;
+    
+    results[engine] = {
+      cost: totalCost,
+      rows: baseCost.rows,
+      ioOps: baseCost.ioOps,
+      startupCost: params.startupCost,
+      executionCost: cpuCost + tupleOverhead,
+      description: params.description,
+    };
+  }
+  
+  // Find cheapest engine
+  let cheapest = 'volcano';
+  let cheapestCost = results.volcano.cost;
+  for (const [engine, data] of Object.entries(results)) {
+    if (data.cost < cheapestCost) {
+      cheapest = engine;
+      cheapestCost = data.cost;
+    }
+  }
+  
+  results.cheapest = cheapest;
+  results.baseCost = baseCost;
+  return results;
+}
+
+/**
+ * Get engine cost parameters (for inspection/testing).
+ */
+export function getEngineCosts() {
+  return { ...ENGINE_COSTS };
+}
+
+/**
+ * Override engine cost parameters.
+ */
+export function setEngineCosts(engine, params) {
+  if (ENGINE_COSTS[engine]) {
+    Object.assign(ENGINE_COSTS[engine], params);
+  }
 }
 
 function _estimate(node, stats) {

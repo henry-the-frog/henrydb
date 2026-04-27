@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import { Database } from './db.js';
 import { buildPlan } from './volcano-planner.js';
 import { parse } from './sql.js';
-import { estimateCost, formatCostEstimate, explainWithCost } from './cost-model.js';
+import { estimateCost, formatCostEstimate, explainWithCost, estimateMultiEngineCost, getEngineCosts } from './cost-model.js';
 
 describe('Cost Model', () => {
   let db, tableStats;
@@ -130,5 +130,36 @@ describe('Cost Model', () => {
     );
     assert.ok(est.rows <= 3);
     assert.ok(est.cost > 0);
+  });
+
+  it('multi-engine cost returns all engines', () => {
+    const result = estimateMultiEngineCost(plan('SELECT * FROM users WHERE age > 25'), tableStats);
+    assert.ok(result.volcano);
+    assert.ok(result.codegen);
+    assert.ok(result.vectorized);
+    assert.ok(result.cheapest);
+    assert.ok(['volcano', 'codegen', 'vectorized'].includes(result.cheapest));
+  });
+
+  it('codegen cheaper than volcano for large scans', () => {
+    // For a large table, codegen should be cheaper due to lower CPU multiplier
+    const bigStats = new Map([['users', { rowCount: 10000, avgRowSize: 100 }]]);
+    const result = estimateMultiEngineCost(plan('SELECT * FROM users WHERE age > 25'), bigStats);
+    assert.ok(result.codegen.cost < result.volcano.cost,
+      `codegen (${result.codegen.cost.toFixed(1)}) should be < volcano (${result.volcano.cost.toFixed(1)})`);
+  });
+
+  it('volcano cheapest for tiny tables', () => {
+    // For very small tables, volcano's zero startup cost wins
+    const tinyStats = new Map([['users', { rowCount: 5, avgRowSize: 50 }]]);
+    const result = estimateMultiEngineCost(plan('SELECT * FROM users'), tinyStats);
+    assert.equal(result.cheapest, 'volcano',
+      `Expected volcano but got ${result.cheapest} (v=${result.volcano.cost.toFixed(2)}, c=${result.codegen.cost.toFixed(2)}, vec=${result.vectorized.cost.toFixed(2)})`);
+  });
+
+  it('engine costs are configurable', () => {
+    const original = getEngineCosts();
+    assert.ok(original.volcano);
+    assert.equal(original.volcano.cpuMultiplier, 1.0);
   });
 });
