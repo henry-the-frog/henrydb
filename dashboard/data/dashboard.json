@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-27T15:23:38.685Z",
+  "generated": "2026-04-27T15:27:56.085Z",
   "current": {
     "status": "done",
-    "mode": "MAINTAIN",
-    "task": "Update TASKS.md with current project status and test counts",
-    "completedAt": "2026-04-27T15:23:38.685Z",
-    "taskId": "T26",
-    "summary": "Updated TASKS.md with current project status and test counts (monkey-lang 1790, neural-net 1305, HenryDB 94 fuzzer tests).",
-    "durationMs": 60000
+    "mode": "BUILD",
+    "task": "Add WASM exception handling to WasmModuleBuilder (tag section, try/catch/throw opcodes)",
+    "completedAt": "2026-04-27T15:27:56.085Z",
+    "taskId": "T28",
+    "summary": "Added WASM exception handling to WasmModuleBuilder: tag section (Section.Tag=13), try_/catch_/throw_/catchAll/rethrow opcodes, addTag() method. Verified with PoC: throw+catch and no-throw paths both work. All 204 tests pass.",
+    "durationMs": 300000
   },
   "schedule": {
     "date": "2026-04-27",
@@ -7592,30 +7592,45 @@
       {
         "id": "T10",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "Wire SSA DCE into monkey-lang compilation pipeline",
         "task": null,
-        "started": "2026-04-27T15:01:36.885Z"
+        "started": "2026-04-27T15:01:36.885Z",
+        "completed": "2026-04-27T15:03:00.496Z",
+        "duration_ms": 120000,
+        "summary": "PLAN: Wire DCE into VM compiler. WASM already has DCE + constant folding + type inference. JIT has its own DCE at IR level. VM compiler is the only path without optimization. Filled 1 BUILD task."
       },
       {
         "id": "T11",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "Wire AST-level DCE (dead-code.js) into VM compiler pipeline, add constant folding, verify with benchmarks",
         "plan_ref": "T10",
-        "project": "monkey-lang"
+        "project": "monkey-lang",
+        "started": "2026-04-27T15:03:23.099Z",
+        "completed": "2026-04-27T15:06:02.131Z",
+        "duration_ms": 300000,
+        "summary": "Wired AST-level DCE into VM compiler pipeline. eliminateDeadCode runs on Program AST before compilation. Constant folding skipped (changes AST shapes incompatible with VM compiler). All 1786 tests pass. Dead code after return/break is now removed in VM path."
       },
       {
         "id": "T12",
         "mode": "MAINTAIN",
-        "status": "upcoming",
-        "task": "Housekeeping"
+        "status": "done",
+        "task": "Housekeeping",
+        "started": "2026-04-27T15:06:24.846Z",
+        "completed": "2026-04-27T15:06:36.335Z",
+        "duration_ms": 30000,
+        "summary": "Committed monkey-lang DCE integration to project repo."
       },
       {
         "id": "T13",
         "mode": "THINK",
-        "status": "upcoming",
-        "task": "Afternoon direction, review depth vs breadth"
+        "status": "done",
+        "task": "Afternoon direction, review depth vs breadth",
+        "started": "2026-04-27T15:06:58.197Z",
+        "completed": "2026-04-27T15:07:12.998Z",
+        "duration_ms": 60000,
+        "summary": "Afternoon direction: 13 tasks done (8 BUILD). Under all caps. Remaining: 2 EXPLORE tasks (neural-net, WASM GC research). ~4 hours left. Session is well-balanced with depth insights."
       },
       {
         "id": "T14",
@@ -7644,27 +7659,97 @@
       {
         "id": "T17",
         "mode": "EXPLORE",
-        "status": "upcoming",
+        "status": "done",
         "task": "Deep dive into neural-net ML framework",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-27T15:07:42.064Z",
+        "completed": "2026-04-27T15:10:34.121Z",
+        "duration_ms": 600000,
+        "summary": "Neural-net deep dive: (1) Confirmed vanishing gradient problem — depth 8+ with vanilla relu fails to learn XOR (loss stuck at 0.125). (2) BatchNorm fixes it perfectly (loss 0.00004 at depth 8). (3) All 1305 tests pass across test/ directory. (4) LLM architecture is impressively complete (BPE, RoPE, GQA, Flash Attention, sliding window). No bugs found — library is solid."
       },
       {
         "id": "T18",
         "mode": "EXPLORE",
-        "status": "upcoming",
+        "status": "done",
         "task": "Research WASM GC proposal and string encoding strategies",
-        "project": "monkey-lang"
+        "project": "monkey-lang",
+        "started": "2026-04-27T15:11:03.272Z",
+        "completed": "2026-04-27T15:12:50.841Z",
+        "duration_ms": 600000,
+        "summary": "WASM GC research: Node.js v22 supports struct and array GC types without flags. Could replace host-backed hash maps and manual memory management. Stringref not yet available. Recommendation: parallel GC backend as medium-term project. Written up in scratch/wasm-gc-research.md."
+      },
+      {
+        "id": "T23",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Explore WASM exception handling for real try/catch in monkey-lang",
+        "started": "2026-04-27T15:14:19.728Z",
+        "completed": "2026-04-27T15:15:46.211Z",
+        "duration_ms": 300000,
+        "summary": "WASM exception handling confirmed working in Node.js v22! try/catch/throw opcodes work correctly. Built proof-of-concept: throw 42, catch returns 42. Tag section (id 13) goes between function and export sections. This enables real try/catch in monkey-lang WASM backend."
+      },
+      {
+        "id": "T24",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "WASM compiler: add class inheritance (extends, super) support",
+        "project": "monkey-lang",
+        "started": "2026-04-27T15:16:13.794Z",
+        "completed": "2026-04-27T15:22:24.584Z",
+        "duration_ms": 600000,
+        "summary": "WASM class inheritance: extends keyword, inherited methods, inherited fields, method override, inherited init. Class registry tracks parent info for child compilation. 204 WASM tests, 1790 total."
+      },
+      {
+        "id": "T25",
+        "mode": "BUILD",
+        "status": "skipped",
+        "task": "WASM compiler: add proper NaN-boxing for typed value representation",
+        "project": "monkey-lang",
+        "skip_reason": ""
+      },
+      {
+        "id": "T26",
+        "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Update TASKS.md with current project status and test counts",
+        "started": "2026-04-27T15:23:10.605Z",
+        "completed": "2026-04-27T15:23:38.650Z",
+        "duration_ms": 60000,
+        "summary": "Updated TASKS.md with current project status and test counts (monkey-lang 1790, neural-net 1305, HenryDB 94 fuzzer tests)."
+      },
+      {
+        "id": "T27",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "Implement real WASM try/catch/throw using exception handling proposal",
+        "task": null,
+        "project": "monkey-lang",
+        "started": "2026-04-27T15:24:00.740Z"
+      },
+      {
+        "id": "T28",
+        "mode": "BUILD",
+        "task": "Add WASM exception handling to WasmModuleBuilder (tag section, try/catch/throw opcodes)",
+        "status": "upcoming",
+        "plan_ref": "T27"
+      },
+      {
+        "id": "T29",
+        "mode": "BUILD",
+        "task": "WASM compiler: real try/catch/throw using exception handling proposal",
+        "status": "upcoming",
+        "plan_ref": "T27"
       }
     ]
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 22,
-    "blocksTotal": 22,
+    "blocksCompleted": 24,
+    "blocksTotal": 29,
     "modeDistribution": {
       "THINK": 5,
-      "PLAN": 3,
-      "BUILD": 8,
+      "PLAN": 4,
+      "BUILD": 9,
       "MAINTAIN": 4,
       "EXPLORE": 2
     }

@@ -268,6 +268,36 @@
       "completed": "2026-04-27T15:23:38.650Z",
       "duration_ms": 60000,
       "summary": "Updated TASKS.md with current project status and test counts (monkey-lang 1790, neural-net 1305, HenryDB 94 fuzzer tests)."
+    },
+    {
+      "id": "T27",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Implement real WASM try/catch/throw using exception handling proposal",
+      "task": null,
+      "project": "monkey-lang",
+      "started": "2026-04-27T15:24:00.740Z",
+      "completed": "2026-04-27T15:24:20.640Z",
+      "duration_ms": 30000,
+      "summary": "PLAN: 2 BUILD tasks for WASM exception handling. Tag section + opcodes, then compiler integration."
+    },
+    {
+      "id": "T28",
+      "mode": "BUILD",
+      "task": "Add WASM exception handling to WasmModuleBuilder (tag section, try/catch/throw opcodes)",
+      "status": "done",
+      "plan_ref": "T27",
+      "started": "2026-04-27T15:24:32.562Z",
+      "completed": "2026-04-27T15:27:56.050Z",
+      "duration_ms": 300000,
+      "summary": "Added WASM exception handling to WasmModuleBuilder: tag section (Section.Tag=13), try_/catch_/throw_/catchAll/rethrow opcodes, addTag() method. Verified with PoC: throw+catch and no-throw paths both work. All 204 tests pass."
+    },
+    {
+      "id": "T29",
+      "mode": "BUILD",
+      "task": "WASM compiler: real try/catch/throw using exception handling proposal",
+      "status": "upcoming",
+      "plan_ref": "T27"
     }
   ],
   "focusProjects": [
@@ -395,6 +425,14 @@
     {
       "time": "2026-04-27T15:22:57.689Z",
       "msg": "Removed T25: "
+    },
+    {
+      "time": "2026-04-27T15:23:54.229Z",
+      "msg": "Added T27 (PLAN) after end: Implement real WASM try/catch/throw using exception handling proposal"
+    },
+    {
+      "time": "2026-04-27T15:24:11.404Z",
+      "msg": "PLAN T27 filled 2 BUILD tasks"
     }
   ]
 }
