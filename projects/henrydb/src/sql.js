@@ -98,6 +98,22 @@ export function tokenize(sql) {
       // Not a dollar-quote — fall through to operator handling
     }
 
+    // Blob literal: X'hex...' or x'hex...'
+    if ((src[i] === 'X' || src[i] === 'x') && i + 1 < src.length && src[i + 1] === "'") {
+      i += 2; // skip X'
+      let hex = '';
+      while (i < src.length && src[i] !== "'") {
+        hex += src[i++];
+      }
+      if (i >= src.length) throw new Error('Unterminated blob literal');
+      i++; // closing quote
+      if (hex.length % 2 !== 0 || !/^[0-9a-fA-F]*$/.test(hex)) {
+        throw new Error('Invalid blob literal: odd length or non-hex characters');
+      }
+      tokens.push({ type: 'BLOB_LITERAL', value: hex });
+      continue;
+    }
+
     // String literal
     if (src[i] === "'") {
       i++;
@@ -2242,6 +2258,7 @@ export function parse(sql) {
     }
     if (t.type === 'NUMBER') { advance(); return { type: 'literal', value: t.value, isFloat: t.isFloat || false }; }
     if (t.type === 'STRING') { advance(); return { type: 'literal', value: t.value }; }
+    if (t.type === 'BLOB_LITERAL') { advance(); return { type: 'literal', value: Buffer.from(t.value, 'hex') }; }
     if (t.type === 'PARAM') { advance(); return { type: 'PARAM', index: t.index }; }
     // ARRAY[...] literal
     if (t.type === 'IDENT' && t.value.toUpperCase() === 'ARRAY') {

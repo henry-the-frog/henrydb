@@ -1077,10 +1077,21 @@
     {
       "id": "T104",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: add zeroblob(), unicode(), char(), hex(), unhex() functions",
       "project": "henrydb",
-      "started": "2026-04-27T18:57:56.433Z"
+      "started": "2026-04-27T18:57:56.433Z",
+      "completed": "2026-04-27T18:59:22.653Z",
+      "duration_ms": 180000,
+      "summary": "Added 8 SQLite-compatible scalar functions: zeroblob, unicode, char, hex, unhex, typeof, quote, likely/unlikely. 14/15 edge case tests pass (1 failure is X-literal parsing, not function). 33 regression, 323/323 compliance."
+    },
+    {
+      "id": "T105",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "HenryDB: add X'...' blob literal parsing + improve CAST for blob types",
+      "project": "henrydb",
+      "started": "2026-04-27T18:59:47.016Z"
     }
   ],
   "focusProjects": [
@@ -1540,6 +1551,10 @@
     {
       "time": "2026-04-27T18:57:48.400Z",
       "msg": "Added T104 (BUILD) after end: HenryDB: add zeroblob(), unicode(), char(), hex(), unhex() functions"
+    },
+    {
+      "time": "2026-04-27T18:59:41.559Z",
+      "msg": "Added T105 (BUILD) after end: HenryDB: add X'...' blob literal parsing + improve CAST for blob types"
     }
   ]
 }
