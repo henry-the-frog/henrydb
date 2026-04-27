@@ -606,6 +606,17 @@
       "completed": "2026-04-27T16:47:08.401Z",
       "duration_ms": 300000,
       "summary": "Added 5 JSON scalar functions: json_extract (JSONPath), json_array_length, json_type, json_valid, json (minify). All work correctly. 117 regression tests pass."
+    },
+    {
+      "id": "T58",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: add json_group_array() and json_group_object() aggregate functions",
+      "project": "henrydb",
+      "started": "2026-04-27T16:48:11.058Z",
+      "completed": "2026-04-27T16:49:54.066Z",
+      "duration_ms": 300000,
+      "summary": "Added json_group_array() and json_group_object() aggregate functions. Both work in legacy and volcano paths with GROUP BY. All regression tests pass."
     }
   ],
   "focusProjects": [
@@ -857,6 +868,10 @@
     {
       "time": "2026-04-27T16:45:38.126Z",
       "msg": "Added T57 (BUILD) after end: HenryDB: add json_extract() scalar function for JSON path access"
+    },
+    {
+      "time": "2026-04-27T16:48:05.360Z",
+      "msg": "Added T58 (BUILD) after end: HenryDB: add json_group_array() and json_group_object() aggregate functions"
     }
   ]
 }

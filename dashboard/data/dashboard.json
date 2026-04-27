@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-27T16:47:08.435Z",
+  "generated": "2026-04-27T16:49:54.101Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "HenryDB: add json_extract() scalar function for JSON path access",
-    "completedAt": "2026-04-27T16:47:08.435Z",
-    "taskId": "T57",
-    "summary": "Added 5 JSON scalar functions: json_extract (JSONPath), json_array_length, json_type, json_valid, json (minify). All work correctly. 117 regression tests pass.",
+    "task": "HenryDB: add json_group_array() and json_group_object() aggregate functions",
+    "completedAt": "2026-04-27T16:49:54.101Z",
+    "taskId": "T58",
+    "summary": "Added json_group_array() and json_group_object() aggregate functions. Both work in legacy and volcano paths with GROUP BY. All regression tests pass.",
     "durationMs": 300000
   },
   "schedule": {
@@ -7744,12 +7744,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 52,
+    "blocksCompleted": 53,
     "blocksTotal": 29,
     "modeDistribution": {
       "THINK": 10,
       "PLAN": 4,
-      "BUILD": 28,
+      "BUILD": 29,
       "MAINTAIN": 4,
       "EXPLORE": 6
     }
