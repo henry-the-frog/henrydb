@@ -254,15 +254,20 @@
     {
       "id": "T25",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "skipped",
       "task": "WASM compiler: add proper NaN-boxing for typed value representation",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "skip_reason": ""
     },
     {
       "id": "T26",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Update TASKS.md with current project status and test counts"
+      "status": "done",
+      "task": "Update TASKS.md with current project status and test counts",
+      "started": "2026-04-27T15:23:10.605Z",
+      "completed": "2026-04-27T15:23:38.650Z",
+      "duration_ms": 60000,
+      "summary": "Updated TASKS.md with current project status and test counts (monkey-lang 1790, neural-net 1305, HenryDB 94 fuzzer tests)."
     }
   ],
   "focusProjects": [
@@ -386,6 +391,10 @@
     {
       "time": "2026-04-27T15:14:09.879Z",
       "msg": "Added T26 (MAINTAIN) after end: Update TASKS.md with current project status and test counts"
+    },
+    {
+      "time": "2026-04-27T15:22:57.689Z",
+      "msg": "Removed T25: "
     }
   ]
 }
