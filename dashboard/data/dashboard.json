@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-27T16:51:17.173Z",
+  "generated": "2026-04-27T16:52:44.375Z",
   "current": {
     "status": "done",
-    "mode": "MAINTAIN",
-    "task": "Final session A housekeeping: update TASKS.md, package descriptions, git push all repos",
-    "completedAt": "2026-04-27T16:51:17.173Z",
-    "taskId": "T59",
-    "summary": "Final housekeeping: updated TASKS.md, package descriptions, all repos committed.",
-    "durationMs": 60000
+    "mode": "BUILD",
+    "task": "HenryDB: add json_set() and json_replace() functions for JSON mutation",
+    "completedAt": "2026-04-27T16:52:44.375Z",
+    "taskId": "T60",
+    "summary": "Added json_set(), json_replace(), json_insert(), json_remove() functions. Full SQLite JSON1 extension compatibility (except json_tree and json_patch). All regression tests pass.",
+    "durationMs": 300000
   },
   "schedule": {
     "date": "2026-04-27",
@@ -7744,12 +7744,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 54,
+    "blocksCompleted": 55,
     "blocksTotal": 29,
     "modeDistribution": {
       "THINK": 10,
       "PLAN": 4,
-      "BUILD": 29,
+      "BUILD": 30,
       "MAINTAIN": 5,
       "EXPLORE": 6
     }

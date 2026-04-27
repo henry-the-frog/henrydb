@@ -25,6 +25,39 @@ function sqlCmp(left, right, op) {
   }
 }
 
+// Helper: set a value at a JSON path
+function _jsonSetPath(data, path, value, createMissing) {
+  const parts = path.replace(/^\$\.?/, '').split(/\.|\[(\d+)\]/).filter(Boolean);
+  if (parts.length === 0) return value;
+  
+  let current = data;
+  for (let i = 0; i < parts.length - 1; i++) {
+    const idx = Number(parts[i]);
+    const next = !isNaN(idx) && Array.isArray(current) ? current[idx] : current[parts[i]];
+    if (next === undefined || next === null) {
+      if (!createMissing) return data;
+      // Create intermediate object/array
+      const nextPart = parts[i + 1];
+      const nextIsIdx = !isNaN(Number(nextPart));
+      const newNode = nextIsIdx ? [] : {};
+      if (!isNaN(idx) && Array.isArray(current)) current[idx] = newNode;
+      else current[parts[i]] = newNode;
+      current = newNode;
+    } else {
+      current = next;
+    }
+  }
+  
+  const lastPart = parts[parts.length - 1];
+  const lastIdx = Number(lastPart);
+  if (!isNaN(lastIdx) && Array.isArray(current)) {
+    if (current[lastIdx] !== undefined || createMissing) current[lastIdx] = value;
+  } else {
+    if (current[lastPart] !== undefined || createMissing) current[lastPart] = value;
+  }
+  return data;
+}
+
 /**
  * Install expression evaluation methods on Database.prototype.
  * @param {Function} Database - The Database class

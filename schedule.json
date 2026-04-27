@@ -627,6 +627,17 @@
       "completed": "2026-04-27T16:51:17.138Z",
       "duration_ms": 60000,
       "summary": "Final housekeeping: updated TASKS.md, package descriptions, all repos committed."
+    },
+    {
+      "id": "T60",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: add json_set() and json_replace() functions for JSON mutation",
+      "project": "henrydb",
+      "started": "2026-04-27T16:51:44.633Z",
+      "completed": "2026-04-27T16:52:44.340Z",
+      "duration_ms": 300000,
+      "summary": "Added json_set(), json_replace(), json_insert(), json_remove() functions. Full SQLite JSON1 extension compatibility (except json_tree and json_patch). All regression tests pass."
     }
   ],
   "focusProjects": [
@@ -886,6 +897,10 @@
     {
       "time": "2026-04-27T16:50:29.265Z",
       "msg": "Added T59 (MAINTAIN) after end: Final session A housekeeping: update TASKS.md, package descriptions, git push all repos"
+    },
+    {
+      "time": "2026-04-27T16:51:36.823Z",
+      "msg": "Added T60 (BUILD) after end: HenryDB: add json_set() and json_replace() functions for JSON mutation"
     }
   ]
 }
