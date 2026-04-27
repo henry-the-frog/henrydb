@@ -3070,7 +3070,11 @@ export function parse(sql) {
           else if (tok.type === 'PLUS') whenTokens.push('+');
           else if (tok.type === 'MINUS') whenTokens.push('-');
           else if (tok.type === '*') whenTokens.push('*');
-          else if (['(', ')', ','].includes(tok.type)) whenTokens.push(tok.type);
+          else if (tok.type === 'CONCAT_OP' || tok.type === 'CONCAT') whenTokens.push('||');
+          else if (tok.type === 'AND') whenTokens.push('AND');
+          else if (tok.type === 'OR') whenTokens.push('OR');
+          else if (tok.type === 'NOT') whenTokens.push('NOT');
+          else if (['(', ')', ',', '.'].includes(tok.type)) whenTokens.push(tok.type);
           else whenTokens.push(tok.value || tok.type);
         }
         whenClause = whenTokens.join(' ');
@@ -3087,6 +3091,15 @@ export function parse(sql) {
         else if (tok.type === 'PLUS') bodyTokens.push('+');
         else if (tok.type === 'MINUS') bodyTokens.push('-');
         else if (tok.type === '*') bodyTokens.push('*');
+        else if (tok.type === 'SLASH') bodyTokens.push('/');
+        else if (tok.type === 'MOD') bodyTokens.push('%');
+        else if (tok.type === 'CONCAT_OP' || tok.type === 'CONCAT') bodyTokens.push('||');
+        else if (tok.type === 'LT') bodyTokens.push('<');
+        else if (tok.type === 'GT') bodyTokens.push('>');
+        else if (tok.type === 'LTE') bodyTokens.push('<=');
+        else if (tok.type === 'GTE') bodyTokens.push('>=');
+        else if (tok.type === 'NEQ' || tok.type === '<>') bodyTokens.push('<>');
+        else if (tok.type === '.') bodyTokens.push('.');
         else bodyTokens.push(tok.value || tok.type);
       }
       return { type: 'CREATE_TRIGGER', name, timing, event, table, columns, whenClause, bodySql: bodyTokens.join(' ') };
