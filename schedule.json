@@ -931,9 +931,12 @@
     {
       "id": "T89",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Final cleanup: daily log, git push, CURRENT.md",
-      "started": "2026-04-27T19:02:49.141Z"
+      "started": "2026-04-27T19:02:49.141Z",
+      "completed": "2026-04-27T19:04:32.799Z",
+      "duration_ms": 120000,
+      "summary": "Daily log updated, TASKS.md and TODO.md cleaned up, all changes committed and pushed."
     },
     {
       "id": "T90",
@@ -1072,8 +1075,9 @@
     {
       "id": "T103",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Update daily log, TASKS.md, push all changes"
+      "status": "in-progress",
+      "task": "Update daily log, TASKS.md, push all changes",
+      "started": "2026-04-27T19:10:29.882Z"
     },
     {
       "id": "T104",
@@ -1106,6 +1110,16 @@
       "completed": "2026-04-27T19:02:28.819Z",
       "duration_ms": 120000,
       "summary": "DEPTH PIVOT: Full test sweep of monkey-lang: 1850/1854 pass (1 pre-existing GC failure, 3 skipped). Full HenryDB regression: 33/33 pass, 323/323 compliance. All changes from this session are clean."
+    },
+    {
+      "id": "T107",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Deep analysis: nested closure capture bug — trace WASM binary output",
+      "started": "2026-04-27T19:04:56.413Z",
+      "completed": "2026-04-27T19:09:47.146Z",
+      "duration_ms": 600000,
+      "summary": "Deep analysis of nested closure bug. Root cause: _hasFreeVariables stopped at nested functions (fixed to walk into them). But the core issue persists — puts in middle function produces no output when a nested function literal is the last expression. The code generation looks correct on paper (correct body references, correct scope restoration). Likely a WASM binary encoding issue where instructions end up in wrong function body. Need WASM disassembler to confirm. Key finding: the outer function is compiled as a direct function (no env_ptr) which changes the local index layout."
     }
   ],
   "focusProjects": [
@@ -1573,6 +1587,10 @@
     {
       "time": "2026-04-27T19:01:53.657Z",
       "msg": "Added T106 (MAINTAIN) after end: DEPTH PIVOT: full test sweep of both projects + depth review"
+    },
+    {
+      "time": "2026-04-27T19:04:46.424Z",
+      "msg": "Added T107 (THINK) after end: Deep analysis: nested closure capture bug — trace WASM binary output"
     }
   ]
 }
