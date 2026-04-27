@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-27T15:54:44.250Z",
+  "generated": "2026-04-27T15:57:54.437Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Monkey-lang: add WASM backend to REPL (:wasm command to toggle) for interactive comparison",
-    "completedAt": "2026-04-27T15:54:44.250Z",
-    "taskId": "T39",
-    "summary": "Already implemented! REPL supports :engine wasm and --wasm CLI flag. Full WASM execution path exists with async handling.",
-    "durationMs": 30000
+    "task": "Monkey-lang: WASM compiler type inference integration — use type info to bypass __add for known-integer additions",
+    "completedAt": "2026-04-27T15:57:54.437Z",
+    "taskId": "T40",
+    "summary": "MASSIVE perf improvement! Type inference for variable bindings: let x = 5 marks x as knownInt, bypasses __add host calls. Results: WASM vs VM 36.7x (was 4.7x), WASM vs JIT 12.0x (was 2.5x). WASM now beats Transpiler on 4/10 benchmarks including sum 10k (0.07ms vs 0.13ms).",
+    "durationMs": 300000
   },
   "schedule": {
     "date": "2026-04-27",
@@ -7744,12 +7744,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 35,
+    "blocksCompleted": 36,
     "blocksTotal": 29,
     "modeDistribution": {
       "THINK": 6,
       "PLAN": 4,
-      "BUILD": 17,
+      "BUILD": 18,
       "MAINTAIN": 4,
       "EXPLORE": 4
     }
