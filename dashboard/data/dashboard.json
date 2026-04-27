@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-27T16:22:04.672Z",
+  "generated": "2026-04-27T16:24:09.577Z",
   "current": {
     "status": "done",
-    "mode": "BUILD",
-    "task": "WASM: optimize comparison operators — use direct i32_lt_s/i32_gt_s when both operands are knownInt instead of calling __lt/__gt",
-    "completedAt": "2026-04-27T16:22:04.672Z",
-    "taskId": "T48",
-    "summary": "Added stats tracking for comparison operators. Comparisons already used direct i32 when knownInt. fib now shows 75% direct (3 direct, 1 residual host call — likely edge case). No code changes needed, only stats tracking.",
+    "mode": "EXPLORE",
+    "task": "Monkey-lang: stress test WASM backend with complex programs — classes + closures + recursion + comprehensions combined",
+    "completedAt": "2026-04-27T16:24:09.577Z",
+    "taskId": "T49",
+    "summary": "WASM stress test: 5/6 complex programs pass (class+methods, closure+class, HOF+map, hash+comprehension, try/catch+throw). Only failure: match guard syntax (parser issue). Backend handles combined features well.",
     "durationMs": 300000
   },
   "schedule": {
@@ -7744,14 +7744,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 44,
+    "blocksCompleted": 45,
     "blocksTotal": 29,
     "modeDistribution": {
       "THINK": 9,
       "PLAN": 4,
       "BUILD": 23,
       "MAINTAIN": 4,
-      "EXPLORE": 4
+      "EXPLORE": 5
     }
   },
   "artifacts": [],

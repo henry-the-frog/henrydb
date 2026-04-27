@@ -510,6 +510,17 @@
       "completed": "2026-04-27T16:22:04.636Z",
       "duration_ms": 300000,
       "summary": "Added stats tracking for comparison operators. Comparisons already used direct i32 when knownInt. fib now shows 75% direct (3 direct, 1 residual host call — likely edge case). No code changes needed, only stats tracking."
+    },
+    {
+      "id": "T49",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Monkey-lang: stress test WASM backend with complex programs — classes + closures + recursion + comprehensions combined",
+      "project": "monkey-lang",
+      "started": "2026-04-27T16:23:21.748Z",
+      "completed": "2026-04-27T16:24:09.542Z",
+      "duration_ms": 300000,
+      "summary": "WASM stress test: 5/6 complex programs pass (class+methods, closure+class, HOF+map, hash+comprehension, try/catch+throw). Only failure: match guard syntax (parser issue). Backend handles combined features well."
     }
   ],
   "focusProjects": [
@@ -721,6 +732,10 @@
     {
       "time": "2026-04-27T16:19:05.586Z",
       "msg": "Added T48 (BUILD) after end: WASM: optimize comparison operators — use direct i32_lt_s/i32_gt_s when both operands are knownInt instead of calling __lt/__gt"
+    },
+    {
+      "time": "2026-04-27T16:23:16.551Z",
+      "msg": "Added T49 (EXPLORE) after end: Monkey-lang: stress test WASM backend with complex programs — classes + closures + recursion + comprehensions combined"
     }
   ]
 }
