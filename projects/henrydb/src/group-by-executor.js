@@ -249,7 +249,8 @@ export function selectWithGroupBy(db, ast, rows) {
           return strs.length ? strs.join(sep) : null;
         }
         case 'JSON_AGG':
-        case 'JSONB_AGG': {
+        case 'JSONB_AGG':
+        case 'JSON_GROUP_ARRAY': {
           const vals = distinct ? [...new Set(values)] : values;
           const parsed = vals.map(v => {
             if (typeof v === 'string') {

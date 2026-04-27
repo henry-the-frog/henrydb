@@ -1181,10 +1181,21 @@
     {
       "id": "T113",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: fix WHERE clause for no-FROM SELECTs (SELECT 1 WHERE 0 should return 0 rows)",
       "project": "henrydb",
-      "started": "2026-04-27T19:27:57.007Z"
+      "started": "2026-04-27T19:27:57.007Z",
+      "completed": "2026-04-27T19:28:53.769Z",
+      "duration_ms": 120000,
+      "summary": "Fixed WHERE for no-FROM SELECTs. SELECT 1 WHERE 0 now returns empty. count(*) FROM (SELECT 1 WHERE 0) returns 0. 33 regression, 323/323 compliance."
+    },
+    {
+      "id": "T114",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "HenryDB: add json_group_array() and json_group_object() aggregate functions",
+      "project": "henrydb",
+      "started": "2026-04-27T19:29:20.565Z"
     }
   ],
   "focusProjects": [
@@ -1680,6 +1691,10 @@
     {
       "time": "2026-04-27T19:27:51.760Z",
       "msg": "Added T113 (BUILD) after end: HenryDB: fix WHERE clause for no-FROM SELECTs (SELECT 1 WHERE 0 should return 0 rows)"
+    },
+    {
+      "time": "2026-04-27T19:29:08.744Z",
+      "msg": "Added T114 (BUILD) after end: HenryDB: add json_group_array() and json_group_object() aggregate functions"
     }
   ]
 }

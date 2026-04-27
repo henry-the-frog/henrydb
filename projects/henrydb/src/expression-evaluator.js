@@ -400,7 +400,7 @@ P._exprContainsAggregate = function(expr) {
   return exprContains(expr, n => {
     if (n.type === 'aggregate_expr') return true;
     if ((n.type === 'function_call' || n.type === 'function') && 
-        ['SUM', 'COUNT', 'AVG', 'MIN', 'MAX', 'BOOL_AND', 'BOOL_OR', 'EVERY', 'GROUP_CONCAT', 'STRING_AGG', 'JSON_AGG', 'JSONB_AGG', 'ARRAY_AGG'].includes(n.func?.toUpperCase())) return true;
+        ['SUM', 'COUNT', 'AVG', 'MIN', 'MAX', 'BOOL_AND', 'BOOL_OR', 'EVERY', 'GROUP_CONCAT', 'STRING_AGG', 'JSON_AGG', 'JSONB_AGG', 'ARRAY_AGG', 'JSON_GROUP_ARRAY', 'JSON_GROUP_OBJECT'].includes(n.func?.toUpperCase())) return true;
     return false;
   });
 }
@@ -1139,7 +1139,8 @@ P._computeAggregates = function(columns, rows) {
         break;
       }
       case 'JSON_AGG':
-      case 'JSONB_AGG': {
+      case 'JSONB_AGG':
+      case 'JSON_GROUP_ARRAY': {
         const vals = col.distinct ? [...new Set(values)] : values;
         // Try to parse string values as JSON to avoid double-encoding
         const parsed = vals.map(v => {
@@ -1149,6 +1150,18 @@ P._computeAggregates = function(columns, rows) {
           return v;
         });
         result[name] = JSON.stringify(parsed);
+        break;
+      }
+      case 'JSON_GROUP_OBJECT': {
+        // json_group_object(key, value) — needs 2 arguments but aggregator only tracks single column
+        // For now, collect as key-value pairs from odd/even positions
+        const obj = {};
+        for (let i = 0; i < values.length; i += 2) {
+          const k = String(values[i] ?? '');
+          const v = i + 1 < values.length ? values[i + 1] : null;
+          obj[k] = v;
+        }
+        result[name] = JSON.stringify(obj);
         break;
       }
       case 'ARRAY_AGG': {
