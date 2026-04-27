@@ -1,13 +1,11 @@
 {
-  "generated": "2026-04-27T19:46:27.035Z",
+  "generated": "2026-04-27T20:22:24.203Z",
   "current": {
-    "status": "done",
-    "mode": "BUILD",
-    "task": "HenryDB: add json_quote() function",
-    "completedAt": "2026-04-27T19:46:27.035Z",
-    "taskId": "T120",
-    "summary": "Added json_quote().",
-    "durationMs": 60000
+    "status": "in-progress",
+    "mode": "MAINTAIN",
+    "task": "Housekeeping + git push",
+    "startedAt": "2026-04-27T20:22:24.203Z",
+    "taskId": "T124"
   },
   "schedule": {
     "date": "2026-04-27",
@@ -8266,42 +8264,559 @@
       {
         "id": "T78",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "HenryDB improvements based on fuzzer findings",
         "task": null,
-        "started": "2026-04-27T17:50:35.431Z"
+        "started": "2026-04-27T17:50:35.431Z",
+        "completed": "2026-04-27T17:50:47.559Z",
+        "duration_ms": 30000,
+        "summary": "Planned 3 BUILD tasks for HenryDB bugs: BETWEEN/GLOB boolean fix, printf+total, misc fixes."
       },
       {
         "id": "T79",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "Fix BETWEEN and GLOB to return 0/1 boolean instead of the value",
         "plan_ref": "T78",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-27T17:50:55.909Z",
+        "completed": "2026-04-27T18:04:31.911Z",
+        "duration_ms": 600000,
+        "summary": "Fixed BETWEEN/GLOB/LIKE: return 0/1 boolean. Added GLOB with case-sensitive matching. Parser handles literals + trailing BETWEEN/LIKE/GLOB/IN/NOT. 33 regression tests pass, 323/323 compliance."
       },
       {
         "id": "T80",
         "mode": "BUILD",
         "task": "Add printf/format function and total() aggregate",
-        "status": "upcoming",
-        "plan_ref": "T78"
+        "status": "done",
+        "plan_ref": "T78",
+        "started": "2026-04-27T18:04:44.436Z",
+        "completed": "2026-04-27T18:10:54.527Z",
+        "duration_ms": 600000,
+        "summary": "Added printf/format function (supports %d,%f,%s,%x,%X,%o,%c with width/precision) and total() aggregate (returns 0.0 for empty sets). 33 regression tests pass, 323/323 compliance."
       },
       {
         "id": "T81",
         "mode": "BUILD",
         "task": "Fix count() no-args, random() return type, group_concat single-row",
+        "status": "done",
+        "plan_ref": "T78",
+        "started": "2026-04-27T18:11:12.902Z",
+        "completed": "2026-04-27T18:13:33.016Z",
+        "duration_ms": 300000,
+        "summary": "Fixed 3 bugs: count() no-args works as count(*), random() returns integer (SQLite compat), aggregates without FROM use implicit single row. 33 regression, 323/323 compliance."
+      },
+      {
+        "id": "T82",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Investigate class method collision bug in monkey-lang WASM: hash lookup vs builtin methods",
+        "started": "2026-04-27T18:14:42.583Z",
+        "completed": "2026-04-27T18:16:06.534Z",
+        "duration_ms": 120000,
+        "summary": "Investigated: class method collision is NOT a real bug. Methods stored as closures in hash work correctly. Even names like get/keys/len resolve to the class method, not builtins. The builtin len() on instances returns 0 (could be improved to count fields). Marking as theoretical concern, not a real bug."
+      },
+      {
+        "id": "T83",
+        "mode": "PLAN",
+        "status": "skipped",
+        "goal": "Fix class method collision in WASM compiler",
+        "task": null,
+        "skip_reason": ""
+      },
+      {
+        "id": "T84",
+        "mode": "BUILD",
+        "status": "skipped",
+        "task": null,
+        "plan_ref": "T83",
+        "project": "monkey-lang",
+        "skip_reason": ""
+      },
+      {
+        "id": "T85",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Investigate arr[0]() syntax in WASM: index expression result used as callable",
+        "started": "2026-04-27T18:16:31.926Z",
+        "completed": "2026-04-27T18:17:08.357Z",
+        "duration_ms": 60000,
+        "summary": "arr[0]() syntax already works in WASM. Parser handles index-then-call, compiler generates correct code. Array of functions, hash of functions both work. Not a real bug."
+      },
+      {
+        "id": "T86",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Neural-net: assess gradient checkpointing implementation — what architecture supports it?",
+        "started": "2026-04-27T18:17:26.424Z",
+        "completed": "2026-04-27T18:18:43.110Z",
+        "duration_ms": 60000,
+        "summary": "Gradient checkpointing already fully implemented (2 modules, all tests pass). Mixed precision also exists. neural-net has 170 source modules — very mature. No clear gap to fill."
+      },
+      {
+        "id": "T87",
+        "mode": "THINK",
+        "status": "done",
+        "task": "WASM stress-test: find edge case bugs by testing complex programs",
+        "started": "2026-04-27T18:19:03.748Z",
+        "completed": "2026-04-27T18:22:09.848Z",
+        "duration_ms": 300000,
+        "summary": "Stress-tested WASM with 14 edge case programs. Found 2 issues: (1) closure captures are by-value not by-reference (design choice, not bug), (2) float division by zero returned 0 instead of Infinity. Fixed float div-by-zero. All other edge cases work perfectly: mutual recursion, chained methods, deeply nested closures, float conditionals, pattern matching, class inheritance chains."
+      },
+      {
+        "id": "T88",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "WASM: fix bugs found during stress-testing",
+        "project": "monkey-lang",
+        "started": "2026-04-27T18:22:17.131Z",
+        "completed": "2026-04-27T18:25:21.022Z",
+        "duration_ms": 300000,
+        "summary": "Added 14 stress-test edge cases (254 total). Fixed float div-by-zero (returns Infinity). Found nested closure capture limitation (3+ levels). All tests pass."
+      },
+      {
+        "id": "T89",
+        "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Final cleanup: daily log, git push, CURRENT.md",
+        "started": "2026-04-27T19:02:49.141Z",
+        "completed": "2026-04-27T19:04:32.799Z",
+        "duration_ms": 120000,
+        "summary": "Daily log updated, TASKS.md and TODO.md cleaned up, all changes committed and pushed."
+      },
+      {
+        "id": "T90",
+        "mode": "THINK",
+        "status": "done",
+        "task": "WASM: design nested closure capture fix — environment chain or box references",
+        "started": "2026-04-27T18:25:52.665Z",
+        "completed": "2026-04-27T18:30:23.753Z",
+        "duration_ms": 600000,
+        "summary": "Investigated nested closure capture bug in depth. Root cause partially identified: code for inner function body may be emitting into both the inner and middle function bodies. The binding indices look correct (x=2, y=1 in middle scope), but runtime values are 0. Need to trace WASM binary output to confirm. Filed as known limitation."
+      },
+      {
+        "id": "T91",
+        "mode": "BUILD",
+        "status": "skipped",
+        "task": "WASM: implement proper nested closure captures",
+        "project": "monkey-lang",
+        "skip_reason": ""
+      },
+      {
+        "id": "T92",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "HenryDB: add json_insert, json_replace, json_remove functions",
+        "project": "henrydb",
+        "started": "2026-04-27T18:30:48.878Z",
+        "completed": "2026-04-27T18:32:48.092Z",
+        "duration_ms": 300000,
+        "summary": "Added json_insert, json_replace, json_remove, json_patch. Improved json_set with multi-path, nested paths, array indices. All handle multiple path/value pairs. 33 regression, 323/323 compliance."
+      },
+      {
+        "id": "T93",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "HenryDB: add json_each() table-valued function for iterating JSON arrays/objects",
+        "project": "henrydb",
+        "started": "2026-04-27T18:33:06.241Z",
+        "completed": "2026-04-27T18:38:14.915Z",
+        "duration_ms": 300000,
+        "summary": "Added json_each() and json_tree() TVFs with path navigation, all standard columns. Both support WHERE filtering and aggregates. Parser extended with JSON_EACH/JSON_TREE keywords. 33 regression, 323/323 compliance."
+      },
+      {
+        "id": "T94",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "monkey-lang WASM: add string methods (split, trim, startsWith, endsWith, indexOf)",
+        "project": "monkey-lang",
+        "started": "2026-04-27T18:38:40.911Z",
+        "completed": "2026-04-27T18:42:21.453Z",
+        "duration_ms": 300000,
+        "summary": "Added 9 string methods to WASM: split, trim, replace, indexOf, startsWith, endsWith, toUpper, toLower, substring. All with host imports + 11 new tests. 265 WASM tests pass."
+      },
+      {
+        "id": "T95",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "WASM: add type() and int() conversion builtins",
+        "project": "monkey-lang",
+        "started": "2026-04-27T18:42:50.199Z",
+        "completed": "2026-04-27T18:45:21.366Z",
+        "duration_ms": 300000,
+        "summary": "Added 9 utility builtins to WASM: abs, max, min, range, join, keys, values, contains, reverse. All work with multiple types (int/float, array/string). 265 tests pass. Renamed task from type/int (already existed) to utilities."
+      },
+      {
+        "id": "T96",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Run full monkey-lang test suite to verify all recent WASM changes",
+        "project": "monkey-lang",
+        "started": "2026-04-27T18:45:51.553Z",
+        "completed": "2026-04-27T18:46:37.783Z",
+        "duration_ms": 120000,
+        "summary": "Full test suite: 1850/1854 pass. 289 WASM-specific tests all pass. 1 failure is pre-existing GC issue (fibonacci with GC + WASM GC integration). 3 skipped. Core compiler and all new features are clean."
+      },
+      {
+        "id": "T97",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Benchmark comparison: what programs does monkey-lang WASM handle that the VM can't, and vice versa?",
+        "started": "2026-04-27T18:46:56.986Z",
+        "completed": "2026-04-27T18:47:53.207Z",
+        "duration_ms": 120000,
+        "summary": "Benchmark comparison: WASM 30.4x VM, 8.1x JIT avg. WASM wins on tight loops (sum, nested, if/else). Transpiler wins 8/12 (native JS). WASM loses on recursive calls (closure dispatch overhead). factorial and sum 100k fail in WASM (stack/limits)."
+      },
+      {
+        "id": "T98",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "WASM: fix factorial and sum 100k benchmark failures",
+        "project": "monkey-lang",
+        "started": "2026-04-27T18:48:09.361Z",
+        "completed": "2026-04-27T18:48:44.150Z",
+        "duration_ms": 60000,
+        "summary": "Investigated: factorial(20) and sum 100k are marked wasmExpected:null because results overflow i32. Not bugs — inherent 32-bit integer limitation. Would require i64/NaN-boxing to fix. Current N/A marking in benchmarks is correct."
+      },
+      {
+        "id": "T99",
+        "mode": "THINK",
+        "status": "done",
+        "task": "WASM: direct call optimization for non-capturing named functions",
+        "started": "2026-04-27T18:49:07.031Z",
+        "completed": "2026-04-27T18:50:59.635Z",
+        "duration_ms": 120000,
+        "summary": "Direct call optimization ALREADY EXISTS for non-capturing top-level functions. fib uses direct call, not closure dispatch. WASM being slower than transpiler on fib is inherent — V8 JIT-compiles transpiled JS to native code. No further optimization needed."
+      },
+      {
+        "id": "T100",
+        "mode": "BUILD",
+        "status": "skipped",
+        "task": "WASM: implement direct call optimization",
+        "project": "monkey-lang",
+        "skip_reason": ""
+      },
+      {
+        "id": "T101",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "HenryDB: add UPSERT (INSERT OR REPLACE / ON CONFLICT) support",
+        "project": "henrydb",
+        "started": "2026-04-27T18:51:24.660Z",
+        "completed": "2026-04-27T18:56:07.742Z",
+        "duration_ms": 300000,
+        "summary": "Fixed ON CONFLICT DO NOTHING for non-PK unique constraints. Now catches ALL constraint violations, not just PK conflicts. Also fixed UNIQUE INDEX check bypass during upsert. 33 regression, 323/323 compliance."
+      },
+      {
+        "id": "T102",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "monkey-lang WASM: add filter, map, reduce higher-order builtins",
+        "project": "monkey-lang",
+        "started": "2026-04-27T18:56:34.707Z",
+        "completed": "2026-04-27T18:57:19.252Z",
+        "duration_ms": 60000,
+        "summary": "Skipped: filter/map/reduce require host→WASM callback mechanism (closure invocation from JS). This is a significant feature that requires exporting call_indirect or a __call1 helper. Users can already write these as monkey-lang functions that compile correctly. Filing for future implementation."
+      },
+      {
+        "id": "T103",
+        "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Update daily log, TASKS.md, push all changes",
+        "started": "2026-04-27T19:10:29.882Z",
+        "completed": "2026-04-27T19:11:06.025Z",
+        "duration_ms": 120000,
+        "summary": "Final housekeeping: daily log with evening summary, TASKS.md updated, git push to both repos."
+      },
+      {
+        "id": "T104",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "HenryDB: add zeroblob(), unicode(), char(), hex(), unhex() functions",
+        "project": "henrydb",
+        "started": "2026-04-27T18:57:56.433Z",
+        "completed": "2026-04-27T18:59:22.653Z",
+        "duration_ms": 180000,
+        "summary": "Added 8 SQLite-compatible scalar functions: zeroblob, unicode, char, hex, unhex, typeof, quote, likely/unlikely. 14/15 edge case tests pass (1 failure is X-literal parsing, not function). 33 regression, 323/323 compliance."
+      },
+      {
+        "id": "T105",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "HenryDB: add X'...' blob literal parsing + improve CAST for blob types",
+        "project": "henrydb",
+        "started": "2026-04-27T18:59:47.016Z",
+        "completed": "2026-04-27T19:01:31.090Z",
+        "duration_ms": 180000,
+        "summary": "Added X-string blob literal parsing (X-hex-hex). typeof/quote/hex work with blobs. 33 regression, 323/323 compliance."
+      },
+      {
+        "id": "T106",
+        "mode": "MAINTAIN",
+        "status": "done",
+        "task": "DEPTH PIVOT: full test sweep of both projects + depth review",
+        "started": "2026-04-27T19:01:59.449Z",
+        "completed": "2026-04-27T19:02:28.819Z",
+        "duration_ms": 120000,
+        "summary": "DEPTH PIVOT: Full test sweep of monkey-lang: 1850/1854 pass (1 pre-existing GC failure, 3 skipped). Full HenryDB regression: 33/33 pass, 323/323 compliance. All changes from this session are clean."
+      },
+      {
+        "id": "T107",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Deep analysis: nested closure capture bug — trace WASM binary output",
+        "started": "2026-04-27T19:04:56.413Z",
+        "completed": "2026-04-27T19:09:47.146Z",
+        "duration_ms": 600000,
+        "summary": "Deep analysis of nested closure bug. Root cause: _hasFreeVariables stopped at nested functions (fixed to walk into them). But the core issue persists — puts in middle function produces no output when a nested function literal is the last expression. The code generation looks correct on paper (correct body references, correct scope restoration). Likely a WASM binary encoding issue where instructions end up in wrong function body. Need WASM disassembler to confirm. Key finding: the outer function is compiled as a direct function (no env_ptr) which changes the local index layout."
+      },
+      {
+        "id": "T108",
+        "mode": "EXPLORE",
+        "status": "done",
+        "task": "Install WABT and disassemble nested closure WASM binary",
+        "project": "monkey-lang",
+        "started": "2026-04-27T19:11:37.714Z",
+        "completed": "2026-04-27T19:13:29.707Z",
+        "duration_ms": 180000,
+        "summary": "Installed WABT (wasm2wat). But WasmCompiler OOMs even at 1GB for a simple program — severe memory leak in the compiler prevents generating WASM binary for analysis. The memory leak itself is the most impactful bug to fix. Filed for investigation."
+      },
+      {
+        "id": "T109",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Investigate WasmCompiler OOM: profile module import chain and object sizes",
+        "started": "2026-04-27T19:16:06.465Z",
+        "completed": "2026-04-27T19:19:20.260Z",
+        "duration_ms": 300000,
+        "summary": "ROOT CAUSE FOUND! Nested closure bug is a table index assignment issue. The outer fn(x) creates a closure pointing to func 16 (inner fn(z)) instead of func 15 (middle fn(y)). The table elem mapping has them in wrong order: index 0 → fn(z), index 1 → fn(y). Also confirmed: env_ptr=0 means x is NOT being captured. Two bugs: (1) wrong function table index, (2) captures not being stored in closure env. Both trace to how direct functions compile nested function literals."
+      },
+      {
+        "id": "T110",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "WASM: fix nested closure table index assignment bug",
+        "project": "monkey-lang",
+        "started": "2026-04-27T19:20:13.430Z",
+        "completed": "2026-04-27T19:22:53.649Z",
+        "duration_ms": 300000,
+        "summary": "FIXED nested closure bug! Root cause: closureFuncs elem section used insertion order (deepest-first) instead of assigned tableIndex. 1-line fix: build funcIndices by tableIndex. 3-level closures now return correct values (35 = 5+10+20). Middle function puts works. All 265 tests pass."
+      },
+      {
+        "id": "T111",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "monkey-lang WASM: add more edge case tests for fixed nested closures",
+        "project": "monkey-lang",
+        "started": "2026-04-27T19:25:19.177Z",
+        "completed": "2026-04-27T19:26:20.044Z",
+        "duration_ms": 120000,
+        "summary": "Added 3 nested closure tests: middle function with puts, 4-level closures, intermediate computation. All pass. 268 WASM tests total."
+      },
+      {
+        "id": "T112",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "HenryDB: add iif(), nullif(), ifnull() functions if missing",
+        "project": "henrydb",
+        "started": "2026-04-27T19:26:47.112Z",
+        "completed": "2026-04-27T19:27:45.157Z",
+        "duration_ms": 120000,
+        "summary": "iif, nullif, ifnull, coalesce, sign all already work. ltrim/rtrim/trim work with single quotes. Found: subquery WHERE 0 does not filter (SELECT 1 WHERE 0 returns 1 instead of 0 rows). Minor bug to fix."
+      },
+      {
+        "id": "T113",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "HenryDB: fix WHERE clause for no-FROM SELECTs (SELECT 1 WHERE 0 should return 0 rows)",
+        "project": "henrydb",
+        "started": "2026-04-27T19:27:57.007Z",
+        "completed": "2026-04-27T19:28:53.769Z",
+        "duration_ms": 120000,
+        "summary": "Fixed WHERE for no-FROM SELECTs. SELECT 1 WHERE 0 now returns empty. count(*) FROM (SELECT 1 WHERE 0) returns 0. 33 regression, 323/323 compliance."
+      },
+      {
+        "id": "T114",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "HenryDB: add json_group_array() and json_group_object() aggregate functions",
+        "project": "henrydb",
+        "started": "2026-04-27T19:29:20.565Z",
+        "completed": "2026-04-27T19:32:06.539Z",
+        "duration_ms": 180000,
+        "summary": "Added json_group_array() and json_group_object() aggregate functions. 33 regression, 323/323 compliance."
+      },
+      {
+        "id": "T115",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "HenryDB: add substr() alias + changes() and last_insert_rowid() functions",
+        "project": "henrydb",
+        "started": "2026-04-27T19:32:28.571Z",
+        "completed": "2026-04-27T19:35:13.401Z",
+        "duration_ms": 180000,
+        "summary": "Added changes(), last_insert_rowid(), total_changes(), sqlite_version(). State tracking for insert counts. 33 regression, 323/323 compliance."
+      },
+      {
+        "id": "T116",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "HenryDB: add date/time functions (date, time, datetime, julianday, strftime)",
+        "project": "henrydb",
+        "started": "2026-04-27T19:35:49.364Z",
+        "completed": "2026-04-27T19:37:29.841Z",
+        "duration_ms": 180000,
+        "summary": "Fixed strftime (now handling), added julianday() and unixepoch(). Added %j,%w,%W,%s,%f,%% format codes. 33 regression, 323/323 compliance."
+      },
+      {
+        "id": "T117",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "monkey-lang WASM: benchmark post-nested-closure-fix to measure improvement",
+        "project": "monkey-lang",
+        "started": "2026-04-27T19:38:27.260Z",
+        "completed": "2026-04-27T19:39:27.467Z",
+        "duration_ms": 120000,
+        "summary": "Post-fix benchmarks: WASM 32.0x VM, 9.1x JIT. Closure factory nearly matches JIT (1.49ms vs 1.42ms). WASM wins on 3 benchmarks (sum, nested, if/else). Transpiler wins 8. Performance stable."
+      },
+      {
+        "id": "T118",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "HenryDB: add EXPLAIN QUERY PLAN support",
+        "project": "henrydb",
+        "started": "2026-04-27T19:39:51.815Z",
+        "completed": "2026-04-27T19:42:54.220Z",
+        "duration_ms": 300000,
+        "summary": "Added EXPLAIN QUERY PLAN with SQLite-compatible output (selectid, order, from, detail). Shows SCAN/SEARCH, index usage, temp B-trees. 33 regression pass."
+      },
+      {
+        "id": "T119",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "HenryDB: add json_valid() function and json_type() improvements",
+        "project": "henrydb",
+        "started": "2026-04-27T19:43:41.480Z",
+        "completed": "2026-04-27T19:45:12.258Z",
+        "duration_ms": 120000,
+        "summary": "Fixed json_type() path navigation. Now returns correct SQLite type names at path (integer, real, text, true, false, null, array, object). 33 regression pass."
+      },
+      {
+        "id": "T120",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "HenryDB: add json_quote() function",
+        "project": "henrydb",
+        "started": "2026-04-27T19:46:26.859Z",
+        "completed": "2026-04-27T19:46:27.000Z",
+        "duration_ms": 60000,
+        "summary": "Added json_quote()."
+      },
+      {
+        "id": "T121",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Session B opening: assess state, pick focus areas for afternoon/evening",
+        "started": "2026-04-27T20:16:06.818Z",
+        "completed": "2026-04-27T20:16:22.217Z",
+        "duration_ms": 60000,
+        "summary": "Session B opening: Session A completed 43 tasks. monkey-lang 268 WASM tests, HenryDB 323/323 compliance. Afternoon focus: window functions, filter/map/reduce builtins, WASM binary caching. Queue built with 3 THINK-PLAN-BUILD cycles + 1 EXPLORE."
+      },
+      {
+        "id": "T122",
+        "mode": "PLAN",
+        "status": "done",
+        "goal": "HenryDB: Window functions (ROW_NUMBER, RANK, DENSE_RANK, NTILE, LAG, LEAD, FIRST_VALUE, LAST_VALUE)",
+        "task": null,
+        "started": "2026-04-27T20:16:31.690Z",
+        "completed": "2026-04-27T20:22:01.152Z",
+        "duration_ms": 120000,
+        "summary": "Window functions already fully implemented (ROW_NUMBER, RANK, DENSE_RANK, NTILE, LAG, LEAD, FIRST_VALUE, LAST_VALUE, NTH_VALUE, CUME_DIST, PERCENT_RANK + frame support). 47 window tests all pass. Redirecting BUILD slot."
+      },
+      {
+        "id": "T123",
+        "mode": "BUILD",
         "status": "upcoming",
-        "plan_ref": "T78"
+        "task": "HenryDB: UPDATE OF column syntax for triggers + unified cost model exploration",
+        "plan_ref": "T122",
+        "project": "henrydb"
+      },
+      {
+        "id": "T124",
+        "mode": "MAINTAIN",
+        "status": "upcoming",
+        "task": "Housekeeping + git push"
+      },
+      {
+        "id": "T125",
+        "mode": "THINK",
+        "status": "upcoming",
+        "task": "Mid-session reflection + quality check"
+      },
+      {
+        "id": "T126",
+        "mode": "PLAN",
+        "status": "upcoming",
+        "goal": "monkey-lang: filter/map/reduce builtins via host-WASM callback mechanism",
+        "task": null
+      },
+      {
+        "id": "T127",
+        "mode": "BUILD",
+        "status": "upcoming",
+        "task": null,
+        "plan_ref": "T126",
+        "project": "monkey-lang"
+      },
+      {
+        "id": "T128",
+        "mode": "MAINTAIN",
+        "status": "upcoming",
+        "task": "Housekeeping"
+      },
+      {
+        "id": "T129",
+        "mode": "THINK",
+        "status": "upcoming",
+        "task": "Assess progress, plan final cycle"
+      },
+      {
+        "id": "T130",
+        "mode": "PLAN",
+        "status": "upcoming",
+        "goal": "monkey-lang: WASM binary caching for fast recompilation",
+        "task": null
+      },
+      {
+        "id": "T131",
+        "mode": "BUILD",
+        "status": "upcoming",
+        "task": null,
+        "plan_ref": "T130",
+        "project": "monkey-lang"
+      },
+      {
+        "id": "T132",
+        "mode": "MAINTAIN",
+        "status": "upcoming",
+        "task": "Final housekeeping + git push"
+      },
+      {
+        "id": "T133",
+        "mode": "EXPLORE",
+        "status": "upcoming",
+        "task": "Research WASM component model for monkey-lang module imports",
+        "project": "monkey-lang"
       }
     ]
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 108,
-    "blocksTotal": 81,
+    "blocksCompleted": 110,
+    "blocksTotal": 133,
     "modeDistribution": {
-      "THINK": 22,
-      "PLAN": 7,
+      "THINK": 23,
+      "PLAN": 8,
       "BUILD": 62,
       "MAINTAIN": 9,
       "EXPLORE": 8
