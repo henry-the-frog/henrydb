@@ -144,15 +144,19 @@
     {
       "id": "T10",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Wire SSA DCE into monkey-lang compilation pipeline",
-      "task": null
+      "task": null,
+      "started": "2026-04-27T15:01:36.885Z",
+      "completed": "2026-04-27T15:03:00.496Z",
+      "duration_ms": 120000,
+      "summary": "PLAN: Wire DCE into VM compiler. WASM already has DCE + constant folding + type inference. JIT has its own DCE at IR level. VM compiler is the only path without optimization. Filled 1 BUILD task."
     },
     {
       "id": "T11",
       "mode": "BUILD",
       "status": "upcoming",
-      "task": null,
+      "task": "Wire AST-level DCE (dead-code.js) into VM compiler pipeline, add constant folding, verify with benchmarks",
       "plan_ref": "T10",
       "project": "monkey-lang"
     },
@@ -308,6 +312,10 @@
     {
       "time": "2026-04-27T14:42:27.770Z",
       "msg": "PLAN T6 filled 3 BUILD tasks"
+    },
+    {
+      "time": "2026-04-27T15:02:48.450Z",
+      "msg": "PLAN T10 filled 1 BUILD tasks"
     }
   ]
 }
