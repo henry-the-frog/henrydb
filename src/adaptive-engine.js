@@ -11,6 +11,7 @@ import { QueryPlanner } from './planner.js';
 import { VectorizedCodeGen } from './vectorized-codegen.js';
 import { QueryCodeGen } from './query-codegen.js';
 import { CompiledQueryEngine } from './compiled-query.js';
+import { estimateMultiEngineCost } from './cost-model.js';
 
 /**
  * AdaptiveQueryEngine — picks the best execution strategy per query.
@@ -142,11 +143,18 @@ export class AdaptiveQueryEngine {
     const hasSubquery = ast.where?.subquery || false;
     const hasGroupBy = !!ast.groupBy;
 
-    // Estimate selectivity
+    // Estimate selectivity and build volcano plan for cost estimation
     let estimatedSelectivity = 1.0;
-    if (hasWhere && rowCount > 0) {
-      const plan = this.planner.plan(ast);
-      estimatedSelectivity = (plan.estimatedRows || rowCount) / rowCount;
+    let volcanoPlan = null;
+    if (rowCount > 0) {
+      try {
+        volcanoPlan = this.planner.plan(ast);
+        if (hasWhere && volcanoPlan) {
+          estimatedSelectivity = (volcanoPlan.estimatedRows || rowCount) / rowCount;
+        }
+      } catch (e) {
+        // Plan construction failed — will use heuristic selection
+      }
     }
 
     const analysis = {
@@ -161,9 +169,32 @@ export class AdaptiveQueryEngine {
       hasGroupBy,
       estimatedSelectivity,
       reason: '',
+      _volcanoPlan: volcanoPlan,  // attach for cost-based selection
     };
 
     return analysis;
+  }
+
+  /**
+   * Get table statistics as a Map for the cost model.
+   */
+  _getTableStats() {
+    const stats = new Map();
+    for (const [name, table] of this.db.tables) {
+      const plannerStats = this.planner.getStats(name);
+      if (plannerStats) {
+        stats.set(name, {
+          rowCount: plannerStats.rowCount || table.rows?.length || 0,
+          avgRowSize: plannerStats.avgRowSize || 100,
+        });
+      } else {
+        stats.set(name, {
+          rowCount: table.rows?.length || 0,
+          avgRowSize: 100,
+        });
+      }
+    }
+    return stats;
   }
 
   /**
@@ -173,58 +204,74 @@ export class AdaptiveQueryEngine {
     const { rowCount, joinCount, hasAggregation, hasLimit, limitValue,
             hasWhere, hasSubquery, estimatedSelectivity } = analysis;
 
-    // Can't compile subqueries
+    // Hard constraints: some patterns can't be compiled
     if (hasSubquery) {
-      analysis.reason = 'subquery → volcano';
+      analysis.reason = 'subquery → volcano (unsupported by codegen/vectorized)';
       return 'volcano';
     }
 
-    // Tiny tables: not worth compiling
+    // Try cost-based selection using the unified cost model
+    if (analysis._volcanoPlan) {
+      try {
+        const tableStats = this._getTableStats();
+        const costs = estimateMultiEngineCost(analysis._volcanoPlan, tableStats);
+        const cheapest = costs.cheapest;
+        
+        // Map 'codegen' to 'compiled' for the compiled pipeline engine
+        const engineMap = { volcano: 'volcano', codegen: 'compiled', vectorized: 'vectorized' };
+        const selected = engineMap[cheapest] || cheapest;
+        
+        analysis.reason = `cost-based: volcano=${costs.volcano.cost.toFixed(1)}, ` +
+          `codegen=${costs.codegen.cost.toFixed(1)}, vectorized=${costs.vectorized.cost.toFixed(1)} → ${selected}`;
+        analysis.costDetails = costs;
+        
+        return selected;
+      } catch (e) {
+        // Fall through to heuristic selection
+      }
+    }
+
+    // Fallback: heuristic selection (when no plan is available)
     if (rowCount < 50) {
-      analysis.reason = `small table (${rowCount} rows) → volcano`;
+      analysis.reason = `small table (${rowCount} rows) → volcano (heuristic)`;
       return 'volcano';
     }
 
-    // Large scans without selective filters: vectorized wins
     if (rowCount > 500 && estimatedSelectivity > 0.3 && !hasLimit) {
-      analysis.reason = `large scan (${rowCount} rows, ${(estimatedSelectivity * 100).toFixed(0)}% sel) → vectorized`;
+      analysis.reason = `large scan (${rowCount} rows, ${(estimatedSelectivity * 100).toFixed(0)}% sel) → vectorized (heuristic)`;
       return 'vectorized';
     }
 
-    // Joins: vectorized for large, codegen for medium
     if (joinCount > 0) {
       if (rowCount > 200) {
-        analysis.reason = `join (${joinCount} tables, ${rowCount} rows) → vectorized`;
+        analysis.reason = `join (${joinCount} tables, ${rowCount} rows) → vectorized (heuristic)`;
         return 'vectorized';
       }
-      analysis.reason = `small join (${joinCount} tables, ${rowCount} rows) → codegen`;
+      analysis.reason = `small join (${joinCount} tables, ${rowCount} rows) → codegen (heuristic)`;
       return 'codegen';
     }
 
-    // Highly selective queries (LIMIT or narrow filter): codegen
     if (hasLimit && limitValue < rowCount * 0.1) {
-      analysis.reason = `selective LIMIT ${limitValue}/${rowCount} → codegen`;
+      analysis.reason = `selective LIMIT ${limitValue}/${rowCount} → codegen (heuristic)`;
       return 'codegen';
     }
 
     if (estimatedSelectivity < 0.1) {
-      analysis.reason = `highly selective (${(estimatedSelectivity * 100).toFixed(1)}%) → codegen`;
+      analysis.reason = `highly selective (${(estimatedSelectivity * 100).toFixed(1)}%) → codegen (heuristic)`;
       return 'codegen';
     }
 
-    // Analytics: vectorized
     if (hasAggregation) {
-      analysis.reason = `aggregation → vectorized`;
+      analysis.reason = `aggregation → vectorized (heuristic)`;
       return 'vectorized';
     }
 
-    // Default: vectorized for large tables, compiled for medium
     if (rowCount > 500) {
-      analysis.reason = `default large (${rowCount} rows) → vectorized`;
+      analysis.reason = `default large (${rowCount} rows) → vectorized (heuristic)`;
       return 'vectorized';
     }
 
-    analysis.reason = `default medium (${rowCount} rows) → compiled`;
+    analysis.reason = `default medium (${rowCount} rows) → compiled (heuristic)`;
     return 'compiled';
   }
 
