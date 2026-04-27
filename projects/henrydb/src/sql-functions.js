@@ -416,21 +416,92 @@ export function evalFunction(db, func, args, row) {
         return current === undefined ? null : (typeof current === 'object' && current !== null ? JSON.stringify(current) : String(current));
       } catch { return null; }
     }
-    case 'JSON_SET': {
+    case 'JSON_SET':
+    case 'JSON_INSERT':
+    case 'JSON_REPLACE': {
+      // json_set(json, path, value, [path2, value2, ...])
+      // json_insert: only sets if path doesn't exist
+      // json_replace: only sets if path already exists
+      // json_set: always sets (insert or replace)
       const json = db._evalValue(args[0], row);
-      const path = db._evalValue(args[1], row);
-      const value = db._evalValue(args[2], row);
       if (json == null) return null;
       try {
-        const obj = typeof json === 'string' ? JSON.parse(json) : { ...json };
-        const parts = path.replace(/^\$\.?/, '').split('.').filter(Boolean);
-        let current = obj;
-        for (let i = 0; i < parts.length - 1; i++) {
-          if (!current[parts[i]]) current[parts[i]] = {};
-          current = current[parts[i]];
+        let obj = typeof json === 'string' ? JSON.parse(json) : JSON.parse(JSON.stringify(json));
+        const mode = func.split('_')[1]; // SET, INSERT, or REPLACE
+        // Process path/value pairs
+        for (let p = 1; p + 1 < args.length; p += 2) {
+          const path = db._evalValue(args[p], row);
+          const value = db._evalValue(args[p + 1], row);
+          const parts = String(path).replace(/^\$\.?/, '').split(/\.|\[(\d+)\]/).filter(Boolean);
+          if (parts.length === 0) {
+            // $ path — replace whole object
+            if (mode !== 'INSERT') obj = typeof value === 'string' ? JSON.parse(value) : value;
+            continue;
+          }
+          let current = obj;
+          for (let i = 0; i < parts.length - 1; i++) {
+            const key = /^\d+$/.test(parts[i]) ? parseInt(parts[i]) : parts[i];
+            if (current[key] === undefined || current[key] === null) {
+              if (mode === 'REPLACE') break;
+              current[key] = /^\d+$/.test(parts[i + 1] || '') ? [] : {};
+            }
+            current = current[key];
+          }
+          const lastKey = /^\d+$/.test(parts[parts.length - 1]) ? parseInt(parts[parts.length - 1]) : parts[parts.length - 1];
+          const exists = current != null && current[lastKey] !== undefined;
+          if (mode === 'INSERT' && exists) continue;
+          if (mode === 'REPLACE' && !exists) continue;
+          if (current != null) current[lastKey] = value;
         }
-        current[parts[parts.length - 1]] = value;
         return JSON.stringify(obj);
+      } catch { return null; }
+    }
+    case 'JSON_REMOVE': {
+      // json_remove(json, path, [path2, ...])
+      const json = db._evalValue(args[0], row);
+      if (json == null) return null;
+      try {
+        let obj = typeof json === 'string' ? JSON.parse(json) : JSON.parse(JSON.stringify(json));
+        for (let p = 1; p < args.length; p++) {
+          const path = db._evalValue(args[p], row);
+          const parts = String(path).replace(/^\$\.?/, '').split(/\.|\[(\d+)\]/).filter(Boolean);
+          if (parts.length === 0) continue; // Can't remove $
+          let current = obj;
+          for (let i = 0; i < parts.length - 1; i++) {
+            const key = /^\d+$/.test(parts[i]) ? parseInt(parts[i]) : parts[i];
+            if (current[key] === undefined) { current = null; break; }
+            current = current[key];
+          }
+          if (current != null) {
+            const lastKey = /^\d+$/.test(parts[parts.length - 1]) ? parseInt(parts[parts.length - 1]) : parts[parts.length - 1];
+            if (Array.isArray(current) && typeof lastKey === 'number') {
+              current.splice(lastKey, 1);
+            } else {
+              delete current[lastKey];
+            }
+          }
+        }
+        return JSON.stringify(obj);
+      } catch { return null; }
+    }
+    case 'JSON_PATCH': {
+      // json_patch(json, patch) — merge patch (RFC 7396)
+      const json = db._evalValue(args[0], row);
+      const patch = db._evalValue(args[1], row);
+      if (json == null || patch == null) return null;
+      try {
+        const obj = typeof json === 'string' ? JSON.parse(json) : JSON.parse(JSON.stringify(json));
+        const p = typeof patch === 'string' ? JSON.parse(patch) : patch;
+        const merge = (target, source) => {
+          if (typeof source !== 'object' || source === null) return source;
+          const result = typeof target === 'object' && target !== null ? { ...target } : {};
+          for (const key of Object.keys(source)) {
+            if (source[key] === null) delete result[key];
+            else result[key] = merge(result[key], source[key]);
+          }
+          return result;
+        };
+        return JSON.stringify(merge(obj, p));
       } catch { return null; }
     }
     case 'JSON_ARRAY_LENGTH': {
