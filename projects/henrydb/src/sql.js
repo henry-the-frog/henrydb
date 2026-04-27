@@ -28,7 +28,7 @@ const KEYWORDS = new Set([
   'OVER', 'PARTITION', 'RANK', 'ROW_NUMBER', 'DENSE_RANK', 'NTILE', 'LAG', 'LEAD', 'FIRST_VALUE', 'LAST_VALUE', 'CUME_DIST', 'PERCENT_RANK', 'NTH_VALUE',
   'INCLUDE', 'ALTER', 'ADD', 'COLUMN', 'RENAME', 'TO', 'CHECK',
   'UNBOUNDED', 'PRECEDING', 'FOLLOWING', 'RANGE', 'GROUPS', 'EXCLUDE', 'TIES', 'OTHERS', 'CURRENT',
-  'REFERENCES', 'FOREIGN', 'CASCADE', 'RESTRICT', 'SET', 'TEMPORARY', 'TEMP', 'OF',
+  'REFERENCES', 'FOREIGN', 'CASCADE', 'RESTRICT', 'SET', 'TEMPORARY', 'TEMP', 'OF', 'INSTEAD',
   'CAST', 'INT', 'INTEGER', 'TEXT', 'FLOAT', 'BOOLEAN',
   'GROUP_CONCAT', 'STRING_AGG', 'SEPARATOR',
   'JSON_AGG', 'JSONB_AGG', 'ARRAY_AGG', 'JSON_GROUP_ARRAY', 'JSON_GROUP_OBJECT',
@@ -3030,7 +3030,11 @@ export function parse(sql) {
     if (isKeyword('TRIGGER')) {
       advance(); // TRIGGER
       const name = advance().value;
-      const timing = advance().value; // BEFORE or AFTER
+      let timing = advance().value; // BEFORE, AFTER, or INSTEAD
+      if (timing.toUpperCase() === 'INSTEAD') {
+        expect('KEYWORD', 'OF');
+        timing = 'INSTEAD OF';
+      }
       const event = advance().value; // INSERT, UPDATE, DELETE
       // Parse UPDATE OF col1, col2, ... (optional)
       let columns = null;

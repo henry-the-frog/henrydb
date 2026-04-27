@@ -2,7 +2,20 @@
 
 export function update(db, ast) {
   const table = db.tables.get(ast.table);
-  if (!table) throw new Error(`Table ${ast.table} not found`);
+  if (!table) {
+    // Check for INSTEAD OF UPDATE trigger on view
+    const view = db.views.get(ast.table);
+    if (view) {
+      const insteadTrigger = db.triggers.find(
+        t => t.timing === 'INSTEAD OF' && t.event === 'UPDATE' && t.table === ast.table
+      );
+      if (insteadTrigger) {
+        throw new Error(`INSTEAD OF UPDATE on views not yet implemented`);
+      }
+      throw new Error(`Cannot UPDATE view ${ast.table} (no INSTEAD OF trigger)`);
+    }
+    throw new Error(`Table ${ast.table} not found`);
+  }
 
   let updated = 0;
   const toUpdate = [];
@@ -210,7 +223,20 @@ export function update(db, ast) {
 
 export function executeDelete(db, ast) {
   const table = db.tables.get(ast.table);
-  if (!table) throw new Error(`Table ${ast.table} not found`);
+  if (!table) {
+    // Check for INSTEAD OF DELETE trigger on view
+    const view = db.views.get(ast.table);
+    if (view) {
+      const insteadTrigger = db.triggers.find(
+        t => t.timing === 'INSTEAD OF' && t.event === 'DELETE' && t.table === ast.table
+      );
+      if (insteadTrigger) {
+        throw new Error(`INSTEAD OF DELETE on views not yet implemented`);
+      }
+      throw new Error(`Cannot DELETE from view ${ast.table} (no INSTEAD OF trigger)`);
+    }
+    throw new Error(`Table ${ast.table} not found`);
+  }
 
   let deleted = 0;
   const toDelete = [];

@@ -223,3 +223,44 @@ describe('WHEN clause triggers', () => {
     assert.equal(db.execute('SELECT count(*) as cnt FROM audit').rows[0].cnt, 1);
   });
 });
+
+describe('INSTEAD OF triggers for views', () => {
+  it('INSTEAD OF INSERT on view redirects to base table', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE emp (id INTEGER PRIMARY KEY, name TEXT, dept TEXT)');
+    db.execute("CREATE VIEW eng AS SELECT id, name, dept FROM emp WHERE dept = 'Eng'");
+    db.execute("CREATE TRIGGER eng_insert INSTEAD OF INSERT ON eng BEGIN INSERT INTO emp VALUES (NEW.id, NEW.name, 'Eng') END");
+
+    db.execute("INSERT INTO eng (id, name) VALUES (1, 'Alice')");
+    db.execute("INSERT INTO eng (id, name) VALUES (2, 'Bob')");
+
+    const rows = db.execute('SELECT * FROM emp ORDER BY id').rows;
+    assert.equal(rows.length, 2);
+    assert.equal(rows[0].name, 'Alice');
+    assert.equal(rows[0].dept, 'Eng');
+    assert.equal(rows[1].name, 'Bob');
+  });
+
+  it('INSTEAD OF INSERT makes rows visible through view', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE emp (id INTEGER PRIMARY KEY, name TEXT, dept TEXT)');
+    db.execute("CREATE VIEW eng AS SELECT id, name FROM emp WHERE dept = 'Eng'");
+    db.execute("CREATE TRIGGER eng_insert INSTEAD OF INSERT ON eng BEGIN INSERT INTO emp VALUES (NEW.id, NEW.name, 'Eng') END");
+
+    db.execute("INSERT INTO eng (id, name) VALUES (1, 'Alice')");
+
+    const viewRows = db.execute('SELECT * FROM eng').rows;
+    assert.equal(viewRows.length, 1);
+    assert.equal(viewRows[0].name, 'Alice');
+  });
+
+  it('INSERT into view without INSTEAD OF trigger gives error', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE t (id INTEGER PRIMARY KEY, name TEXT)');
+    db.execute('CREATE VIEW v AS SELECT * FROM t');
+
+    assert.throws(() => {
+      db.execute("INSERT INTO v VALUES (1, 'Alice')");
+    }, /Cannot INSERT into view v/);
+  });
+});

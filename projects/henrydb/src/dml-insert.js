@@ -3,7 +3,20 @@
 
 export function insert(db, ast) {
   const table = db.tables.get(ast.table);
-  if (!table) throw new Error(`Table ${ast.table} not found`);
+  if (!table) {
+    // Check if it's a view with INSTEAD OF INSERT trigger
+    const view = db.views.get(ast.table);
+    if (view) {
+      const insteadTrigger = db.triggers.find(
+        t => t.timing === 'INSTEAD OF' && t.event === 'INSERT' && t.table === ast.table
+      );
+      if (insteadTrigger) {
+        return _executeInsteadOfInsert(db, ast, view, insteadTrigger);
+      }
+      throw new Error(`Cannot INSERT into view ${ast.table} (no INSTEAD OF trigger)`);
+    }
+    throw new Error(`Table ${ast.table} not found`);
+  }
 
   // Handle INSERT OR REPLACE/IGNORE: synthesize onConflict
   if (ast.conflictAction && !ast.onConflict) {
@@ -424,4 +437,83 @@ export function fireTriggers(db, timing, event, tableName, rowValues, schema, ol
       }
     }
   }
+}
+
+// Execute INSTEAD OF INSERT trigger for a view
+function _executeInsteadOfInsert(db, ast, view, trigger) {
+  // For INSTEAD OF INSERT, we need to:
+  // 1. Get the column names from the INSERT statement (or from the view definition)
+  // 2. Evaluate the VALUES expressions to get actual values
+  // 3. Substitute NEW.col references in the trigger body
+  // 4. Execute the trigger body
+
+  const results = [];
+  
+  // Get column names from INSERT (or view columns)
+  let columnNames = ast.columns;
+  if (!columnNames && view.query && view.query.columns) {
+    columnNames = view.query.columns
+      .filter(c => c.type !== 'star')
+      .map(c => c.alias || c.name || (c.expr && c.expr.name));
+  }
+
+  // Process each VALUES row
+  for (const valueExprs of (ast.rows || ast.values || [])) {
+    // Evaluate each expression to get literal values
+    const newValues = {};
+    for (let i = 0; i < valueExprs.length; i++) {
+      const expr = valueExprs[i];
+      const colName = columnNames && columnNames[i] ? columnNames[i] : `col${i}`;
+      // Simple expression evaluation for common cases
+      if (expr.type === 'literal') {
+        newValues[colName] = expr.value;
+      } else if (expr.type === 'null') {
+        newValues[colName] = null;
+      } else {
+        // For complex expressions, evaluate via SQL
+        try {
+          const r = db.execute(`SELECT ${_exprToSql(expr)} AS v`);
+          newValues[colName] = r.rows[0]?.v;
+        } catch {
+          newValues[colName] = null;
+        }
+      }
+    }
+
+    // Substitute NEW.col references in trigger body
+    let bodySql = trigger.bodySql;
+    for (const [colName, val] of Object.entries(newValues)) {
+      const sqlVal = val === null || val === undefined ? 'NULL'
+        : typeof val === 'string' ? `'${val.replace(/'/g, "''")}'`
+        : String(val);
+      bodySql = bodySql.replace(new RegExp(`NEW\\.${colName}\\b`, 'gi'), sqlVal);
+    }
+
+    // Execute trigger body
+    let cleanSql = bodySql.trim();
+    if (cleanSql.toUpperCase().startsWith('BEGIN')) cleanSql = cleanSql.slice(5).trim();
+    if (cleanSql.toUpperCase().endsWith('END')) cleanSql = cleanSql.slice(0, -3).trim();
+
+    const statements = cleanSql.split(';').map(s => s.trim()).filter(Boolean);
+    for (const stmt of statements) {
+      db.execute(stmt);
+    }
+    results.push(newValues);
+  }
+
+  return { type: 'INSERT', rowCount: results.length, rows: results };
+}
+
+// Helper: convert expression AST back to SQL string
+function _exprToSql(expr) {
+  if (!expr) return 'NULL';
+  if (expr.type === 'literal') {
+    if (typeof expr.value === 'string') return `'${expr.value.replace(/'/g, "''")}'`;
+    return String(expr.value);
+  }
+  if (expr.type === 'null') return 'NULL';
+  if (expr.type === 'column_ref') return expr.name;
+  if (expr.type === 'COMPARE') return `${_exprToSql(expr.left)} ${expr.op} ${_exprToSql(expr.right)}`;
+  if (expr.type === 'BINARY_OP') return `(${_exprToSql(expr.left)} ${expr.op} ${_exprToSql(expr.right)})`;
+  return 'NULL';
 }
