@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-27T15:53:09.797Z",
+  "generated": "2026-04-27T15:54:44.250Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "WASM compiler: implement constant folding that's compatible with WASM (fold arithmetic on integer literals to reduce runtime calls)",
-    "completedAt": "2026-04-27T15:53:09.797Z",
-    "taskId": "T38",
-    "summary": "Already implemented! WASM compiler has _tryConstantFold (recursive, handles all ops) + _isDefinitelyInteger (directs i32_add vs __add). stats.constantsFolded tracks fold count. No changes needed.",
-    "durationMs": 60000
+    "task": "Monkey-lang: add WASM backend to REPL (:wasm command to toggle) for interactive comparison",
+    "completedAt": "2026-04-27T15:54:44.250Z",
+    "taskId": "T39",
+    "summary": "Already implemented! REPL supports :engine wasm and --wasm CLI flag. Full WASM execution path exists with async handling.",
+    "durationMs": 30000
   },
   "schedule": {
     "date": "2026-04-27",
@@ -7744,12 +7744,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 34,
+    "blocksCompleted": 35,
     "blocksTotal": 29,
     "modeDistribution": {
       "THINK": 6,
       "PLAN": 4,
-      "BUILD": 16,
+      "BUILD": 17,
       "MAINTAIN": 4,
       "EXPLORE": 4
     }

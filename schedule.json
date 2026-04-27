@@ -401,6 +401,17 @@
       "completed": "2026-04-27T15:53:09.763Z",
       "duration_ms": 60000,
       "summary": "Already implemented! WASM compiler has _tryConstantFold (recursive, handles all ops) + _isDefinitelyInteger (directs i32_add vs __add). stats.constantsFolded tracks fold count. No changes needed."
+    },
+    {
+      "id": "T39",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Monkey-lang: add WASM backend to REPL (:wasm command to toggle) for interactive comparison",
+      "project": "monkey-lang",
+      "started": "2026-04-27T15:53:42.894Z",
+      "completed": "2026-04-27T15:54:44.215Z",
+      "duration_ms": 30000,
+      "summary": "Already implemented! REPL supports :engine wasm and --wasm CLI flag. Full WASM execution path exists with async handling."
     }
   ],
   "focusProjects": [
@@ -572,6 +583,10 @@
     {
       "time": "2026-04-27T15:52:07.940Z",
       "msg": "Added T38 (BUILD) after end: WASM compiler: implement constant folding that's compatible with WASM (fold arithmetic on integer literals to reduce runtime calls)"
+    },
+    {
+      "time": "2026-04-27T15:53:37.453Z",
+      "msg": "Added T39 (BUILD) after end: Monkey-lang: add WASM backend to REPL (:wasm command to toggle) for interactive comparison"
     }
   ]
 }
