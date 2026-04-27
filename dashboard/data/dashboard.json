@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-27T14:36:49.688Z",
+  "generated": "2026-04-27T14:38:39.397Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "WASM: ClassStatement compilation (class, methods, self, inheritance, super)",
-    "completedAt": "2026-04-27T14:36:49.688Z",
-    "taskId": "T19",
-    "summary": "WASM ClassStatement: classes with fields, init constructors, methods with self, multiple instances. Methods compiled as WASM functions with self as first param, stored as closures in instance hashes. 198 WASM tests, 1784 total.",
-    "durationMs": 1200000
+    "task": "WASM: ImportStatement + GeneratorLiteral/YieldExpression support",
+    "completedAt": "2026-04-27T14:38:39.397Z",
+    "taskId": "T20",
+    "summary": "WASM: ImportStatement stub (compiles with warning), Generator/Yield stubs (warning + passthrough). Full WASM coverage: 200 tests. Generators require WASM coroutine/CPS transform — flagged as known limitation. 1786 total tests.",
+    "durationMs": 600000
   },
   "schedule": {
     "date": "2026-04-27",
@@ -7594,12 +7594,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 4,
+    "blocksCompleted": 5,
     "blocksTotal": 20,
     "modeDistribution": {
       "THINK": 1,
       "PLAN": 1,
-      "BUILD": 2
+      "BUILD": 3
     }
   },
   "artifacts": [],
