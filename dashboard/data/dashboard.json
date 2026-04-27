@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-27T20:22:24.203Z",
+  "generated": "2026-04-27T20:41:49.834Z",
   "current": {
     "status": "in-progress",
     "mode": "MAINTAIN",
-    "task": "Housekeeping + git push",
-    "startedAt": "2026-04-27T20:22:24.203Z",
-    "taskId": "T124"
+    "task": "Housekeeping",
+    "startedAt": "2026-04-27T20:41:49.834Z",
+    "taskId": "T128"
   },
   "schedule": {
     "date": "2026-04-27",
@@ -8736,37 +8736,61 @@
       {
         "id": "T123",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "skipped",
         "task": "HenryDB: UPDATE OF column syntax for triggers + unified cost model exploration",
         "plan_ref": "T122",
-        "project": "henrydb"
+        "project": "henrydb",
+        "skip_reason": "Window functions already done, no BUILD needed"
       },
       {
         "id": "T124",
         "mode": "MAINTAIN",
-        "status": "upcoming",
-        "task": "Housekeeping + git push"
+        "status": "done",
+        "task": "Housekeeping + git push",
+        "started": "2026-04-27T20:22:24.066Z",
+        "completed": "2026-04-27T20:23:20.299Z",
+        "duration_ms": 60000,
+        "summary": "Git push all repos, committed Session B state"
       },
       {
         "id": "T125",
         "mode": "THINK",
-        "status": "upcoming",
-        "task": "Mid-session reflection + quality check"
+        "status": "done",
+        "task": "Mid-session reflection + quality check",
+        "started": "2026-04-27T20:23:29.006Z",
+        "completed": "2026-04-27T20:23:39.900Z",
+        "duration_ms": 60000,
+        "summary": "Depth check passes (3/3 yes from Session A). Queue good: filter/map/reduce is highest-value next."
       },
       {
         "id": "T126",
         "mode": "PLAN",
-        "status": "upcoming",
+        "status": "in-progress",
         "goal": "monkey-lang: filter/map/reduce builtins via host-WASM callback mechanism",
-        "task": null
+        "task": null,
+        "started": "2026-04-27T20:23:48.132Z"
       },
       {
         "id": "T127",
         "mode": "BUILD",
         "status": "upcoming",
-        "task": null,
+        "task": "Export WASM table from compiler + implement __map host import with closure callback",
         "plan_ref": "T126",
         "project": "monkey-lang"
+      },
+      {
+        "id": "T134",
+        "mode": "BUILD",
+        "task": "Implement __filter and __reduce host imports with closure callback",
+        "status": "upcoming",
+        "plan_ref": "T126"
+      },
+      {
+        "id": "T135",
+        "mode": "BUILD",
+        "task": "Implement __find, __any, __every host imports + tests for all higher-order builtins",
+        "status": "upcoming",
+        "plan_ref": "T126"
       },
       {
         "id": "T128",
@@ -8812,13 +8836,13 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 110,
-    "blocksTotal": 133,
+    "blocksCompleted": 116,
+    "blocksTotal": 135,
     "modeDistribution": {
-      "THINK": 23,
-      "PLAN": 8,
-      "BUILD": 62,
-      "MAINTAIN": 9,
+      "THINK": 24,
+      "PLAN": 9,
+      "BUILD": 65,
+      "MAINTAIN": 10,
       "EXPLORE": 8
     }
   },

@@ -1,6 +1,6 @@
 status: in-progress
-mode: THINK
-task: Session B opening: assess state, pick focus areas for afternoon/evening
-current_position: T121
-started: 2026-04-27T20:16:06Z
-tasks_completed_this_session: 0
+mode: BUILD
+task: Export WASM table from compiler + implement __map host import with closure callback
+current_position: T127
+started: 2026-04-27T20:32:03Z
+tasks_completed_this_session: 4

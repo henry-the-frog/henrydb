@@ -1299,36 +1299,74 @@
     {
       "id": "T124",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Housekeeping + git push",
-      "started": "2026-04-27T20:22:24.066Z"
+      "started": "2026-04-27T20:22:24.066Z",
+      "completed": "2026-04-27T20:23:20.299Z",
+      "duration_ms": 60000,
+      "summary": "Git push all repos, committed Session B state"
     },
     {
       "id": "T125",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Mid-session reflection + quality check"
+      "status": "done",
+      "task": "Mid-session reflection + quality check",
+      "started": "2026-04-27T20:23:29.006Z",
+      "completed": "2026-04-27T20:23:39.900Z",
+      "duration_ms": 60000,
+      "summary": "Depth check passes (3/3 yes from Session A). Queue good: filter/map/reduce is highest-value next."
     },
     {
       "id": "T126",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "monkey-lang: filter/map/reduce builtins via host-WASM callback mechanism",
-      "task": null
+      "task": null,
+      "started": "2026-04-27T20:23:48.132Z",
+      "completed": "2026-04-27T20:31:53.492Z",
+      "duration_ms": 300000,
+      "summary": "Planned filter/map/reduce for WASM: export table, implement __map/__filter/__reduce/__find/__any/__every as host imports using call_indirect via table.get(). Closures already stored as [TAG_CLOSURE][table_index][env_ptr]. 3 BUILD tasks created."
     },
     {
       "id": "T127",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null,
+      "status": "done",
+      "task": "Export WASM table from compiler + implement __map host import with closure callback",
       "plan_ref": "T126",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-27T20:32:03.647Z",
+      "completed": "2026-04-27T20:39:33.744Z",
+      "duration_ms": 600000,
+      "summary": "Implemented map/filter/reduce/find/any/every WASM builtins via host-WASM closure callback. Exported table, host reads [TAG_CLOSURE][table_index][env_ptr], calls via table.get(). Added scope shadowing check for user-defined overrides. 268/268 tests pass, no regressions."
+    },
+    {
+      "id": "T134",
+      "mode": "BUILD",
+      "task": "Implement __filter and __reduce host imports with closure callback",
+      "status": "done",
+      "plan_ref": "T126",
+      "started": "2026-04-27T20:39:45.239Z",
+      "completed": "2026-04-27T20:39:45.380Z",
+      "duration_ms": 5000,
+      "summary": "Already implemented in T127 (all 6 HOFs done together)"
+    },
+    {
+      "id": "T135",
+      "mode": "BUILD",
+      "task": "Implement __find, __any, __every host imports + tests for all higher-order builtins",
+      "status": "done",
+      "plan_ref": "T126",
+      "started": "2026-04-27T20:39:54.992Z",
+      "completed": "2026-04-27T20:41:40.327Z",
+      "duration_ms": 300000,
+      "summary": "Added 27 tests for HOF builtins: map(5), filter(5), reduce(5), find(2), any(2), every(3), chaining(3), user-shadow(2). All 295/295 pass."
     },
     {
       "id": "T128",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Housekeeping"
+      "status": "in-progress",
+      "task": "Housekeeping",
+      "started": "2026-04-27T20:41:49.799Z"
     },
     {
       "id": "T129",
@@ -1946,6 +1984,10 @@
     {
       "time": "2026-04-27T20:22:12.615Z",
       "msg": "Removed T123: Window functions already done, no BUILD needed"
+    },
+    {
+      "time": "2026-04-27T20:31:47.648Z",
+      "msg": "PLAN T126 filled 3 BUILD tasks"
     }
   ]
 }
