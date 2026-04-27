@@ -390,6 +390,17 @@
       "completed": "2026-04-27T15:51:23.684Z",
       "duration_ms": 300000,
       "summary": "Wrote comprehensive ARCHITECTURE.md for monkey-lang: 5 backend comparison, value representations, design decisions, optimization opportunities, benchmark analysis."
+    },
+    {
+      "id": "T38",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "WASM compiler: implement constant folding that's compatible with WASM (fold arithmetic on integer literals to reduce runtime calls)",
+      "project": "monkey-lang",
+      "started": "2026-04-27T15:52:15.316Z",
+      "completed": "2026-04-27T15:53:09.763Z",
+      "duration_ms": 60000,
+      "summary": "Already implemented! WASM compiler has _tryConstantFold (recursive, handles all ops) + _isDefinitelyInteger (directs i32_add vs __add). stats.constantsFolded tracks fold count. No changes needed."
     }
   ],
   "focusProjects": [
@@ -557,6 +568,10 @@
     {
       "time": "2026-04-27T15:50:21.362Z",
       "msg": "Added T37 (THINK) after end: Write up WASM compiler architecture document — how the 5 backends differ, compilation strategy, optimization opportunities"
+    },
+    {
+      "time": "2026-04-27T15:52:07.940Z",
+      "msg": "Added T38 (BUILD) after end: WASM compiler: implement constant folding that's compatible with WASM (fold arithmetic on integer literals to reduce runtime calls)"
     }
   ]
 }
