@@ -13,6 +13,53 @@ export function explain(db, ast) {
   const stmt = ast.statement;
   const format = ast.format || 'text';
 
+  // EXPLAIN QUERY PLAN: SQLite-compatible simple output
+  if (ast.queryPlan) {
+    const rows = [];
+    let selectId = 0;
+    
+    function describeFrom(from, order = 0) {
+      if (!from) return;
+      const tableName = from.table || from.name || 'subquery';
+      const alias = from.alias ? ` AS ${from.alias}` : '';
+      
+      if (from.table === '__generate_series' || from.table === '__json_each' || from.table === '__json_tree') {
+        rows.push({ selectid: selectId, order, from: order, detail: `SCAN ${tableName}${alias}` });
+      } else if (tableName.startsWith('__')) {
+        rows.push({ selectid: selectId, order, from: order, detail: `SCAN ${tableName}${alias}` });
+      } else {
+        const tableObj = db.tables.get(tableName);
+        const hasPKIndex = tableObj?.schema?.some(c => c.primaryKey);
+        if (stmt.where && hasPKIndex) {
+          rows.push({ selectid: selectId, order, from: order, detail: `SEARCH ${tableName}${alias} USING INDEX` });
+        } else {
+          rows.push({ selectid: selectId, order, from: order, detail: `SCAN ${tableName}${alias}` });
+        }
+      }
+      
+      // Handle JOINs
+      if (from.joins) {
+        for (let i = 0; i < from.joins.length; i++) {
+          const join = from.joins[i];
+          const jTable = join.table || join.name || 'subquery';
+          const jAlias = join.alias ? ` AS ${join.alias}` : '';
+          rows.push({ selectid: selectId, order: i + 1, from: i + 1, detail: `SCAN ${jTable}${jAlias}` });
+        }
+      }
+    }
+    
+    describeFrom(stmt.from);
+    
+    if (stmt.orderBy) {
+      rows.push({ selectid: selectId, order: 0, from: 0, detail: 'USE TEMP B-TREE FOR ORDER BY' });
+    }
+    if (stmt.groupBy) {
+      rows.push({ selectid: selectId, order: 0, from: 0, detail: 'USE TEMP B-TREE FOR GROUP BY' });
+    }
+    
+    return { type: 'ROWS', rows, columns: ['selectid', 'order', 'from', 'detail'] };
+  }
+
   // EXPLAIN COMPILED: show the compiled query plan
   if (ast.compiled) {
     return explainCompiled(db, stmt);

@@ -1221,6 +1221,25 @@
       "completed": "2026-04-27T19:37:29.841Z",
       "duration_ms": 180000,
       "summary": "Fixed strftime (now handling), added julianday() and unixepoch(). Added %j,%w,%W,%s,%f,%% format codes. 33 regression, 323/323 compliance."
+    },
+    {
+      "id": "T117",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "monkey-lang WASM: benchmark post-nested-closure-fix to measure improvement",
+      "project": "monkey-lang",
+      "started": "2026-04-27T19:38:27.260Z",
+      "completed": "2026-04-27T19:39:27.467Z",
+      "duration_ms": 120000,
+      "summary": "Post-fix benchmarks: WASM 32.0x VM, 9.1x JIT. Closure factory nearly matches JIT (1.49ms vs 1.42ms). WASM wins on 3 benchmarks (sum, nested, if/else). Transpiler wins 8. Performance stable."
+    },
+    {
+      "id": "T118",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "HenryDB: add EXPLAIN QUERY PLAN support",
+      "project": "henrydb",
+      "started": "2026-04-27T19:39:51.815Z"
     }
   ],
   "focusProjects": [
@@ -1728,6 +1747,14 @@
     {
       "time": "2026-04-27T19:35:38.857Z",
       "msg": "Added T116 (BUILD) after end: HenryDB: add date/time functions (date, time, datetime, julianday, strftime)"
+    },
+    {
+      "time": "2026-04-27T19:38:15.947Z",
+      "msg": "Added T117 (BUILD) after end: monkey-lang WASM: benchmark post-nested-closure-fix to measure improvement"
+    },
+    {
+      "time": "2026-04-27T19:39:44.240Z",
+      "msg": "Added T118 (BUILD) after end: HenryDB: add EXPLAIN QUERY PLAN support"
     }
   ]
 }

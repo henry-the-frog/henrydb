@@ -15,7 +15,7 @@ const KEYWORDS = new Set([
   'LIKE', 'ILIKE', 'GLOB', 'SIMILAR', 'ESCAPE', 'UPPER', 'LOWER', 'INITCAP', 'LENGTH', 'CHAR_LENGTH', 'CONCAT', 'BETWEEN', 'SYMMETRIC', 'TABLESAMPLE', 'POSITION',
   'OVERLAY', 'PLACING', 'SPLIT_PART', 'TRANSLATE', 'CHR', 'ASCII', 'MD5', 'DATE_FORMAT', 'MAKE_DATE', 'MAKE_TIMESTAMP', 'EPOCH', 'TO_TIMESTAMP',
   'OVER', 'PARTITION', 'ROW_NUMBER', 'RANK', 'DENSE_RANK', 'LAG', 'LEAD', 'FIRST_VALUE', 'LAST_VALUE', 'CUME_DIST', 'PERCENT_RANK', 'NTH_VALUE', 'VIEW', 'DISTINCT',
-  'WITH', 'RECURSIVE', 'UNION', 'ALL', 'CASE', 'WHEN', 'THEN', 'ELSE', 'END', 'EXPLAIN', 'ANALYZE', 'COMPILED', 'FORMAT',
+  'WITH', 'RECURSIVE', 'UNION', 'ALL', 'CASE', 'WHEN', 'THEN', 'ELSE', 'END', 'EXPLAIN', 'QUERY', 'PLAN', 'ANALYZE', 'COMPILED', 'FORMAT',
   'INTERSECT', 'EXCEPT', 'GENERATED', 'ALWAYS', 'STORED', 'ROLLUP', 'CUBE', 'GROUPING', 'SETS', 'MERGE', 'USING', 'MATCHED', 'FILTER', 'SEQUENCE', 'START', 'INCREMENT', 'RESTART', 'NEXTVAL', 'CURRVAL',
   'IS', 'COALESCE', 'NULLIF', 'TRUNCATE', 'CROSS', 'FULL', 'OUTER', 'NATURAL', 'USING', 'SHOW', 'TABLES', 'DESCRIBE',
   'SUBSTRING', 'SUBSTR', 'REPLACE', 'TRIM', 'INSTR', 'ABS', 'ROUND', 'CEIL', 'FLOOR', 'IFNULL', 'ISNULL', 'NVL', 'IIF', 'TYPEOF',
@@ -287,8 +287,12 @@ export function parse(sql) {
   // EXPLAIN
   if (isKeyword('EXPLAIN')) {
     advance();
-    let analyze = false, compiled = false, format = 'text';
-    // Parse options: ANALYZE, COMPILED, (FORMAT JSON|YAML|DOT|TEXT)
+    let analyze = false, compiled = false, format = 'text', queryPlan = false;
+    // Parse options: QUERY PLAN, ANALYZE, COMPILED, (FORMAT JSON|YAML|DOT|TEXT)
+    if (isKeyword('QUERY') && tokens[pos + 1]?.type === 'KEYWORD' && tokens[pos + 1]?.value === 'PLAN') {
+      advance(); advance(); // QUERY PLAN
+      queryPlan = true;
+    }
     while (true) {
       if (isKeyword('ANALYZE')) { advance(); analyze = true; continue; }
       if (isKeyword('COMPILED')) { advance(); compiled = true; continue; }
@@ -313,7 +317,7 @@ export function parse(sql) {
     if (isKeyword('WITH')) statement = parseWith();
     else if (isKeyword('SELECT')) statement = parseSelect();
     else throw new Error('EXPLAIN requires a SELECT statement');
-    return { type: 'EXPLAIN', statement, analyze, compiled, format };
+    return { type: 'EXPLAIN', statement, analyze, compiled, format, queryPlan };
   }
 
 // SELECT or WITH
