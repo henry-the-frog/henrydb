@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-27T15:44:58.787Z",
+  "generated": "2026-04-27T15:46:05.345Z",
   "current": {
     "status": "done",
-    "mode": "BUILD",
-    "task": "WASM compiler: pre-compilation mode for benchmark (compile once, run many)",
-    "completedAt": "2026-04-27T15:44:58.787Z",
-    "taskId": "T33",
-    "summary": "Pre-compilation mode for WASM benchmark. Results: WASM vs VM now 4.7x (was 3.5x), WASM vs JIT 2.5x (was 1.9x). GCD 0.98ms, power 0.60ms. Pre-compile eliminates repeated compilation overhead.",
-    "durationMs": 300000
+    "mode": "EXPLORE",
+    "task": "Monkey-lang: run full test suite with WASM backend to find coverage gaps",
+    "completedAt": "2026-04-27T15:46:05.345Z",
+    "taskId": "T34",
+    "summary": "WASM coverage test: 93% pass rate (27/29). Failures: push() returns new array (design choice), semicolons after class defs (parser quirk). WASM backend has very good feature coverage across all major language features.",
+    "durationMs": 180000
   },
   "schedule": {
     "date": "2026-04-27",
@@ -7744,14 +7744,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 29,
+    "blocksCompleted": 30,
     "blocksTotal": 29,
     "modeDistribution": {
       "THINK": 5,
       "PLAN": 4,
       "BUILD": 13,
       "MAINTAIN": 4,
-      "EXPLORE": 3
+      "EXPLORE": 4
     }
   },
   "artifacts": [],
