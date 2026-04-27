@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-27T14:56:35.767Z",
+  "generated": "2026-04-27T14:58:43.944Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "HenryDB: fix boolean/integer coercion (comparisons should return 1/0 not true/false)",
-    "completedAt": "2026-04-27T14:56:35.767Z",
-    "taskId": "T7",
-    "summary": "Fixed boolean/integer coercion across 3 code paths: expression-evaluator (3 comparison sites), _evalValue bridge (true/false→1/0), volcano-planner comparators. All comparisons now return 1/0/NULL per SQLite spec. All tests pass.",
-    "durationMs": 600000
+    "task": "HenryDB: fix cross-type comparisons (numeric affinity coercion for = > < operators)",
+    "completedAt": "2026-04-27T14:58:43.944Z",
+    "taskId": "T21",
+    "summary": "Fixed cross-type comparisons: extended numeric affinity coercion from EQ/NE to all comparison operators (LT/GT/LE/GE). Applied to both expression-evaluator and volcano-planner. 10>'9' now correctly returns 1. 94 fuzzer tests pass.",
+    "durationMs": 300000
   },
   "schedule": {
     "date": "2026-04-27",
@@ -7635,12 +7635,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 9,
+    "blocksCompleted": 10,
     "blocksTotal": 22,
     "modeDistribution": {
       "THINK": 2,
       "PLAN": 2,
-      "BUILD": 4,
+      "BUILD": 5,
       "MAINTAIN": 1
     }
   },

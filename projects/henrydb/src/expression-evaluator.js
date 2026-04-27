@@ -766,16 +766,15 @@ P._evalExpr = function(expr, row) {
         return null;
       }
       // For EQ/NE: apply implicit coercion (one number, one numeric string → compare as numbers)
-      if (expr.op === 'EQ' || expr.op === 'NE') {
-        if (typeof left === 'number' && typeof right === 'string') {
-          const n = Number(right);
-          if (!isNaN(n) && right.trim() !== '') right = n;
-        } else if (typeof left === 'string' && typeof right === 'number') {
-          const n = Number(left);
-          if (!isNaN(n) && left.trim() !== '') left = n;
-        }
+      // Apply numeric affinity coercion: if one side is number and other is numeric string, coerce
+      if (typeof left === 'number' && typeof right === 'string') {
+        const n = Number(right);
+        if (!isNaN(n) && right.trim() !== '') right = n;
+      } else if (typeof left === 'string' && typeof right === 'number') {
+        const n = Number(left);
+        if (!isNaN(n) && left.trim() !== '') left = n;
       }
-      // For ordering comparisons: use sqliteCompare (type-class aware, no coercion)
+      // For ordering comparisons: use sqliteCompare (type-class aware after coercion)
       switch (expr.op) {
         case 'EQ': return sqlBool(left === right, left, right);
         case 'NE': return sqlBool(left !== right, left, right);

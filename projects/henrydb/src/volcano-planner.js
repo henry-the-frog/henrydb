@@ -1362,21 +1362,33 @@ function buildValueGetter(expr, ctx) {
   }
 }
 
+// Numeric affinity coercion helper
+function coerce(a, b) {
+  if (typeof a === 'number' && typeof b === 'string') {
+    const n = Number(b);
+    if (!isNaN(n) && b.trim() !== '') return [a, n];
+  } else if (typeof a === 'string' && typeof b === 'number') {
+    const n = Number(a);
+    if (!isNaN(n) && a.trim() !== '') return [n, b];
+  }
+  return [a, b];
+}
+
 const comparators = {
-  EQ: (a, b) => a == null || b == null ? null : a == b ? 1 : 0,
-  '=': (a, b) => a == null || b == null ? null : a == b ? 1 : 0,
-  NE: (a, b) => a == null || b == null ? null : a != b ? 1 : 0,
-  NEQ: (a, b) => a == null || b == null ? null : a != b ? 1 : 0,
-  '!=': (a, b) => a == null || b == null ? null : a != b ? 1 : 0,
-  '<>': (a, b) => a == null || b == null ? null : a != b ? 1 : 0,
-  LT: (a, b) => a == null || b == null ? null : a < b ? 1 : 0,
-  '<': (a, b) => a == null || b == null ? null : a < b ? 1 : 0,
-  LE: (a, b) => a == null || b == null ? null : a <= b ? 1 : 0,
-  '<=': (a, b) => a == null || b == null ? null : a <= b ? 1 : 0,
-  GT: (a, b) => a == null || b == null ? null : a > b ? 1 : 0,
-  '>': (a, b) => a == null || b == null ? null : a > b ? 1 : 0,
-  GE: (a, b) => a == null || b == null ? null : a >= b ? 1 : 0,
-  '>=': (a, b) => a == null || b == null ? null : a >= b ? 1 : 0,
+  EQ: (a, b) => { if (a == null || b == null) return null; [a, b] = coerce(a, b); return a == b ? 1 : 0; },
+  '=': (a, b) => { if (a == null || b == null) return null; [a, b] = coerce(a, b); return a == b ? 1 : 0; },
+  NE: (a, b) => { if (a == null || b == null) return null; [a, b] = coerce(a, b); return a != b ? 1 : 0; },
+  NEQ: (a, b) => { if (a == null || b == null) return null; [a, b] = coerce(a, b); return a != b ? 1 : 0; },
+  '!=': (a, b) => { if (a == null || b == null) return null; [a, b] = coerce(a, b); return a != b ? 1 : 0; },
+  '<>': (a, b) => { if (a == null || b == null) return null; [a, b] = coerce(a, b); return a != b ? 1 : 0; },
+  LT: (a, b) => { if (a == null || b == null) return null; [a, b] = coerce(a, b); return a < b ? 1 : 0; },
+  '<': (a, b) => { if (a == null || b == null) return null; [a, b] = coerce(a, b); return a < b ? 1 : 0; },
+  LE: (a, b) => { if (a == null || b == null) return null; [a, b] = coerce(a, b); return a <= b ? 1 : 0; },
+  '<=': (a, b) => { if (a == null || b == null) return null; [a, b] = coerce(a, b); return a <= b ? 1 : 0; },
+  GT: (a, b) => { if (a == null || b == null) return null; [a, b] = coerce(a, b); return a > b ? 1 : 0; },
+  '>': (a, b) => { if (a == null || b == null) return null; [a, b] = coerce(a, b); return a > b ? 1 : 0; },
+  GE: (a, b) => { if (a == null || b == null) return null; [a, b] = coerce(a, b); return a >= b ? 1 : 0; },
+  '>=': (a, b) => { if (a == null || b == null) return null; [a, b] = coerce(a, b); return a >= b ? 1 : 0; },
 };
 
 /**

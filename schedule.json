@@ -103,8 +103,12 @@
       "id": "T21",
       "mode": "BUILD",
       "task": "HenryDB: fix cross-type comparisons (numeric affinity coercion for = > < operators)",
-      "status": "upcoming",
-      "plan_ref": "T6"
+      "status": "done",
+      "plan_ref": "T6",
+      "started": "2026-04-27T14:57:05.059Z",
+      "completed": "2026-04-27T14:58:43.866Z",
+      "duration_ms": 300000,
+      "summary": "Fixed cross-type comparisons: extended numeric affinity coercion from EQ/NE to all comparison operators (LT/GT/LE/GE). Applied to both expression-evaluator and volcano-planner. 10>'9' now correctly returns 1. 94 fuzzer tests pass."
     },
     {
       "id": "T22",
