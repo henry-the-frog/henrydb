@@ -1134,6 +1134,16 @@
       "completed": "2026-04-27T19:13:29.707Z",
       "duration_ms": 180000,
       "summary": "Installed WABT (wasm2wat). But WasmCompiler OOMs even at 1GB for a simple program — severe memory leak in the compiler prevents generating WASM binary for analysis. The memory leak itself is the most impactful bug to fix. Filed for investigation."
+    },
+    {
+      "id": "T109",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Investigate WasmCompiler OOM: profile module import chain and object sizes",
+      "started": "2026-04-27T19:16:06.465Z",
+      "completed": "2026-04-27T19:19:20.260Z",
+      "duration_ms": 300000,
+      "summary": "ROOT CAUSE FOUND! Nested closure bug is a table index assignment issue. The outer fn(x) creates a closure pointing to func 16 (inner fn(z)) instead of func 15 (middle fn(y)). The table elem mapping has them in wrong order: index 0 → fn(z), index 1 → fn(y). Also confirmed: env_ptr=0 means x is NOT being captured. Two bugs: (1) wrong function table index, (2) captures not being stored in closure env. Both trace to how direct functions compile nested function literals."
     }
   ],
   "focusProjects": [
@@ -1609,6 +1619,10 @@
     {
       "time": "2026-04-27T19:11:32.867Z",
       "msg": "Added T108 (EXPLORE) after end: Install WABT and disassemble nested closure WASM binary"
+    },
+    {
+      "time": "2026-04-27T19:16:00.722Z",
+      "msg": "Added T109 (THINK) after end: Investigate WasmCompiler OOM: profile module import chain and object sizes"
     }
   ]
 }
