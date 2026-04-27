@@ -335,6 +335,24 @@
       "completed": "2026-04-27T15:41:44.770Z",
       "duration_ms": 300000,
       "summary": "Fixed CTE column renaming bug. WITH a(x) AS (...) now correctly renames output columns. Applied to both legacy path (select-inner.js) and volcano planner. Multi-CTE references work. 94 fuzzer tests pass."
+    },
+    {
+      "id": "T33",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "WASM compiler: pre-compilation mode for benchmark (compile once, run many)",
+      "project": "monkey-lang",
+      "started": "2026-04-27T15:42:49.585Z",
+      "completed": "2026-04-27T15:44:58.751Z",
+      "duration_ms": 300000,
+      "summary": "Pre-compilation mode for WASM benchmark. Results: WASM vs VM now 4.7x (was 3.5x), WASM vs JIT 2.5x (was 1.9x). GCD 0.98ms, power 0.60ms. Pre-compile eliminates repeated compilation overhead."
+    },
+    {
+      "id": "T34",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "Monkey-lang: run full test suite with WASM backend to find coverage gaps",
+      "project": "monkey-lang"
     }
   ],
   "focusProjects": [
@@ -482,6 +500,14 @@
     {
       "time": "2026-04-27T15:37:39.659Z",
       "msg": "Added T32 (BUILD) after end: Fix multi-CTE reference bug: CTE b referencing CTE a returns nulls"
+    },
+    {
+      "time": "2026-04-27T15:42:35.983Z",
+      "msg": "Added T33 (BUILD) after end: WASM compiler: pre-compilation mode for benchmark (compile once, run many)"
+    },
+    {
+      "time": "2026-04-27T15:42:40.872Z",
+      "msg": "Added T34 (EXPLORE) after end: Monkey-lang: run full test suite with WASM backend to find coverage gaps"
     }
   ]
 }

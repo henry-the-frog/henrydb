@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-27T15:41:44.805Z",
+  "generated": "2026-04-27T15:44:58.787Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Fix multi-CTE reference bug: CTE b referencing CTE a returns nulls",
-    "completedAt": "2026-04-27T15:41:44.805Z",
-    "taskId": "T32",
-    "summary": "Fixed CTE column renaming bug. WITH a(x) AS (...) now correctly renames output columns. Applied to both legacy path (select-inner.js) and volcano planner. Multi-CTE references work. 94 fuzzer tests pass.",
+    "task": "WASM compiler: pre-compilation mode for benchmark (compile once, run many)",
+    "completedAt": "2026-04-27T15:44:58.787Z",
+    "taskId": "T33",
+    "summary": "Pre-compilation mode for WASM benchmark. Results: WASM vs VM now 4.7x (was 3.5x), WASM vs JIT 2.5x (was 1.9x). GCD 0.98ms, power 0.60ms. Pre-compile eliminates repeated compilation overhead.",
     "durationMs": 300000
   },
   "schedule": {
@@ -7744,12 +7744,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 28,
+    "blocksCompleted": 29,
     "blocksTotal": 29,
     "modeDistribution": {
       "THINK": 5,
       "PLAN": 4,
-      "BUILD": 12,
+      "BUILD": 13,
       "MAINTAIN": 4,
       "EXPLORE": 3
     }
