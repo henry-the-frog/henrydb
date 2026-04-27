@@ -1214,10 +1214,13 @@
     {
       "id": "T116",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: add date/time functions (date, time, datetime, julianday, strftime)",
       "project": "henrydb",
-      "started": "2026-04-27T19:35:49.364Z"
+      "started": "2026-04-27T19:35:49.364Z",
+      "completed": "2026-04-27T19:37:29.841Z",
+      "duration_ms": 180000,
+      "summary": "Fixed strftime (now handling), added julianday() and unixepoch(). Added %j,%w,%W,%s,%f,%% format codes. 33 regression, 323/323 compliance."
     }
   ],
   "focusProjects": [
