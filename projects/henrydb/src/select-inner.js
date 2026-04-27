@@ -15,30 +15,54 @@ function executeBuiltinTVF(funcName, args, db) {
   
   switch (funcName.toLowerCase()) {
     case 'json_each': {
-      let data;
-      try { data = JSON.parse(argValues[0]); } catch { return { rows: [] }; }
-      const rows = [];
-      if (Array.isArray(data)) {
-        for (let i = 0; i < data.length; i++) {
-          const v = data[i];
-          rows.push({
-            key: i,
-            value: typeof v === 'object' ? JSON.stringify(v) : v,
-            type: typeof v === 'object' ? (Array.isArray(v) ? 'array' : 'object') : typeof v,
-            atom: typeof v === 'object' ? null : v,
-          });
+      const jsonStr = argValues[0];
+      const rootPath = argValues[1] || '$';
+      if (jsonStr == null) return { rows: [] };
+      try {
+        let obj = typeof jsonStr === 'string' ? JSON.parse(jsonStr) : jsonStr;
+        // Navigate to root path if not $
+        if (rootPath !== '$') {
+          const parts = rootPath.replace(/^\$\.?/, '').split(/\.|\[(\d+)\]/).filter(Boolean);
+          for (const p of parts) {
+            obj = obj?.[/^\d+$/.test(p) ? parseInt(p) : p];
+          }
         }
-      } else if (typeof data === 'object' && data !== null) {
-        for (const [key, v] of Object.entries(data)) {
-          rows.push({
-            key,
-            value: typeof v === 'object' ? JSON.stringify(v) : v,
-            type: typeof v === 'object' ? (Array.isArray(v) ? 'array' : 'object') : typeof v,
-            atom: typeof v === 'object' ? null : v,
-          });
+        const rows = [];
+        if (Array.isArray(obj)) {
+          for (let i = 0; i < obj.length; i++) {
+            const v = obj[i];
+            const type = v === null ? 'null' : Array.isArray(v) ? 'array' : typeof v === 'object' ? 'object' : typeof v;
+            const atom = (typeof v === 'object' && v !== null) ? null : v;
+            rows.push({
+              key: i,
+              value: typeof v === 'object' && v !== null ? JSON.stringify(v) : v,
+              type,
+              atom,
+              id: i,
+              parent: null,
+              fullkey: `${rootPath}[${i}]`,
+              path: rootPath,
+            });
+          }
+        } else if (typeof obj === 'object' && obj !== null) {
+          let id = 0;
+          for (const [key, v] of Object.entries(obj)) {
+            const type = v === null ? 'null' : Array.isArray(v) ? 'array' : typeof v === 'object' ? 'object' : typeof v;
+            const atom = (typeof v === 'object' && v !== null) ? null : v;
+            rows.push({
+              key,
+              value: typeof v === 'object' && v !== null ? JSON.stringify(v) : v,
+              type,
+              atom,
+              id: id++,
+              parent: null,
+              fullkey: `${rootPath}.${key}`,
+              path: rootPath,
+            });
+          }
         }
-      }
-      return { rows };
+        return { rows };
+      } catch { return { rows: [] }; }
     }
     
     case 'generate_series': {
@@ -50,6 +74,45 @@ function executeBuiltinTVF(funcName, args, db) {
         rows.push({ value: v });
       }
       return { rows };
+    }
+    
+    case 'json_tree': {
+      // Recursive version of json_each
+      const jsonStr = argValues[0];
+      const rootPath = argValues[1] || '$';
+      if (jsonStr == null) return { rows: [] };
+      try {
+        const obj = typeof jsonStr === 'string' ? JSON.parse(jsonStr) : jsonStr;
+        const rows = [];
+        let nextId = 0;
+        const walk = (value, path, parentId) => {
+          const id = nextId++;
+          const type = value === null ? 'null' : Array.isArray(value) ? 'array' : typeof value === 'object' ? 'object' : typeof value;
+          const atom = (typeof value === 'object' && value !== null) ? null : value;
+          const key = path === rootPath ? null : path.includes('[') ? parseInt(path.match(/\[(\d+)\]$/)?.[1] || '0') : path.split('.').pop();
+          rows.push({
+            key,
+            value: typeof value === 'object' && value !== null ? JSON.stringify(value) : value,
+            type,
+            atom,
+            id,
+            parent: parentId,
+            fullkey: path,
+            path: path === rootPath ? '$' : path.replace(/\.?[^.\[]+(\[\d+\])?$/, '') || '$',
+          });
+          if (Array.isArray(value)) {
+            for (let i = 0; i < value.length; i++) {
+              walk(value[i], `${path}[${i}]`, id);
+            }
+          } else if (typeof value === 'object' && value !== null) {
+            for (const [k, v] of Object.entries(value)) {
+              walk(v, `${path}.${k}`, id);
+            }
+          }
+        };
+        walk(obj, rootPath, null);
+        return { rows };
+      } catch { return { rows: [] }; }
     }
     
     default:
@@ -137,6 +200,27 @@ export function selectInner(db, ast) {
     }
     
     // Apply columns
+    return db._applySelectColumns(ast, rows);
+  }
+
+  // JSON_EACH / JSON_TREE: expand JSON to rows
+  if (tableName === '__json_each' || tableName === '__json_tree') {
+    const jsonVal = db._evalValue(ast.from.jsonExpr, {});
+    const pathVal = ast.from.pathExpr ? db._evalValue(ast.from.pathExpr, {}) : '$';
+    // Call the TVF directly with evaluated values
+    const tvfResult = executeBuiltinTVF(ast.from.tvfName, [
+      { type: 'literal', value: jsonVal },
+      { type: 'literal', value: pathVal }
+    ], db);
+    let rows = tvfResult ? tvfResult.rows : [];
+    
+    // Apply WHERE
+    if (ast.where) rows = rows.filter(row => db._evalExpr(ast.where, row));
+    
+    const hasAgg = ast.columns.some(c => c.type === 'aggregate');
+    if (ast.groupBy) return db._selectWithGroupBy(ast, rows);
+    if (hasAgg) return { type: 'ROWS', rows: [db._computeAggregates(ast.columns, rows)] };
+    
     return db._applySelectColumns(ast, rows);
   }
 

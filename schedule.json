@@ -955,10 +955,21 @@
     {
       "id": "T92",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: add json_insert, json_replace, json_remove functions",
       "project": "henrydb",
-      "started": "2026-04-27T18:30:48.878Z"
+      "started": "2026-04-27T18:30:48.878Z",
+      "completed": "2026-04-27T18:32:48.092Z",
+      "duration_ms": 300000,
+      "summary": "Added json_insert, json_replace, json_remove, json_patch. Improved json_set with multi-path, nested paths, array indices. All handle multiple path/value pairs. 33 regression, 323/323 compliance."
+    },
+    {
+      "id": "T93",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "HenryDB: add json_each() table-valued function for iterating JSON arrays/objects",
+      "project": "henrydb",
+      "started": "2026-04-27T18:33:06.241Z"
     }
   ],
   "focusProjects": [
@@ -1366,6 +1377,10 @@
     {
       "time": "2026-04-27T18:30:39.479Z",
       "msg": "Added T92 (BUILD) after end: HenryDB: add json_insert, json_replace, json_remove functions"
+    },
+    {
+      "time": "2026-04-27T18:32:59.187Z",
+      "msg": "Added T93 (BUILD) after end: HenryDB: add json_each() table-valued function for iterating JSON arrays/objects"
     }
   ]
 }

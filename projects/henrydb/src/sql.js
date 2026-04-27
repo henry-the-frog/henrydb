@@ -41,7 +41,7 @@ const KEYWORDS = new Set([
   'IF', 'EXISTS',
   'JSON_EXTRACT', 'JSON_SET', 'JSON_ARRAY_LENGTH', 'JSON_TYPE', 'JSON_OBJECT', 'JSON_ARRAY', 'JSON_VALID', 'JSON_VALUE',
   'FULLTEXT', 'MATCH', 'AGAINST',
-  'GENERATE_SERIES', 'LATERAL', 'UNNEST',
+  'GENERATE_SERIES', 'JSON_EACH', 'JSON_TREE', 'LATERAL', 'UNNEST',
   'EXTRACT', 'DATE_PART', 'LTRIM', 'RTRIM', 'INTERVAL', 'GREATEST', 'LEAST', 'MOD', 'FOR',
   'PIVOT', 'UNPIVOT', 'CONCURRENTLY', 'REGEXP', 'RLIKE', 'REGEXP_MATCHES', 'REGEXP_REPLACE', 'REGEXP_COUNT', 'APPLY',
   'CYCLE', 'SEARCH', 'DEPTH', 'BREADTH', 'WINDOW', 'COMMENT',
@@ -1744,6 +1744,23 @@ export function parse(sql) {
         expect(')');
       }
       return { table: '__generate_series', alias, start, stop, step, columnAliases };
+    }
+    // JSON_EACH(json[, path]) and JSON_TREE(json[, path])
+    if (isKeyword('JSON_EACH') || isKeyword('JSON_TREE')) {
+      const funcName = advance().value.toLowerCase(); // json_each or json_tree
+      expect('(');
+      const jsonExpr = parseExpr();
+      let pathExpr = null;
+      if (match(',')) {
+        pathExpr = parseExpr();
+      }
+      expect(')');
+      let alias = null;
+      if (isKeyword('AS')) { advance(); alias = readAlias(); }
+      else if (peek().type === 'KEYWORD' && !['WHERE', 'GROUP', 'ORDER', 'LIMIT', 'JOIN', 'LEFT', 'RIGHT', 'INNER', 'OUTER', 'ON', 'HAVING', 'UNION', 'INTERSECT', 'EXCEPT'].includes(peek().value)) {
+        alias = advance().value;
+      }
+      return { table: '__' + funcName, alias, jsonExpr, pathExpr, tvfName: funcName };
     }
     // UNNEST(array_expr)
     if (isKeyword('UNNEST')) {
