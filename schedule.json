@@ -1493,43 +1493,159 @@
     {
       "id": "T141",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Git push + housekeeping",
-      "started": "2026-04-27T20:55:12.472Z"
+      "started": "2026-04-27T20:55:12.472Z",
+      "completed": "2026-04-27T20:55:32.171Z",
+      "duration_ms": 30000,
+      "summary": "Git push all repos"
     },
     {
       "id": "T142",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "Depth: stress test HOF builtins with edge cases + closures with captured mutations",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-27T20:55:41.414Z",
+      "completed": "2026-04-27T21:01:14.398Z",
+      "duration_ms": 600000,
+      "summary": "EXPLORE found CRITICAL bug: JS host and WASM heap collision at 100K/131K boundary. Large arrays (10K+ elements) silently corrupted. Fixed by splitting memory: WASM heap lower half (131K start), JS host upper half (512K start), 16 pages (1MB). Also added DataView refresh after callbacks for memory growth safety. 3 new stress tests. 307/307 pass."
     },
     {
       "id": "T143",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "regex-engine: Fix empty string matching and anchor support",
       "task": null,
-      "project": "regex-engine"
+      "project": "regex-engine",
+      "started": "2026-04-27T21:01:34.339Z",
+      "completed": "2026-04-27T21:01:40.434Z",
+      "duration_ms": 1000,
+      "summary": "Skipped - wrong project (regex-engine) for this session"
     },
     {
       "id": "T144",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "monkey-lang: WASM sort() implementation with comparison function callback",
       "task": null,
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-27T21:01:54.013Z",
+      "completed": "2026-04-27T21:01:54.154Z",
+      "duration_ms": 1000,
+      "summary": "Sort already implemented in T137"
     },
     {
       "id": "T145",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": null,
       "plan_ref": "T144",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-27T21:02:05.076Z",
+      "completed": "2026-04-27T21:02:05.217Z",
+      "duration_ms": 1000,
+      "summary": "Sort already built in T137"
     },
     {
       "id": "T146",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Final git push + session close",
+      "started": "2026-04-27T21:02:22.490Z",
+      "completed": "2026-04-27T21:02:22.631Z",
+      "duration_ms": 1000,
+      "summary": "Not closing yet - 3h remaining"
+    },
+    {
+      "id": "T149",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Plan next cycle: check WASM memory management for other bugs + explore new language features",
+      "started": "2026-04-27T21:03:01.964Z",
+      "completed": "2026-04-27T21:03:15.249Z",
+      "duration_ms": 60000,
+      "summary": "THINK: Shared allocator approach identified — export WASM alloc function, have JS host use it. String stress test next to find same class of bugs. HenryDB UPDATE OF for project variety."
+    },
+    {
+      "id": "T150",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Stress test WASM string operations for heap corruption (same class of bug as T142)",
+      "project": "monkey-lang",
+      "started": "2026-04-27T21:03:26.683Z",
+      "completed": "2026-04-27T21:06:14.282Z",
+      "duration_ms": 300000,
+      "summary": "EXPLORE: Found string concat is O(n²) memory without GC. Increased memory to 2MB (32 pages), JS heap at 1MB offset. String concat works up to ~500 iterations, arrays up to ~100K elements. Beyond that needs GC mode. Known limitation documented."
+    },
+    {
+      "id": "T151",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "monkey-lang: WASM shared allocator (unify JS host + WASM heap to prevent future collisions)",
+      "task": null,
+      "project": "monkey-lang",
+      "started": "2026-04-27T21:06:27.851Z",
+      "completed": "2026-04-27T21:06:47.414Z",
+      "duration_ms": 60000,
+      "summary": "Plan: export WASM alloc function, have JS writeString/writeArray use it via memoryRef.alloc after instantiation. Falls back to jsHeapPtr if not available."
+    },
+    {
+      "id": "T152",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Export WASM alloc function + update writeString/writeArray/writeFloat to use it via memoryRef.alloc",
+      "plan_ref": "T151",
+      "project": "monkey-lang",
+      "started": "2026-04-27T21:07:00.368Z",
+      "completed": "2026-04-27T21:09:27.770Z",
+      "duration_ms": 300000,
+      "summary": "Unified shared allocator: exported WASM alloc function as __alloc. JS host writeString/writeArray/writeFloat now use WASM allocator directly via memoryRef.alloc. Eliminates dual-allocator collision class of bugs. 374/374 tests pass."
+    },
+    {
+      "id": "T153",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Git push + mid-session sync",
+      "started": "2026-04-27T21:09:41.154Z"
+    },
+    {
+      "id": "T154",
+      "mode": "PLAN",
+      "status": "upcoming",
+      "goal": "HenryDB: UPDATE OF column syntax for triggers",
+      "task": null,
+      "project": "henrydb"
+    },
+    {
+      "id": "T155",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null,
+      "plan_ref": "T154",
+      "project": "henrydb"
+    },
+    {
+      "id": "T156",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Housekeeping + git push"
+    },
+    {
+      "id": "T157",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "Run full monkey-lang test suite (all backends) to check for cross-backend consistency",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T158",
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "Evening assessment + session wrap planning"
+    },
+    {
+      "id": "T159",
       "mode": "MAINTAIN",
       "status": "upcoming",
       "task": "Final git push + session close"
@@ -2184,6 +2300,54 @@
     {
       "time": "2026-04-27T20:49:55.569Z",
       "msg": "PLAN T139 filled 2 BUILD tasks"
+    },
+    {
+      "time": "2026-04-27T21:02:46.969Z",
+      "msg": "Added T149 (THINK) after end: Plan next cycle: check WASM memory management for other bugs + explore new language features"
+    },
+    {
+      "time": "2026-04-27T21:02:47.086Z",
+      "msg": "Added T150 (EXPLORE) after end: Stress test WASM string operations for heap corruption (same class of bug as T142)"
+    },
+    {
+      "time": "2026-04-27T21:02:47.198Z",
+      "msg": "Added T151 (PLAN) after end: monkey-lang: WASM shared allocator (unify JS host + WASM heap to prevent future collisions)"
+    },
+    {
+      "time": "2026-04-27T21:02:47.311Z",
+      "msg": "Added T152 (BUILD) after end: null"
+    },
+    {
+      "time": "2026-04-27T21:02:47.428Z",
+      "msg": "Added T153 (MAINTAIN) after end: Git push + mid-session sync"
+    },
+    {
+      "time": "2026-04-27T21:02:47.543Z",
+      "msg": "Added T154 (PLAN) after end: HenryDB: UPDATE OF column syntax for triggers"
+    },
+    {
+      "time": "2026-04-27T21:02:47.662Z",
+      "msg": "Added T155 (BUILD) after end: null"
+    },
+    {
+      "time": "2026-04-27T21:02:47.778Z",
+      "msg": "Added T156 (MAINTAIN) after end: Housekeeping + git push"
+    },
+    {
+      "time": "2026-04-27T21:02:47.916Z",
+      "msg": "Added T157 (EXPLORE) after end: Run full monkey-lang test suite (all backends) to check for cross-backend consistency"
+    },
+    {
+      "time": "2026-04-27T21:02:48.034Z",
+      "msg": "Added T158 (THINK) after end: Evening assessment + session wrap planning"
+    },
+    {
+      "time": "2026-04-27T21:02:48.270Z",
+      "msg": "Added T159 (MAINTAIN) after end: Final git push + session close"
+    },
+    {
+      "time": "2026-04-27T21:06:42.337Z",
+      "msg": "PLAN T151 filled 1 BUILD tasks"
     }
   ]
 }
