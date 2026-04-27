@@ -1,7 +1,9 @@
 # TODO.md
 
 ## Urgent
-(none)
+- monkey-lang: WasmCompiler OOMs at 2GB+ for standalone compilation (since 2026-04-27)
+  - Blocks: binary caching, CLI, WASM playground
+  - Likely cause: massive import chain creates huge object graphs
 
 ## Normal
 - monkey-lang: Fix nested closure captures (3+ levels return 0 for outer vars)

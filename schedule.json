@@ -1075,9 +1075,12 @@
     {
       "id": "T103",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Update daily log, TASKS.md, push all changes",
-      "started": "2026-04-27T19:10:29.882Z"
+      "started": "2026-04-27T19:10:29.882Z",
+      "completed": "2026-04-27T19:11:06.025Z",
+      "duration_ms": 120000,
+      "summary": "Final housekeeping: daily log with evening summary, TASKS.md updated, git push to both repos."
     },
     {
       "id": "T104",
@@ -1120,6 +1123,17 @@
       "completed": "2026-04-27T19:09:47.146Z",
       "duration_ms": 600000,
       "summary": "Deep analysis of nested closure bug. Root cause: _hasFreeVariables stopped at nested functions (fixed to walk into them). But the core issue persists — puts in middle function produces no output when a nested function literal is the last expression. The code generation looks correct on paper (correct body references, correct scope restoration). Likely a WASM binary encoding issue where instructions end up in wrong function body. Need WASM disassembler to confirm. Key finding: the outer function is compiled as a direct function (no env_ptr) which changes the local index layout."
+    },
+    {
+      "id": "T108",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Install WABT and disassemble nested closure WASM binary",
+      "project": "monkey-lang",
+      "started": "2026-04-27T19:11:37.714Z",
+      "completed": "2026-04-27T19:13:29.707Z",
+      "duration_ms": 180000,
+      "summary": "Installed WABT (wasm2wat). But WasmCompiler OOMs even at 1GB for a simple program — severe memory leak in the compiler prevents generating WASM binary for analysis. The memory leak itself is the most impactful bug to fix. Filed for investigation."
     }
   ],
   "focusProjects": [
@@ -1591,6 +1605,10 @@
     {
       "time": "2026-04-27T19:04:46.424Z",
       "msg": "Added T107 (THINK) after end: Deep analysis: nested closure capture bug — trace WASM binary output"
+    },
+    {
+      "time": "2026-04-27T19:11:32.867Z",
+      "msg": "Added T108 (EXPLORE) after end: Install WABT and disassemble nested closure WASM binary"
     }
   ]
 }
