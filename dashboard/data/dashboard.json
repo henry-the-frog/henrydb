@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-27T15:57:54.437Z",
+  "generated": "2026-04-27T16:01:51.180Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Monkey-lang: WASM compiler type inference integration — use type info to bypass __add for known-integer additions",
-    "completedAt": "2026-04-27T15:57:54.437Z",
-    "taskId": "T40",
-    "summary": "MASSIVE perf improvement! Type inference for variable bindings: let x = 5 marks x as knownInt, bypasses __add host calls. Results: WASM vs VM 36.7x (was 4.7x), WASM vs JIT 12.0x (was 2.5x). WASM now beats Transpiler on 4/10 benchmarks including sum 10k (0.07ms vs 0.13ms).",
+    "task": "WASM: propagate knownInt through function parameters (if all call sites pass integers, mark params as knownInt)",
+    "completedAt": "2026-04-27T16:01:51.180Z",
+    "taskId": "T41",
+    "summary": "Added function parameter type inference via body scanning. Parameters used in arithmetic/comparisons marked knownInt. No benchmark regression. fib unchanged (bottleneck is indirect call overhead, not arithmetic). All 208 tests pass.",
     "durationMs": 300000
   },
   "schedule": {
@@ -7744,12 +7744,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 36,
+    "blocksCompleted": 37,
     "blocksTotal": 29,
     "modeDistribution": {
       "THINK": 6,
       "PLAN": 4,
-      "BUILD": 18,
+      "BUILD": 19,
       "MAINTAIN": 4,
       "EXPLORE": 4
     }

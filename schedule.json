@@ -423,6 +423,17 @@
       "completed": "2026-04-27T15:57:54.403Z",
       "duration_ms": 300000,
       "summary": "MASSIVE perf improvement! Type inference for variable bindings: let x = 5 marks x as knownInt, bypasses __add host calls. Results: WASM vs VM 36.7x (was 4.7x), WASM vs JIT 12.0x (was 2.5x). WASM now beats Transpiler on 4/10 benchmarks including sum 10k (0.07ms vs 0.13ms)."
+    },
+    {
+      "id": "T41",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "WASM: propagate knownInt through function parameters (if all call sites pass integers, mark params as knownInt)",
+      "project": "monkey-lang",
+      "started": "2026-04-27T15:59:02.983Z",
+      "completed": "2026-04-27T16:01:51.145Z",
+      "duration_ms": 300000,
+      "summary": "Added function parameter type inference via body scanning. Parameters used in arithmetic/comparisons marked knownInt. No benchmark regression. fib unchanged (bottleneck is indirect call overhead, not arithmetic). All 208 tests pass."
     }
   ],
   "focusProjects": [
@@ -602,6 +613,10 @@
     {
       "time": "2026-04-27T15:55:18.394Z",
       "msg": "Added T40 (BUILD) after end: Monkey-lang: WASM compiler type inference integration — use type info to bypass __add for known-integer additions"
+    },
+    {
+      "time": "2026-04-27T15:58:55.698Z",
+      "msg": "Added T41 (BUILD) after end: WASM: propagate knownInt through function parameters (if all call sites pass integers, mark params as knownInt)"
     }
   ]
 }
