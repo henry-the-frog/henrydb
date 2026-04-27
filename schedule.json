@@ -1639,28 +1639,127 @@
     {
       "id": "T156",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Housekeeping + git push",
-      "started": "2026-04-27T21:15:46.927Z"
+      "started": "2026-04-27T21:15:46.927Z",
+      "completed": "2026-04-27T21:16:24.619Z",
+      "duration_ms": 30000,
+      "summary": "Git push all repos"
     },
     {
       "id": "T157",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "Run full monkey-lang test suite (all backends) to check for cross-backend consistency",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-27T21:16:35.544Z",
+      "completed": "2026-04-27T21:17:38.320Z",
+      "duration_ms": 120000,
+      "summary": "Full monkey-lang test suite: 1893/1896 pass, 3 skipped (JIT timeouts), 0 failures. All backends consistent. 374 WASM + 761 eval/compiler + 302 JIT + 456 others."
     },
     {
       "id": "T158",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Evening assessment + session wrap planning"
+      "status": "done",
+      "task": "Evening assessment + session wrap planning",
+      "started": "2026-04-27T21:17:55.173Z",
+      "completed": "2026-04-27T21:18:10.383Z",
+      "duration_ms": 60000,
+      "summary": "Mid-afternoon: 9 BUILDs, 2 EXPLOREs. Depth check 3/3 yes. 3h remaining. Focus: HenryDB trigger WHEN clause + monkey-lang feature."
     },
     {
       "id": "T159",
       "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Final git push + session close",
+      "started": "2026-04-27T21:18:38.107Z",
+      "completed": "2026-04-27T21:18:38.250Z",
+      "duration_ms": 1000,
+      "summary": "Not closing - 3h remaining"
+    },
+    {
+      "id": "T160",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "HenryDB: WHEN clause for triggers (conditional trigger firing)",
+      "task": null,
+      "project": "henrydb",
+      "started": "2026-04-27T21:18:44.494Z",
+      "completed": "2026-04-27T21:19:03.902Z",
+      "duration_ms": 60000,
+      "summary": "Plan WHEN clause: parse WHEN <expr> between FOR EACH ROW and BEGIN, store SQL, evaluate with NEW/OLD bindings before firing body."
+    },
+    {
+      "id": "T161",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: Parse WHEN clause in CREATE TRIGGER + evaluate condition before firing",
+      "plan_ref": "T160",
+      "project": "henrydb",
+      "started": "2026-04-27T21:19:11.898Z",
+      "completed": "2026-04-27T21:22:03.754Z",
+      "duration_ms": 300000,
+      "summary": "HenryDB WHEN clause for triggers. Parser captures WHEN <expr> before BEGIN, evaluates with NEW/OLD bindings via SELECT CASE WHEN. Works combined with UPDATE OF columns. 3 new tests, 15/15 pass."
+    },
+    {
+      "id": "T162",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "monkey-lang: WASM flatMap builtin + zip/enumerate HOFs",
+      "task": null,
+      "project": "monkey-lang",
+      "started": "2026-04-27T21:22:18.430Z",
+      "completed": "2026-04-27T21:22:35.677Z",
+      "duration_ms": 60000,
+      "summary": "Plan flatMap/zip/enumerate: host imports using shared allocator, compiler builtin cases, tests."
+    },
+    {
+      "id": "T163",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "WASM flatMap/zip/enumerate builtins: host imports + compiler cases + tests",
+      "plan_ref": "T162",
+      "project": "monkey-lang",
+      "started": "2026-04-27T21:22:41.929Z",
+      "completed": "2026-04-27T21:25:12.014Z",
+      "duration_ms": 300000,
+      "summary": "flatMap/zip/enumerate WASM builtins: flatMap maps+flattens, zip pairs from 2 arrays, enumerate pairs with index. 10 new tests, 317/317 pass."
+    },
+    {
+      "id": "T164",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Git push",
+      "started": "2026-04-27T21:25:28.259Z"
+    },
+    {
+      "id": "T165",
+      "mode": "PLAN",
       "status": "upcoming",
-      "task": "Final git push + session close"
+      "goal": "HenryDB: INSTEAD OF triggers for views",
+      "task": null,
+      "project": "henrydb"
+    },
+    {
+      "id": "T166",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null,
+      "plan_ref": "T165",
+      "project": "henrydb"
+    },
+    {
+      "id": "T167",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "Benchmark: WASM HOFs vs VM eval for map/filter/reduce performance comparison",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T168",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Final git push + evening summary"
     }
   ],
   "focusProjects": [
@@ -2364,6 +2463,50 @@
     {
       "time": "2026-04-27T21:11:01.975Z",
       "msg": "PLAN T154 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-04-27T21:18:22.625Z",
+      "msg": "Added T160 (PLAN) after end: HenryDB: WHEN clause for triggers (conditional trigger firing)"
+    },
+    {
+      "time": "2026-04-27T21:18:22.741Z",
+      "msg": "Added T161 (BUILD) after end: null"
+    },
+    {
+      "time": "2026-04-27T21:18:22.858Z",
+      "msg": "Added T162 (PLAN) after end: monkey-lang: WASM flatMap builtin + zip/enumerate HOFs"
+    },
+    {
+      "time": "2026-04-27T21:18:22.974Z",
+      "msg": "Added T163 (BUILD) after end: null"
+    },
+    {
+      "time": "2026-04-27T21:18:23.091Z",
+      "msg": "Added T164 (MAINTAIN) after end: Git push"
+    },
+    {
+      "time": "2026-04-27T21:18:23.207Z",
+      "msg": "Added T165 (PLAN) after end: HenryDB: INSTEAD OF triggers for views"
+    },
+    {
+      "time": "2026-04-27T21:18:23.323Z",
+      "msg": "Added T166 (BUILD) after end: null"
+    },
+    {
+      "time": "2026-04-27T21:18:23.439Z",
+      "msg": "Added T167 (EXPLORE) after end: Benchmark: WASM HOFs vs VM eval for map/filter/reduce performance comparison"
+    },
+    {
+      "time": "2026-04-27T21:18:23.576Z",
+      "msg": "Added T168 (MAINTAIN) after end: Final git push + evening summary"
+    },
+    {
+      "time": "2026-04-27T21:18:54.969Z",
+      "msg": "PLAN T160 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-04-27T21:22:30.586Z",
+      "msg": "PLAN T162 filled 1 BUILD tasks"
     }
   ]
 }

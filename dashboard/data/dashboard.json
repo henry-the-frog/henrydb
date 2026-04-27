@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-27T21:15:46.964Z",
+  "generated": "2026-04-27T21:25:28.295Z",
   "current": {
     "status": "in-progress",
     "mode": "MAINTAIN",
-    "task": "Housekeeping + git push",
-    "startedAt": "2026-04-27T21:15:46.964Z",
-    "taskId": "T156"
+    "task": "Git push",
+    "startedAt": "2026-04-27T21:25:28.295Z",
+    "taskId": "T164"
   },
   "schedule": {
     "date": "2026-04-27",
@@ -9061,57 +9061,156 @@
       {
         "id": "T154",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "HenryDB: UPDATE OF column syntax for triggers",
         "task": null,
         "project": "henrydb",
-        "started": "2026-04-27T21:10:12.606Z"
+        "started": "2026-04-27T21:10:12.606Z",
+        "completed": "2026-04-27T21:11:08.204Z",
+        "duration_ms": 120000,
+        "summary": "Plan: parse UPDATE OF col1,col2 in CREATE TRIGGER, store columns array, check on UPDATE fire if specified columns changed."
       },
       {
         "id": "T155",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "HenryDB: Parse UPDATE OF columns in CREATE TRIGGER + fire only when specified columns change",
         "plan_ref": "T154",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-27T21:11:18.177Z",
+        "completed": "2026-04-27T21:15:33.672Z",
+        "duration_ms": 300000,
+        "summary": "HenryDB: UPDATE OF column syntax for triggers. Parser handles OF col1,col2 between event and ON. Triggers only fire when specified columns change. 4 new tests, 8/8 pass. Also added OF to keyword list."
       },
       {
         "id": "T156",
         "mode": "MAINTAIN",
-        "status": "upcoming",
-        "task": "Housekeeping + git push"
+        "status": "done",
+        "task": "Housekeeping + git push",
+        "started": "2026-04-27T21:15:46.927Z",
+        "completed": "2026-04-27T21:16:24.619Z",
+        "duration_ms": 30000,
+        "summary": "Git push all repos"
       },
       {
         "id": "T157",
         "mode": "EXPLORE",
-        "status": "upcoming",
+        "status": "done",
         "task": "Run full monkey-lang test suite (all backends) to check for cross-backend consistency",
-        "project": "monkey-lang"
+        "project": "monkey-lang",
+        "started": "2026-04-27T21:16:35.544Z",
+        "completed": "2026-04-27T21:17:38.320Z",
+        "duration_ms": 120000,
+        "summary": "Full monkey-lang test suite: 1893/1896 pass, 3 skipped (JIT timeouts), 0 failures. All backends consistent. 374 WASM + 761 eval/compiler + 302 JIT + 456 others."
       },
       {
         "id": "T158",
         "mode": "THINK",
-        "status": "upcoming",
-        "task": "Evening assessment + session wrap planning"
+        "status": "done",
+        "task": "Evening assessment + session wrap planning",
+        "started": "2026-04-27T21:17:55.173Z",
+        "completed": "2026-04-27T21:18:10.383Z",
+        "duration_ms": 60000,
+        "summary": "Mid-afternoon: 9 BUILDs, 2 EXPLOREs. Depth check 3/3 yes. 3h remaining. Focus: HenryDB trigger WHEN clause + monkey-lang feature."
       },
       {
         "id": "T159",
         "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Final git push + session close",
+        "started": "2026-04-27T21:18:38.107Z",
+        "completed": "2026-04-27T21:18:38.250Z",
+        "duration_ms": 1000,
+        "summary": "Not closing - 3h remaining"
+      },
+      {
+        "id": "T160",
+        "mode": "PLAN",
+        "status": "done",
+        "goal": "HenryDB: WHEN clause for triggers (conditional trigger firing)",
+        "task": null,
+        "project": "henrydb",
+        "started": "2026-04-27T21:18:44.494Z",
+        "completed": "2026-04-27T21:19:03.902Z",
+        "duration_ms": 60000,
+        "summary": "Plan WHEN clause: parse WHEN <expr> between FOR EACH ROW and BEGIN, store SQL, evaluate with NEW/OLD bindings before firing body."
+      },
+      {
+        "id": "T161",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "HenryDB: Parse WHEN clause in CREATE TRIGGER + evaluate condition before firing",
+        "plan_ref": "T160",
+        "project": "henrydb",
+        "started": "2026-04-27T21:19:11.898Z",
+        "completed": "2026-04-27T21:22:03.754Z",
+        "duration_ms": 300000,
+        "summary": "HenryDB WHEN clause for triggers. Parser captures WHEN <expr> before BEGIN, evaluates with NEW/OLD bindings via SELECT CASE WHEN. Works combined with UPDATE OF columns. 3 new tests, 15/15 pass."
+      },
+      {
+        "id": "T162",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "monkey-lang: WASM flatMap builtin + zip/enumerate HOFs",
+        "task": null,
+        "project": "monkey-lang",
+        "started": "2026-04-27T21:22:18.430Z"
+      },
+      {
+        "id": "T163",
+        "mode": "BUILD",
         "status": "upcoming",
-        "task": "Final git push + session close"
+        "task": "WASM flatMap/zip/enumerate builtins: host imports + compiler cases + tests",
+        "plan_ref": "T162",
+        "project": "monkey-lang"
+      },
+      {
+        "id": "T164",
+        "mode": "MAINTAIN",
+        "status": "upcoming",
+        "task": "Git push"
+      },
+      {
+        "id": "T165",
+        "mode": "PLAN",
+        "status": "upcoming",
+        "goal": "HenryDB: INSTEAD OF triggers for views",
+        "task": null,
+        "project": "henrydb"
+      },
+      {
+        "id": "T166",
+        "mode": "BUILD",
+        "status": "upcoming",
+        "task": null,
+        "plan_ref": "T165",
+        "project": "henrydb"
+      },
+      {
+        "id": "T167",
+        "mode": "EXPLORE",
+        "status": "upcoming",
+        "task": "Benchmark: WASM HOFs vs VM eval for map/filter/reduce performance comparison",
+        "project": "monkey-lang"
+      },
+      {
+        "id": "T168",
+        "mode": "MAINTAIN",
+        "status": "upcoming",
+        "task": "Final git push + evening summary"
       }
     ]
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 138,
-    "blocksTotal": 159,
+    "blocksCompleted": 146,
+    "blocksTotal": 168,
     "modeDistribution": {
-      "THINK": 26,
-      "PLAN": 14,
-      "BUILD": 73,
-      "MAINTAIN": 15,
-      "EXPLORE": 10
+      "THINK": 27,
+      "PLAN": 16,
+      "BUILD": 75,
+      "MAINTAIN": 17,
+      "EXPLORE": 11
     }
   },
   "artifacts": [],
