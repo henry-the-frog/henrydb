@@ -543,6 +543,14 @@
       "completed": "2026-04-27T16:33:50.309Z",
       "duration_ms": 600000,
       "summary": "Implemented super.method() for WASM classes. Parent method resolved via class registry, called with self via callIndirect. Works with args and field access. 217 WASM tests, 1803 total."
+    },
+    {
+      "id": "T52",
+      "mode": "BUILD",
+      "status": "skipped",
+      "task": "WASM: optimize comparison chains — if(n < 2) should use br_if(i32_lt_s) directly without going through runtime",
+      "project": "monkey-lang",
+      "skip_reason": ""
     }
   ],
   "focusProjects": [
@@ -766,6 +774,14 @@
     {
       "time": "2026-04-27T16:29:22.087Z",
       "msg": "Added T51 (BUILD) after end: Monkey-lang WASM: implement super.method() for calling parent class methods"
+    },
+    {
+      "time": "2026-04-27T16:34:54.413Z",
+      "msg": "Added T52 (BUILD) after end: WASM: optimize comparison chains — if(n < 2) should use br_if(i32_lt_s) directly without going through runtime"
+    },
+    {
+      "time": "2026-04-27T16:35:06.147Z",
+      "msg": "Removed T52: "
     }
   ]
 }
