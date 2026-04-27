@@ -1247,10 +1247,20 @@
     {
       "id": "T119",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: add json_valid() function and json_type() improvements",
       "project": "henrydb",
-      "started": "2026-04-27T19:43:41.480Z"
+      "started": "2026-04-27T19:43:41.480Z",
+      "completed": "2026-04-27T19:45:12.258Z",
+      "duration_ms": 120000,
+      "summary": "Fixed json_type() path navigation. Now returns correct SQLite type names at path (integer, real, text, true, false, null, array, object). 33 regression pass."
+    },
+    {
+      "id": "T120",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: add json_quote() function",
+      "project": "henrydb"
     }
   ],
   "focusProjects": [
@@ -1770,6 +1780,10 @@
     {
       "time": "2026-04-27T19:43:35.494Z",
       "msg": "Added T119 (BUILD) after end: HenryDB: add json_valid() function and json_type() improvements"
+    },
+    {
+      "time": "2026-04-27T19:45:34.621Z",
+      "msg": "Added T120 (BUILD) after end: HenryDB: add json_quote() function"
     }
   ]
 }

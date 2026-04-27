@@ -1108,6 +1108,11 @@ export function evalFunction(db, func, args, row) {
     case 'SQLITE_VERSION': {
       return '3.45.0'; // Compatibility stub
     }
+    case 'JSON_QUOTE': {
+      const val = db._evalValue(args[0], row);
+      if (val === null || val === undefined) return 'null';
+      return JSON.stringify(val);
+    }
     
     default: throw new Error(`Unknown function: ${func}`);
   }

@@ -1,11 +1,13 @@
 {
-  "generated": "2026-04-27T19:43:41.515Z",
+  "generated": "2026-04-27T19:45:12.294Z",
   "current": {
-    "status": "in-progress",
+    "status": "done",
     "mode": "BUILD",
     "task": "HenryDB: add json_valid() function and json_type() improvements",
-    "startedAt": "2026-04-27T19:43:41.515Z",
-    "taskId": "T119"
+    "completedAt": "2026-04-27T19:45:12.294Z",
+    "taskId": "T119",
+    "summary": "Fixed json_type() path navigation. Now returns correct SQLite type names at path (integer, real, text, true, false, null, array, object). 33 regression pass.",
+    "durationMs": 120000
   },
   "schedule": {
     "date": "2026-04-27",
@@ -8295,12 +8297,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 106,
+    "blocksCompleted": 107,
     "blocksTotal": 81,
     "modeDistribution": {
       "THINK": 22,
       "PLAN": 7,
-      "BUILD": 60,
+      "BUILD": 61,
       "MAINTAIN": 9,
       "EXPLORE": 8
     }
