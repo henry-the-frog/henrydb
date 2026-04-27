@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-27T15:34:58.244Z",
+  "generated": "2026-04-27T15:37:16.749Z",
   "current": {
     "status": "done",
-    "mode": "BUILD",
-    "task": "WASM compiler: 5-way execution benchmark update comparing all backends on complex programs (classes, closures, recursion)",
-    "completedAt": "2026-04-27T15:34:58.244Z",
-    "taskId": "T30",
-    "summary": "5-way benchmark updated! WASM runs on 10/12 benchmarks. Results: WASM 3.5x faster than VM, 1.9x faster than JIT. Best: GCD 1.43ms, power 0.86ms. Transpiler still fastest (native JS). WASM compile+run overhead included.",
-    "durationMs": 600000
+    "mode": "EXPLORE",
+    "task": "HenryDB: stress test LATERAL joins and recursive CTEs, find gaps",
+    "completedAt": "2026-04-27T15:37:16.749Z",
+    "taskId": "T31",
+    "summary": "HenryDB LATERAL + recursive CTE stress test. Found: (1) Multi-CTE reference bug: CTE b referencing CTE a returns nulls instead of computed values. (2) Recursive CTEs work (countdown, org hierarchy, deep 1000, UNION dedup). (3) LATERAL works correctly with correlated subqueries and aggregates.",
+    "durationMs": 300000
   },
   "schedule": {
     "date": "2026-04-27",
@@ -7744,14 +7744,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 26,
+    "blocksCompleted": 27,
     "blocksTotal": 29,
     "modeDistribution": {
       "THINK": 5,
       "PLAN": 4,
       "BUILD": 11,
       "MAINTAIN": 4,
-      "EXPLORE": 2
+      "EXPLORE": 3
     }
   },
   "artifacts": [],

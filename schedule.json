@@ -317,9 +317,13 @@
     {
       "id": "T31",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "HenryDB: stress test LATERAL joins and recursive CTEs, find gaps",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-27T15:35:38.362Z",
+      "completed": "2026-04-27T15:37:16.714Z",
+      "duration_ms": 300000,
+      "summary": "HenryDB LATERAL + recursive CTE stress test. Found: (1) Multi-CTE reference bug: CTE b referencing CTE a returns nulls instead of computed values. (2) Recursive CTEs work (countdown, org hierarchy, deep 1000, UNION dedup). (3) LATERAL works correctly with correlated subqueries and aggregates."
     }
   ],
   "focusProjects": [
