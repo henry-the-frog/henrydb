@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-27T22:15:16.259Z",
+  "generated": "2026-04-27T22:19:36.288Z",
   "current": {
     "status": "in-progress",
     "mode": "MAINTAIN",
     "task": "Git push",
-    "startedAt": "2026-04-27T22:15:16.259Z",
-    "taskId": "T205"
+    "startedAt": "2026-04-27T22:19:36.288Z",
+    "taskId": "T211"
   },
   "schedule": {
     "date": "2026-04-27",
@@ -9287,38 +9287,420 @@
       {
         "id": "T174",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "monkey-lang: WASM string interpolation support",
         "task": null,
         "project": "monkey-lang",
-        "started": "2026-04-27T21:36:23.127Z"
+        "started": "2026-04-27T21:36:23.127Z",
+        "completed": "2026-04-27T21:37:31.957Z",
+        "duration_ms": 60000,
+        "summary": "Plan: compile TemplateLiteral parts, convert non-strings via str(), concatenate with __str_concat."
       },
       {
         "id": "T175",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "WASM template literal compilation: compile each part, convert to string via str(), concatenate with __str_concat",
         "plan_ref": "T174",
-        "project": "monkey-lang"
+        "project": "monkey-lang",
+        "started": "2026-04-27T21:37:39.326Z",
+        "completed": "2026-04-27T21:38:16.368Z",
+        "duration_ms": 30000,
+        "summary": "Template literals already implemented in WASM compiler. Basic, interpolation, and multi-interpolation all work."
       },
       {
         "id": "T176",
         "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Final git push + session close (8 PM)",
+        "started": "2026-04-27T21:38:37.399Z",
+        "completed": "2026-04-27T21:38:37.541Z",
+        "duration_ms": 1000,
+        "summary": "Not closing - generating more work"
+      },
+      {
+        "id": "T177",
+        "mode": "PLAN",
+        "status": "done",
+        "goal": "monkey-lang: WASM support for try/catch/throw error handling",
+        "task": null,
+        "project": "monkey-lang",
+        "started": "2026-04-27T21:44:32.188Z",
+        "completed": "2026-04-27T21:45:17.295Z",
+        "duration_ms": 30000,
+        "summary": "try/catch/throw already implemented in WASM compiler. Skipping."
+      },
+      {
+        "id": "T178",
+        "mode": "BUILD",
+        "status": "done",
+        "task": null,
+        "plan_ref": "T177",
+        "project": "monkey-lang",
+        "started": "2026-04-27T21:45:17.597Z",
+        "completed": "2026-04-27T21:45:17.950Z",
+        "duration_ms": 1000,
+        "summary": "Skipped"
+      },
+      {
+        "id": "T179",
+        "mode": "PLAN",
+        "status": "done",
+        "goal": "HenryDB: RETURNING clause for UPDATE and DELETE statements",
+        "task": null,
+        "project": "henrydb",
+        "started": "2026-04-27T21:45:18.277Z",
+        "completed": "2026-04-27T21:45:18.608Z",
+        "duration_ms": 30000,
+        "summary": "RETURNING already fully implemented for INSERT/UPDATE/DELETE"
+      },
+      {
+        "id": "T180",
+        "mode": "BUILD",
+        "status": "done",
+        "task": null,
+        "plan_ref": "T179",
+        "project": "henrydb",
+        "started": "2026-04-27T21:45:18.842Z",
+        "completed": "2026-04-27T21:45:19.059Z",
+        "duration_ms": 1000,
+        "summary": "Skipped"
+      },
+      {
+        "id": "T181",
+        "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Git push + housekeeping",
+        "started": "2026-04-27T21:45:44.173Z",
+        "completed": "2026-04-27T21:46:08.690Z",
+        "duration_ms": 30000,
+        "summary": "Git push all repos"
+      },
+      {
+        "id": "T182",
+        "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Session close (8 PM)",
+        "started": "2026-04-27T21:46:35.734Z",
+        "completed": "2026-04-27T21:46:36.134Z",
+        "duration_ms": 1000,
+        "summary": "Not closing yet"
+      },
+      {
+        "id": "T183",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Strategy shift: projects are mature. Focus on depth — stress tests, edge cases, performance",
+        "started": "2026-04-27T21:46:43.540Z",
+        "completed": "2026-04-27T21:46:43.798Z",
+        "duration_ms": 10000,
+        "summary": "Strategy: depth over breadth. Systematic edge case testing to find bugs."
+      },
+      {
+        "id": "T184",
+        "mode": "EXPLORE",
+        "status": "done",
+        "task": "WASM compiler: systematic edge case testing (closures in closures, mutual recursion, deeply nested arrays)",
+        "project": "monkey-lang",
+        "started": "2026-04-27T21:46:50.879Z",
+        "completed": "2026-04-27T21:49:09.560Z",
+        "duration_ms": 300000,
+        "summary": "EXPLORE found genuine WASM bug: Y-combinator pattern produces wrong results. fact(3) via Y-combinator gives 393348 instead of 6. Direct recursion works fine. Issue is in deeply nested closure environment passing — closure env pointers get corrupted when closures are passed through multiple HOF layers. Steps 1-3 (basic HOF, wrapping, identity) work; step 4 (computation through closure chain) fails."
+      },
+      {
+        "id": "T185",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Fix any bugs found in EXPLORE T184",
+        "project": "monkey-lang",
+        "started": "2026-04-27T21:49:31.742Z",
+        "completed": "2026-04-27T21:50:54.109Z",
+        "duration_ms": 300000,
+        "summary": "Investigated Y-combinator bug. Narrowed to: when a closure parameter is captured by an inner closure and called, the closure struct is accessed incorrectly. self(42) returns 131108 (heap pointer) instead of 42. The _emitClosureCall looks correct; issue is likely in capture-from-parameter mechanism where parameter slot offset is wrong. Complex fix — logged for future session."
+      },
+      {
+        "id": "T186",
+        "mode": "EXPLORE",
+        "status": "done",
+        "task": "HenryDB: stress test trigger system (cascading triggers, recursive triggers, INSTEAD OF edge cases)",
+        "project": "henrydb",
+        "started": "2026-04-27T21:51:10.208Z",
+        "completed": "2026-04-27T21:53:02.800Z",
+        "duration_ms": 300000,
+        "summary": "HenryDB trigger stress test: cascading (3-level), INSTEAD OF, multiple triggers, NULL WHEN, recursive self-firing all pass. Added trigger recursion depth limit (max 32) to prevent stack overflow. Controlled recursion still works. 34/34 tests."
+      },
+      {
+        "id": "T187",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Fix any bugs found in EXPLORE T186",
+        "project": "henrydb",
+        "started": "2026-04-27T21:53:35.801Z",
+        "completed": "2026-04-27T21:53:35.944Z",
+        "duration_ms": 5000,
+        "summary": "No bugs found — all trigger edge cases passed. Added depth limit in EXPLORE."
+      },
+      {
+        "id": "T188",
+        "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Final session close",
+        "started": "2026-04-27T21:54:10.444Z",
+        "completed": "2026-04-27T21:54:10.586Z",
+        "duration_ms": 1000,
+        "summary": "Not closing yet - generating more work"
+      },
+      {
+        "id": "T189",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Add WASM compiler test for Y-combinator bug (regression test, currently failing)",
+        "project": "monkey-lang",
+        "started": "2026-04-27T21:54:37.684Z",
+        "completed": "2026-04-27T21:55:31.087Z",
+        "duration_ms": 60000,
+        "summary": "Added 2 Y-combinator regression tests (skipped as known bug). 317/319 pass, 2 skipped."
+      },
+      {
+        "id": "T190",
+        "mode": "PLAN",
+        "status": "done",
+        "goal": "HenryDB: MERGE (UPSERT) statement support",
+        "task": null,
+        "project": "henrydb",
+        "started": "2026-04-27T21:55:38.312Z",
+        "completed": "2026-04-27T21:56:05.095Z",
+        "duration_ms": 30000,
+        "summary": "MERGE already fully implemented including WHEN MATCHED/NOT MATCHED, UPDATE SET, INSERT VALUES."
+      },
+      {
+        "id": "T191",
+        "mode": "BUILD",
+        "status": "done",
+        "task": null,
+        "plan_ref": "T190",
+        "project": "henrydb",
+        "started": "2026-04-27T21:56:05.237Z",
+        "completed": "2026-04-27T21:56:05.380Z",
+        "duration_ms": 1000,
+        "summary": "MERGE already done — skipped"
+      },
+      {
+        "id": "T192",
+        "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Git push all repos",
+        "started": "2026-04-27T21:56:14.385Z",
+        "completed": "2026-04-27T21:56:46.081Z",
+        "duration_ms": 30000,
+        "summary": "Git push all repos"
+      },
+      {
+        "id": "T193",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Session B evening summary + reflection",
+        "started": "2026-04-27T21:56:59.386Z",
+        "completed": "2026-04-27T21:57:25.229Z",
+        "duration_ms": 60000,
+        "summary": "Session B assessment: 10 features built, 3 bugs found (1 critical fixed, 1 important logged), 59+ new tests. Projects very mature. Remaining time: focus on Y-combinator bug fix."
+      },
+      {
+        "id": "T194",
+        "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Final git push + session end",
+        "started": "2026-04-27T21:57:51.421Z",
+        "completed": "2026-04-27T21:57:51.564Z",
+        "duration_ms": 1000,
+        "summary": "Not closing - continuing to Y-combinator bug"
+      },
+      {
+        "id": "T195",
+        "mode": "EXPLORE",
+        "status": "done",
+        "task": "Deep debug Y-combinator bug: trace closure creation and call_indirect for wrapped closure parameters",
+        "project": "monkey-lang",
+        "started": "2026-04-27T21:58:00.986Z",
+        "completed": "2026-04-27T22:04:09.888Z",
+        "duration_ms": 600000,
+        "summary": "FOUND AND FIXED Y-combinator bug! Root cause: SelfExpression AST node treated self as class keyword everywhere. Fix: check scope binding in SelfExpression handler + capture SelfExpression in _findCaptures. Y-combinator factorial now returns 120 (was 655580). 386/386 WASM tests pass, 0 skipped."
+      },
+      {
+        "id": "T196",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Fix Y-combinator closure parameter capture bug",
+        "project": "monkey-lang",
+        "started": "2026-04-27T22:04:39.283Z",
+        "completed": "2026-04-27T22:04:39.427Z",
+        "duration_ms": 1000,
+        "summary": "Bug already fixed in T195"
+      },
+      {
+        "id": "T197",
+        "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Final git push + session close",
+        "started": "2026-04-27T22:04:54.110Z",
+        "completed": "2026-04-27T22:05:15.660Z",
+        "duration_ms": 30000,
+        "summary": "Git push all repos. Not closing."
+      },
+      {
+        "id": "T198",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Assess: what is the single most impactful thing to build in the remaining 4 hours?",
+        "started": "2026-04-27T22:05:38.128Z",
+        "completed": "2026-04-27T22:05:56.060Z",
+        "duration_ms": 60000,
+        "summary": "Y-combinator fix was the crown jewel. Remaining time: quality pass on WASM compiler + optional regex-engine cycle."
+      },
+      {
+        "id": "T199",
+        "mode": "EXPLORE",
+        "status": "done",
+        "task": "WASM compiler quality review: read through all changes from today, identify any missed edge cases",
+        "project": "monkey-lang",
+        "started": "2026-04-27T22:06:31.426Z",
+        "completed": "2026-04-27T22:08:55.972Z",
+        "duration_ms": 300000,
+        "summary": "Quality review: fixed GC path HOF DataView refresh (same bug class as T142). Also confirmed SelfExpression fix is GC-neutral. 386/386 tests pass."
+      },
+      {
+        "id": "T200",
+        "mode": "EXPLORE",
+        "status": "done",
+        "task": "HenryDB: comprehensive trigger system test (all new features combined)",
+        "project": "henrydb",
+        "started": "2026-04-27T22:09:14.961Z",
+        "completed": "2026-04-27T22:12:12.441Z",
+        "duration_ms": 300000,
+        "summary": "Found and fixed trigger SQL reconstruction bug: CONCAT_OP/operators stored as token type names instead of SQL symbols. Fixed body and WHEN clause token reconstruction for ||, <, >, <=, >=, <>, /, %, dot. 34/34 tests."
+      },
+      {
+        "id": "T201",
+        "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Evening summary + git push + session close",
+        "started": "2026-04-27T22:12:36.808Z",
+        "completed": "2026-04-27T22:12:36.951Z",
+        "duration_ms": 1000,
+        "summary": "Not closing yet - continuing work"
+      },
+      {
+        "id": "T202",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Add comprehensive trigger test combining UPDATE OF + WHEN + INSTEAD OF + cascading + operators",
+        "project": "henrydb",
+        "started": "2026-04-27T22:13:07.477Z",
+        "completed": "2026-04-27T22:14:00.276Z",
+        "duration_ms": 180000,
+        "summary": "3 comprehensive trigger integration tests: UPDATE OF+WHEN+cascade+operators, INSTEAD OF cascading to WHEN, recursive binary tree (63 nodes). 21/21 pass."
+      },
+      {
+        "id": "T203",
+        "mode": "EXPLORE",
+        "status": "done",
+        "task": "monkey-lang: test WASM class methods use self correctly after SelfExpression fix",
+        "project": "monkey-lang",
+        "started": "2026-04-27T22:14:17.199Z",
+        "completed": "2026-04-27T22:14:45.672Z",
+        "duration_ms": 120000,
+        "summary": "SelfExpression fix verified: class methods with self work (self=instance), Y-combinator with self parameter works (self=closure param). fib(10)=55 via Y-combinator. No regressions."
+      },
+      {
+        "id": "T204",
+        "mode": "PLAN",
+        "status": "done",
+        "goal": "monkey-lang: WASM support for generator functions (yield/next)",
+        "task": null,
+        "project": "monkey-lang",
+        "started": "2026-04-27T22:15:04.477Z",
+        "completed": "2026-04-27T22:15:04.620Z",
+        "duration_ms": 10000,
+        "summary": "Generator WASM support deferred — requires stack switching/CPS, multi-day project. Out of scope for this session."
+      },
+      {
+        "id": "T205",
+        "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Git push",
+        "started": "2026-04-27T22:15:16.224Z",
+        "completed": "2026-04-27T22:15:52.712Z",
+        "duration_ms": 30000,
+        "summary": "Git push all repos"
+      },
+      {
+        "id": "T206",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Pre-close assessment",
+        "started": "2026-04-27T22:16:05.730Z",
+        "completed": "2026-04-27T22:16:23.184Z",
+        "duration_ms": 60000,
+        "summary": "4 hours remaining. Focus: WASM optimizer (constant folding + dead code elimination) — highest impact on compiler quality."
+      },
+      {
+        "id": "T207",
+        "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Session close",
+        "started": "2026-04-27T22:16:45.420Z",
+        "completed": "2026-04-27T22:16:45.564Z",
+        "duration_ms": 1000,
+        "summary": "Not closing"
+      },
+      {
+        "id": "T208",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "monkey-lang: WASM constant folding optimizer (fold constant arithmetic at compile time)",
+        "task": null,
+        "project": "monkey-lang",
+        "started": "2026-04-27T22:16:53.652Z"
+      },
+      {
+        "id": "T209",
+        "mode": "BUILD",
         "status": "upcoming",
-        "task": "Final git push + session close (8 PM)"
+        "task": "Implement AST constant folding pass (arithmetic, string concat, boolean, pure builtins) + integrate with WASM compiler",
+        "plan_ref": "T208",
+        "project": "monkey-lang"
+      },
+      {
+        "id": "T210",
+        "mode": "EXPLORE",
+        "status": "upcoming",
+        "task": "monkey-lang: benchmark constant folding improvement",
+        "project": "monkey-lang"
+      },
+      {
+        "id": "T211",
+        "mode": "MAINTAIN",
+        "status": "upcoming",
+        "task": "Git push"
+      },
+      {
+        "id": "T212",
+        "mode": "MAINTAIN",
+        "status": "upcoming",
+        "task": "Session close (at 8 PM)"
       }
     ]
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 187,
-    "blocksTotal": 176,
+    "blocksCompleted": 193,
+    "blocksTotal": 212,
     "modeDistribution": {
-      "THINK": 30,
-      "PLAN": 24,
-      "BUILD": 87,
-      "MAINTAIN": 28,
-      "EXPLORE": 18
+      "THINK": 31,
+      "PLAN": 25,
+      "BUILD": 88,
+      "MAINTAIN": 30,
+      "EXPLORE": 19
     }
   },
   "artifacts": [],
