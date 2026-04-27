@@ -229,6 +229,36 @@
       "completed": "2026-04-27T15:12:50.841Z",
       "duration_ms": 600000,
       "summary": "WASM GC research: Node.js v22 supports struct and array GC types without flags. Could replace host-backed hash maps and manual memory management. Stringref not yet available. Recommendation: parallel GC backend as medium-term project. Written up in scratch/wasm-gc-research.md."
+    },
+    {
+      "id": "T23",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Explore WASM exception handling for real try/catch in monkey-lang",
+      "started": "2026-04-27T15:14:19.728Z",
+      "completed": "2026-04-27T15:15:46.211Z",
+      "duration_ms": 300000,
+      "summary": "WASM exception handling confirmed working in Node.js v22! try/catch/throw opcodes work correctly. Built proof-of-concept: throw 42, catch returns 42. Tag section (id 13) goes between function and export sections. This enables real try/catch in monkey-lang WASM backend."
+    },
+    {
+      "id": "T24",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "WASM compiler: add class inheritance (extends, super) support",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T25",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "WASM compiler: add proper NaN-boxing for typed value representation",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T26",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Update TASKS.md with current project status and test counts"
     }
   ],
   "focusProjects": [
@@ -336,6 +366,22 @@
     {
       "time": "2026-04-27T15:02:48.450Z",
       "msg": "PLAN T10 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-04-27T15:13:39.660Z",
+      "msg": "Added T23 (THINK) after end: Explore WASM exception handling for real try/catch in monkey-lang"
+    },
+    {
+      "time": "2026-04-27T15:13:52.795Z",
+      "msg": "Added T24 (BUILD) after end: WASM compiler: add class inheritance (extends, super) support"
+    },
+    {
+      "time": "2026-04-27T15:14:02.144Z",
+      "msg": "Added T25 (BUILD) after end: WASM compiler: add proper NaN-boxing for typed value representation"
+    },
+    {
+      "time": "2026-04-27T15:14:09.879Z",
+      "msg": "Added T26 (MAINTAIN) after end: Update TASKS.md with current project status and test counts"
     }
   ]
 }

@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-27T15:12:50.876Z",
+  "generated": "2026-04-27T15:15:46.246Z",
   "current": {
     "status": "done",
-    "mode": "EXPLORE",
-    "task": "Research WASM GC proposal and string encoding strategies",
-    "completedAt": "2026-04-27T15:12:50.876Z",
-    "taskId": "T18",
-    "summary": "WASM GC research: Node.js v22 supports struct and array GC types without flags. Could replace host-backed hash maps and manual memory management. Stringref not yet available. Recommendation: parallel GC backend as medium-term project. Written up in scratch/wasm-gc-research.md.",
-    "durationMs": 600000
+    "mode": "THINK",
+    "task": "Explore WASM exception handling for real try/catch in monkey-lang",
+    "completedAt": "2026-04-27T15:15:46.246Z",
+    "taskId": "T23",
+    "summary": "WASM exception handling confirmed working in Node.js v22! try/catch/throw opcodes work correctly. Built proof-of-concept: throw 42, catch returns 42. Tag section (id 13) goes between function and export sections. This enables real try/catch in monkey-lang WASM backend.",
+    "durationMs": 300000
   },
   "schedule": {
     "date": "2026-04-27",
@@ -7659,10 +7659,10 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 19,
+    "blocksCompleted": 20,
     "blocksTotal": 22,
     "modeDistribution": {
-      "THINK": 4,
+      "THINK": 5,
       "PLAN": 3,
       "BUILD": 7,
       "MAINTAIN": 3,
