@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-27T14:42:36.136Z",
+  "generated": "2026-04-27T14:56:35.767Z",
   "current": {
     "status": "done",
-    "mode": "PLAN",
-    "task": "",
-    "completedAt": "2026-04-27T14:42:36.136Z",
-    "taskId": "T6",
-    "summary": "HenryDB type affinity audit: found 6 edge cases — boolean/int coercion (1=1.0→true not 1), cross-type comparisons failing (1=\"1\"→null), typeof(\"str\")→null, CAST string→int→null. Filled 3 BUILD tasks.",
-    "durationMs": 180000
+    "mode": "BUILD",
+    "task": "HenryDB: fix boolean/integer coercion (comparisons should return 1/0 not true/false)",
+    "completedAt": "2026-04-27T14:56:35.767Z",
+    "taskId": "T7",
+    "summary": "Fixed boolean/integer coercion across 3 code paths: expression-evaluator (3 comparison sites), _evalValue bridge (true/false→1/0), volcano-planner comparators. All comparisons now return 1/0/NULL per SQLite spec. All tests pass.",
+    "durationMs": 600000
   },
   "schedule": {
     "date": "2026-04-27",
@@ -7635,12 +7635,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 8,
+    "blocksCompleted": 9,
     "blocksTotal": 22,
     "modeDistribution": {
       "THINK": 2,
       "PLAN": 2,
-      "BUILD": 3,
+      "BUILD": 4,
       "MAINTAIN": 1
     }
   },

@@ -10,6 +10,21 @@ import { tokenize } from './fulltext.js';
 import { typeClass, sqliteCompare } from './type-affinity.js';
 import { percentileCont, median } from './percentile.js';
 
+// SQLite boolean: NULL propagates, otherwise 1/0
+function sqlBool(result, left, right) {
+  if (left == null || right == null) return null;
+  return result ? 1 : 0;
+}
+function sqlCmp(left, right, op) {
+  if (left == null || right == null) return null;
+  switch (op) {
+    case '<': return sqliteCompare(left, right) < 0 ? 1 : 0;
+    case '>': return sqliteCompare(left, right) > 0 ? 1 : 0;
+    case '<=': return sqliteCompare(left, right) <= 0 ? 1 : 0;
+    case '>=': return sqliteCompare(left, right) >= 0 ? 1 : 0;
+  }
+}
+
 /**
  * Install expression evaluation methods on Database.prototype.
  * @param {Function} Database - The Database class
@@ -231,12 +246,12 @@ P._evalGroupCond = function(cond, groupRows, result, computeAgg) {
     const left = this._evalGroupExpr(cond.left, groupRows, result, computeAgg);
     const right = this._evalGroupExpr(cond.right, groupRows, result, computeAgg);
     switch (cond.op) {
-      case 'EQ': case '=': return left === right;
-      case 'NE': case '!=': case '<>': return left !== right;
-      case 'LT': case '<': return sqliteCompare(left, right) < 0;
-      case 'GT': case '>': return sqliteCompare(left, right) > 0;
-      case 'LE': case '<=': return sqliteCompare(left, right) <= 0;
-      case 'GE': case '>=': return sqliteCompare(left, right) >= 0;
+      case 'EQ': case '=': return sqlBool(left === right, left, right);
+      case 'NE': case '!=': case '<>': return sqlBool(left !== right, left, right);
+      case 'LT': case '<': return sqlCmp(left, right, '<');
+      case 'GT': case '>': return sqlCmp(left, right, '>');
+      case 'LE': case '<=': return sqlCmp(left, right, '<=');
+      case 'GE': case '>=': return sqlCmp(left, right, '>=');
     }
   }
   if (cond.type === 'AND') return this._evalGroupCond(cond.left, groupRows, result, computeAgg) && this._evalGroupCond(cond.right, groupRows, result, computeAgg);
@@ -725,18 +740,18 @@ P._evalExpr = function(expr, row) {
       const compare = (left, right) => {
         if (right === null || right === undefined) return null;
         switch (expr.op) {
-          case 'EQ': return left === right;
-          case 'NE': return left !== right;
-          case 'LT': return sqliteCompare(left, right) < 0;
-          case 'GT': return sqliteCompare(left, right) > 0;
-          case 'LE': return sqliteCompare(left, right) <= 0;
-          case 'GE': return sqliteCompare(left, right) >= 0;
+          case 'EQ': return sqlBool(left === right, left, right);
+          case 'NE': return sqlBool(left !== right, left, right);
+          case 'LT': return sqlCmp(left, right, '<');
+          case 'GT': return sqlCmp(left, right, '>');
+          case 'LE': return sqlCmp(left, right, '<=');
+          case 'GE': return sqlCmp(left, right, '>=');
         }
       };
       if (expr.quantifier === 'ANY') {
-        return subRows.some(r => compare(leftVal, Object.values(r)[0]) === true);
+        return subRows.some(r => compare(leftVal, Object.values(r)[0]) === 1) ? 1 : 0;
       } else {
-        return subRows.every(r => compare(leftVal, Object.values(r)[0]) === true);
+        return subRows.every(r => compare(leftVal, Object.values(r)[0]) === 1) ? 1 : 0;
       }
     }
     case 'COMPARE': {
@@ -746,8 +761,8 @@ P._evalExpr = function(expr, row) {
       // This is correct for three-valued logic in WHERE, HAVING, CHECK, etc.
       if (left === null || left === undefined || right === null || right === undefined) {
         // Special case: IS / IS NOT operators handle NULL directly
-        if (expr.op === 'IS') return left === right;
-        if (expr.op === 'IS_NOT') return left !== right;
+        if (expr.op === 'IS') return left === right ? 1 : 0;
+        if (expr.op === 'IS_NOT') return left !== right ? 1 : 0;
         return null;
       }
       // For EQ/NE: apply implicit coercion (one number, one numeric string → compare as numbers)
@@ -762,12 +777,12 @@ P._evalExpr = function(expr, row) {
       }
       // For ordering comparisons: use sqliteCompare (type-class aware, no coercion)
       switch (expr.op) {
-        case 'EQ': return left === right;
-        case 'NE': return left !== right;
-        case 'LT': return sqliteCompare(left, right) < 0;
-        case 'GT': return sqliteCompare(left, right) > 0;
-        case 'LE': return sqliteCompare(left, right) <= 0;
-        case 'GE': return sqliteCompare(left, right) >= 0;
+        case 'EQ': return sqlBool(left === right, left, right);
+        case 'NE': return sqlBool(left !== right, left, right);
+        case 'LT': return sqlCmp(left, right, '<');
+        case 'GT': return sqlCmp(left, right, '>');
+        case 'LE': return sqlCmp(left, right, '<=');
+        case 'GE': return sqlCmp(left, right, '>=');
       }
     }
     default: {
@@ -809,7 +824,7 @@ P._evalValue = function(node, row) {
       node.type === 'EXISTS') {
     const result = this._evalExpr(node, row);
     if (result == null) return null;
-    return result ? true : false;
+    return result ? 1 : 0;
   }
   if (node.type === 'MATCH_AGAINST') {
     // Return relevance score
