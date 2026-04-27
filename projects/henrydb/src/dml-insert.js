@@ -348,8 +348,41 @@ export function fireTriggers(db, timing, event, tableName, rowValues, schema, ol
           const idx = schema.findIndex(c => c.name.toUpperCase() === colName.toUpperCase());
           return idx >= 0 && rowValues[idx] !== oldRowValues[idx];
         });
-        if (!changed) continue; // Skip this trigger — specified columns didn't change
+        if (!changed) continue;
       }
+
+      // WHEN clause check: evaluate condition with NEW/OLD bindings
+      if (trigger.whenClause) {
+        try {
+          let whenSql = trigger.whenClause;
+          if (schema && rowValues) {
+            for (let i = 0; i < schema.length; i++) {
+              const colName = schema[i].name;
+              const val = rowValues[i];
+              const sqlVal = val === null || val === undefined ? 'NULL'
+                : typeof val === 'string' ? `'${val.replace(/'/g, "''")}'`
+                : String(val);
+              whenSql = whenSql.replace(new RegExp(`NEW\\.${colName}\\b`, 'gi'), sqlVal);
+            }
+          }
+          if (schema && oldRowValues) {
+            for (let i = 0; i < schema.length; i++) {
+              const colName = schema[i].name;
+              const val = oldRowValues[i];
+              const sqlVal = val === null || val === undefined ? 'NULL'
+                : typeof val === 'string' ? `'${val.replace(/'/g, "''")}'`
+                : String(val);
+              whenSql = whenSql.replace(new RegExp(`OLD\\.${colName}\\b`, 'gi'), sqlVal);
+            }
+          }
+          const result = db.execute(`SELECT CASE WHEN (${whenSql}) THEN 1 ELSE 0 END AS v`);
+          if (!result.rows || result.rows.length === 0 || result.rows[0].v !== 1) continue;
+        } catch (e) {
+          // If WHEN evaluation fails, skip the trigger
+          continue;
+        }
+      }
+
       try {
         // Build NEW and OLD row objects from values + schema
         let bodySql = trigger.bodySql;

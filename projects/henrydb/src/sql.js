@@ -3046,6 +3046,31 @@ export function parse(sql) {
       expect('KEYWORD', 'ON');
       const table = advance().value;
       if (isKeyword('FOR')) { advance(); expect('KEYWORD', 'EACH'); expect('KEYWORD', 'ROW'); }
+      // Parse optional WHEN clause
+      let whenClause = null;
+      if (isKeyword('WHEN')) {
+        advance(); // WHEN
+        const whenTokens = [];
+        // Collect tokens until BEGIN or EXECUTE
+        while (peek().type !== 'EOF' && !isKeyword('BEGIN') && !isKeyword('EXECUTE')) {
+          const tok = advance();
+          if (tok.type === 'STRING') whenTokens.push(`'${tok.value}'`);
+          else if (tok.type === 'NUMBER') whenTokens.push(String(tok.value));
+          else if (tok.type === 'KEYWORD' || tok.type === 'IDENT') whenTokens.push(tok.originalValue || tok.value);
+          else if (tok.type === 'EQ') whenTokens.push('=');
+          else if (tok.type === 'NEQ' || tok.type === '<>') whenTokens.push('<>');
+          else if (tok.type === 'LT') whenTokens.push('<');
+          else if (tok.type === 'GT') whenTokens.push('>');
+          else if (tok.type === 'LTE') whenTokens.push('<=');
+          else if (tok.type === 'GTE') whenTokens.push('>=');
+          else if (tok.type === 'PLUS') whenTokens.push('+');
+          else if (tok.type === 'MINUS') whenTokens.push('-');
+          else if (tok.type === '*') whenTokens.push('*');
+          else if (['(', ')', ','].includes(tok.type)) whenTokens.push(tok.type);
+          else whenTokens.push(tok.value || tok.type);
+        }
+        whenClause = whenTokens.join(' ');
+      }
       if (isKeyword('EXECUTE')) advance();
       const bodyTokens = [];
       while (peek().type !== 'EOF') {
@@ -3060,7 +3085,7 @@ export function parse(sql) {
         else if (tok.type === '*') bodyTokens.push('*');
         else bodyTokens.push(tok.value || tok.type);
       }
-      return { type: 'CREATE_TRIGGER', name, timing, event, table, columns, bodySql: bodyTokens.join(' ') };
+      return { type: 'CREATE_TRIGGER', name, timing, event, table, columns, whenClause, bodySql: bodyTokens.join(' ') };
     }
     if (isKeyword('SEQUENCE')) {
       advance(); // SEQUENCE

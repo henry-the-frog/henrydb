@@ -1,4 +1,4 @@
-import { test, describe } from 'node:test';
+import { test, describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { Database } from './db.js';
 
@@ -171,5 +171,55 @@ describe('UPDATE OF column triggers', () => {
 
     db.execute('UPDATE t SET b = 20');
     assert.equal(db.execute('SELECT count(*) as cnt FROM log').rows[0].cnt, 2);
+  });
+});
+
+describe('WHEN clause triggers', () => {
+  it('fires only when condition is true', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE emp (id INTEGER PRIMARY KEY, name TEXT, salary INTEGER)');
+    db.execute('CREATE TABLE audit (msg TEXT)');
+    db.execute("CREATE TRIGGER big_salary AFTER UPDATE ON emp WHEN NEW.salary > 100000 BEGIN INSERT INTO audit VALUES ('big') END");
+    db.execute("INSERT INTO emp VALUES (1, 'Alice', 50000)");
+
+    db.execute('UPDATE emp SET salary = 80000 WHERE id = 1');
+    assert.equal(db.execute('SELECT count(*) as cnt FROM audit').rows[0].cnt, 0);
+
+    db.execute('UPDATE emp SET salary = 150000 WHERE id = 1');
+    assert.equal(db.execute('SELECT count(*) as cnt FROM audit').rows[0].cnt, 1);
+  });
+
+  it('supports OLD and NEW references in WHEN', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE t (id INTEGER PRIMARY KEY, val INTEGER)');
+    db.execute('CREATE TABLE log (msg TEXT)');
+    db.execute("CREATE TRIGGER val_up AFTER UPDATE ON t WHEN NEW.val > OLD.val BEGIN INSERT INTO log VALUES ('up') END");
+    db.execute('INSERT INTO t VALUES (1, 10)');
+
+    db.execute('UPDATE t SET val = 20 WHERE id = 1');
+    assert.equal(db.execute('SELECT count(*) as cnt FROM log').rows[0].cnt, 1);
+
+    db.execute('UPDATE t SET val = 5 WHERE id = 1');
+    assert.equal(db.execute('SELECT count(*) as cnt FROM log').rows[0].cnt, 1);
+  });
+
+  it('WHEN works with UPDATE OF columns', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE emp (id INTEGER PRIMARY KEY, salary INTEGER, bonus INTEGER)');
+    db.execute('CREATE TABLE audit (msg TEXT)');
+    db.execute("CREATE TRIGGER big_raise AFTER UPDATE OF salary ON emp WHEN NEW.salary > 100000 BEGIN INSERT INTO audit VALUES ('raise') END");
+    db.execute('INSERT INTO emp VALUES (1, 50000, 1000)');
+
+    // Update bonus (not salary) → no fire (column check)
+    db.execute('UPDATE emp SET bonus = 5000 WHERE id = 1');
+    assert.equal(db.execute('SELECT count(*) as cnt FROM audit').rows[0].cnt, 0);
+
+    // Update salary but below threshold → no fire (WHEN check)
+    db.execute('UPDATE emp SET salary = 80000 WHERE id = 1');
+    assert.equal(db.execute('SELECT count(*) as cnt FROM audit').rows[0].cnt, 0);
+
+    // Update salary above threshold → fire (both checks pass)
+    db.execute('UPDATE emp SET salary = 150000 WHERE id = 1');
+    assert.equal(db.execute('SELECT count(*) as cnt FROM audit').rows[0].cnt, 1);
   });
 });
