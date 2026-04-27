@@ -1383,9 +1383,10 @@ export class Database {
   
   _pivotAggregate(func, col, rows) {
     const vals = rows.map(r => r[col]).filter(v => v != null);
-    if (vals.length === 0) return null;
+    if (vals.length === 0) return func === 'TOTAL' ? 0.0 : null;
     switch (func) {
       case 'SUM': return vals.reduce((a, b) => Number(a) + Number(b), 0);
+      case 'TOTAL': return vals.reduce((a, b) => Number(a) + Number(b), 0.0); // Always returns float, 0.0 if empty
       case 'COUNT': return vals.length;
       case 'AVG': return vals.reduce((a, b) => Number(a) + Number(b), 0) / vals.length;
       case 'MAX': return vals.reduce((a, b) => (a > b ? a : b));

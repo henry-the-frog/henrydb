@@ -1108,6 +1108,7 @@ P._computeAggregates = function(columns, rows) {
         break;
       }
       case 'SUM': result[name] = values.length ? values.reduce((s, v) => s + (typeof v === 'string' ? Number(v) || 0 : v), 0) : null; break;
+      case 'TOTAL': result[name] = values.reduce((s, v) => s + (typeof v === 'string' ? Number(v) || 0 : v), 0.0); break; // Always returns float, 0.0 if empty
       case 'AVG': result[name] = values.length ? values.reduce((s, v) => s + (typeof v === 'string' ? Number(v) || 0 : v), 0) / values.length : null; break;
       case 'MIN': result[name] = values.length ? values.reduce((a, b) => sqliteCompare(a, b) < 0 ? a : b) : null; break;
       case 'MAX': result[name] = values.length ? values.reduce((a, b) => sqliteCompare(a, b) > 0 ? a : b) : null; break;

@@ -829,18 +829,22 @@
     {
       "id": "T79",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Fix BETWEEN and GLOB to return 0/1 boolean instead of the value",
       "plan_ref": "T78",
       "project": "henrydb",
-      "started": "2026-04-27T17:50:55.909Z"
+      "started": "2026-04-27T17:50:55.909Z",
+      "completed": "2026-04-27T18:04:31.911Z",
+      "duration_ms": 600000,
+      "summary": "Fixed BETWEEN/GLOB/LIKE: return 0/1 boolean. Added GLOB with case-sensitive matching. Parser handles literals + trailing BETWEEN/LIKE/GLOB/IN/NOT. 33 regression tests pass, 323/323 compliance."
     },
     {
       "id": "T80",
       "mode": "BUILD",
       "task": "Add printf/format function and total() aggregate",
-      "status": "upcoming",
-      "plan_ref": "T78"
+      "status": "in-progress",
+      "plan_ref": "T78",
+      "started": "2026-04-27T18:04:44.436Z"
     },
     {
       "id": "T81",

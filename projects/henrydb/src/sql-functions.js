@@ -278,6 +278,64 @@ export function evalFunction(db, func, args, row) {
       const idx = String(str).indexOf(String(search));
       return idx === -1 ? 0 : idx + 1;  // SQL 1-indexed, 0 = not found
     }
+    case 'PRINTF':
+    case 'FORMAT': {
+      // SQLite printf: %d (int), %f (float), %s (string), %% (literal %)
+      const fmt = db._evalValue(args[0], row);
+      if (fmt == null) return null;
+      const fmtStr = String(fmt);
+      let result = '';
+      let argIdx = 1;
+      for (let i = 0; i < fmtStr.length; i++) {
+        if (fmtStr[i] === '%') {
+          i++;
+          if (i >= fmtStr.length) break;
+          if (fmtStr[i] === '%') { result += '%'; continue; }
+          // Parse flags, width, precision
+          let flags = '';
+          while ('-+ 0#'.includes(fmtStr[i])) { flags += fmtStr[i]; i++; }
+          let width = '';
+          while (fmtStr[i] >= '0' && fmtStr[i] <= '9') { width += fmtStr[i]; i++; }
+          let precision = '';
+          if (fmtStr[i] === '.') {
+            i++;
+            while (fmtStr[i] >= '0' && fmtStr[i] <= '9') { precision += fmtStr[i]; i++; }
+          }
+          const spec = fmtStr[i];
+          const val = argIdx < args.length ? db._evalValue(args[argIdx], row) : null;
+          argIdx++;
+          let formatted = '';
+          switch (spec) {
+            case 'd': case 'i': formatted = String(parseInt(val) || 0); break;
+            case 'f': {
+              const prec = precision !== '' ? parseInt(precision) : 6;
+              formatted = (parseFloat(val) || 0).toFixed(prec);
+              break;
+            }
+            case 's': formatted = val != null ? String(val) : ''; break;
+            case 'x': formatted = ((parseInt(val) || 0) >>> 0).toString(16); break;
+            case 'X': formatted = ((parseInt(val) || 0) >>> 0).toString(16).toUpperCase(); break;
+            case 'o': formatted = ((parseInt(val) || 0) >>> 0).toString(8); break;
+            case 'c': formatted = String.fromCharCode(parseInt(val) || 0); break;
+            default: formatted = '%' + spec; break;
+          }
+          // Apply width padding
+          if (width) {
+            const w = parseInt(width);
+            const padChar = flags.includes('0') && !flags.includes('-') ? '0' : ' ';
+            if (flags.includes('-')) {
+              formatted = formatted.padEnd(w, ' ');
+            } else {
+              formatted = formatted.padStart(w, padChar);
+            }
+          }
+          result += formatted;
+        } else {
+          result += fmtStr[i];
+        }
+      }
+      return result;
+    }
     case 'ABS': {
       const val = db._evalValue(args[0], row);
       return val != null ? Math.abs(val) : null;

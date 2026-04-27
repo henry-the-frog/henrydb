@@ -219,6 +219,7 @@ export function selectWithGroupBy(db, ast, rows) {
           return isStar ? effectiveRows.length : values.length;
         }
         case 'SUM': return values.length ? values.reduce((s, v) => s + v, 0) : null;
+        case 'TOTAL': return values.reduce((s, v) => s + v, 0.0); // Always float, 0.0 if empty
         case 'AVG': return values.length ? values.reduce((s, v) => s + v, 0) / values.length : null;
         case 'MIN': return values.length ? values.reduce((a, b) => sqliteCompare(a, b) < 0 ? a : b) : null;
         case 'MAX': return values.length ? values.reduce((a, b) => sqliteCompare(a, b) > 0 ? a : b) : null;
