@@ -1,33 +1,33 @@
-# TASKS.md - Project Tasks
+# TASKS.md
 
 ## Active Projects
 
-### monkey-lang
-- **Status**: 1803 tests (100% pass), 5 execution backends
-- **WASM**: 217 tests — classes (inheritance + super), closures, HOFs, comprehensions, try/catch, pattern matching. 36.3x VM, 11.4x JIT.
-- **Recent (Apr 27)**: WASM Phase 2 complete (all AST nodes), type inference (knownInt + return types), exception handling, benchmark update
-- **Next**: Float support (NaN-boxing), WASM closure capture type propagation, WASM binary caching
+### monkey-lang (WASM Compiler)
+- **Tests:** 265 WASM compiler tests, 1850/1854 total suite
+- **Performance:** 30-34x VM, 8-11x JIT on computation-heavy benchmarks
+- **Features:** Full AST, closures, classes (3-level inheritance), super calls, exceptions, floats, type inference, 9 string methods, 9 utility builtins
+- **Known issues:** 
+  - Nested closure captures (3+ levels) return 0 for outer variables
+  - i32 overflow for large numbers (factorial(20), sum 100k)
+  - filter/map/reduce builtins need host→WASM callback mechanism
 
 ### HenryDB
-- **Status**: ~99% SQLite compatibility, 117 regression tests pass
-- **JSON**: json_each(), json_extract(), json_array_length(), json_type(), json_valid(), json(), json_group_array(), json_group_object()
-- **TVF**: generate_series() table-valued function
-- **Recent (Apr 27)**: Boolean/integer coercion, cross-type comparison, CTE column renaming, JSON functions
-- **Next**: TVF cross-join support, json_tree(), json_insert/replace/remove
+- **Tests:** 33 regression, 323/323 SQL compliance
+- **JSON support:** Full JSON1 extension (16+ functions) + json_each/json_tree TVFs
+- **Recent:** GLOB support, printf, total(), blob literals, zeroblob, unicode/char/hex/unhex/typeof/quote
+- **Known issues:**
+  - Some ESM module evaluation order quirks in testing
 
 ### neural-net
-- **Status**: 1305 tests, 168 source modules, ~27K LOC
-- **Covers**: Hopfield (1982) → KAN (2024), complete LLM architecture
-- **Next**: Gradient checkpointing, mixed precision training
+- **Status:** Very mature (170 source modules, gradient checkpointing, mixed precision)
+- **No active work needed**
 
-## Test Counts (as of 2026-04-27 afternoon)
-
-| Project    | Tests | Pass Rate |
-|-----------|-------|-----------|
-| monkey-lang | 1803 | 100% |
-| neural-net | 1305 | 100% |
-| HenryDB   | 117 (regression) | 100% |
-
-## TODO (see TODO.md for full list)
-- monkey-lang: NaN-boxing, WASM closure type propagation
-- HenryDB: json_tree(), UPDATE OF column, TVF cross-joins
+## Backlog
+- monkey-lang: Fix nested closure captures (environment chain or box references)
+- monkey-lang: NaN-boxing for typed value representation
+- monkey-lang: Module resolution for import statements
+- monkey-lang: WASM binary caching for recompilation avoidance
+- monkey-lang: filter/map/reduce via host→WASM callback (__call1 export)
+- HenryDB: Unified cost model across execution engines
+- HenryDB: Window functions (ROW_NUMBER, RANK, etc.)
+- HenryDB: UPDATE OF column syntax for triggers

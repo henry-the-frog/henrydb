@@ -931,8 +931,9 @@
     {
       "id": "T89",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Final cleanup: daily log, git push, CURRENT.md"
+      "status": "in-progress",
+      "task": "Final cleanup: daily log, git push, CURRENT.md",
+      "started": "2026-04-27T19:02:49.141Z"
     },
     {
       "id": "T90",
@@ -1088,10 +1089,23 @@
     {
       "id": "T105",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: add X'...' blob literal parsing + improve CAST for blob types",
       "project": "henrydb",
-      "started": "2026-04-27T18:59:47.016Z"
+      "started": "2026-04-27T18:59:47.016Z",
+      "completed": "2026-04-27T19:01:31.090Z",
+      "duration_ms": 180000,
+      "summary": "Added X-string blob literal parsing (X-hex-hex). typeof/quote/hex work with blobs. 33 regression, 323/323 compliance."
+    },
+    {
+      "id": "T106",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "DEPTH PIVOT: full test sweep of both projects + depth review",
+      "started": "2026-04-27T19:01:59.449Z",
+      "completed": "2026-04-27T19:02:28.819Z",
+      "duration_ms": 120000,
+      "summary": "DEPTH PIVOT: Full test sweep of monkey-lang: 1850/1854 pass (1 pre-existing GC failure, 3 skipped). Full HenryDB regression: 33/33 pass, 323/323 compliance. All changes from this session are clean."
     }
   ],
   "focusProjects": [
@@ -1555,6 +1569,10 @@
     {
       "time": "2026-04-27T18:59:41.559Z",
       "msg": "Added T105 (BUILD) after end: HenryDB: add X'...' blob literal parsing + improve CAST for blob types"
+    },
+    {
+      "time": "2026-04-27T19:01:53.657Z",
+      "msg": "Added T106 (MAINTAIN) after end: DEPTH PIVOT: full test sweep of both projects + depth review"
     }
   ]
 }
