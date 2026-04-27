@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-27T14:17:52.925Z",
+  "generated": "2026-04-27T14:29:28.494Z",
   "current": {
     "status": "done",
-    "mode": "PLAN",
-    "task": "",
-    "completedAt": "2026-04-27T14:17:52.925Z",
-    "taskId": "T2",
-    "summary": "WASM Phase 2 reframed: strings/closures/arrays already done (182 tests). Real gaps: classes, try/throw, generators, imports, array comprehension, hash destructuring. Filled 3 BUILD tasks for highest-value missing features.",
-    "durationMs": 120000
+    "mode": "BUILD",
+    "task": "WASM: ArrayComprehension + HashDestructuringLet + TryExpression/ThrowExpression support",
+    "completedAt": "2026-04-27T14:29:28.494Z",
+    "taskId": "T3",
+    "summary": "WASM: ArrayComprehension (with/without filter), HashDestructuringLet, TryExpression/ThrowExpression. Fixed critical runtime bug: integer/pointer confusion in __add/__eq/__lt/__gt when small integers collided with data segment addresses. Fix: moved data segment to offset 65536 + strict isStrPtr validation. 192 WASM tests passing, 1778 total.",
+    "durationMs": 900000
   },
   "schedule": {
     "date": "2026-04-27",
@@ -7594,11 +7594,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 2,
+    "blocksCompleted": 3,
     "blocksTotal": 20,
     "modeDistribution": {
       "THINK": 1,
-      "PLAN": 1
+      "PLAN": 1,
+      "BUILD": 1
     }
   },
   "artifacts": [],

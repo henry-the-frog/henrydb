@@ -25,10 +25,14 @@
     {
       "id": "T3",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "WASM: ArrayComprehension + HashDestructuringLet + TryExpression/ThrowExpression support",
       "plan_ref": "T2",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-27T14:18:15.172Z",
+      "completed": "2026-04-27T14:29:28.459Z",
+      "duration_ms": 900000,
+      "summary": "WASM: ArrayComprehension (with/without filter), HashDestructuringLet, TryExpression/ThrowExpression. Fixed critical runtime bug: integer/pointer confusion in __add/__eq/__lt/__gt when small integers collided with data segment addresses. Fix: moved data segment to offset 65536 + strict isStrPtr validation. 192 WASM tests passing, 1778 total."
     },
     {
       "id": "T19",
