@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-27T16:24:09.577Z",
+  "generated": "2026-04-27T16:27:56.162Z",
   "current": {
     "status": "done",
-    "mode": "EXPLORE",
-    "task": "Monkey-lang: stress test WASM backend with complex programs — classes + closures + recursion + comprehensions combined",
-    "completedAt": "2026-04-27T16:24:09.577Z",
-    "taskId": "T49",
-    "summary": "WASM stress test: 5/6 complex programs pass (class+methods, closure+class, HOF+map, hash+comprehension, try/catch+throw). Only failure: match guard syntax (parser issue). Backend handles combined features well.",
+    "mode": "BUILD",
+    "task": "Monkey-lang WASM: add comprehensive integration test exercising all features together",
+    "completedAt": "2026-04-27T16:27:56.161Z",
+    "taskId": "T50",
+    "summary": "Added 6 WASM integration tests: fib+exception, class inheritance+arithmetic, comprehension+hash+HOF, closure factory+for-in, nested try-catch+class, while loop. 214 WASM tests, 1800 total.",
     "durationMs": 300000
   },
   "schedule": {
@@ -7744,12 +7744,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 45,
+    "blocksCompleted": 46,
     "blocksTotal": 29,
     "modeDistribution": {
       "THINK": 9,
       "PLAN": 4,
-      "BUILD": 23,
+      "BUILD": 24,
       "MAINTAIN": 4,
       "EXPLORE": 5
     }
