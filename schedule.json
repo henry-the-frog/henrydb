@@ -2245,15 +2245,50 @@
     {
       "id": "T211",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Git push",
-      "started": "2026-04-27T22:19:36.253Z"
+      "started": "2026-04-27T22:19:36.253Z",
+      "completed": "2026-04-27T22:19:58.077Z",
+      "duration_ms": 30000,
+      "summary": "Git push"
     },
     {
       "id": "T212",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Session close (at 8 PM)"
+      "status": "done",
+      "task": "Session close (at 8 PM)",
+      "started": "2026-04-27T22:20:07.359Z",
+      "completed": "2026-04-27T22:20:07.502Z",
+      "duration_ms": 1000,
+      "summary": "Not closing - 4 hours remaining"
+    },
+    {
+      "id": "T213",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Final quality sweep: run ALL HenryDB tests to verify no regressions from trigger changes",
+      "project": "henrydb",
+      "started": "2026-04-27T22:20:37.303Z",
+      "completed": "2026-04-27T22:21:11.074Z",
+      "duration_ms": 180000,
+      "summary": "Quality sweep: 85 core tests + 5 compliance + 20 fuzzer = 110+ HenryDB tests pass, 0 failures. No regressions from trigger changes."
+    },
+    {
+      "id": "T214",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Write evening summary + update MEMORY.md",
+      "started": "2026-04-27T22:21:16.110Z",
+      "completed": "2026-04-27T22:21:53.699Z",
+      "duration_ms": 120000,
+      "summary": "Evening summary written to daily log. Comprehensive accounting of all accomplishments, bugs, tests, and insights."
+    },
+    {
+      "id": "T215",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Final git push + CURRENT.md update",
+      "started": "2026-04-27T22:22:04.763Z"
     }
   ],
   "focusProjects": [
@@ -3189,6 +3224,18 @@
     {
       "time": "2026-04-27T22:17:06.815Z",
       "msg": "PLAN T208 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-04-27T22:20:21.211Z",
+      "msg": "Added T213 (EXPLORE) after end: Final quality sweep: run ALL HenryDB tests to verify no regressions from trigger changes"
+    },
+    {
+      "time": "2026-04-27T22:20:21.328Z",
+      "msg": "Added T214 (MAINTAIN) after end: Write evening summary + update MEMORY.md"
+    },
+    {
+      "time": "2026-04-27T22:20:21.444Z",
+      "msg": "Added T215 (MAINTAIN) after end: Final git push + CURRENT.md update"
     }
   ]
 }
