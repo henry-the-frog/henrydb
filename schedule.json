@@ -456,6 +456,17 @@
       "completed": "2026-04-27T16:08:01.486Z",
       "duration_ms": 300000,
       "summary": "WASM compilation quality analysis: fib 67% direct ops (return type inference would unlock remaining 33%), sum 100% direct (full benefit of knownInt), closures 0% direct (captures dont propagate knownInt). Next optimizations: return type inference and capture type propagation."
+    },
+    {
+      "id": "T44",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Deep analysis: what makes WASM beat the transpiler on some benchmarks but lose on fib?",
+      "project": "monkey-lang",
+      "started": "2026-04-27T16:08:47.907Z",
+      "completed": "2026-04-27T16:09:14.711Z",
+      "duration_ms": 600000,
+      "summary": "Deep analysis: WASM beats transpiler on tight arithmetic loops (no function calls). Loses on recursive/function-heavy workloads due to: (1) call_indirect/env_ptr overhead, (2) V8 TurboFan inlining that WASM cant do. Top optimization: remove env_ptr for non-capturing functions."
     }
   ],
   "focusProjects": [
@@ -647,6 +658,10 @@
     {
       "time": "2026-04-27T16:05:46.710Z",
       "msg": "Added T43 (THINK) after end: Depth pivot: analyze WASM compilation quality — what percentage of operations use direct i32 vs host imports?"
+    },
+    {
+      "time": "2026-04-27T16:08:40.039Z",
+      "msg": "Added T44 (THINK) after end: Deep analysis: what makes WASM beat the transpiler on some benchmarks but lose on fib?"
     }
   ]
 }
