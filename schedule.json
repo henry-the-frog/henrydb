@@ -155,10 +155,14 @@
     {
       "id": "T11",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "Wire AST-level DCE (dead-code.js) into VM compiler pipeline, add constant folding, verify with benchmarks",
       "plan_ref": "T10",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-27T15:03:23.099Z",
+      "completed": "2026-04-27T15:06:02.131Z",
+      "duration_ms": 300000,
+      "summary": "Wired AST-level DCE into VM compiler pipeline. eliminateDeadCode runs on Program AST before compilation. Constant folding skipped (changes AST shapes incompatible with VM compiler). All 1786 tests pass. Dead code after return/break is now removed in VM path."
     },
     {
       "id": "T12",
