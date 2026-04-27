@@ -595,6 +595,17 @@
       "completed": "2026-04-27T16:45:13.915Z",
       "duration_ms": 120000,
       "summary": "WASM production readiness: core features done, missing float support (biggest gap), string methods, module imports, GC, generators. Highest-value next: NaN-boxing for floats, string methods, WASM binary caching."
+    },
+    {
+      "id": "T57",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: add json_extract() scalar function for JSON path access",
+      "project": "henrydb",
+      "started": "2026-04-27T16:45:43.494Z",
+      "completed": "2026-04-27T16:47:08.401Z",
+      "duration_ms": 300000,
+      "summary": "Added 5 JSON scalar functions: json_extract (JSONPath), json_array_length, json_type, json_valid, json (minify). All work correctly. 117 regression tests pass."
     }
   ],
   "focusProjects": [
@@ -842,6 +853,10 @@
     {
       "time": "2026-04-27T16:44:48.480Z",
       "msg": "Added T56 (THINK) after end: Plan next high-impact work: what would make the WASM backend production-ready?"
+    },
+    {
+      "time": "2026-04-27T16:45:38.126Z",
+      "msg": "Added T57 (BUILD) after end: HenryDB: add json_extract() scalar function for JSON path access"
     }
   ]
 }

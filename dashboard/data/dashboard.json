@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-27T16:45:13.951Z",
+  "generated": "2026-04-27T16:47:08.435Z",
   "current": {
     "status": "done",
-    "mode": "THINK",
-    "task": "Plan next high-impact work: what would make the WASM backend production-ready?",
-    "completedAt": "2026-04-27T16:45:13.951Z",
-    "taskId": "T56",
-    "summary": "WASM production readiness: core features done, missing float support (biggest gap), string methods, module imports, GC, generators. Highest-value next: NaN-boxing for floats, string methods, WASM binary caching.",
-    "durationMs": 120000
+    "mode": "BUILD",
+    "task": "HenryDB: add json_extract() scalar function for JSON path access",
+    "completedAt": "2026-04-27T16:47:08.435Z",
+    "taskId": "T57",
+    "summary": "Added 5 JSON scalar functions: json_extract (JSONPath), json_array_length, json_type, json_valid, json (minify). All work correctly. 117 regression tests pass.",
+    "durationMs": 300000
   },
   "schedule": {
     "date": "2026-04-27",
@@ -7744,12 +7744,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 51,
+    "blocksCompleted": 52,
     "blocksTotal": 29,
     "modeDistribution": {
       "THINK": 10,
       "PLAN": 4,
-      "BUILD": 27,
+      "BUILD": 28,
       "MAINTAIN": 4,
       "EXPLORE": 6
     }
