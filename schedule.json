@@ -324,6 +324,17 @@
       "completed": "2026-04-27T15:37:16.714Z",
       "duration_ms": 300000,
       "summary": "HenryDB LATERAL + recursive CTE stress test. Found: (1) Multi-CTE reference bug: CTE b referencing CTE a returns nulls instead of computed values. (2) Recursive CTEs work (countdown, org hierarchy, deep 1000, UNION dedup). (3) LATERAL works correctly with correlated subqueries and aggregates."
+    },
+    {
+      "id": "T32",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Fix multi-CTE reference bug: CTE b referencing CTE a returns nulls",
+      "project": "henrydb",
+      "started": "2026-04-27T15:37:44.857Z",
+      "completed": "2026-04-27T15:41:44.770Z",
+      "duration_ms": 300000,
+      "summary": "Fixed CTE column renaming bug. WITH a(x) AS (...) now correctly renames output columns. Applied to both legacy path (select-inner.js) and volcano planner. Multi-CTE references work. 94 fuzzer tests pass."
     }
   ],
   "focusProjects": [
@@ -467,6 +478,10 @@
     {
       "time": "2026-04-27T15:31:52.457Z",
       "msg": "Added T31 (EXPLORE) after end: HenryDB: stress test LATERAL joins and recursive CTEs, find gaps"
+    },
+    {
+      "time": "2026-04-27T15:37:39.659Z",
+      "msg": "Added T32 (BUILD) after end: Fix multi-CTE reference bug: CTE b referencing CTE a returns nulls"
     }
   ]
 }

@@ -97,10 +97,23 @@ export function buildPlan(ast, tables, indexCatalog, tableStats) {
       // Strip table qualifications from column names (c.region → region)
       // CTE output columns should be unqualified so outer queries can re-qualify with their own alias
       const rawKeys = rows.length > 0 ? Object.keys(rows[0]).filter(k => !k.startsWith('_')) : [];
-      const schema = rawKeys.map(name => {
+      const schema = rawKeys.map((name, i) => {
         const unqual = name.includes('.') ? name.split('.').pop() : name;
-        return { name: unqual, _origKey: name };
+        // Apply CTE column renaming if specified: WITH a(x, y) AS (...)
+        const finalName = (cte.columns && cte.columns[i]) || unqual;
+        return { name: finalName, _origKey: name };
       });
+      
+      // If CTE has column renaming, also rename the row keys for proper resolution
+      if (cte.columns && cte.columns.length > 0) {
+        for (const row of rows) {
+          for (let i = 0; i < rawKeys.length && i < cte.columns.length; i++) {
+            if (rawKeys[i] !== cte.columns[i]) {
+              row[cte.columns[i]] = row[rawKeys[i]];
+            }
+          }
+        }
+      }
       cteTables.set(cte.name, {
         heap: { 
           scan: function*() { for (const r of rows) yield { values: schema.map(c => r[c._origKey]), pageId: 0, slotIdx: 0 }; },

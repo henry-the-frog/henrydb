@@ -248,6 +248,10 @@ export function selectInner(db, ast) {
         ? db.execute_ast(viewDef.query)
         : db._select(viewDef.query);
       rows = viewResult.rows;
+      // Apply CTE column renaming if specified
+      if (viewDef.cteColumns) {
+        db._renameCTEColumns(rows, viewDef.cteColumns);
+      }
     }
 
     // Add qualified column names (alias.col) for alias-prefixed references

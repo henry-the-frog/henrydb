@@ -1040,15 +1040,17 @@ export class Database {
         if (cte.recursive && (cte.unionQuery || cte.query.type === 'UNION')) {
           // Recursive CTE: iterate until fixed point
           const allRows = this._executeRecursiveCTE(cte);
+          this._renameCTEColumns(allRows, cte.columns);
           this.views.set(cte.name, { materializedRows: allRows, isCTE: true });
         } else if (cte.unionQuery || cte.query.type === 'UNION') {
           // Non-recursive CTE with UNION: materialize by executing both parts
           const leftResult = this._select(cte.query);
           const rightResult = this.execute_ast(cte.unionQuery);
           const allRows = [...leftResult.rows, ...rightResult.rows];
+          this._renameCTEColumns(allRows, cte.columns);
           this.views.set(cte.name, { materializedRows: allRows, isCTE: true });
         } else {
-          this.views.set(cte.name, { query: cte.query, isCTE: true });
+          this.views.set(cte.name, { query: cte.query, isCTE: true, cteColumns: cte.columns });
         }
         tempViews.push(cte.name);
       }
@@ -1240,6 +1242,20 @@ export class Database {
   _planToDot(plan) { return _planToDotImpl(this, plan); }
 
   _executeRecursiveCTE(cte) { return _executeRecursiveCTEImpl(this, cte); }
+  
+  // Rename CTE output columns: WITH a(x, y) AS (SELECT ...) renames columns to x, y
+  _renameCTEColumns(rows, cteColumns) {
+    if (!cteColumns || cteColumns.length === 0 || rows.length === 0) return;
+    const origKeys = Object.keys(rows[0]).filter(k => !k.startsWith('_'));
+    for (const row of rows) {
+      for (let i = 0; i < origKeys.length && i < cteColumns.length; i++) {
+        if (origKeys[i] !== cteColumns[i]) {
+          row[cteColumns[i]] = row[origKeys[i]];
+          delete row[origKeys[i]];
+        }
+      }
+    }
+  }
 
   _explainCompiled(stmt) { return _explainCompiledImpl(this, stmt); }
   _explainAnalyze(stmt) { return _explainAnalyzeImpl(this, stmt); }
