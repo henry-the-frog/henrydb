@@ -1,5 +1,10 @@
 # Scratch Notes Index
 
+## Session A (2026-04-27 morning) — New Files
+- `wasm-int-ptr-confusion.md` — Critical bug: integers colliding with data segment pointers (fix: offset 65536)
+- `wasm-gc-research.md` — Node.js v22 supports WASM GC structs/arrays, stringref not yet available
+- `wasm-host-import-cost.md` — Host import crossing is dominant WASM bottleneck, knownInt inference 8x speedup
+
 ## Session A (2026-04-26 morning) — New Files
 - `session-a-learnings-apr26.md` — Key learnings (VM callbacks, WASM, classes, SQLite affinity, SSA, DCE)
 - `runtime-dispatch-plan.md` — Implementation plan for OpMethodCall runtime dispatch (~100 LOC)
