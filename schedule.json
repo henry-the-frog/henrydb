@@ -532,6 +532,17 @@
       "completed": "2026-04-27T16:27:56.126Z",
       "duration_ms": 300000,
       "summary": "Added 6 WASM integration tests: fib+exception, class inheritance+arithmetic, comprehension+hash+HOF, closure factory+for-in, nested try-catch+class, while loop. 214 WASM tests, 1800 total."
+    },
+    {
+      "id": "T51",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Monkey-lang WASM: implement super.method() for calling parent class methods",
+      "project": "monkey-lang",
+      "started": "2026-04-27T16:29:35.149Z",
+      "completed": "2026-04-27T16:33:50.309Z",
+      "duration_ms": 600000,
+      "summary": "Implemented super.method() for WASM classes. Parent method resolved via class registry, called with self via callIndirect. Works with args and field access. 217 WASM tests, 1803 total."
     }
   ],
   "focusProjects": [
@@ -751,6 +762,10 @@
     {
       "time": "2026-04-27T16:26:07.442Z",
       "msg": "Added T50 (BUILD) after end: Monkey-lang WASM: add comprehensive integration test exercising all features together"
+    },
+    {
+      "time": "2026-04-27T16:29:22.087Z",
+      "msg": "Added T51 (BUILD) after end: Monkey-lang WASM: implement super.method() for calling parent class methods"
     }
   ]
 }
