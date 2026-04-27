@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-27T15:31:05.159Z",
+  "generated": "2026-04-27T15:34:58.244Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "WASM compiler: real try/catch/throw using exception handling proposal",
-    "completedAt": "2026-04-27T15:31:05.159Z",
-    "taskId": "T29",
-    "summary": "Real WASM try/catch/throw using exception handling proposal! Replaced stub implementations with native WASM EH: try_ opcode creates try blocks, throw_ propagates i32 values, catch_ binds caught values. Nested try/catch and re-throw work. 208 WASM tests, 1794 total.",
+    "task": "WASM compiler: 5-way execution benchmark update comparing all backends on complex programs (classes, closures, recursion)",
+    "completedAt": "2026-04-27T15:34:58.244Z",
+    "taskId": "T30",
+    "summary": "5-way benchmark updated! WASM runs on 10/12 benchmarks. Results: WASM 3.5x faster than VM, 1.9x faster than JIT. Best: GCD 1.43ms, power 0.86ms. Transpiler still fastest (native JS). WASM compile+run overhead included.",
     "durationMs": 600000
   },
   "schedule": {
@@ -7744,12 +7744,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 25,
+    "blocksCompleted": 26,
     "blocksTotal": 29,
     "modeDistribution": {
       "THINK": 5,
       "PLAN": 4,
-      "BUILD": 10,
+      "BUILD": 11,
       "MAINTAIN": 4,
       "EXPLORE": 2
     }

@@ -302,6 +302,24 @@
       "completed": "2026-04-27T15:31:05.124Z",
       "duration_ms": 600000,
       "summary": "Real WASM try/catch/throw using exception handling proposal! Replaced stub implementations with native WASM EH: try_ opcode creates try blocks, throw_ propagates i32 values, catch_ binds caught values. Nested try/catch and re-throw work. 208 WASM tests, 1794 total."
+    },
+    {
+      "id": "T30",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "WASM compiler: 5-way execution benchmark update comparing all backends on complex programs (classes, closures, recursion)",
+      "project": "monkey-lang",
+      "started": "2026-04-27T15:32:00.627Z",
+      "completed": "2026-04-27T15:34:58.200Z",
+      "duration_ms": 600000,
+      "summary": "5-way benchmark updated! WASM runs on 10/12 benchmarks. Results: WASM 3.5x faster than VM, 1.9x faster than JIT. Best: GCD 1.43ms, power 0.86ms. Transpiler still fastest (native JS). WASM compile+run overhead included."
+    },
+    {
+      "id": "T31",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "HenryDB: stress test LATERAL joins and recursive CTEs, find gaps",
+      "project": "henrydb"
     }
   ],
   "focusProjects": [
@@ -437,6 +455,14 @@
     {
       "time": "2026-04-27T15:24:11.404Z",
       "msg": "PLAN T27 filled 2 BUILD tasks"
+    },
+    {
+      "time": "2026-04-27T15:31:44.043Z",
+      "msg": "Added T30 (BUILD) after end: WASM compiler: 5-way execution benchmark update comparing all backends on complex programs (classes, closures, recursion)"
+    },
+    {
+      "time": "2026-04-27T15:31:52.457Z",
+      "msg": "Added T31 (EXPLORE) after end: HenryDB: stress test LATERAL joins and recursive CTEs, find gaps"
     }
   ]
 }
