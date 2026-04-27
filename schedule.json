@@ -4,23 +4,45 @@
     {
       "id": "T1",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Review weekend progress, set Monday direction"
+      "status": "done",
+      "task": "Review weekend progress, set Monday direction",
+      "started": "2026-04-27T14:15:20.063Z",
+      "completed": "2026-04-27T14:15:43.620Z",
+      "duration_ms": 60000,
+      "summary": "Weekend review: WASM Phase 1 complete (memory/globals/table/HOFs 38-58x), HenryDB fuzzer 99.3%, SSA DCE integrated. Queue looks good, no changes needed."
     },
     {
       "id": "T2",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "WASM Phase 2: string support via linear memory and host imports",
-      "task": null
+      "task": null,
+      "started": "2026-04-27T14:16:06.208Z",
+      "completed": "2026-04-27T14:17:52.890Z",
+      "duration_ms": 120000,
+      "summary": "WASM Phase 2 reframed: strings/closures/arrays already done (182 tests). Real gaps: classes, try/throw, generators, imports, array comprehension, hash destructuring. Filled 3 BUILD tasks for highest-value missing features."
     },
     {
       "id": "T3",
       "mode": "BUILD",
       "status": "upcoming",
-      "task": null,
+      "task": "WASM: ArrayComprehension + HashDestructuringLet + TryExpression/ThrowExpression support",
       "plan_ref": "T2",
       "project": "monkey-lang"
+    },
+    {
+      "id": "T19",
+      "mode": "BUILD",
+      "task": "WASM: ClassStatement compilation (class, methods, self, inheritance, super)",
+      "status": "upcoming",
+      "plan_ref": "T2"
+    },
+    {
+      "id": "T20",
+      "mode": "BUILD",
+      "task": "WASM: ImportStatement + GeneratorLiteral/YieldExpression support",
+      "status": "upcoming",
+      "plan_ref": "T2"
     },
     {
       "id": "T4",
@@ -205,6 +227,10 @@
     {
       "time": "2026-04-27T14:01:54.585Z",
       "msg": "Added T18 (EXPLORE) after T17: Research WASM GC proposal and string encoding strategies"
+    },
+    {
+      "time": "2026-04-27T14:17:47.000Z",
+      "msg": "PLAN T2 filled 3 BUILD tasks"
     }
   ]
 }

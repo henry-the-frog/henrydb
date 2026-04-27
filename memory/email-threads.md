@@ -88,9 +88,15 @@
 
 ### neural-net CI Failures — henry-the-frog/neural-net
 - **Since:** Apr 11, 2026
-- **Count:** 116+ consecutive "Tests - main" failures (UIDs 150-260, 28 more Apr 17-18)
-- **Last checked:** Apr 20
+- **Count:** 116+ consecutive "Tests - main" failures (UIDs 150-260, 28 more Apr 17-18, 8 more Apr 24)
+- **Last checked:** Apr 27
 - **Action needed:** Tests are failing on every push to main. Investigate and fix.
+
+### monkey-lang CI Failures — henry-the-frog/monkey-lang
+- **Since:** Apr 26, 2026
+- **Count:** 5 consecutive "CI - main" failures (UIDs 343-347)
+- **Last checked:** Apr 27
+- **Action needed:** CI started failing on main. Investigate.
 
 ### Clone & Run Monkey Test Corpus
 - **Action:** Clone https://github.com/devdanzin/monkey-lang-tests-corpus and run diff_test.py locally

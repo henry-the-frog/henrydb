@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-27T14:02:19.945Z",
+  "generated": "2026-04-27T14:17:52.925Z",
   "current": {
     "status": "done",
-    "mode": "BUILD",
-    "task": "WASM: compile string concatenation via host imports (env.__str_concat)",
-    "completedAt": "2026-04-27T14:00:24.005Z",
-    "taskId": "T114",
-    "summary": " [auto-resolved: orphaned in-progress task]",
-    "durationMs": 0
+    "mode": "PLAN",
+    "task": "",
+    "completedAt": "2026-04-27T14:17:52.925Z",
+    "taskId": "T2",
+    "summary": "WASM Phase 2 reframed: strings/closures/arrays already done (182 tests). Real gaps: classes, try/throw, generators, imports, array comprehension, hash destructuring. Filled 3 BUILD tasks for highest-value missing features.",
+    "durationMs": 120000
   },
   "schedule": {
     "date": "2026-04-27",
@@ -7452,23 +7452,42 @@
       {
         "id": "T1",
         "mode": "THINK",
-        "status": "upcoming",
-        "task": "Review weekend progress, set Monday direction"
+        "status": "done",
+        "task": "Review weekend progress, set Monday direction",
+        "started": "2026-04-27T14:15:20.063Z",
+        "completed": "2026-04-27T14:15:43.620Z",
+        "duration_ms": 60000,
+        "summary": "Weekend review: WASM Phase 1 complete (memory/globals/table/HOFs 38-58x), HenryDB fuzzer 99.3%, SSA DCE integrated. Queue looks good, no changes needed."
       },
       {
         "id": "T2",
         "mode": "PLAN",
-        "status": "upcoming",
+        "status": "in-progress",
         "goal": "WASM Phase 2: string support via linear memory and host imports",
-        "task": null
+        "task": null,
+        "started": "2026-04-27T14:16:06.208Z"
       },
       {
         "id": "T3",
         "mode": "BUILD",
         "status": "upcoming",
-        "task": null,
+        "task": "WASM: ArrayComprehension + HashDestructuringLet + TryExpression/ThrowExpression support",
         "plan_ref": "T2",
         "project": "monkey-lang"
+      },
+      {
+        "id": "T19",
+        "mode": "BUILD",
+        "task": "WASM: ClassStatement compilation (class, methods, self, inheritance, super)",
+        "status": "upcoming",
+        "plan_ref": "T2"
+      },
+      {
+        "id": "T20",
+        "mode": "BUILD",
+        "task": "WASM: ImportStatement + GeneratorLiteral/YieldExpression support",
+        "status": "upcoming",
+        "plan_ref": "T2"
       },
       {
         "id": "T4",
@@ -7575,9 +7594,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 0,
-    "blocksTotal": 18,
-    "modeDistribution": {}
+    "blocksCompleted": 2,
+    "blocksTotal": 20,
+    "modeDistribution": {
+      "THINK": 1,
+      "PLAN": 1
+    }
   },
   "artifacts": [],
   "blockers": [],
