@@ -21,7 +21,7 @@ export class ExpressionEvaluator {
       case 'CAST': return this._cast(expr, row);
       case 'BETWEEN': {
         const val = this.evaluate(expr.expr, row);
-        return val >= this.evaluate(expr.low, row) && val <= this.evaluate(expr.high, row);
+        return (val >= this.evaluate(expr.low, row) && val <= this.evaluate(expr.high, row)) ? 1 : 0;
       }
       case 'IN': {
         const val = this.evaluate(expr.expr, row);

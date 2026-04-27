@@ -688,7 +688,25 @@ P._evalExpr = function(expr, row) {
       if (val == null || pattern == null) return null;
       const escapeChar = expr.escape ? this._evalValue(expr.escape, row) : null;
       const regex = this._likeToRegex(String(pattern), escapeChar);
-      return new RegExp(regex).test(String(val));
+      // SQLite LIKE is case-insensitive for ASCII
+      return new RegExp(regex, 'i').test(String(val)) ? 1 : 0;
+    }
+    case 'GLOB': {
+      const val = this._evalValue(expr.left, row);
+      const pattern = this._evalValue(expr.pattern, row);
+      if (val == null || pattern == null) return null;
+      // GLOB: * matches any sequence, ? matches any single char, case-sensitive
+      let regex = '^';
+      const p = String(pattern);
+      for (let i = 0; i < p.length; i++) {
+        const ch = p[i];
+        if (ch === '*') regex += '.*';
+        else if (ch === '?') regex += '.';
+        else if ('.+^${}()|[]\\'.includes(ch)) regex += '\\' + ch;
+        else regex += ch;
+      }
+      regex += '$';
+      return new RegExp(regex).test(String(val)) ? 1 : 0;
     }
     case 'ILIKE': {
       const val = this._evalValue(expr.left, row);
@@ -696,7 +714,7 @@ P._evalExpr = function(expr, row) {
       if (val == null || pattern == null) return null;
       const escapeChar = expr.escape ? this._evalValue(expr.escape, row) : null;
       const regex = this._likeToRegex(String(pattern), escapeChar);
-      return new RegExp(regex, 'i').test(String(val));
+      return new RegExp(regex, 'i').test(String(val)) ? 1 : 0;
     }
     case 'SIMILAR_TO': {
       const val = this._evalValue(expr.left, row);
@@ -734,7 +752,7 @@ P._evalExpr = function(expr, row) {
       let high = this._evalValue(expr.high, row);
       if (val === null || val === undefined || low === null || low === undefined || high === null || high === undefined) return null;
       if (expr.symmetric && low > high) { const tmp = low; low = high; high = tmp; }
-      return val >= low && val <= high;
+      return (val >= low && val <= high) ? 1 : 0;
     }
     case 'NOT_BETWEEN': {
       const val = this._evalValue(expr.left, row);
@@ -742,7 +760,7 @@ P._evalExpr = function(expr, row) {
       let high = this._evalValue(expr.high, row);
       if (val === null || val === undefined || low === null || low === undefined || high === null || high === undefined) return null;
       if (expr.symmetric && low > high) { const tmp = low; low = high; high = tmp; }
-      return val < low || val > high;
+      return (val < low || val > high) ? 1 : 0;
     }
     case 'TS_MATCH': {
       // Full-text search: to_tsvector(text) @@ to_tsquery(query)
@@ -859,7 +877,7 @@ P._evalValue = function(node, row) {
   // Boolean expression types — delegate to _evalExpr and return true/false as values
   if (node.type === 'IS_NULL' || node.type === 'IS_NOT_NULL' ||
       node.type === 'COMPARE' || node.type === 'BETWEEN' || node.type === 'NOT_BETWEEN' ||
-      node.type === 'LIKE' || node.type === 'ILIKE' || node.type === 'REGEXP' ||
+      node.type === 'LIKE' || node.type === 'ILIKE' || node.type === 'GLOB' || node.type === 'REGEXP' ||
       node.type === 'TS_MATCH' ||
       node.type === 'IN_LIST' || node.type === 'IN_SUBQUERY' ||
       node.type === 'NOT_IN' || node.type === 'NOT_LIKE' ||

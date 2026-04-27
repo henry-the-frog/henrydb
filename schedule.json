@@ -730,36 +730,124 @@
     {
       "id": "T67",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Housekeeping",
-      "started": "2026-04-27T17:36:07.109Z"
+      "started": "2026-04-27T17:36:07.109Z",
+      "completed": "2026-04-27T17:36:52.402Z",
+      "duration_ms": 60000,
+      "summary": "Housekeeping: git push both repos, daily log updated, CURRENT.md updated."
     },
     {
       "id": "T68",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Direction check: HenryDB improvements or monkey-lang depth?"
+      "status": "done",
+      "task": "Direction check: HenryDB improvements or monkey-lang depth?",
+      "started": "2026-04-27T17:37:01.328Z",
+      "completed": "2026-04-27T17:37:13.012Z",
+      "duration_ms": 60000,
+      "summary": "Direction: monkey-lang WASM float support is highest-value gap. All numbers are i32, blocking float-using programs. NaN-boxing or f64 representation needed. HenryDB is in great shape with JSON1 extension. Going deep on WASM float support."
     },
     {
       "id": "T69",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "skipped",
       "goal": "HenryDB: super.method fix + class method collision in monkey-lang",
-      "task": null
+      "task": null,
+      "skip_reason": ""
     },
     {
       "id": "T70",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "skipped",
       "task": null,
       "plan_ref": "T69",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "skip_reason": ""
     },
     {
       "id": "T71",
       "mode": "MAINTAIN",
+      "status": "skipped",
+      "task": "Final housekeeping + git push",
+      "skip_reason": ""
+    },
+    {
+      "id": "T74",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "WASM float support: NaN-boxing or tagged representation for mixed int/float arithmetic",
+      "task": null,
+      "started": "2026-04-27T17:37:39.472Z",
+      "completed": "2026-04-27T17:38:34.505Z",
+      "duration_ms": 120000,
+      "summary": "PLAN: Tagged heap float representation. TAG_FLOAT=5, 12-byte heap objects [tag:i32][f64:8bytes]. Runtime dispatch in host imports for float detection. 2 BUILD tasks: implementation + tests."
+    },
+    {
+      "id": "T75",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "WASM float support: tagged heap representation with runtime dispatch in host imports",
+      "plan_ref": "T74",
+      "project": "monkey-lang",
+      "started": "2026-04-27T17:38:43.386Z",
+      "completed": "2026-04-27T17:42:29.921Z",
+      "duration_ms": 600000,
+      "summary": "WASM float support implemented: TAG_FLOAT=5 heap objects, runtime dispatch in host imports for mixed int/float arithmetic. New host imports: __float_new, __sub, __mul, __div, __mod, __neg, __to_float. Fixed prefix negation. 236 tests pass."
+    },
+    {
+      "id": "T76",
+      "mode": "BUILD",
+      "task": "WASM float: add float arithmetic tests and verify mixed int/float operations",
+      "status": "done",
+      "plan_ref": "T74",
+      "started": "2026-04-27T17:42:37.385Z",
+      "completed": "2026-04-27T17:45:20.951Z",
+      "duration_ms": 300000,
+      "summary": "23 float tests added: literals, arithmetic (+/-/*/÷/%), negation, mixed int/float, comparisons, let bindings, function returns, loop accumulation, closure capture. Removed stale prefix monkey-patch. 240 WASM tests pass."
+    },
+    {
+      "id": "T77",
+      "mode": "THINK",
+      "status": "done",
+      "task": "HenryDB: run fuzzer to assess current compatibility and identify highest-value fixes",
+      "started": "2026-04-27T17:45:52.660Z",
+      "completed": "2026-04-27T17:50:30.173Z",
+      "duration_ms": 300000,
+      "summary": "Found 7 bugs in HenryDB: (1) BETWEEN returns value not 0/1, (2) GLOB returns value not 0/1, (3) printf missing, (4) random() returns real, (5) count() no-args errors, (6) total() missing, (7) group_concat single-row bug. BETWEEN+GLOB are highest priority."
+    },
+    {
+      "id": "T78",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "HenryDB improvements based on fuzzer findings",
+      "task": null,
+      "started": "2026-04-27T17:50:35.431Z",
+      "completed": "2026-04-27T17:50:47.559Z",
+      "duration_ms": 30000,
+      "summary": "Planned 3 BUILD tasks for HenryDB bugs: BETWEEN/GLOB boolean fix, printf+total, misc fixes."
+    },
+    {
+      "id": "T79",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Fix BETWEEN and GLOB to return 0/1 boolean instead of the value",
+      "plan_ref": "T78",
+      "project": "henrydb",
+      "started": "2026-04-27T17:50:55.909Z"
+    },
+    {
+      "id": "T80",
+      "mode": "BUILD",
+      "task": "Add printf/format function and total() aggregate",
       "status": "upcoming",
-      "task": "Final housekeeping + git push"
+      "plan_ref": "T78"
+    },
+    {
+      "id": "T81",
+      "mode": "BUILD",
+      "task": "Fix count() no-args, random() return type, group_concat single-row",
+      "status": "upcoming",
+      "plan_ref": "T78"
     }
   ],
   "focusProjects": [
@@ -1071,6 +1159,46 @@
     {
       "time": "2026-04-27T17:32:16.558Z",
       "msg": "PLAN T65 filled 3 BUILD tasks"
+    },
+    {
+      "time": "2026-04-27T17:37:22.576Z",
+      "msg": "Removed T69: "
+    },
+    {
+      "time": "2026-04-27T17:37:22.690Z",
+      "msg": "Removed T70: "
+    },
+    {
+      "time": "2026-04-27T17:37:22.804Z",
+      "msg": "Removed T71: "
+    },
+    {
+      "time": "2026-04-27T17:37:29.891Z",
+      "msg": "Added T74 (PLAN) after end: WASM float support: NaN-boxing or tagged representation for mixed int/float arithmetic"
+    },
+    {
+      "time": "2026-04-27T17:37:30.007Z",
+      "msg": "Added T75 (BUILD) after end: null"
+    },
+    {
+      "time": "2026-04-27T17:38:27.198Z",
+      "msg": "PLAN T74 filled 2 BUILD tasks"
+    },
+    {
+      "time": "2026-04-27T17:45:44.498Z",
+      "msg": "Added T77 (THINK) after end: HenryDB: run fuzzer to assess current compatibility and identify highest-value fixes"
+    },
+    {
+      "time": "2026-04-27T17:45:44.612Z",
+      "msg": "Added T78 (PLAN) after end: HenryDB improvements based on fuzzer findings"
+    },
+    {
+      "time": "2026-04-27T17:45:44.727Z",
+      "msg": "Added T79 (BUILD) after end: null"
+    },
+    {
+      "time": "2026-04-27T17:50:41.730Z",
+      "msg": "PLAN T78 filled 3 BUILD tasks"
     }
   ]
 }

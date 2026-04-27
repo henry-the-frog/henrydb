@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-27T17:36:07.145Z",
+  "generated": "2026-04-27T17:50:55.969Z",
   "current": {
     "status": "in-progress",
-    "mode": "MAINTAIN",
-    "task": "Housekeeping",
-    "startedAt": "2026-04-27T17:36:07.145Z",
-    "taskId": "T67"
+    "mode": "BUILD",
+    "task": "Fix BETWEEN and GLOB to return 0/1 boolean instead of the value",
+    "startedAt": "2026-04-27T17:50:55.969Z",
+    "taskId": "T79"
   },
   "schedule": {
     "date": "2026-04-27",
@@ -8131,77 +8131,177 @@
       {
         "id": "T65",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "WASM optimization: env_ptr removal for non-capturing functions + closure type propagation",
         "task": null,
-        "started": "2026-04-27T17:31:59.230Z"
+        "started": "2026-04-27T17:31:59.230Z",
+        "completed": "2026-04-27T17:32:20.957Z",
+        "duration_ms": 120000,
+        "summary": "Planned 3 BUILD tasks: (1) closure capture type propagation for knownInt, (2) skip env allocation for 0-capture function literals, (3) benchmark closure workloads. Key insight: keep env_ptr calling convention uniform but propagate type info through captures."
       },
       {
         "id": "T66",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "WASM: closure capture type propagation — pass knownInt status through captures into closure body",
         "plan_ref": "T65",
-        "project": "monkey-lang"
+        "project": "monkey-lang",
+        "started": "2026-04-27T17:32:28.534Z",
+        "completed": "2026-04-27T17:34:10.200Z",
+        "duration_ms": 300000,
+        "summary": "Closure capture type propagation: captures now carry knownInt from outer scope. 217 WASM tests pass. Closures capturing integers use direct i32 ops."
       },
       {
         "id": "T72",
         "mode": "BUILD",
         "task": "WASM: skip environment allocation for 0-capture function literals (allocate minimal 4-byte env instead of full struct)",
-        "status": "upcoming",
-        "plan_ref": "T65"
+        "status": "done",
+        "plan_ref": "T65",
+        "started": "2026-04-27T17:34:19.268Z",
+        "completed": "2026-04-27T17:34:58.656Z",
+        "duration_ms": 300000,
+        "summary": "Skip env allocation for 0-capture closures. Set env_ptr=0 instead of allocating a 4-byte struct. Saves 1 alloc + 1 store per non-capturing closure. 217 tests pass."
       },
       {
         "id": "T73",
         "mode": "BUILD",
         "task": "WASM: benchmark closure-heavy workloads to measure optimization impact",
-        "status": "upcoming",
-        "plan_ref": "T65"
+        "status": "done",
+        "plan_ref": "T65",
+        "started": "2026-04-27T17:35:04.681Z",
+        "completed": "2026-04-27T17:36:00.217Z",
+        "duration_ms": 300000,
+        "summary": "Benchmark post-optimization: WASM 34.4x VM, 11.0x JIT. Closure factory: 0.86ms (5.9x VM, 1.7x JIT). WASM wins on 4 benchmarks (sum, nested loops, closure factory, if/else). All perf tests pass."
       },
       {
         "id": "T67",
         "mode": "MAINTAIN",
-        "status": "upcoming",
-        "task": "Housekeeping"
+        "status": "done",
+        "task": "Housekeeping",
+        "started": "2026-04-27T17:36:07.109Z",
+        "completed": "2026-04-27T17:36:52.402Z",
+        "duration_ms": 60000,
+        "summary": "Housekeeping: git push both repos, daily log updated, CURRENT.md updated."
       },
       {
         "id": "T68",
         "mode": "THINK",
-        "status": "upcoming",
-        "task": "Direction check: HenryDB improvements or monkey-lang depth?"
+        "status": "done",
+        "task": "Direction check: HenryDB improvements or monkey-lang depth?",
+        "started": "2026-04-27T17:37:01.328Z",
+        "completed": "2026-04-27T17:37:13.012Z",
+        "duration_ms": 60000,
+        "summary": "Direction: monkey-lang WASM float support is highest-value gap. All numbers are i32, blocking float-using programs. NaN-boxing or f64 representation needed. HenryDB is in great shape with JSON1 extension. Going deep on WASM float support."
       },
       {
         "id": "T69",
         "mode": "PLAN",
-        "status": "upcoming",
+        "status": "skipped",
         "goal": "HenryDB: super.method fix + class method collision in monkey-lang",
-        "task": null
+        "task": null,
+        "skip_reason": ""
       },
       {
         "id": "T70",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "skipped",
         "task": null,
         "plan_ref": "T69",
-        "project": "monkey-lang"
+        "project": "monkey-lang",
+        "skip_reason": ""
       },
       {
         "id": "T71",
         "mode": "MAINTAIN",
+        "status": "skipped",
+        "task": "Final housekeeping + git push",
+        "skip_reason": ""
+      },
+      {
+        "id": "T74",
+        "mode": "PLAN",
+        "status": "done",
+        "goal": "WASM float support: NaN-boxing or tagged representation for mixed int/float arithmetic",
+        "task": null,
+        "started": "2026-04-27T17:37:39.472Z",
+        "completed": "2026-04-27T17:38:34.505Z",
+        "duration_ms": 120000,
+        "summary": "PLAN: Tagged heap float representation. TAG_FLOAT=5, 12-byte heap objects [tag:i32][f64:8bytes]. Runtime dispatch in host imports for float detection. 2 BUILD tasks: implementation + tests."
+      },
+      {
+        "id": "T75",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "WASM float support: tagged heap representation with runtime dispatch in host imports",
+        "plan_ref": "T74",
+        "project": "monkey-lang",
+        "started": "2026-04-27T17:38:43.386Z",
+        "completed": "2026-04-27T17:42:29.921Z",
+        "duration_ms": 600000,
+        "summary": "WASM float support implemented: TAG_FLOAT=5 heap objects, runtime dispatch in host imports for mixed int/float arithmetic. New host imports: __float_new, __sub, __mul, __div, __mod, __neg, __to_float. Fixed prefix negation. 236 tests pass."
+      },
+      {
+        "id": "T76",
+        "mode": "BUILD",
+        "task": "WASM float: add float arithmetic tests and verify mixed int/float operations",
+        "status": "done",
+        "plan_ref": "T74",
+        "started": "2026-04-27T17:42:37.385Z",
+        "completed": "2026-04-27T17:45:20.951Z",
+        "duration_ms": 300000,
+        "summary": "23 float tests added: literals, arithmetic (+/-/*/÷/%), negation, mixed int/float, comparisons, let bindings, function returns, loop accumulation, closure capture. Removed stale prefix monkey-patch. 240 WASM tests pass."
+      },
+      {
+        "id": "T77",
+        "mode": "THINK",
+        "status": "done",
+        "task": "HenryDB: run fuzzer to assess current compatibility and identify highest-value fixes",
+        "started": "2026-04-27T17:45:52.660Z",
+        "completed": "2026-04-27T17:50:30.173Z",
+        "duration_ms": 300000,
+        "summary": "Found 7 bugs in HenryDB: (1) BETWEEN returns value not 0/1, (2) GLOB returns value not 0/1, (3) printf missing, (4) random() returns real, (5) count() no-args errors, (6) total() missing, (7) group_concat single-row bug. BETWEEN+GLOB are highest priority."
+      },
+      {
+        "id": "T78",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "HenryDB improvements based on fuzzer findings",
+        "task": null,
+        "started": "2026-04-27T17:50:35.431Z"
+      },
+      {
+        "id": "T79",
+        "mode": "BUILD",
         "status": "upcoming",
-        "task": "Final housekeeping + git push"
+        "task": "Fix BETWEEN and GLOB to return 0/1 boolean instead of the value",
+        "plan_ref": "T78",
+        "project": "henrydb"
+      },
+      {
+        "id": "T80",
+        "mode": "BUILD",
+        "task": "Add printf/format function and total() aggregate",
+        "status": "upcoming",
+        "plan_ref": "T78"
+      },
+      {
+        "id": "T81",
+        "mode": "BUILD",
+        "task": "Fix count() no-args, random() return type, group_concat single-row",
+        "status": "upcoming",
+        "plan_ref": "T78"
       }
     ]
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 63,
-    "blocksTotal": 73,
+    "blocksCompleted": 70,
+    "blocksTotal": 81,
     "modeDistribution": {
-      "THINK": 11,
-      "PLAN": 5,
-      "BUILD": 35,
-      "MAINTAIN": 5,
+      "THINK": 13,
+      "PLAN": 7,
+      "BUILD": 37,
+      "MAINTAIN": 6,
       "EXPLORE": 7
     }
   },

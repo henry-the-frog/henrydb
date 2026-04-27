@@ -12,7 +12,7 @@ const KEYWORDS = new Set([
   'CORR', 'COVAR_POP', 'COVAR_SAMP', 'REGR_SLOPE', 'REGR_INTERCEPT', 'REGR_R2', 'REGR_COUNT',
   'JOIN', 'INNER', 'LEFT', 'RIGHT', 'ON', 'GROUP', 'HAVING',
   'INDEX', 'INDEXES', 'UNIQUE', 'IF', 'EXISTS', 'IN', 'ALTER', 'ADD', 'COLUMN', 'DEFAULT', 'RENAME', 'TO',
-  'LIKE', 'ILIKE', 'SIMILAR', 'ESCAPE', 'UPPER', 'LOWER', 'INITCAP', 'LENGTH', 'CHAR_LENGTH', 'CONCAT', 'BETWEEN', 'SYMMETRIC', 'TABLESAMPLE', 'POSITION',
+  'LIKE', 'ILIKE', 'GLOB', 'SIMILAR', 'ESCAPE', 'UPPER', 'LOWER', 'INITCAP', 'LENGTH', 'CHAR_LENGTH', 'CONCAT', 'BETWEEN', 'SYMMETRIC', 'TABLESAMPLE', 'POSITION',
   'OVERLAY', 'PLACING', 'SPLIT_PART', 'TRANSLATE', 'CHR', 'ASCII', 'MD5', 'DATE_FORMAT', 'MAKE_DATE', 'MAKE_TIMESTAMP', 'EPOCH', 'TO_TIMESTAMP',
   'OVER', 'PARTITION', 'ROW_NUMBER', 'RANK', 'DENSE_RANK', 'LAG', 'LEAD', 'FIRST_VALUE', 'LAST_VALUE', 'CUME_DIST', 'PERCENT_RANK', 'NTH_VALUE', 'VIEW', 'DISTINCT',
   'WITH', 'RECURSIVE', 'UNION', 'ALL', 'CASE', 'WHEN', 'THEN', 'ELSE', 'END', 'EXPLAIN', 'ANALYZE', 'COMPILED', 'FORMAT',
@@ -1506,6 +1506,92 @@ export function parse(sql) {
           return { type: 'expression', expr, alias };
         }
       }
+      // Check for BETWEEN/LIKE/GLOB/IN after literal
+      if (!alias && isKeyword('BETWEEN')) {
+        advance(); // BETWEEN
+        let symmetric = false;
+        if (isKeyword('SYMMETRIC')) { advance(); symmetric = true; }
+        const low = parsePrimaryWithConcat();
+        expect('KEYWORD', 'AND');
+        const high = parsePrimaryWithConcat();
+        const expr = { type: 'BETWEEN', left: literalExpr, low, high, symmetric };
+        if (isKeyword('AS')) { advance(); alias = readAlias(); }
+        return { type: 'expression', expr, alias };
+      }
+      if (!alias && isKeyword('NOT') && tokens[pos + 1]?.type === 'KEYWORD' && tokens[pos + 1]?.value === 'BETWEEN') {
+        advance(); advance(); // NOT BETWEEN
+        const low = parsePrimaryWithConcat();
+        expect('KEYWORD', 'AND');
+        const high = parsePrimaryWithConcat();
+        const expr = { type: 'NOT_BETWEEN', left: literalExpr, low, high };
+        if (isKeyword('AS')) { advance(); alias = readAlias(); }
+        return { type: 'expression', expr, alias };
+      }
+      if (!alias && isKeyword('LIKE')) {
+        advance();
+        const pattern = parsePrimaryWithConcat();
+        let escape = null;
+        if (isKeyword('ESCAPE')) { advance(); escape = parsePrimaryWithConcat(); }
+        const expr = { type: 'LIKE', left: literalExpr, pattern, escape };
+        if (isKeyword('AS')) { advance(); alias = readAlias(); }
+        return { type: 'expression', expr, alias };
+      }
+      if (!alias && isKeyword('GLOB')) {
+        advance();
+        const pattern = parsePrimaryWithConcat();
+        const expr = { type: 'GLOB', left: literalExpr, pattern };
+        if (isKeyword('AS')) { advance(); alias = readAlias(); }
+        return { type: 'expression', expr, alias };
+      }
+      if (!alias && isKeyword('IN')) {
+        advance();
+        expect('(');
+        const values = [parseExpr()];
+        while (match(',')) values.push(parseExpr());
+        expect(')');
+        const expr = { type: 'IN_LIST', left: literalExpr, values };
+        if (isKeyword('AS')) { advance(); alias = readAlias(); }
+        return { type: 'expression', expr, alias };
+      }
+      // NOT variants for literals
+      if (!alias && isKeyword('NOT') && tokens[pos + 1]?.type === 'KEYWORD') {
+        const nextKw = tokens[pos + 1]?.value;
+        if (nextKw === 'BETWEEN') {
+          advance(); advance(); // NOT BETWEEN
+          const low = parsePrimaryWithConcat();
+          expect('KEYWORD', 'AND');
+          const high = parsePrimaryWithConcat();
+          const expr = { type: 'NOT_BETWEEN', left: literalExpr, low, high };
+          if (isKeyword('AS')) { advance(); alias = readAlias(); }
+          return { type: 'expression', expr, alias };
+        }
+        if (nextKw === 'LIKE') {
+          advance(); advance(); // NOT LIKE
+          const pattern = parsePrimaryWithConcat();
+          let escape = null;
+          if (isKeyword('ESCAPE')) { advance(); escape = parsePrimaryWithConcat(); }
+          const expr = { type: 'NOT', expr: { type: 'LIKE', left: literalExpr, pattern, escape } };
+          if (isKeyword('AS')) { advance(); alias = readAlias(); }
+          return { type: 'expression', expr, alias };
+        }
+        if (nextKw === 'GLOB') {
+          advance(); advance(); // NOT GLOB
+          const pattern = parsePrimaryWithConcat();
+          const expr = { type: 'NOT', expr: { type: 'GLOB', left: literalExpr, pattern } };
+          if (isKeyword('AS')) { advance(); alias = readAlias(); }
+          return { type: 'expression', expr, alias };
+        }
+        if (nextKw === 'IN') {
+          advance(); advance(); // NOT IN
+          expect('(');
+          const values = [parseExpr()];
+          while (match(',')) values.push(parseExpr());
+          expect(')');
+          const expr = { type: 'NOT', expr: { type: 'IN_LIST', left: literalExpr, values } };
+          if (isKeyword('AS')) { advance(); alias = readAlias(); }
+          return { type: 'expression', expr, alias };
+        }
+      }
       return { type: 'expression', expr: literalExpr, alias };
     }
     
@@ -1912,6 +1998,14 @@ export function parse(sql) {
       return { type: 'NOT', expr: { type: 'LIKE', left, pattern, escape } };
     }
 
+    // NOT GLOB
+    if (isKeyword('NOT') && tokens[pos + 1]?.type === 'KEYWORD' && tokens[pos + 1]?.value === 'GLOB') {
+      advance(); // NOT
+      advance(); // GLOB
+      const pattern = parsePrimaryWithConcat();
+      return { type: 'NOT', expr: { type: 'GLOB', left, pattern } };
+    }
+
     // NOT REGEXP
     if (isKeyword('NOT') && tokens[pos + 1]?.type === 'KEYWORD' && (tokens[pos + 1]?.value === 'REGEXP' || tokens[pos + 1]?.value === 'RLIKE')) {
       advance(); // NOT
@@ -1953,6 +2047,12 @@ export function parse(sql) {
         escape = parsePrimaryWithConcat();
       }
       return { type: 'LIKE', left, pattern, escape };
+    }
+
+    if (isKeyword('GLOB')) {
+      advance();
+      const pattern = parsePrimaryWithConcat();
+      return { type: 'GLOB', left, pattern };
     }
 
     if (isKeyword('ILIKE')) {
