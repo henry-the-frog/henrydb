@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-27T16:04:59.038Z",
+  "generated": "2026-04-27T16:08:01.521Z",
   "current": {
     "status": "done",
-    "mode": "BUILD",
-    "task": "WASM: optimize named recursive functions to use direct call instead of call_indirect",
-    "completedAt": "2026-04-27T16:04:59.038Z",
-    "taskId": "T42",
-    "summary": "Fixed self-reference in recursive functions (selfName not counted as free variable). fib was already compiled as direct function — performance unchanged because env_ptr parameter overhead remains. 208 tests pass.",
+    "mode": "THINK",
+    "task": "Depth pivot: analyze WASM compilation quality — what percentage of operations use direct i32 vs host imports?",
+    "completedAt": "2026-04-27T16:08:01.521Z",
+    "taskId": "T43",
+    "summary": "WASM compilation quality analysis: fib 67% direct ops (return type inference would unlock remaining 33%), sum 100% direct (full benefit of knownInt), closures 0% direct (captures dont propagate knownInt). Next optimizations: return type inference and capture type propagation.",
     "durationMs": 300000
   },
   "schedule": {
@@ -7744,10 +7744,10 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 38,
+    "blocksCompleted": 39,
     "blocksTotal": 29,
     "modeDistribution": {
-      "THINK": 6,
+      "THINK": 7,
       "PLAN": 4,
       "BUILD": 20,
       "MAINTAIN": 4,
