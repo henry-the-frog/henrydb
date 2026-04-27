@@ -1236,10 +1236,13 @@
     {
       "id": "T118",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: add EXPLAIN QUERY PLAN support",
       "project": "henrydb",
-      "started": "2026-04-27T19:39:51.815Z"
+      "started": "2026-04-27T19:39:51.815Z",
+      "completed": "2026-04-27T19:42:54.220Z",
+      "duration_ms": 300000,
+      "summary": "Added EXPLAIN QUERY PLAN with SQLite-compatible output (selectid, order, from, detail). Shows SCAN/SEARCH, index usage, temp B-trees. 33 regression pass."
     }
   ],
   "focusProjects": [
