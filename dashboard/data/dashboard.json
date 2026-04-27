@@ -1,13 +1,11 @@
 {
-  "generated": "2026-04-27T19:22:53.685Z",
+  "generated": "2026-04-27T19:27:57.043Z",
   "current": {
-    "status": "done",
+    "status": "in-progress",
     "mode": "BUILD",
-    "task": "WASM: fix nested closure table index assignment bug",
-    "completedAt": "2026-04-27T19:22:53.685Z",
-    "taskId": "T110",
-    "summary": "FIXED nested closure bug! Root cause: closureFuncs elem section used insertion order (deepest-first) instead of assigned tableIndex. 1-line fix: build funcIndices by tableIndex. 3-level closures now return correct values (35 = 5+10+20). Middle function puts works. All 265 tests pass.",
-    "durationMs": 300000
+    "task": "HenryDB: fix WHERE clause for no-FROM SELECTs (SELECT 1 WHERE 0 should return 0 rows)",
+    "startedAt": "2026-04-27T19:27:57.043Z",
+    "taskId": "T113"
   },
   "schedule": {
     "date": "2026-04-27",
@@ -8297,12 +8295,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 98,
+    "blocksCompleted": 100,
     "blocksTotal": 81,
     "modeDistribution": {
       "THINK": 22,
       "PLAN": 7,
-      "BUILD": 52,
+      "BUILD": 54,
       "MAINTAIN": 9,
       "EXPLORE": 8
     }

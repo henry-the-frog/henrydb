@@ -139,6 +139,19 @@ export function selectInner(db, ast) {
   }
   // Handle SELECT without FROM (e.g., SELECT 1 AS n)
   if (!ast.from) {
+    // Check WHERE clause (e.g., SELECT 1 WHERE 0 → empty result)
+    if (ast.where) {
+      const whereResult = db._evalExpr(ast.where, {});
+      if (!whereResult) {
+        // Check if any columns are aggregates — aggregates on empty still return a row
+        const hasAgg = ast.columns.some(c => c.type === 'aggregate');
+        if (hasAgg) {
+          return { type: 'ROWS', rows: [db._computeAggregates(ast.columns, [])] };
+        }
+        return { type: 'ROWS', rows: [] };
+      }
+    }
+    
     // Check if any columns are aggregates — if so, use _computeAggregates with 1 implicit row
     const hasAgg = ast.columns.some(c => c.type === 'aggregate');
     if (hasAgg) {

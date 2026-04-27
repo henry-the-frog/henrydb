@@ -1155,6 +1155,36 @@
       "completed": "2026-04-27T19:22:53.649Z",
       "duration_ms": 300000,
       "summary": "FIXED nested closure bug! Root cause: closureFuncs elem section used insertion order (deepest-first) instead of assigned tableIndex. 1-line fix: build funcIndices by tableIndex. 3-level closures now return correct values (35 = 5+10+20). Middle function puts works. All 265 tests pass."
+    },
+    {
+      "id": "T111",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "monkey-lang WASM: add more edge case tests for fixed nested closures",
+      "project": "monkey-lang",
+      "started": "2026-04-27T19:25:19.177Z",
+      "completed": "2026-04-27T19:26:20.044Z",
+      "duration_ms": 120000,
+      "summary": "Added 3 nested closure tests: middle function with puts, 4-level closures, intermediate computation. All pass. 268 WASM tests total."
+    },
+    {
+      "id": "T112",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: add iif(), nullif(), ifnull() functions if missing",
+      "project": "henrydb",
+      "started": "2026-04-27T19:26:47.112Z",
+      "completed": "2026-04-27T19:27:45.157Z",
+      "duration_ms": 120000,
+      "summary": "iif, nullif, ifnull, coalesce, sign all already work. ltrim/rtrim/trim work with single quotes. Found: subquery WHERE 0 does not filter (SELECT 1 WHERE 0 returns 1 instead of 0 rows). Minor bug to fix."
+    },
+    {
+      "id": "T113",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "HenryDB: fix WHERE clause for no-FROM SELECTs (SELECT 1 WHERE 0 should return 0 rows)",
+      "project": "henrydb",
+      "started": "2026-04-27T19:27:57.007Z"
     }
   ],
   "focusProjects": [
@@ -1638,6 +1668,18 @@
     {
       "time": "2026-04-27T19:20:06.979Z",
       "msg": "Added T110 (BUILD) after end: WASM: fix nested closure table index assignment bug"
+    },
+    {
+      "time": "2026-04-27T19:25:12.854Z",
+      "msg": "Added T111 (BUILD) after end: monkey-lang WASM: add more edge case tests for fixed nested closures"
+    },
+    {
+      "time": "2026-04-27T19:26:36.575Z",
+      "msg": "Added T112 (BUILD) after end: HenryDB: add iif(), nullif(), ifnull() functions if missing"
+    },
+    {
+      "time": "2026-04-27T19:27:51.760Z",
+      "msg": "Added T113 (BUILD) after end: HenryDB: fix WHERE clause for no-FROM SELECTs (SELECT 1 WHERE 0 should return 0 rows)"
     }
   ]
 }
