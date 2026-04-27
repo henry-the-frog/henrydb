@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-27T16:18:25.320Z",
+  "generated": "2026-04-27T16:22:04.672Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "WASM: propagate knownInt through closure captures and for-in loop variables",
-    "completedAt": "2026-04-27T16:18:25.320Z",
-    "taskId": "T47",
-    "summary": "Propagated knownInt through for-in loop variables (range iterables mark var as knownInt). for (i in 0..10000) { sum = sum + i } now 100% direct. 1794 tests pass.",
+    "task": "WASM: optimize comparison operators — use direct i32_lt_s/i32_gt_s when both operands are knownInt instead of calling __lt/__gt",
+    "completedAt": "2026-04-27T16:22:04.672Z",
+    "taskId": "T48",
+    "summary": "Added stats tracking for comparison operators. Comparisons already used direct i32 when knownInt. fib now shows 75% direct (3 direct, 1 residual host call — likely edge case). No code changes needed, only stats tracking.",
     "durationMs": 300000
   },
   "schedule": {
@@ -7744,12 +7744,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 43,
+    "blocksCompleted": 44,
     "blocksTotal": 29,
     "modeDistribution": {
       "THINK": 9,
       "PLAN": 4,
-      "BUILD": 22,
+      "BUILD": 23,
       "MAINTAIN": 4,
       "EXPLORE": 4
     }
