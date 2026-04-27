@@ -106,3 +106,70 @@ describe('Triggers', () => {
     assert.equal(log[0].val, null);
   });
 });
+
+describe('UPDATE OF column triggers', () => {
+  it('fires only when specified column changes', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE emp (id INTEGER PRIMARY KEY, name TEXT, salary INTEGER, dept TEXT)');
+    db.execute('CREATE TABLE audit (msg TEXT)');
+    db.execute("CREATE TRIGGER salary_change AFTER UPDATE OF salary ON emp BEGIN INSERT INTO audit VALUES ('salary changed') END");
+    db.execute("INSERT INTO emp VALUES (1, 'Alice', 50000, 'Eng')");
+
+    // Update salary → trigger fires
+    db.execute('UPDATE emp SET salary = 60000 WHERE id = 1');
+    assert.equal(db.execute('SELECT count(*) as cnt FROM audit').rows[0].cnt, 1);
+
+    // Update dept → trigger does NOT fire
+    db.execute("UPDATE emp SET dept = 'HR' WHERE id = 1");
+    assert.equal(db.execute('SELECT count(*) as cnt FROM audit').rows[0].cnt, 1);
+
+    // Update salary again → trigger fires
+    db.execute('UPDATE emp SET salary = 70000 WHERE id = 1');
+    assert.equal(db.execute('SELECT count(*) as cnt FROM audit').rows[0].cnt, 2);
+  });
+
+  it('fires when any of multiple specified columns change', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE t (a INTEGER, b INTEGER, c INTEGER)');
+    db.execute('CREATE TABLE log (msg TEXT)');
+    db.execute("CREATE TRIGGER t_ab AFTER UPDATE OF a, b ON t BEGIN INSERT INTO log VALUES ('changed') END");
+    db.execute('INSERT INTO t VALUES (1, 2, 3)');
+
+    // Only c changed → no fire
+    db.execute('UPDATE t SET c = 99');
+    assert.equal(db.execute('SELECT count(*) as cnt FROM log').rows[0].cnt, 0);
+
+    // a changed → fire
+    db.execute('UPDATE t SET a = 10');
+    assert.equal(db.execute('SELECT count(*) as cnt FROM log').rows[0].cnt, 1);
+
+    // b changed → fire
+    db.execute('UPDATE t SET b = 20');
+    assert.equal(db.execute('SELECT count(*) as cnt FROM log').rows[0].cnt, 2);
+  });
+
+  it('fires when salary+dept both change and trigger watches salary', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE emp (id INTEGER PRIMARY KEY, salary INTEGER, dept TEXT)');
+    db.execute('CREATE TABLE audit (msg TEXT)');
+    db.execute("CREATE TRIGGER s_change AFTER UPDATE OF salary ON emp BEGIN INSERT INTO audit VALUES ('yes') END");
+    db.execute('INSERT INTO emp VALUES (1, 50000, \'Eng\')');
+
+    db.execute("UPDATE emp SET salary = 80000, dept = 'Sales' WHERE id = 1");
+    assert.equal(db.execute('SELECT count(*) as cnt FROM audit').rows[0].cnt, 1);
+  });
+
+  it('regular UPDATE trigger (no OF) fires on any column change', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE t (a INTEGER, b INTEGER)');
+    db.execute('CREATE TABLE log (msg TEXT)');
+    db.execute("CREATE TRIGGER t_any AFTER UPDATE ON t BEGIN INSERT INTO log VALUES ('any') END");
+    db.execute('INSERT INTO t VALUES (1, 2)');
+
+    db.execute('UPDATE t SET a = 10');
+    assert.equal(db.execute('SELECT count(*) as cnt FROM log').rows[0].cnt, 1);
+
+    db.execute('UPDATE t SET b = 20');
+    assert.equal(db.execute('SELECT count(*) as cnt FROM log').rows[0].cnt, 2);
+  });
+});

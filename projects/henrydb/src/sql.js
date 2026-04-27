@@ -28,7 +28,7 @@ const KEYWORDS = new Set([
   'OVER', 'PARTITION', 'RANK', 'ROW_NUMBER', 'DENSE_RANK', 'NTILE', 'LAG', 'LEAD', 'FIRST_VALUE', 'LAST_VALUE', 'CUME_DIST', 'PERCENT_RANK', 'NTH_VALUE',
   'INCLUDE', 'ALTER', 'ADD', 'COLUMN', 'RENAME', 'TO', 'CHECK',
   'UNBOUNDED', 'PRECEDING', 'FOLLOWING', 'RANGE', 'GROUPS', 'EXCLUDE', 'TIES', 'OTHERS', 'CURRENT',
-  'REFERENCES', 'FOREIGN', 'CASCADE', 'RESTRICT', 'SET', 'TEMPORARY', 'TEMP',
+  'REFERENCES', 'FOREIGN', 'CASCADE', 'RESTRICT', 'SET', 'TEMPORARY', 'TEMP', 'OF',
   'CAST', 'INT', 'INTEGER', 'TEXT', 'FLOAT', 'BOOLEAN',
   'GROUP_CONCAT', 'STRING_AGG', 'SEPARATOR',
   'JSON_AGG', 'JSONB_AGG', 'ARRAY_AGG', 'JSON_GROUP_ARRAY', 'JSON_GROUP_OBJECT',
@@ -3032,6 +3032,17 @@ export function parse(sql) {
       const name = advance().value;
       const timing = advance().value; // BEFORE or AFTER
       const event = advance().value; // INSERT, UPDATE, DELETE
+      // Parse UPDATE OF col1, col2, ... (optional)
+      let columns = null;
+      if (event.toUpperCase() === 'UPDATE' && isKeyword('OF')) {
+        advance(); // OF
+        columns = [];
+        columns.push(advance().value);
+        while (peek().type === ',') {
+          advance(); // comma
+          columns.push(advance().value);
+        }
+      }
       expect('KEYWORD', 'ON');
       const table = advance().value;
       if (isKeyword('FOR')) { advance(); expect('KEYWORD', 'EACH'); expect('KEYWORD', 'ROW'); }
@@ -3049,7 +3060,7 @@ export function parse(sql) {
         else if (tok.type === '*') bodyTokens.push('*');
         else bodyTokens.push(tok.value || tok.type);
       }
-      return { type: 'CREATE_TRIGGER', name, timing, event, table, bodySql: bodyTokens.join(' ') };
+      return { type: 'CREATE_TRIGGER', name, timing, event, table, columns, bodySql: bodyTokens.join(' ') };
     }
     if (isKeyword('SEQUENCE')) {
       advance(); // SEQUENCE

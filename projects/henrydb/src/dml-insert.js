@@ -342,6 +342,14 @@ export function insertSelect(db, ast) {
 export function fireTriggers(db, timing, event, tableName, rowValues, schema, oldRowValues) {
   for (const trigger of db.triggers) {
     if (trigger.timing === timing && trigger.event === event && trigger.table === tableName) {
+      // UPDATE OF columns check: only fire if at least one specified column changed
+      if (trigger.columns && trigger.columns.length > 0 && event === 'UPDATE' && schema && rowValues && oldRowValues) {
+        const changed = trigger.columns.some(colName => {
+          const idx = schema.findIndex(c => c.name.toUpperCase() === colName.toUpperCase());
+          return idx >= 0 && rowValues[idx] !== oldRowValues[idx];
+        });
+        if (!changed) continue; // Skip this trigger — specified columns didn't change
+      }
       try {
         // Build NEW and OLD row objects from values + schema
         let bodySql = trigger.bodySql;

@@ -720,6 +720,7 @@ export class Database {
           timing: ast.timing,
           event: ast.event,
           table: ast.table,
+          columns: ast.columns || null, // UPDATE OF columns (null = all columns)
           bodySql: ast.bodySql,
         });
         return { type: 'OK', message: `Trigger ${ast.name} created` };
