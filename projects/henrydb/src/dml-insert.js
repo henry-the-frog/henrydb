@@ -241,6 +241,7 @@ export function insert(db, ast) {
     return { type: 'ROWS', rows: filteredRows, count: inserted };
   }
   if (table.liveTupleCount !== undefined) table.liveTupleCount += inserted;
+  db._changes = inserted;
   return { type: 'OK', message: `${inserted} row(s) inserted`, count: inserted };
 }
 

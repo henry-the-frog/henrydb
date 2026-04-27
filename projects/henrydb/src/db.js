@@ -83,6 +83,8 @@ export class Database {
     this.views = new Map();  // viewName -> { query (AST) }
     this.sequences = new Map(); // seqName -> { current, increment, min, max }
     this.triggers = [];      // { name, timing, event, table, bodySql }
+    this._lastInsertRowid = 0;
+    this._changes = 0;
     
     // Storage factory: can be overridden for file-backed storage
     this._heapFactory = options.heapFactory || ((name) => new HeapFile(name));

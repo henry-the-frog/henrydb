@@ -1192,10 +1192,21 @@
     {
       "id": "T114",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: add json_group_array() and json_group_object() aggregate functions",
       "project": "henrydb",
-      "started": "2026-04-27T19:29:20.565Z"
+      "started": "2026-04-27T19:29:20.565Z",
+      "completed": "2026-04-27T19:32:06.539Z",
+      "duration_ms": 180000,
+      "summary": "Added json_group_array() and json_group_object() aggregate functions. 33 regression, 323/323 compliance."
+    },
+    {
+      "id": "T115",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "HenryDB: add substr() alias + changes() and last_insert_rowid() functions",
+      "project": "henrydb",
+      "started": "2026-04-27T19:32:28.571Z"
     }
   ],
   "focusProjects": [
@@ -1695,6 +1706,10 @@
     {
       "time": "2026-04-27T19:29:08.744Z",
       "msg": "Added T114 (BUILD) after end: HenryDB: add json_group_array() and json_group_object() aggregate functions"
+    },
+    {
+      "time": "2026-04-27T19:32:22.408Z",
+      "msg": "Added T115 (BUILD) after end: HenryDB: add substr() alias + changes() and last_insert_rowid() functions"
     }
   ]
 }

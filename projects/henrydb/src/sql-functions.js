@@ -1056,6 +1056,18 @@ export function evalFunction(db, func, args, row) {
       // These are optimizer hints, just return the value unchanged
       return db._evalValue(args[0], row);
     }
+    case 'CHANGES': {
+      return db._changes || 0;
+    }
+    case 'LAST_INSERT_ROWID': {
+      return db._lastInsertRowid || 0;
+    }
+    case 'TOTAL_CHANGES': {
+      return db._totalChanges || 0;
+    }
+    case 'SQLITE_VERSION': {
+      return '3.45.0'; // Compatibility stub
+    }
     
     default: throw new Error(`Unknown function: ${func}`);
   }
