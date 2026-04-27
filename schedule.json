@@ -649,6 +649,17 @@
       "completed": "2026-04-27T16:54:38.772Z",
       "duration_ms": 300000,
       "summary": "Added json_object(), json_array(), json_quote(), json_patch(). HenryDB now has complete JSON1 extension (16 functions). All regression tests pass."
+    },
+    {
+      "id": "T62",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: comprehensive JSON function regression tests",
+      "project": "henrydb",
+      "started": "2026-04-27T16:55:25.870Z",
+      "completed": "2026-04-27T16:56:34.031Z",
+      "duration_ms": 300000,
+      "summary": "25 JSON regression tests covering all 16 functions: extractors, validators, mutators, constructors, aggregates, TVF. 143 total regression tests pass."
     }
   ],
   "focusProjects": [
@@ -916,6 +927,10 @@
     {
       "time": "2026-04-27T16:53:26.599Z",
       "msg": "Added T61 (BUILD) after end: HenryDB: add json_object() and json_array() constructor functions"
+    },
+    {
+      "time": "2026-04-27T16:55:20.377Z",
+      "msg": "Added T62 (BUILD) after end: HenryDB: comprehensive JSON function regression tests"
     }
   ]
 }
