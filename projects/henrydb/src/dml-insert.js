@@ -163,6 +163,8 @@ export function insert(db, ast) {
     }
 
     // Check UNIQUE INDEX constraints from indexCatalog
+    // Skip if UPSERT (ON CONFLICT) is in play — conflicts are handled above
+    if (!ast.onConflict) {
     for (const [idxName, meta] of db.indexCatalog) {
       if (meta.table === ast.table && meta.unique) {
         const idxTable = db.tables.get(meta.table);
@@ -192,7 +194,28 @@ export function insert(db, ast) {
         }
       }
     }
+    } // end if (!ast.onConflict) for UNIQUE INDEX check
     
+    // When ON CONFLICT DO NOTHING is active without specific columns,
+    // wrap insert in try/catch to handle constraint violations gracefully
+    if (ast.onConflict && ast.onConflict.action === 'NOTHING') {
+      try {
+        const rid = db._insertRow(table, ast.columns, values);
+        inserted++;
+        if (ast.returning) {
+          const lastTuple = [...table.heap.scan()].pop();
+          const actualValues = lastTuple?.values || lastTuple || [];
+          const retRow = {};
+          table.schema.forEach((c, i) => { retRow[c.name] = actualValues[i]; });
+          returnedRows.push(retRow);
+        }
+      } catch (e) {
+        if (e.message && e.message.includes('constraint')) {
+          continue; // Silently skip on constraint violation
+        }
+        throw e; // Re-throw non-constraint errors
+      }
+    } else {
     const rid = db._insertRow(table, ast.columns, values);
     inserted++;
     
@@ -204,6 +227,7 @@ export function insert(db, ast) {
       table.schema.forEach((c, i) => { retRow[c.name] = actualValues[i]; });
       returnedRows.push(retRow);
     }
+    } // end else (non-NOTHING upsert or normal insert)
   }
 
   // Batch autocommit: commit the batch transaction after all rows

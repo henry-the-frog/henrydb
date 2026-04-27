@@ -966,10 +966,93 @@
     {
       "id": "T93",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: add json_each() table-valued function for iterating JSON arrays/objects",
       "project": "henrydb",
-      "started": "2026-04-27T18:33:06.241Z"
+      "started": "2026-04-27T18:33:06.241Z",
+      "completed": "2026-04-27T18:38:14.915Z",
+      "duration_ms": 300000,
+      "summary": "Added json_each() and json_tree() TVFs with path navigation, all standard columns. Both support WHERE filtering and aggregates. Parser extended with JSON_EACH/JSON_TREE keywords. 33 regression, 323/323 compliance."
+    },
+    {
+      "id": "T94",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "monkey-lang WASM: add string methods (split, trim, startsWith, endsWith, indexOf)",
+      "project": "monkey-lang",
+      "started": "2026-04-27T18:38:40.911Z",
+      "completed": "2026-04-27T18:42:21.453Z",
+      "duration_ms": 300000,
+      "summary": "Added 9 string methods to WASM: split, trim, replace, indexOf, startsWith, endsWith, toUpper, toLower, substring. All with host imports + 11 new tests. 265 WASM tests pass."
+    },
+    {
+      "id": "T95",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "WASM: add type() and int() conversion builtins",
+      "project": "monkey-lang",
+      "started": "2026-04-27T18:42:50.199Z",
+      "completed": "2026-04-27T18:45:21.366Z",
+      "duration_ms": 300000,
+      "summary": "Added 9 utility builtins to WASM: abs, max, min, range, join, keys, values, contains, reverse. All work with multiple types (int/float, array/string). 265 tests pass. Renamed task from type/int (already existed) to utilities."
+    },
+    {
+      "id": "T96",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Run full monkey-lang test suite to verify all recent WASM changes",
+      "project": "monkey-lang",
+      "started": "2026-04-27T18:45:51.553Z",
+      "completed": "2026-04-27T18:46:37.783Z",
+      "duration_ms": 120000,
+      "summary": "Full test suite: 1850/1854 pass. 289 WASM-specific tests all pass. 1 failure is pre-existing GC issue (fibonacci with GC + WASM GC integration). 3 skipped. Core compiler and all new features are clean."
+    },
+    {
+      "id": "T97",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Benchmark comparison: what programs does monkey-lang WASM handle that the VM can't, and vice versa?",
+      "started": "2026-04-27T18:46:56.986Z",
+      "completed": "2026-04-27T18:47:53.207Z",
+      "duration_ms": 120000,
+      "summary": "Benchmark comparison: WASM 30.4x VM, 8.1x JIT avg. WASM wins on tight loops (sum, nested, if/else). Transpiler wins 8/12 (native JS). WASM loses on recursive calls (closure dispatch overhead). factorial and sum 100k fail in WASM (stack/limits)."
+    },
+    {
+      "id": "T98",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "WASM: fix factorial and sum 100k benchmark failures",
+      "project": "monkey-lang",
+      "started": "2026-04-27T18:48:09.361Z",
+      "completed": "2026-04-27T18:48:44.150Z",
+      "duration_ms": 60000,
+      "summary": "Investigated: factorial(20) and sum 100k are marked wasmExpected:null because results overflow i32. Not bugs — inherent 32-bit integer limitation. Would require i64/NaN-boxing to fix. Current N/A marking in benchmarks is correct."
+    },
+    {
+      "id": "T99",
+      "mode": "THINK",
+      "status": "done",
+      "task": "WASM: direct call optimization for non-capturing named functions",
+      "started": "2026-04-27T18:49:07.031Z",
+      "completed": "2026-04-27T18:50:59.635Z",
+      "duration_ms": 120000,
+      "summary": "Direct call optimization ALREADY EXISTS for non-capturing top-level functions. fib uses direct call, not closure dispatch. WASM being slower than transpiler on fib is inherent — V8 JIT-compiles transpiled JS to native code. No further optimization needed."
+    },
+    {
+      "id": "T100",
+      "mode": "BUILD",
+      "status": "skipped",
+      "task": "WASM: implement direct call optimization",
+      "project": "monkey-lang",
+      "skip_reason": ""
+    },
+    {
+      "id": "T101",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "HenryDB: add UPSERT (INSERT OR REPLACE / ON CONFLICT) support",
+      "project": "henrydb",
+      "started": "2026-04-27T18:51:24.660Z"
     }
   ],
   "focusProjects": [
@@ -1381,6 +1464,42 @@
     {
       "time": "2026-04-27T18:32:59.187Z",
       "msg": "Added T93 (BUILD) after end: HenryDB: add json_each() table-valued function for iterating JSON arrays/objects"
+    },
+    {
+      "time": "2026-04-27T18:38:35.422Z",
+      "msg": "Added T94 (BUILD) after end: monkey-lang WASM: add string methods (split, trim, startsWith, endsWith, indexOf)"
+    },
+    {
+      "time": "2026-04-27T18:42:43.296Z",
+      "msg": "Added T95 (BUILD) after end: WASM: add type() and int() conversion builtins"
+    },
+    {
+      "time": "2026-04-27T18:45:43.547Z",
+      "msg": "Added T96 (BUILD) after end: Run full monkey-lang test suite to verify all recent WASM changes"
+    },
+    {
+      "time": "2026-04-27T18:46:47.959Z",
+      "msg": "Added T97 (THINK) after end: Benchmark comparison: what programs does monkey-lang WASM handle that the VM can't, and vice versa?"
+    },
+    {
+      "time": "2026-04-27T18:48:04.613Z",
+      "msg": "Added T98 (BUILD) after end: WASM: fix factorial and sum 100k benchmark failures"
+    },
+    {
+      "time": "2026-04-27T18:48:58.983Z",
+      "msg": "Added T99 (THINK) after end: WASM: direct call optimization for non-capturing named functions"
+    },
+    {
+      "time": "2026-04-27T18:48:59.098Z",
+      "msg": "Added T100 (BUILD) after end: WASM: implement direct call optimization"
+    },
+    {
+      "time": "2026-04-27T18:51:10.104Z",
+      "msg": "Removed T100: "
+    },
+    {
+      "time": "2026-04-27T18:51:16.589Z",
+      "msg": "Added T101 (BUILD) after end: HenryDB: add UPSERT (INSERT OR REPLACE / ON CONFLICT) support"
     }
   ]
 }
