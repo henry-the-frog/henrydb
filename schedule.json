@@ -573,6 +573,17 @@
       "completed": "2026-04-27T16:42:40.429Z",
       "duration_ms": 600000,
       "summary": "Implemented json_each() and generate_series() table-valued functions! json_each works with arrays and objects, supports WHERE filtering and aggregation. generate_series supports start/stop/step. 106 regression tests pass."
+    },
+    {
+      "id": "T55",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: add json_each and generate_series regression tests",
+      "project": "henrydb",
+      "started": "2026-04-27T16:43:32.056Z",
+      "completed": "2026-04-27T16:44:21.799Z",
+      "duration_ms": 180000,
+      "summary": "Added 11 TVF regression tests (10 pass, 1 skipped for cross-join TODO). Covers json_each array/object/filter/aggregate/nested types, generate_series basic/step/filter/aggregate."
     }
   ],
   "focusProjects": [
@@ -812,6 +823,10 @@
     {
       "time": "2026-04-27T16:37:11.334Z",
       "msg": "Added T54 (BUILD) after end: HenryDB: implement json_each table-valued function"
+    },
+    {
+      "time": "2026-04-27T16:43:24.105Z",
+      "msg": "Added T55 (BUILD) after end: HenryDB: add json_each and generate_series regression tests"
     }
   ]
 }

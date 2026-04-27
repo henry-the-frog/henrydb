@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-27T16:42:40.463Z",
+  "generated": "2026-04-27T16:44:21.833Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "HenryDB: implement json_each table-valued function",
-    "completedAt": "2026-04-27T16:42:40.463Z",
-    "taskId": "T54",
-    "summary": "Implemented json_each() and generate_series() table-valued functions! json_each works with arrays and objects, supports WHERE filtering and aggregation. generate_series supports start/stop/step. 106 regression tests pass.",
-    "durationMs": 600000
+    "task": "HenryDB: add json_each and generate_series regression tests",
+    "completedAt": "2026-04-27T16:44:21.833Z",
+    "taskId": "T55",
+    "summary": "Added 11 TVF regression tests (10 pass, 1 skipped for cross-join TODO). Covers json_each array/object/filter/aggregate/nested types, generate_series basic/step/filter/aggregate.",
+    "durationMs": 180000
   },
   "schedule": {
     "date": "2026-04-27",
@@ -7744,12 +7744,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 49,
+    "blocksCompleted": 50,
     "blocksTotal": 29,
     "modeDistribution": {
       "THINK": 9,
       "PLAN": 4,
-      "BUILD": 26,
+      "BUILD": 27,
       "MAINTAIN": 4,
       "EXPLORE": 6
     }
