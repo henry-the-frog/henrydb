@@ -211,9 +211,13 @@
     {
       "id": "T17",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "Deep dive into neural-net ML framework",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-27T15:07:42.064Z",
+      "completed": "2026-04-27T15:10:34.121Z",
+      "duration_ms": 600000,
+      "summary": "Neural-net deep dive: (1) Confirmed vanishing gradient problem — depth 8+ with vanilla relu fails to learn XOR (loss stuck at 0.125). (2) BatchNorm fixes it perfectly (loss 0.00004 at depth 8). (3) All 1305 tests pass across test/ directory. (4) LLM architecture is impressively complete (BPE, RoPE, GQA, Flash Attention, sliding window). No bugs found — library is solid."
     },
     {
       "id": "T18",
