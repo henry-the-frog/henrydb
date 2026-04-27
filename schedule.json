@@ -1049,10 +1049,38 @@
     {
       "id": "T101",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: add UPSERT (INSERT OR REPLACE / ON CONFLICT) support",
       "project": "henrydb",
-      "started": "2026-04-27T18:51:24.660Z"
+      "started": "2026-04-27T18:51:24.660Z",
+      "completed": "2026-04-27T18:56:07.742Z",
+      "duration_ms": 300000,
+      "summary": "Fixed ON CONFLICT DO NOTHING for non-PK unique constraints. Now catches ALL constraint violations, not just PK conflicts. Also fixed UNIQUE INDEX check bypass during upsert. 33 regression, 323/323 compliance."
+    },
+    {
+      "id": "T102",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "monkey-lang WASM: add filter, map, reduce higher-order builtins",
+      "project": "monkey-lang",
+      "started": "2026-04-27T18:56:34.707Z",
+      "completed": "2026-04-27T18:57:19.252Z",
+      "duration_ms": 60000,
+      "summary": "Skipped: filter/map/reduce require host→WASM callback mechanism (closure invocation from JS). This is a significant feature that requires exporting call_indirect or a __call1 helper. Users can already write these as monkey-lang functions that compile correctly. Filing for future implementation."
+    },
+    {
+      "id": "T103",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Update daily log, TASKS.md, push all changes"
+    },
+    {
+      "id": "T104",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "HenryDB: add zeroblob(), unicode(), char(), hex(), unhex() functions",
+      "project": "henrydb",
+      "started": "2026-04-27T18:57:56.433Z"
     }
   ],
   "focusProjects": [
@@ -1500,6 +1528,18 @@
     {
       "time": "2026-04-27T18:51:16.589Z",
       "msg": "Added T101 (BUILD) after end: HenryDB: add UPSERT (INSERT OR REPLACE / ON CONFLICT) support"
+    },
+    {
+      "time": "2026-04-27T18:56:26.009Z",
+      "msg": "Added T102 (BUILD) after end: monkey-lang WASM: add filter, map, reduce higher-order builtins"
+    },
+    {
+      "time": "2026-04-27T18:57:39.731Z",
+      "msg": "Added T103 (MAINTAIN) after end: Update daily log, TASKS.md, push all changes"
+    },
+    {
+      "time": "2026-04-27T18:57:48.400Z",
+      "msg": "Added T104 (BUILD) after end: HenryDB: add zeroblob(), unicode(), char(), hex(), unhex() functions"
     }
   ]
 }

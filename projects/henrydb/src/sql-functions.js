@@ -1005,6 +1005,58 @@ export function evalFunction(db, func, args, row) {
       return query != null ? String(query) : null;
     }
     
+    case 'ZEROBLOB': {
+      const n = Number(db._evalValue(args[0], row));
+      if (n <= 0 || isNaN(n)) return null;
+      return Buffer.alloc(n);
+    }
+    case 'UNICODE': {
+      const s = db._evalValue(args[0], row);
+      if (s == null) return null;
+      const str = String(s);
+      return str.length > 0 ? str.codePointAt(0) : null;
+    }
+    case 'CHAR': {
+      // char(X1, X2, ...) — returns string from Unicode code points
+      const codePoints = args.map(a => Number(db._evalValue(a, row)));
+      return String.fromCodePoint(...codePoints.filter(c => !isNaN(c) && c > 0));
+    }
+    case 'HEX': {
+      const val = db._evalValue(args[0], row);
+      if (val == null) return null;
+      if (Buffer.isBuffer(val)) return val.toString('hex').toUpperCase();
+      return Buffer.from(String(val), 'utf8').toString('hex').toUpperCase();
+    }
+    case 'UNHEX': {
+      const val = db._evalValue(args[0], row);
+      if (val == null) return null;
+      const hexStr = String(val);
+      if (hexStr.length % 2 !== 0 || !/^[0-9a-fA-F]*$/.test(hexStr)) return null;
+      return Buffer.from(hexStr, 'hex');
+    }
+    case 'TYPEOF': {
+      const val = db._evalValue(args[0], row);
+      if (val === null || val === undefined) return 'null';
+      if (typeof val === 'number') return Number.isInteger(val) ? 'integer' : 'real';
+      if (typeof val === 'string') return 'text';
+      if (Buffer.isBuffer(val)) return 'blob';
+      if (typeof val === 'boolean') return 'integer';
+      return 'text';
+    }
+    case 'QUOTE': {
+      const val = db._evalValue(args[0], row);
+      if (val === null || val === undefined) return 'NULL';
+      if (typeof val === 'number') return String(val);
+      if (Buffer.isBuffer(val)) return "X'" + val.toString('hex').toUpperCase() + "'";
+      return "'" + String(val).replace(/'/g, "''") + "'";
+    }
+    case 'LIKELIHOOD':
+    case 'LIKELY':
+    case 'UNLIKELY': {
+      // These are optimizer hints, just return the value unchanged
+      return db._evalValue(args[0], row);
+    }
+    
     default: throw new Error(`Unknown function: ${func}`);
   }
 }
