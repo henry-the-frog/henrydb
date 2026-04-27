@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-27T16:09:14.746Z",
+  "generated": "2026-04-27T16:14:35.914Z",
   "current": {
     "status": "done",
-    "mode": "THINK",
-    "task": "Deep analysis: what makes WASM beat the transpiler on some benchmarks but lose on fib?",
-    "completedAt": "2026-04-27T16:09:14.746Z",
-    "taskId": "T44",
-    "summary": "Deep analysis: WASM beats transpiler on tight arithmetic loops (no function calls). Loses on recursive/function-heavy workloads due to: (1) call_indirect/env_ptr overhead, (2) V8 TurboFan inlining that WASM cant do. Top optimization: remove env_ptr for non-capturing functions.",
+    "mode": "BUILD",
+    "task": "WASM: optimize non-capturing functions to skip env_ptr parameter",
+    "completedAt": "2026-04-27T16:14:35.914Z",
+    "taskId": "T45",
+    "summary": "Return type inference for WASM! fib(25) 43ms→28ms (35%), fib(30) 479ms→307ms (36%). Fixed-point iteration infers int returns for self-recursive functions. fib now 100% direct arithmetic (0 host calls). 208 tests pass.",
     "durationMs": 600000
   },
   "schedule": {
@@ -7744,12 +7744,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 40,
+    "blocksCompleted": 41,
     "blocksTotal": 29,
     "modeDistribution": {
       "THINK": 8,
       "PLAN": 4,
-      "BUILD": 20,
+      "BUILD": 21,
       "MAINTAIN": 4,
       "EXPLORE": 4
     }
