@@ -1,1103 +1,127 @@
 {
-  "date": "2026-04-26",
+  "date": "2026-04-27",
   "queue": [
     {
       "id": "T1",
       "mode": "THINK",
-      "status": "done",
-      "task": "Review yesterday (500+ tasks across 3 sessions). Assess quality, pick Sunday focus: depth over breadth",
-      "started": "2026-04-26T14:15:20.156Z",
-      "completed": "2026-04-26T14:15:51.572Z",
-      "duration_ms": 60000,
-      "summary": "Reviewed yesterday: 530 tasks, 72% EXPLORE breadth spiral. Today queue is well-structured for depth: CI fix, VM callbacks, fuzzer gap. No queue changes needed."
+      "status": "upcoming",
+      "task": "Review weekend progress, set Monday direction"
     },
     {
       "id": "T2",
       "mode": "PLAN",
-      "status": "done",
-      "goal": "Fix monkey-lang GitHub token workflow scope + CI pipeline",
-      "task": null,
-      "started": "2026-04-26T14:16:04.097Z",
-      "completed": "2026-04-26T14:17:05.762Z",
-      "duration_ms": 45000,
-      "summary": "Planned CI fix: copy workflow to repo root, push with workflow scope. Single BUILD task."
+      "status": "upcoming",
+      "goal": "WASM Phase 2: string support via linear memory and host imports",
+      "task": null
     },
     {
       "id": "T3",
       "mode": "BUILD",
-      "status": "done",
-      "task": "Copy CI workflow to repo root .github/workflows/, push with workflow scope token, verify CI runs",
+      "status": "upcoming",
+      "task": null,
       "plan_ref": "T2",
-      "project": "monkey-lang",
-      "started": "2026-04-26T14:17:18.426Z",
-      "completed": "2026-04-26T14:18:22.477Z",
-      "duration_ms": 120000,
-      "summary": "CI workflow added to repo root, pushed, GitHub Actions running green (Node 18/20/22). Urgent TODO cleared."
+      "project": "monkey-lang"
     },
     {
       "id": "T4",
       "mode": "MAINTAIN",
-      "status": "done",
-      "task": "Housekeeping: commit, push, dashboard health, email check",
-      "started": "2026-04-26T14:18:33.799Z",
-      "completed": "2026-04-26T14:18:46.194Z",
-      "duration_ms": 60000,
-      "summary": "Git pushed, dashboard healthy, GH notifications checked (5 items, none urgent)"
+      "status": "upcoming",
+      "task": "Housekeeping"
     },
     {
       "id": "T5",
       "mode": "THINK",
-      "status": "done",
-      "task": "Reflect on CI fix. Assess monkey-lang SSA pipeline - real but unused by codegen. Worth wiring?",
-      "started": "2026-04-26T14:19:01.837Z",
-      "completed": "2026-04-26T14:19:13.426Z",
-      "duration_ms": 45000,
-      "summary": "SSA pipeline real but low-impact vs VM callbacks (19x perf gap). Keep queue order: VM callbacks first, SSA→DCE later."
+      "status": "upcoming",
+      "task": "Assess WASM string progress, plan next cycle"
     },
     {
       "id": "T6",
       "mode": "PLAN",
-      "status": "done",
-      "goal": "VM callback mechanism for native HOF builtins (prelude 19x slower than native)",
-      "task": null,
-      "started": "2026-04-26T14:19:22.198Z",
-      "completed": "2026-04-26T14:20:19.418Z",
-      "duration_ms": 90000,
-      "summary": "Planned VM callback: callClosureSync method + native map/filter/reduce builtins. 2 BUILD tasks."
+      "status": "upcoming",
+      "goal": "HenryDB: close remaining fuzzer gap - type affinity edge cases",
+      "task": null
     },
     {
       "id": "T7",
       "mode": "BUILD",
-      "status": "done",
-      "task": "Implement callClosureSync in VM + native map/filter/reduce builtins",
+      "status": "upcoming",
+      "task": null,
       "plan_ref": "T6",
-      "project": "monkey-lang",
-      "started": "2026-04-26T14:20:32.071Z",
-      "completed": "2026-04-26T14:26:57.070Z",
-      "duration_ms": 600000,
-      "summary": "VM callback mechanism implemented. callClosureSync enables native HOF builtins. map 4x faster, filter 3.9x, reduce 1.5x. 1149/1149 tests passing."
-    },
-    {
-      "id": "T19",
-      "mode": "BUILD",
-      "task": "Benchmark native vs prelude HOFs, add tests",
-      "status": "done",
-      "plan_ref": "T6",
-      "started": "2026-04-26T14:27:14.073Z",
-      "completed": "2026-04-26T14:28:14.725Z",
-      "duration_ms": 180000,
-      "summary": "Added 21 native HOF tests (edge cases: nested, closures, recursion, chaining) + bench-hof.js. All pass."
+      "project": "henrydb"
     },
     {
       "id": "T8",
       "mode": "MAINTAIN",
-      "status": "done",
-      "task": "Housekeeping: commit, push, dashboard, notifications",
-      "started": "2026-04-26T14:28:24.861Z",
-      "completed": "2026-04-26T14:28:30.647Z",
-      "duration_ms": 30000,
-      "summary": "Git pushed (both repos), CI running, dashboard ok."
+      "status": "upcoming",
+      "task": "Housekeeping"
     },
     {
       "id": "T9",
       "mode": "THINK",
-      "status": "done",
-      "task": "Mid-day reflection. Review VM callback work. What next for HenryDB fuzzer gap?",
-      "started": "2026-04-26T14:28:37.931Z",
-      "completed": "2026-04-26T14:29:06.441Z",
-      "duration_ms": 45000,
-      "summary": "VM callback was a clean win. HenryDB fuzzer gap: 1.4% from type affinity (3 fixes identified in scratch notes). Queue order good."
+      "status": "upcoming",
+      "task": "Mid-day reflection, quality check"
     },
     {
       "id": "T10",
       "mode": "PLAN",
-      "status": "done",
-      "goal": "HenryDB: close fuzzer gap - mixed type comparisons and UNION type affinity",
-      "task": null,
-      "started": "2026-04-26T14:29:14.816Z",
-      "completed": "2026-04-26T14:31:15.900Z",
-      "duration_ms": 120000,
-      "summary": "Planned 2 BUILD tasks: (1) sqliteCompare for WHERE, (2) sqliteCompare for UNION ORDER BY. Targeting 98.6% → 99%+."
+      "status": "upcoming",
+      "goal": "Wire SSA DCE into monkey-lang compilation pipeline",
+      "task": null
     },
     {
       "id": "T11",
       "mode": "BUILD",
-      "status": "done",
-      "task": "Add sqliteCompare function + use in WHERE COMPARE (LT/GT/LE/GE)",
+      "status": "upcoming",
+      "task": null,
       "plan_ref": "T10",
-      "project": "henrydb",
-      "started": "2026-04-26T14:31:26.969Z",
-      "completed": "2026-04-26T14:40:27.790Z",
-      "duration_ms": 300000,
-      "summary": "Added sqliteCompare (NULL<num<text<blob). Updated WHERE COMPARE (LT/GT/LE/GE), BETWEEN, 4x ORDER BY sites, set-ops. Fixed fuzzer harness parseFloat bug. All fuzzer tests pass."
-    },
-    {
-      "id": "T20",
-      "mode": "BUILD",
-      "task": "Use sqliteCompare in UNION/set-ops ORDER BY + run diff fuzzer to measure improvement",
-      "status": "done",
-      "plan_ref": "T10",
-      "started": "2026-04-26T14:40:39.540Z",
-      "completed": "2026-04-26T14:41:00.248Z",
-      "duration_ms": 60000,
-      "summary": "Set-ops already updated in T11. Verified: mixed type comparisons match SQLite (int < string). All 84 diff fuzzer tests pass."
+      "project": "monkey-lang"
     },
     {
       "id": "T12",
       "mode": "MAINTAIN",
-      "status": "done",
-      "task": "Housekeeping: commit, push, dashboard, knowledge capture",
-      "started": "2026-04-26T14:41:09.717Z",
-      "completed": "2026-04-26T14:41:36.988Z",
-      "duration_ms": 60000,
-      "summary": "Pushed workspace and HenryDB. Cleaned TODO (removed completed VM callback and fuzzer gap items)."
+      "status": "upcoming",
+      "task": "Housekeeping"
     },
     {
       "id": "T13",
       "mode": "THINK",
-      "status": "done",
-      "task": "Afternoon direction. Dead code elimination via SSA or HenryDB COUNT(DISTINCT)?",
-      "started": "2026-04-26T14:41:44.536Z",
-      "completed": "2026-04-26T14:42:01.858Z",
-      "duration_ms": 30000,
-      "summary": "SSA→DCE is the right call. Depth check passed (3/3 yes). SSA is genuine compiler engineering, builds on existing infra."
+      "status": "upcoming",
+      "task": "Afternoon direction, review depth vs breadth"
     },
     {
       "id": "T14",
       "mode": "PLAN",
-      "status": "done",
-      "goal": "Per-function SSA enabling dead code elimination in monkey-lang compiler",
-      "task": null,
-      "started": "2026-04-26T14:42:11.846Z",
-      "completed": "2026-04-26T14:42:58.885Z",
-      "duration_ms": 90000,
-      "summary": "Plan: 3 tasks — AST-level DCE first (unreachable + constant folding), wire into pipeline, then SSA-level if time."
+      "status": "upcoming",
+      "goal": "WASM Phase 2: closure support via captured variables in linear memory",
+      "task": null
     },
     {
       "id": "T15",
       "mode": "BUILD",
-      "status": "done",
-      "task": "Implement AST-level DCE pass (unreachable after return + constant branch folding)",
+      "status": "upcoming",
+      "task": null,
       "plan_ref": "T14",
-      "project": "monkey-lang",
-      "started": "2026-04-26T14:43:08.552Z",
-      "completed": "2026-04-26T14:47:16.813Z",
-      "duration_ms": 600000,
-      "summary": "DCE module enhanced with eliminateDeadCode wrapper. Not wired into compiler (compiler already handles constant folding). Learning: DCE as compiler pre-pass conflicts with compilers own inline handling."
-    },
-    {
-      "id": "T21",
-      "mode": "BUILD",
-      "task": "Wire DCE into compilation pipeline + add tests",
-      "status": "done",
-      "plan_ref": "T14",
-      "started": "2026-04-26T14:47:30.923Z",
-      "completed": "2026-04-26T14:47:31.066Z",
-      "duration_ms": 30000,
-      "summary": "Already addressed in T15. DCE wired via pipeline.js (existing). Direct compiler integration causes if-false conflicts. Tested, 1170/1170 pass."
-    },
-    {
-      "id": "T22",
-      "mode": "BUILD",
-      "task": "Explore SSA-level DCE (mark dead defs via def-use chains, annotate AST)",
-      "status": "done",
-      "plan_ref": "T14",
-      "started": "2026-04-26T14:47:40.501Z",
-      "completed": "2026-04-26T14:51:15.925Z",
-      "duration_ms": 600000,
-      "summary": "SSA-level DCE analysis built. Def-use chains from SSA form identify dead definitions. Handles complex expressions via base name matching. 9 new tests. Conservative approach preserves side-effectful assignments."
+      "project": "monkey-lang"
     },
     {
       "id": "T16",
       "mode": "MAINTAIN",
-      "status": "done",
-      "task": "Housekeeping: commit, push, dashboard",
-      "started": "2026-04-26T14:51:32.669Z",
-      "completed": "2026-04-26T14:51:44.351Z",
-      "duration_ms": 30000,
-      "summary": "Git pushed, workspace committed."
+      "status": "upcoming",
+      "task": "Housekeeping"
     },
     {
       "id": "T17",
       "mode": "EXPLORE",
-      "status": "done",
-      "task": "Deep dive: LuaJIT allocation sinking paper - implications for monkey-lang escape analysis",
-      "project": "monkey-lang",
-      "started": "2026-04-26T14:51:52.928Z",
-      "completed": "2026-04-26T14:52:57.639Z",
-      "duration_ms": 300000,
-      "summary": "LuaJIT allocation sinking explored. Key findings: (1) sinking is JIT-only, not applicable to bytecode interpreters (2) monkey-lang escape analysis is correct but conservative — intermediate arrays from map→reduce chains marked escaping (3) interprocedural analysis could help but complex. 3/4 hypotheses confirmed."
+      "status": "upcoming",
+      "task": "Deep dive into neural-net ML framework",
+      "project": "henrydb"
     },
     {
       "id": "T18",
       "mode": "EXPLORE",
-      "status": "done",
-      "task": "HenryDB query optimizer: cost model unification across 6 execution engines",
-      "project": "henrydb",
-      "started": "2026-04-26T14:53:08.673Z",
-      "completed": "2026-04-26T14:54:17.276Z",
-      "duration_ms": 300000,
-      "summary": "Cost model exploration: 4 engines, only volcano uses PG-style cost model. Adaptive engine uses heuristic thresholds + runtime feedback. Unification gap is real but runtime feedback corrects wrong initial choices. 2/4 hypotheses confirmed."
-    },
-    {
-      "id": "T23",
-      "mode": "THINK",
-      "status": "done",
-      "task": "Design monkey-lang class syntax: methods, inheritance, self keyword, constructor",
-      "started": "2026-04-26T14:55:12.114Z",
-      "completed": "2026-04-26T14:55:44.679Z",
-      "duration_ms": 120000,
-      "summary": "Class design already exists in scratch/monkey-lang-class-design.md. Option A: compile to closures. Explicit self, init constructor, extends+super. ~200 LOC total. Good for today."
-    },
-    {
-      "id": "T24",
-      "mode": "PLAN",
-      "status": "done",
-      "goal": "Implement monkey-lang class syntax (parser + compiler + VM support)",
-      "task": null,
-      "started": "2026-04-26T14:55:56.835Z",
-      "completed": "2026-04-26T14:56:03.626Z",
-      "duration_ms": 30000,
-      "summary": "Plan: 3 tasks — (1) lexer/parser/AST, (2) compiler (closure factory), (3) tests"
-    },
-    {
-      "id": "T25",
-      "mode": "BUILD",
-      "task": "Add CLASS token + ClassStatement AST node + parser support",
-      "status": "done",
-      "plan_ref": "T24",
-      "started": "2026-04-26T14:56:07.773Z",
-      "completed": "2026-04-26T14:59:40.157Z",
-      "duration_ms": 300000,
-      "summary": "Parser done: CLASS/EXTENDS/SUPER tokens, ClassStatement + SuperExpression AST, parseClassStatement, dotted set assignment. 1179 tests pass."
-    },
-    {
-      "id": "T26",
-      "mode": "BUILD",
-      "task": "Compile ClassStatement to closure factory function (Option A)",
-      "status": "done",
-      "plan_ref": "T24",
-      "started": "2026-04-26T14:59:53.857Z",
-      "completed": "2026-04-26T15:09:27.979Z",
-      "duration_ms": 900000,
-      "summary": "Class compilation complete. ClassStatement → factory fn + method let-bindings. New OpSetIndex opcode for property mutation. Both speak(rex) and rex.speak() work. 1179/1179 tests pass."
-    },
-    {
-      "id": "T27",
-      "mode": "BUILD",
-      "task": "Add class tests (basic, inheritance, methods, super calls)",
-      "status": "done",
-      "plan_ref": "T24",
-      "started": "2026-04-26T15:09:44.080Z",
-      "completed": "2026-04-26T15:11:02.070Z",
-      "duration_ms": 300000,
-      "summary": "15 class tests added — basic, methods, mutation, edge cases. All 1194 tests pass."
-    },
-    {
-      "id": "T28",
-      "mode": "THINK",
-      "status": "done",
-      "task": "Choose next depth project: HenryDB COUNT(DISTINCT) bug vs monkey-lang inheritance vs WASM Phase 1",
-      "started": "2026-04-26T15:11:28.838Z",
-      "completed": "2026-04-26T15:11:42.489Z",
-      "duration_ms": 30000,
-      "summary": "Inheritance first (completes class feature, 30-60 min), then WASM Phase 1 if time. Both are depth work."
-    },
-    {
-      "id": "T29",
-      "mode": "PLAN",
-      "status": "done",
-      "goal": "Add class inheritance (extends + super) to monkey-lang",
-      "task": null,
-      "started": "2026-04-26T15:12:01.155Z",
-      "completed": "2026-04-26T15:12:06.668Z",
-      "duration_ms": 15000,
-      "summary": "Plan: 2 tasks — compile inheritance + test it"
-    },
-    {
-      "id": "T31",
-      "mode": "BUILD",
-      "task": "Compile class inheritance: extends copies parent methods, super.method() calls parent",
-      "status": "done",
-      "plan_ref": "T29",
-      "started": "2026-04-26T15:12:13.440Z",
-      "completed": "2026-04-26T15:14:50.341Z",
-      "duration_ms": 600000,
-      "summary": "Inheritance works! extends for method sharing, super.init() for parent constructor calls. Method override replaces parent method in scope. 1194/1194 tests pass."
-    },
-    {
-      "id": "T32",
-      "mode": "BUILD",
-      "task": "Test inheritance: basic extends, method override, super calls",
-      "status": "done",
-      "plan_ref": "T29",
-      "started": "2026-04-26T15:15:02.333Z",
-      "completed": "2026-04-26T15:15:56.218Z",
-      "duration_ms": 180000,
-      "summary": "5 inheritance tests added (inherit, override, super.init, 3-level chain, child new methods). 1199 total tests, all pass."
-    },
-    {
-      "id": "T30",
-      "mode": "PLAN",
-      "status": "done",
-      "goal": "WASM compiler Phase 1: integer + function compilation",
-      "task": null,
-      "started": "2026-04-26T15:16:06.233Z",
-      "completed": "2026-04-26T15:16:25.464Z",
-      "duration_ms": 30000,
-      "summary": "WASM Phase 1 plan: 3 tasks — binary encoder, AST→WASM compiler, tests with Node runtime verification"
-    },
-    {
-      "id": "T33",
-      "mode": "BUILD",
-      "task": "Implement WASM binary encoder (LEB128, sections, module structure)",
-      "status": "done",
-      "plan_ref": "T30",
-      "started": "2026-04-26T15:16:32.011Z",
-      "completed": "2026-04-26T15:17:27.431Z",
-      "duration_ms": 300000,
-      "summary": "WASM encoder built. Valid binary: 41-byte add(a,b) module runs in Node WASM runtime. LEB128 + sections + module builder."
-    },
-    {
-      "id": "T34",
-      "mode": "BUILD",
-      "task": "Compile monkey-lang integer expressions + functions to WASM",
-      "status": "done",
-      "plan_ref": "T30",
-      "started": "2026-04-26T15:17:34.792Z",
-      "completed": "2026-04-26T15:19:19.513Z",
-      "duration_ms": 600000,
-      "summary": "WASM compiler Phase 1 complete! Compiles integer arithmetic + functions + if/else + comparisons. fib(30): 7ms WASM vs 892ms VM = 120x speedup."
-    },
-    {
-      "id": "T35",
-      "mode": "BUILD",
-      "task": "Add WASM tests: arithmetic, function calls, verify with Node WASM runtime",
-      "status": "done",
-      "plan_ref": "T30",
-      "started": "2026-04-26T15:19:34.685Z",
-      "completed": "2026-04-26T15:20:39.895Z",
-      "duration_ms": 180000,
-      "summary": "26 WASM tests covering arithmetic, comparisons, if/else, locals, function calls, recursion (fib/fact), return, main expression. 1225 total tests, all pass."
-    },
-    {
-      "id": "T36",
-      "mode": "MAINTAIN",
-      "status": "done",
-      "task": "Update TODO.md, write session learnings scratch note, clean up",
-      "started": "2026-04-26T15:21:12.768Z",
-      "completed": "2026-04-26T15:22:02.350Z",
-      "duration_ms": 120000,
-      "summary": "TODO updated (removed completed items, added new). Session learnings scratch note written (VM callbacks, WASM, classes, SQLite affinity, SSA, DCE)."
-    },
-    {
-      "id": "T37",
-      "mode": "THINK",
-      "status": "done",
-      "task": "Plan next depth work: HenryDB COUNT(DISTINCT) multi-join bug investigation",
-      "started": "2026-04-26T15:22:08.640Z",
-      "completed": "2026-04-26T15:24:04.372Z",
-      "duration_ms": 180000,
-      "summary": "Investigated COUNT(DISTINCT) multi-join: all tested scenarios match SQLite. Bug may have been fixed previously or was very specific. Tested: 2-way join, 3-way join, GROUP BY, HAVING, NULL values, duplicate products. All correct."
-    },
-    {
-      "id": "T38",
-      "mode": "PLAN",
-      "status": "done",
-      "goal": "Fix HenryDB COUNT(DISTINCT) multi-join bug",
-      "task": null,
-      "started": "2026-04-26T15:24:29.530Z",
-      "completed": "2026-04-26T15:24:29.673Z",
-      "duration_ms": 5000,
-      "summary": "Bug not reproducible — skipped"
-    },
-    {
-      "id": "T39",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "WASM Phase 1.5: Add while loops + set statements to WASM compiler",
-      "project": "monkey-lang",
-      "started": "2026-04-26T15:25:38.584Z",
-      "completed": "2026-04-26T15:27:30.429Z",
-      "duration_ms": 300000,
-      "summary": "WASM while loops + set statements. Iterative fib: 41ns/call (native perf). 5 new tests. 1230 total tests."
-    },
-    {
-      "id": "T40",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "WASM: Add for..range compilation",
-      "project": "monkey-lang",
-      "started": "2026-04-26T15:27:50.711Z",
-      "completed": "2026-04-26T15:30:20.127Z",
-      "duration_ms": 300000,
-      "summary": "WASM for-loop compilation. C-style for→block/loop. sum_range and power tests. 1232 total tests."
-    },
-    {
-      "id": "T41",
-      "mode": "MAINTAIN",
-      "status": "done",
-      "task": "[DEPTH PIVOT] Full test sweep of monkey-lang",
-      "project": "monkey-lang",
-      "started": "2026-04-26T15:30:38.354Z",
-      "completed": "2026-04-26T15:30:56.238Z",
-      "duration_ms": 60000,
-      "summary": "Full monkey-lang sweep: 1232/1232 tests pass. Zero failures. Clean."
-    },
-    {
-      "id": "T42",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "[DEPTH PIVOT] Stress-test WASM compiler edge cases - find bugs",
-      "project": "monkey-lang",
-      "started": "2026-04-26T15:31:05.027Z",
-      "completed": "2026-04-26T15:32:40.152Z",
-      "duration_ms": 600000,
-      "summary": "WASM stress test: 1 bug found (empty fn body crash) and fixed. 5 edge cases tested: deep nesting, forward refs, i32 max, overflow all OK. 20% insight rate."
-    },
-    {
-      "id": "T43",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "[DEPTH PIVOT] Stress-test class compilation edge cases - find bugs",
-      "project": "monkey-lang",
-      "started": "2026-04-26T15:32:47.664Z",
-      "completed": "2026-04-26T15:33:23.930Z",
-      "duration_ms": 300000,
-      "summary": "Class stress test: 1 known limitation confirmed (method name collision between classes). Other hypotheses all passed: 3-level super.init works, no-init methods work, instance isolation correct, method→method calls work."
-    },
-    {
-      "id": "T44",
-      "mode": "MAINTAIN",
-      "status": "done",
-      "task": "[DEPTH PIVOT] Full test sweep of HenryDB",
-      "project": "henrydb",
-      "started": "2026-04-26T15:33:32.221Z",
-      "completed": "2026-04-26T15:39:26.231Z",
-      "duration_ms": 120000,
-      "summary": "HenryDB sweep: 4310/4310 pass, 3 skipped, 0 failures. Clean."
-    },
-    {
-      "id": "T45",
-      "mode": "THINK",
-      "status": "done",
-      "task": "Design fix for class method collision: hash-based dispatch vs name mangling",
-      "project": "monkey-lang",
-      "started": "2026-04-26T15:39:55.077Z",
-      "completed": "2026-04-26T15:40:22.214Z",
-      "duration_ms": 120000,
-      "summary": "Decision: Store methods on instance hash + change parseMethodCall to index-based dispatch + VM fallback for builtins. Most correct solution."
-    },
-    {
-      "id": "T46",
-      "mode": "PLAN",
-      "status": "done",
-      "goal": "Fix class method collision via hash-based method dispatch",
-      "task": null,
-      "project": "monkey-lang",
-      "started": "2026-04-26T15:40:30.494Z",
-      "completed": "2026-04-26T15:40:37.520Z",
-      "duration_ms": 10000,
-      "summary": "3 tasks planned"
-    },
-    {
-      "id": "T47",
-      "mode": "BUILD",
-      "task": "Store class methods as closures on instance hash in _compileClass",
-      "status": "done",
-      "plan_ref": "T46",
-      "started": "2026-04-26T15:40:44.107Z",
-      "completed": "2026-04-26T15:45:20.090Z",
-      "duration_ms": 600000,
-      "summary": "Class methods now have mangled names (ClassName__method) for collision avoidance + unmangled aliases for dot-dispatch. 1232 tests pass. Dot-dispatch still has last-wins limitation."
-    },
-    {
-      "id": "T48",
-      "mode": "BUILD",
-      "task": "Change parseMethodCall to index-based dispatch + VM builtin fallback",
-      "status": "done",
-      "plan_ref": "T46",
-      "started": "2026-04-26T15:45:40.520Z",
-      "completed": "2026-04-26T15:50:07.578Z",
-      "duration_ms": 600000,
-      "summary": "Compile-time method dispatch: dot-calls resolve to symbols/builtins at compile time. arr.len() works (builtin), rex.speak() works (class method). Collision still exists for dot-syntax but Cat__speak(cat) works for explicit dispatch. 1232 tests pass."
-    },
-    {
-      "id": "T49",
-      "mode": "BUILD",
-      "task": "Update tests for hash-based method dispatch",
-      "status": "done",
-      "plan_ref": "T46",
-      "started": "2026-04-26T15:50:27.109Z",
-      "completed": "2026-04-26T15:51:29.565Z",
-      "duration_ms": 120000,
-      "summary": "4 method dispatch tests added (class dot, builtin array/string, mangled collision avoidance). 1236 total tests."
-    },
-    {
-      "id": "T50",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Build a real monkey-lang program using classes + WASM: benchmark project (Mandelbrot set computation)",
-      "project": "monkey-lang",
-      "started": "2026-04-26T15:52:00.334Z",
-      "completed": "2026-04-26T15:53:42.901Z",
-      "duration_ms": 300000,
-      "summary": "Mandelbrot benchmark: WASM vs VM. Results match. 330x speedup (0.7ms vs 231ms for 80x60 grid). 301-byte WASM binary. Fixed i32 overflow issue with x100 scale."
-    },
-    {
-      "id": "T51",
-      "mode": "MAINTAIN",
-      "status": "done",
-      "task": "Update scratch/INDEX.md with new session learnings, update CURRENT.md",
-      "project": "workspace",
-      "started": "2026-04-26T15:54:07.467Z",
-      "completed": "2026-04-26T15:54:39.929Z",
-      "duration_ms": 60000,
-      "summary": "Updated scratch/INDEX.md and CURRENT.md with session progress."
-    },
-    {
-      "id": "T52",
-      "mode": "THINK",
-      "status": "done",
-      "task": "Design WASM i64 support for monkey-lang (BigInt integration, 64-bit arithmetic)",
-      "started": "2026-04-26T15:55:11.862Z",
-      "completed": "2026-04-26T15:55:28.843Z",
-      "duration_ms": 30000,
-      "summary": "i64 design: change all types to i64, comparisons produce i32 (unchanged control flow). BigInt on JS boundary. Simple mechanical change."
-    },
-    {
-      "id": "T53",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Add WASM i64 compilation support (64-bit integers)",
-      "project": "monkey-lang",
-      "started": "2026-04-26T15:55:36.069Z",
-      "completed": "2026-04-26T16:01:13.568Z",
-      "duration_ms": 600000,
-      "summary": "WASM i64 support added. useI64 option switches all types to 64-bit. Handles 10 billion+ without overflow. Mandelbrot x1000 precision works (0.72ms). 1236 tests pass."
-    },
-    {
-      "id": "T54",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Re-run Mandelbrot at x1000 precision with i64 WASM",
-      "project": "monkey-lang",
-      "started": "2026-04-26T16:01:30.349Z",
-      "completed": "2026-04-26T16:01:30.492Z",
-      "duration_ms": 5000,
-      "summary": "Already done in T53. i64 Mandelbrot at x1000: 146861 total iterations, 0.72ms."
-    },
-    {
-      "id": "T55",
-      "mode": "MAINTAIN",
-      "status": "done",
-      "task": "Mid-session compaction: flush daily log, update CURRENT.md, git push all",
-      "started": "2026-04-26T16:01:49.101Z",
-      "completed": "2026-04-26T16:02:37.526Z",
-      "duration_ms": 60000,
-      "summary": "Compacted. All repos pushed. CURRENT.md updated. 32 tasks done."
-    },
-    {
-      "id": "T56",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Add i64 WASM tests + update benchmark to include i64",
-      "project": "monkey-lang",
-      "started": "2026-04-26T16:02:44.119Z",
-      "completed": "2026-04-26T16:03:59.396Z",
-      "duration_ms": 120000,
-      "summary": "6 i64 WASM tests: large multiply (10B), overflow, fibonacci, sum to 1M (500B). 1240 total tests."
-    },
-    {
-      "id": "T57",
-      "mode": "THINK",
-      "status": "done",
-      "task": "Investigate HenryDB PL/SQL → procedure handler wiring (854 LOC exists)",
-      "started": "2026-04-26T16:04:13.723Z",
-      "completed": "2026-04-26T16:06:13.440Z",
-      "duration_ms": 120000,
-      "summary": "PL/SQL code exists: 854 LOC parser+interpreter in projects/henrydb/. Has tests. Wire-up needed: (1) copy plsql.js to src/ (2) modify callUserFunction to use PLInterpreter for plsql language (3) detect DECLARE/BEGIN in function bodies."
-    },
-    {
-      "id": "T58",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Wire PL/SQL into HenryDB: copy plsql.js, update callUserFunction",
-      "project": "henrydb",
-      "started": "2026-04-26T16:06:22.297Z",
-      "completed": "2026-04-26T16:13:25.291Z",
-      "duration_ms": 600000,
-      "summary": "PL/SQL wired into HenryDB! factorial(5)=120, classify() with IF/ELSIF, SELECT INTO works. 854 LOC PL/SQL engine integrated. 4313 tests pass."
-    },
-    {
-      "id": "T59",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Add PL/SQL integration tests to main HenryDB test suite",
-      "project": "henrydb",
-      "started": "2026-04-26T16:14:23.580Z",
-      "completed": "2026-04-26T16:21:00.969Z",
-      "duration_ms": 600000,
-      "summary": "8 PL/SQL integration tests added. Fixed unary minus bug in expression evaluator. Fixed auto-detected PL/SQL language assignment. All tests pass."
-    },
-    {
-      "id": "T60",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "Stress-test PL/SQL: edge cases, error handling, nested blocks",
-      "project": "henrydb",
-      "started": "2026-04-26T16:21:45.448Z",
-      "completed": "2026-04-26T16:22:11.742Z",
-      "duration_ms": 300000,
-      "summary": "PL/SQL stress test: nested IF ✅, FOR loop ✅. BUGS: recursive functions return NaN (expression evaluator cant handle function calls), PL→PL calls return string (same root cause). Expression evaluator is string-based regex, needs enhancement for function calls."
-    },
-    {
-      "id": "T61",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Add FOR loop support to PL/SQL integration (FOR i IN 1..10 LOOP)",
-      "project": "henrydb",
-      "started": "2026-04-26T16:22:24.675Z",
-      "completed": "2026-04-26T16:22:24.820Z",
-      "duration_ms": 5000,
-      "summary": "FOR loops already work (confirmed in EXPLORE). Skipping."
-    },
-    {
-      "id": "T62",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Fix PL/SQL expression evaluator: handle function calls in expressions",
-      "project": "henrydb",
-      "started": "2026-04-26T16:22:30.802Z",
-      "completed": "2026-04-26T16:24:42.781Z",
-      "duration_ms": 300000,
-      "summary": "Fixed PL/SQL expression evaluator for function calls. Recursive PL/SQL (rec_fact(5)=120) and nested PL→PL (inc(inc(40))=42) now work. 11/11 PL/SQL tests pass."
-    },
-    {
-      "id": "T63",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Add monkey-lang REPL command --wasm to compile and run WASM",
-      "project": "monkey-lang",
-      "started": "2026-04-26T17:30:44.507Z",
-      "completed": "2026-04-26T17:34:28.177Z",
-      "duration_ms": 120000,
-      "summary": "Added --engine=wasm to REPL with --wasm-type=i32|i64|f64 support. File execution and interactive modes both work. All existing engines unchanged."
-    },
-    {
-      "id": "T64",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "WASM: Add import support for linking multiple WASM modules",
-      "project": "monkey-lang",
-      "started": "2026-04-26T17:34:35.473Z",
-      "completed": "2026-04-26T17:38:25.423Z",
-      "duration_ms": 300000,
-      "summary": "Added WASM import section to wasm.js builder (addImport method, import section encoding). WasmCompiler processes Monkey import statements into WASM imports with importSignatures option. 5 new tests all passing. Backward compatible."
-    },
-    {
-      "id": "T65",
-      "mode": "THINK",
-      "status": "done",
-      "task": "Session retrospective: what worked, what to improve, tomorrow focus",
-      "started": "2026-04-26T16:51:04.011Z",
-      "completed": "2026-04-26T16:51:29.382Z",
-      "duration_ms": 180000,
-      "summary": "Retrospective: WASM compiler biggest win (130-330x). Queue ID confusion after compaction. Tomorrow: OpMethodCall + WASM strings + SSA DCE wiring."
-    },
-    {
-      "id": "T66",
-      "mode": "MAINTAIN",
-      "status": "done",
-      "task": "Update MEMORY.md with todays significant events and learnings",
-      "started": "2026-04-26T16:51:39.132Z",
-      "completed": "2026-04-26T16:51:55.154Z",
-      "duration_ms": 120000,
-      "summary": "MEMORY.md updated with exploration results, VM perf stats, GC/TCO/SCCP findings, tomorrow focus."
-    },
-    {
-      "id": "T67",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Enhanced benchmark: compare i32/i64/f64/VM across fibonacci, Mandelbrot, and iterative algorithms",
-      "project": "monkey-lang",
-      "started": "2026-04-26T17:38:34.157Z",
-      "completed": "2026-04-26T17:42:11.849Z",
-      "duration_ms": 300000,
-      "summary": "Built comprehensive benchmark-wasm.js comparing VM vs WASM (i32/i64/f64) across 6 algorithms. WASM is 14-800x faster. i64 slightly faster than i32 for iteration, i32 better for recursion, f64 consistently slowest WASM variant."
-    },
-    {
-      "id": "T68",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Update monkey-lang README with WASM compilation docs and benchmark results",
-      "project": "monkey-lang",
-      "started": "2026-04-26T17:42:20.397Z",
-      "completed": "2026-04-26T17:43:28.031Z",
-      "duration_ms": 180000,
-      "summary": "Updated README with comprehensive WASM benchmarks (6 algorithms, 3 types), REPL --engine=wasm docs, import support docs. Updated test count to 1,250."
-    },
-    {
-      "id": "T69",
-      "mode": "MAINTAIN",
-      "status": "done",
-      "task": "[DEPTH PIVOT 2] Final test sweeps + evening summary",
-      "project": "workspace",
-      "started": "2026-04-26T16:52:00.327Z",
-      "completed": "2026-04-26T16:57:32.391Z",
-      "duration_ms": 600000,
-      "summary": "Fixed 3 WASM f64 bugs: missing opcodes, broken constant encoding (1 vs 8 bytes), wrong comparison op names. All 1245 tests pass."
-    },
-    {
-      "id": "T70",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "Investigate monkey-lang constant propagation (SCCP) accuracy with complex programs",
-      "project": "monkey-lang",
-      "started": "2026-04-26T16:57:37.532Z",
-      "completed": "2026-04-26T16:58:38.907Z",
-      "duration_ms": 300000,
-      "summary": "SCCP bug found: propagateConstants uses toSSA which gives empty results for function bodies. Needs perFunctionSSA. SCCP is currently useless for real programs."
-    },
-    {
-      "id": "T71",
-      "mode": "THINK",
-      "status": "done",
-      "task": "Design runtime method dispatch for class polymorphism (OpMethodCall)",
-      "project": "monkey-lang",
-      "started": "2026-04-26T16:58:42.617Z",
-      "completed": "2026-04-26T16:59:06.126Z",
-      "duration_ms": 180000,
-      "summary": "Design refined: 3-phase implementation (instance methods → shared prototype → inline caching). Phase 1 is ~100 LOC, sufficient for correctness."
-    },
-    {
-      "id": "T72",
-      "mode": "MAINTAIN",
-      "status": "done",
-      "task": "Write scratch note: runtime dispatch implementation notes for tomorrow",
-      "started": "2026-04-26T16:59:11.207Z",
-      "completed": "2026-04-26T16:59:17.895Z",
-      "duration_ms": 10000,
-      "summary": "Already completed during T71 — scratch/runtime-dispatch-plan.md has full implementation notes."
-    },
-    {
-      "id": "T73",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "Stress-test WASM compiler with edge cases: empty functions, deeply nested ifs, large constants, 0-arg functions",
-      "project": "monkey-lang",
-      "started": "2026-04-26T16:59:36.365Z",
-      "completed": "2026-04-26T17:30:23.823Z",
-      "summary": " [auto-resolved: orphaned in-progress task]"
-    },
-    {
-      "id": "T74",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "HenryDB: run differential fuzzer, analyze remaining failure patterns",
-      "project": "henrydb",
-      "started": "2026-04-26T17:43:37.230Z",
-      "completed": "2026-04-26T17:45:13.884Z",
-      "duration_ms": 300000,
-      "summary": "Ran differential fuzzer: 99.3% pass rate (993/1000). 7 failures all trace to type affinity in comparisons — UNION dedup, window ORDER BY, and subquery AVG comparison dont use sqliteCompare. Documented in scratch note."
-    },
-    {
-      "id": "T75",
-      "mode": "THINK",
-      "status": "done",
-      "task": "Design WASM Phase 2: string support via linear memory",
-      "project": "monkey-lang",
-      "started": "2026-04-26T17:45:22.545Z",
-      "completed": "2026-04-26T17:45:39.308Z",
-      "duration_ms": 120000,
-      "summary": "Reviewed projects-level wasm-compiler string approach: linear memory + data segments + host imports for str ops. Root-level compiler should add: memory section, data section, string host imports. Alternatively, promote projects-level compiler as canonical. Recommend extending root-level for pedagogical clarity."
-    },
-    {
-      "id": "T76",
-      "mode": "MAINTAIN",
-      "status": "done",
-      "task": "Update monkey-lang stats in README (test count, LOC)",
-      "project": "monkey-lang",
-      "started": "2026-04-26T17:45:47.599Z",
-      "completed": "2026-04-26T17:46:30.414Z",
-      "duration_ms": 60000,
-      "summary": "Updated README stats: 24.8K LOC, 91 files, 1250 tests, 2200+ commits. Pushed."
-    },
-    {
-      "id": "T77",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "Test HenryDB PL/SQL with complex programs (cursors, exception handling, bulk operations)",
-      "project": "henrydb",
-      "started": "2026-04-26T17:46:48.530Z",
-      "completed": "2026-04-26T17:48:12.208Z",
-      "duration_ms": 180000,
-      "summary": "PL/HenryDB tested: DECLARE+IF/ELSIF+WHILE+FOR+SELECT INTO+EXCEPTION all work. Missing: CASE statement (parser crash), cursors, DML inside PL blocks (INSERT/UPDATE/DELETE not recognized), PERFORM, NOTICE with format. Core procedural logic is solid."
-    },
-    {
-      "id": "T78",
-      "mode": "THINK",
-      "status": "done",
-      "task": "Analyze monkey-lang optimizer pipeline: what optimizations actually fire on real programs?",
-      "project": "monkey-lang",
-      "started": "2026-04-26T17:48:24.284Z",
-      "completed": "2026-04-26T17:49:39.646Z",
-      "duration_ms": 180000,
-      "summary": "Pipeline has 7 passes (TypeCheck,DCE,CFG,SSA,ConstProp,Liveness,Escape) but only DCE modifies code (constant branch elimination). Dead var detection works but doesnt remove. ConstProp counts but doesnt propagate. Escape analysis is purely informational. The pipeline is analysis-only, not transformational — real work would be: (1) DCE that removes dead let stmts, (2) ConstProp that replaces references."
-    },
-    {
-      "id": "T79",
-      "mode": "THINK",
-      "status": "done",
-      "task": "Design pipeline DCE: remove dead let statements from AST",
-      "project": "monkey-lang",
-      "started": "2026-04-26T17:50:35.514Z",
-      "completed": "2026-04-26T17:50:48.067Z",
-      "duration_ms": 60000,
-      "summary": "Design: removeDeadLets(program, deadVars) in dce.js. Side-effect check: literals/fn-lits/identifiers safe to remove, function calls convert to ExpressionStatement. Wire into pipeline after findDeadVariables."
-    },
-    {
-      "id": "T80",
-      "mode": "PLAN",
-      "status": "done",
-      "goal": "Wire dead variable removal into DCE pass + compiler pipeline",
-      "task": null,
-      "project": "monkey-lang",
-      "started": "2026-04-26T17:51:02.045Z",
-      "completed": "2026-04-26T17:51:08.010Z",
-      "duration_ms": 15000,
-      "summary": "Plan: 2 BUILD tasks — (1) removeDeadLets with side-effect analysis, (2) wire into pipeline + tests"
-    },
-    {
-      "id": "T87",
-      "mode": "BUILD",
-      "task": "Implement removeDeadLets in dce.js with side-effect analysis",
-      "status": "done",
-      "plan_ref": "T80",
-      "started": "2026-04-26T17:51:17.368Z",
-      "completed": "2026-04-26T17:52:07.625Z",
-      "duration_ms": 180000,
-      "summary": "Added removeDeadLets() and isSideEffectFree() to dce.js. Handles safe removal (literals, fn lits) and side-effect conversion (calls). All existing DCE tests pass."
-    },
-    {
-      "id": "T88",
-      "mode": "BUILD",
-      "task": "Wire removeDeadLets into pipeline, add tests for dead let removal",
-      "status": "done",
-      "plan_ref": "T80",
-      "started": "2026-04-26T17:52:17.040Z",
-      "completed": "2026-04-26T17:54:21.926Z",
-      "duration_ms": 180000,
-      "summary": "Wired removeDeadLets into pipeline. Pipeline now actually removes dead let statements. Fixed 3 existing tests, added 2 new tests. 15/15 pipeline tests passing."
-    },
-    {
-      "id": "T81",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Implement AST-level dead let removal in DCE pass",
-      "project": "monkey-lang",
-      "started": "2026-04-26T17:54:32.535Z",
-      "completed": "2026-04-26T17:54:32.681Z",
-      "duration_ms": 5000,
-      "summary": "Already completed as part of T87+T88. removeDeadLets implemented and wired into pipeline."
-    },
-    {
-      "id": "T82",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Fix class method collision: hash-based dispatch on instance",
-      "project": "monkey-lang",
-      "started": "2026-04-26T17:54:39.771Z",
-      "completed": "2026-04-26T18:01:04.591Z",
-      "duration_ms": 600000,
-      "summary": "Fixed class method collision with hash-based dispatch. Methods stored on instance hash, builtins still scope-dispatched. Inheritance chains resolve correctly (3-level). 24/24 class tests pass."
-    },
-    {
-      "id": "T83",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Add super.method() support for non-init methods",
-      "project": "monkey-lang",
-      "started": "2026-04-26T18:01:14.724Z",
-      "completed": "2026-04-26T18:01:36.835Z",
-      "duration_ms": 60000,
-      "summary": "super.method() already works for non-init methods — tested 3-level chain (Base→Mid→Leaf) with super.foo() chaining. The compiler resolves super.method() using _currentSuperClass + mangled names."
-    },
-    {
-      "id": "T84",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "WASM: Add memory section + data segment for string constants",
-      "project": "monkey-lang",
-      "started": "2026-04-26T18:01:48.138Z",
-      "completed": "2026-04-26T18:04:29.798Z",
-      "duration_ms": 300000,
-      "summary": "Added WASM memory section + data segments to wasm.js. addMemory(), addDataSegment(), addStringConstant() with [i32 len][utf8] format. exportMemory(). 7 new tests all passing."
-    },
-    {
-      "id": "T85",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "Stress test class inheritance: diamond, 5-level chain, method override edge cases",
-      "project": "monkey-lang",
-      "started": "2026-04-26T18:04:42.927Z",
-      "completed": "2026-04-26T18:07:45.188Z",
-      "duration_ms": 300000,
-      "summary": "Found and fixed prototype pollution bug in lexer KEYWORDS map (toString/constructor broken). Also verified: 5-level chain, super chain, two-branch inheritance, instance isolation, complex methods all work. 0 test regressions."
-    },
-    {
-      "id": "T86",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "Deep dive neural-net 38K LOC: RLHF, mixture of experts, vision transformer",
-      "project": "monkey-lang",
-      "started": "2026-04-26T18:07:58.516Z",
-      "completed": "2026-04-26T18:10:38.494Z",
-      "duration_ms": 300000,
-      "summary": "Neural-net deep dive: MoE (forward/backward/update works, learns simple tasks), Transformer (PE, MHA, Encoder, Decoder, CrossAttn all work), 1337 tests all passing. Framework is solid with autograd, 20K LOC, 96 files. No RLHF class but has REINFORCE policy gradient."
-    },
-    {
-      "id": "T89",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Fix arr[0]() syntax: index then immediate call",
-      "project": "monkey-lang",
-      "started": "2026-04-26T18:11:13.050Z",
-      "completed": "2026-04-26T18:11:36.310Z",
-      "duration_ms": 30000,
-      "summary": "arr[0]() already works — tested arrays, hashes, nested arrays, all produce correct results. No fix needed."
-    },
-    {
-      "id": "T90",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Add CASE statement to PL/HenryDB parser and interpreter",
-      "project": "henrydb",
-      "started": "2026-04-26T18:11:47.946Z",
-      "completed": "2026-04-26T18:14:38.320Z",
-      "duration_ms": 300000,
-      "summary": "Added CASE statement to PL/HenryDB — simple CASE (CASE expr WHEN val) and searched CASE (CASE WHEN cond). Nested CASE, CASE in loops, CASE_NOT_FOUND error. All PL tests pass."
-    },
-    {
-      "id": "T91",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Add DML (INSERT/UPDATE/DELETE) inside PL/HenryDB BEGIN blocks",
-      "project": "henrydb",
-      "started": "2026-04-26T18:14:49.648Z",
-      "completed": "2026-04-26T18:16:29.303Z",
-      "duration_ms": 180000,
-      "summary": "Added INSERT/UPDATE/DELETE inside PL/HenryDB blocks. DML parsed as raw SQL with variable substitution. Works with loops, CASE, IF. All PL tests pass."
-    },
-    {
-      "id": "T92",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "WASM: Add global section for mutable global variables",
-      "project": "monkey-lang",
-      "started": "2026-04-26T18:16:42.255Z",
-      "completed": "2026-04-26T18:18:50.136Z",
-      "duration_ms": 180000,
-      "summary": "Added WASM global section: addGlobal(), exportGlobal(), encodeF64/F32 helpers. Mutable globals work as counters/state. All WASM tests pass."
-    },
-    {
-      "id": "T93",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "Run full monkey-lang test suite, check for any new failures from recent changes",
-      "project": "monkey-lang",
-      "started": "2026-04-26T18:19:03.901Z",
-      "completed": "2026-04-26T18:19:19.744Z",
-      "duration_ms": 30000,
-      "summary": "Full monkey-lang test suite: 1257 tests, 0 failures. All recent changes (class dispatch, lexer fix, DCE, WASM features) clean."
-    },
-    {
-      "id": "T94",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "WASM compiler: use globals for top-level let variables",
-      "project": "monkey-lang",
-      "started": "2026-04-26T18:19:44.988Z",
-      "completed": "2026-04-26T18:23:53.985Z",
-      "duration_ms": 300000,
-      "summary": "WASM compiler now uses globals for top-level let variables. __init function initializes them, main calls __init first. Functions can close over globals. All WASM tests pass."
-    },
-    {
-      "id": "T95",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Add cursor support to PL/HenryDB (DECLARE CURSOR, OPEN, FETCH, CLOSE)",
-      "project": "henrydb",
-      "started": "2026-04-26T18:24:11.950Z",
-      "completed": "2026-04-26T18:29:46.983Z",
-      "duration_ms": 600000,
-      "summary": "Added cursor support to PL/HenryDB: DECLARE CURSOR FOR, OPEN/FETCH INTO/CLOSE, EXIT WHEN NOT FOUND, LOOP, RECORD type, record field access. All PL tests pass."
-    },
-    {
-      "id": "T96",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Add WASM table section + indirect calls for higher-order functions",
-      "project": "monkey-lang",
-      "started": "2026-04-26T18:30:11.307Z",
-      "completed": "2026-04-26T18:32:37.059Z",
-      "duration_ms": 300000,
-      "summary": "Added WASM table + element sections: addTable, addTableElement, call_indirect opcode, exportTable. Indirect function calls work correctly. All WASM tests pass."
-    },
-    {
-      "id": "T97",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "Run henrydb full test suite, check for regressions",
-      "project": "henrydb",
-      "started": "2026-04-26T18:32:48.289Z",
-      "completed": "2026-04-26T18:38:08.645Z",
-      "duration_ms": 60000,
-      "summary": "PL tests all pass. SQL/joins pass. 1 pre-existing window function failure (running sum partition). No regressions from CASE/DML/cursor changes."
-    },
-    {
-      "id": "T98",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "WASM compiler: compile higher-order functions using table + call_indirect",
-      "project": "monkey-lang",
-      "started": "2026-04-26T18:38:33.470Z",
-      "completed": "2026-04-26T18:40:30.274Z",
-      "duration_ms": 300000,
-      "summary": "WASM compiler now supports higher-order functions: functions as values via table indices, call_indirect for dynamic dispatch. apply(double, 21) → 42. All tests pass."
-    },
-    {
-      "id": "T99",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Add PL/HenryDB stored functions: CREATE FUNCTION + call from SQL",
-      "project": "henrydb",
-      "started": "2026-04-26T18:40:44.936Z",
-      "completed": "2026-04-26T18:42:51.416Z",
-      "duration_ms": 240000,
-      "summary": "Wired PL/HenryDB as stored function language: CREATE FUNCTION ... LANGUAGE plhenrydb. Functions callable from SQL (SELECT, WHERE). Parameters, DB access, all working. 38/38 tests pass."
-    },
-    {
-      "id": "T100",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Monkey: add string interpolation syntax: f-strings or template literals",
-      "project": "monkey-lang",
-      "started": "2026-04-26T18:43:03.357Z",
-      "completed": "2026-04-26T18:44:06.125Z",
-      "duration_ms": 30000,
-      "summary": "Template literals (backtick + dollar-brace) already implemented. Tested: string interpolation, expressions in templates, f-strings. All working."
-    },
-    {
-      "id": "T101",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Fix HenryDB running sum window function partition bug",
-      "project": "henrydb",
-      "started": "2026-04-26T18:44:13.873Z",
-      "completed": "2026-04-26T18:45:21.142Z",
-      "duration_ms": 120000,
-      "summary": "Window function test was wrong, not the engine. RANGE framing includes all tied ORDER BY rows. Fixed test expectations. Verified against SQLite."
+      "status": "upcoming",
+      "task": "Research WASM GC proposal and string encoding strategies",
+      "project": "monkey-lang"
     }
   ],
   "focusProjects": [
@@ -1107,380 +131,80 @@
   "backlog": [],
   "adjustments": [
     {
-      "time": "2026-04-26T14:00:50.426Z",
-      "msg": "Added T1 (THINK) after end: Review yesterday (500+ tasks across 3 sessions). Assess quality, pick Sunday focus: depth over breadth"
+      "time": "2026-04-27T14:01:20.899Z",
+      "msg": "Added T1 (THINK) after end: Review weekend progress, set Monday direction"
     },
     {
-      "time": "2026-04-26T14:01:05.173Z",
-      "msg": "Added T2 (PLAN) after T1: Fix monkey-lang GitHub token workflow scope + CI pipeline"
+      "time": "2026-04-27T14:01:29.188Z",
+      "msg": "Added T2 (PLAN) after T1: WASM Phase 2: string support via linear memory and host imports"
     },
     {
-      "time": "2026-04-26T14:01:18.243Z",
+      "time": "2026-04-27T14:01:45.685Z",
       "msg": "Focus set: [monkey-lang, henrydb]"
     },
     {
-      "time": "2026-04-26T14:01:26.188Z",
+      "time": "2026-04-27T14:01:52.869Z",
       "msg": "Added T3 (BUILD) after T2: null"
     },
     {
-      "time": "2026-04-26T14:01:26.305Z",
-      "msg": "Added T4 (MAINTAIN) after T3: Housekeeping: commit, push, dashboard health, email check"
+      "time": "2026-04-27T14:01:52.983Z",
+      "msg": "Added T4 (MAINTAIN) after T3: Housekeeping"
     },
     {
-      "time": "2026-04-26T14:01:26.423Z",
-      "msg": "Added T5 (THINK) after T4: Reflect on CI fix. Assess monkey-lang SSA pipeline - real but unused by codegen. Worth wiring?"
+      "time": "2026-04-27T14:01:53.098Z",
+      "msg": "Added T5 (THINK) after T4: Assess WASM string progress, plan next cycle"
     },
     {
-      "time": "2026-04-26T14:01:26.541Z",
-      "msg": "Added T6 (PLAN) after T5: VM callback mechanism for native HOF builtins (prelude 19x slower than native)"
+      "time": "2026-04-27T14:01:53.212Z",
+      "msg": "Added T6 (PLAN) after T5: HenryDB: close remaining fuzzer gap - type affinity edge cases"
     },
     {
-      "time": "2026-04-26T14:01:26.658Z",
+      "time": "2026-04-27T14:01:53.326Z",
       "msg": "Added T7 (BUILD) after T6: null"
     },
     {
-      "time": "2026-04-26T14:01:26.776Z",
-      "msg": "Added T8 (MAINTAIN) after T7: Housekeeping: commit, push, dashboard, notifications"
+      "time": "2026-04-27T14:01:53.441Z",
+      "msg": "Added T8 (MAINTAIN) after T7: Housekeeping"
     },
     {
-      "time": "2026-04-26T14:01:26.894Z",
-      "msg": "Added T9 (THINK) after T8: Mid-day reflection. Review VM callback work. What next for HenryDB fuzzer gap?"
+      "time": "2026-04-27T14:01:53.555Z",
+      "msg": "Added T9 (THINK) after T8: Mid-day reflection, quality check"
     },
     {
-      "time": "2026-04-26T14:01:27.011Z",
-      "msg": "Added T10 (PLAN) after T9: HenryDB: close fuzzer gap - mixed type comparisons and UNION type affinity"
+      "time": "2026-04-27T14:01:53.670Z",
+      "msg": "Added T10 (PLAN) after T9: Wire SSA DCE into monkey-lang compilation pipeline"
     },
     {
-      "time": "2026-04-26T14:01:27.145Z",
+      "time": "2026-04-27T14:01:53.784Z",
       "msg": "Added T11 (BUILD) after T10: null"
     },
     {
-      "time": "2026-04-26T14:01:27.271Z",
-      "msg": "Added T12 (MAINTAIN) after T11: Housekeeping: commit, push, dashboard, knowledge capture"
+      "time": "2026-04-27T14:01:53.899Z",
+      "msg": "Added T12 (MAINTAIN) after T11: Housekeeping"
     },
     {
-      "time": "2026-04-26T14:01:27.389Z",
-      "msg": "Added T13 (THINK) after T12: Afternoon direction. Dead code elimination via SSA or HenryDB COUNT(DISTINCT)?"
+      "time": "2026-04-27T14:01:54.014Z",
+      "msg": "Added T13 (THINK) after T12: Afternoon direction, review depth vs breadth"
     },
     {
-      "time": "2026-04-26T14:01:27.506Z",
-      "msg": "Added T14 (PLAN) after T13: Per-function SSA enabling dead code elimination in monkey-lang compiler"
+      "time": "2026-04-27T14:01:54.128Z",
+      "msg": "Added T14 (PLAN) after T13: WASM Phase 2: closure support via captured variables in linear memory"
     },
     {
-      "time": "2026-04-26T14:01:27.624Z",
+      "time": "2026-04-27T14:01:54.242Z",
       "msg": "Added T15 (BUILD) after T14: null"
     },
     {
-      "time": "2026-04-26T14:01:27.741Z",
-      "msg": "Added T16 (MAINTAIN) after T15: Housekeeping: commit, push, dashboard"
+      "time": "2026-04-27T14:01:54.356Z",
+      "msg": "Added T16 (MAINTAIN) after T15: Housekeeping"
     },
     {
-      "time": "2026-04-26T14:01:27.861Z",
-      "msg": "Added T17 (EXPLORE) after T16: Deep dive: LuaJIT allocation sinking paper - implications for monkey-lang escape analysis"
+      "time": "2026-04-27T14:01:54.470Z",
+      "msg": "Added T17 (EXPLORE) after T16: Deep dive into neural-net ML framework"
     },
     {
-      "time": "2026-04-26T14:01:28.000Z",
-      "msg": "Added T18 (EXPLORE) after T17: HenryDB query optimizer: cost model unification across 6 execution engines"
-    },
-    {
-      "time": "2026-04-26T14:17:01.438Z",
-      "msg": "PLAN T2 filled 1 BUILD tasks"
-    },
-    {
-      "time": "2026-04-26T14:20:14.139Z",
-      "msg": "PLAN T6 filled 2 BUILD tasks"
-    },
-    {
-      "time": "2026-04-26T14:31:09.684Z",
-      "msg": "PLAN T10 filled 2 BUILD tasks"
-    },
-    {
-      "time": "2026-04-26T14:42:53.612Z",
-      "msg": "PLAN T14 filled 3 BUILD tasks"
-    },
-    {
-      "time": "2026-04-26T14:54:59.008Z",
-      "msg": "Added T23 (THINK) after end: Design monkey-lang class syntax: methods, inheritance, self keyword, constructor"
-    },
-    {
-      "time": "2026-04-26T14:55:05.974Z",
-      "msg": "Added T24 (PLAN) after end: Implement monkey-lang class syntax (parser + compiler + VM support)"
-    },
-    {
-      "time": "2026-04-26T14:55:56.978Z",
-      "msg": "PLAN T24 filled 3 BUILD tasks"
-    },
-    {
-      "time": "2026-04-26T15:11:22.756Z",
-      "msg": "Added T28 (THINK) after end: Choose next depth project: HenryDB COUNT(DISTINCT) bug vs monkey-lang inheritance vs WASM Phase 1"
-    },
-    {
-      "time": "2026-04-26T15:11:47.579Z",
-      "msg": "Added T29 (PLAN) after end: Add class inheritance (extends + super) to monkey-lang"
-    },
-    {
-      "time": "2026-04-26T15:11:47.698Z",
-      "msg": "Added T30 (PLAN) after end: WASM compiler Phase 1: integer + function compilation"
-    },
-    {
-      "time": "2026-04-26T15:12:01.298Z",
-      "msg": "PLAN T29 filled 2 BUILD tasks"
-    },
-    {
-      "time": "2026-04-26T15:16:18.079Z",
-      "msg": "PLAN T30 filled 3 BUILD tasks"
-    },
-    {
-      "time": "2026-04-26T15:21:06.474Z",
-      "msg": "Added T36 (MAINTAIN) after end: Update TODO.md, write session learnings scratch note, clean up"
-    },
-    {
-      "time": "2026-04-26T15:21:06.593Z",
-      "msg": "Added T37 (THINK) after end: Plan next depth work: HenryDB COUNT(DISTINCT) multi-join bug investigation"
-    },
-    {
-      "time": "2026-04-26T15:21:06.711Z",
-      "msg": "Added T38 (PLAN) after end: Fix HenryDB COUNT(DISTINCT) multi-join bug"
-    },
-    {
-      "time": "2026-04-26T15:25:33.085Z",
-      "msg": "Added T39 (BUILD) after end: WASM Phase 1.5: Add while loops + set statements to WASM compiler"
-    },
-    {
-      "time": "2026-04-26T15:27:44.867Z",
-      "msg": "Added T40 (BUILD) after end: WASM: Add for..range compilation"
-    },
-    {
-      "time": "2026-04-26T15:30:31.916Z",
-      "msg": "Added T41 (MAINTAIN) after end: [DEPTH PIVOT] Full test sweep of monkey-lang"
-    },
-    {
-      "time": "2026-04-26T15:30:32.035Z",
-      "msg": "Added T42 (EXPLORE) after end: [DEPTH PIVOT] Stress-test WASM compiler edge cases - find bugs"
-    },
-    {
-      "time": "2026-04-26T15:30:32.154Z",
-      "msg": "Added T43 (EXPLORE) after end: [DEPTH PIVOT] Stress-test class compilation edge cases - find bugs"
-    },
-    {
-      "time": "2026-04-26T15:30:32.272Z",
-      "msg": "Added T44 (MAINTAIN) after end: [DEPTH PIVOT] Full test sweep of HenryDB"
-    },
-    {
-      "time": "2026-04-26T15:39:49.710Z",
-      "msg": "Added T45 (THINK) after end: Design fix for class method collision: hash-based dispatch vs name mangling"
-    },
-    {
-      "time": "2026-04-26T15:39:49.828Z",
-      "msg": "Added T46 (PLAN) after end: Fix class method collision via hash-based method dispatch"
-    },
-    {
-      "time": "2026-04-26T15:40:30.638Z",
-      "msg": "PLAN T46 filled 3 BUILD tasks"
-    },
-    {
-      "time": "2026-04-26T15:51:53.581Z",
-      "msg": "Added T50 (BUILD) after end: Build a real monkey-lang program using classes + WASM: benchmark project (Mandelbrot set computation)"
-    },
-    {
-      "time": "2026-04-26T15:53:59.825Z",
-      "msg": "Added T51 (MAINTAIN) after end: Update scratch/INDEX.md with new session learnings, update CURRENT.md"
-    },
-    {
-      "time": "2026-04-26T15:54:57.737Z",
-      "msg": "Added T52 (THINK) after end: Design WASM i64 support for monkey-lang (BigInt integration, 64-bit arithmetic)"
-    },
-    {
-      "time": "2026-04-26T15:55:05.042Z",
-      "msg": "Added T53 (BUILD) after end: Add WASM i64 compilation support (64-bit integers)"
-    },
-    {
-      "time": "2026-04-26T15:55:05.160Z",
-      "msg": "Added T54 (BUILD) after end: Re-run Mandelbrot at x1000 precision with i64 WASM"
-    },
-    {
-      "time": "2026-04-26T16:01:48.985Z",
-      "msg": "Added T55 (MAINTAIN) after end: Mid-session compaction: flush daily log, update CURRENT.md, git push all"
-    },
-    {
-      "time": "2026-04-26T16:02:44.003Z",
-      "msg": "Added T56 (BUILD) after end: Add i64 WASM tests + update benchmark to include i64"
-    },
-    {
-      "time": "2026-04-26T16:04:09.170Z",
-      "msg": "Added T57 (THINK) after end: Investigate HenryDB PL/SQL → procedure handler wiring (854 LOC exists)"
-    },
-    {
-      "time": "2026-04-26T16:06:22.161Z",
-      "msg": "Added T58 (BUILD) after end: Wire PL/SQL into HenryDB: copy plsql.js, update callUserFunction"
-    },
-    {
-      "time": "2026-04-26T16:14:23.463Z",
-      "msg": "Added T59 (BUILD) after end: Add PL/SQL integration tests to main HenryDB test suite"
-    },
-    {
-      "time": "2026-04-26T16:21:40.425Z",
-      "msg": "Added T60 (EXPLORE) after end: Stress-test PL/SQL: edge cases, error handling, nested blocks"
-    },
-    {
-      "time": "2026-04-26T16:21:40.544Z",
-      "msg": "Added T61 (BUILD) after end: Add FOR loop support to PL/SQL integration (FOR i IN 1..10 LOOP)"
-    },
-    {
-      "time": "2026-04-26T16:22:30.686Z",
-      "msg": "Added T62 (BUILD) after end: Fix PL/SQL expression evaluator: handle function calls in expressions"
-    },
-    {
-      "time": "2026-04-26T16:32:36.154Z",
-      "msg": "Added T63 (BUILD) after end: Add monkey-lang REPL command --wasm to compile and run WASM"
-    },
-    {
-      "time": "2026-04-26T16:32:36.274Z",
-      "msg": "Added T64 (BUILD) after end: WASM: Add import support for linking multiple WASM modules"
-    },
-    {
-      "time": "2026-04-26T16:35:07.966Z",
-      "msg": "Added T65 (THINK) after end: Session retrospective: what worked, what to improve, tomorrow focus"
-    },
-    {
-      "time": "2026-04-26T16:35:08.085Z",
-      "msg": "Added T66 (MAINTAIN) after end: Update MEMORY.md with todays significant events and learnings"
-    },
-    {
-      "time": "2026-04-26T16:36:32.706Z",
-      "msg": "Added T67 (BUILD) after end: Enhanced benchmark: compare i32/i64/f64/VM across fibonacci, Mandelbrot, and iterative algorithms"
-    },
-    {
-      "time": "2026-04-26T16:38:18.293Z",
-      "msg": "Added T68 (BUILD) after end: Update monkey-lang README with WASM compilation docs and benchmark results"
-    },
-    {
-      "time": "2026-04-26T16:39:16.059Z",
-      "msg": "Added T69 (MAINTAIN) after end: [DEPTH PIVOT 2] Final test sweeps + evening summary"
-    },
-    {
-      "time": "2026-04-26T16:40:00.248Z",
-      "msg": "Added T70 (EXPLORE) after end: Investigate monkey-lang constant propagation (SCCP) accuracy with complex programs"
-    },
-    {
-      "time": "2026-04-26T16:40:00.368Z",
-      "msg": "Added T71 (THINK) after end: Design runtime method dispatch for class polymorphism (OpMethodCall)"
-    },
-    {
-      "time": "2026-04-26T16:43:35.722Z",
-      "msg": "Added T72 (MAINTAIN) after end: Write scratch note: runtime dispatch implementation notes for tomorrow"
-    },
-    {
-      "time": "2026-04-26T16:59:32.742Z",
-      "msg": "Added T73 (EXPLORE) after end: Stress-test WASM compiler with edge cases: empty functions, deeply nested ifs, large constants, 0-arg functions"
-    },
-    {
-      "time": "2026-04-26T16:59:32.861Z",
-      "msg": "Added T74 (EXPLORE) after end: HenryDB: run differential fuzzer, analyze remaining failure patterns"
-    },
-    {
-      "time": "2026-04-26T16:59:32.980Z",
-      "msg": "Added T75 (THINK) after end: Design WASM Phase 2: string support via linear memory"
-    },
-    {
-      "time": "2026-04-26T16:59:33.099Z",
-      "msg": "Added T76 (MAINTAIN) after end: Update monkey-lang stats in README (test count, LOC)"
-    },
-    {
-      "time": "2026-04-26T16:59:33.217Z",
-      "msg": "Added T77 (EXPLORE) after end: Test HenryDB PL/SQL with complex programs (cursors, exception handling, bulk operations)"
-    },
-    {
-      "time": "2026-04-26T16:59:33.336Z",
-      "msg": "Added T78 (THINK) after end: Analyze monkey-lang optimizer pipeline: what optimizations actually fire on real programs?"
-    },
-    {
-      "time": "2026-04-26T17:50:24.026Z",
-      "msg": "Added T79 (THINK) after end: Design pipeline DCE: remove dead let statements from AST"
-    },
-    {
-      "time": "2026-04-26T17:50:24.148Z",
-      "msg": "Added T80 (PLAN) after end: Wire dead variable removal into DCE pass + compiler pipeline"
-    },
-    {
-      "time": "2026-04-26T17:50:24.267Z",
-      "msg": "Added T81 (BUILD) after end: Implement AST-level dead let removal in DCE pass"
-    },
-    {
-      "time": "2026-04-26T17:50:24.386Z",
-      "msg": "Added T82 (BUILD) after end: Fix class method collision: hash-based dispatch on instance"
-    },
-    {
-      "time": "2026-04-26T17:50:24.505Z",
-      "msg": "Added T83 (BUILD) after end: Add super.method() support for non-init methods"
-    },
-    {
-      "time": "2026-04-26T17:50:24.623Z",
-      "msg": "Added T84 (BUILD) after end: WASM: Add memory section + data segment for string constants"
-    },
-    {
-      "time": "2026-04-26T17:50:24.743Z",
-      "msg": "Added T85 (EXPLORE) after end: Stress test class inheritance: diamond, 5-level chain, method override edge cases"
-    },
-    {
-      "time": "2026-04-26T17:50:24.861Z",
-      "msg": "Added T86 (EXPLORE) after end: Deep dive neural-net 38K LOC: RLHF, mixture of experts, vision transformer"
-    },
-    {
-      "time": "2026-04-26T17:51:02.190Z",
-      "msg": "PLAN T80 filled 2 BUILD tasks"
-    },
-    {
-      "time": "2026-04-26T18:10:59.668Z",
-      "msg": "Added T89 (BUILD) after end: Fix arr[0]() syntax: index then immediate call"
-    },
-    {
-      "time": "2026-04-26T18:10:59.788Z",
-      "msg": "Added T90 (BUILD) after end: Add CASE statement to PL/HenryDB parser and interpreter"
-    },
-    {
-      "time": "2026-04-26T18:10:59.915Z",
-      "msg": "Added T91 (BUILD) after end: Add DML (INSERT/UPDATE/DELETE) inside PL/HenryDB BEGIN blocks"
-    },
-    {
-      "time": "2026-04-26T18:11:00.048Z",
-      "msg": "Added T92 (BUILD) after end: WASM: Add global section for mutable global variables"
-    },
-    {
-      "time": "2026-04-26T18:11:00.173Z",
-      "msg": "Added T93 (EXPLORE) after end: Run full monkey-lang test suite, check for any new failures from recent changes"
-    },
-    {
-      "time": "2026-04-26T18:19:33.390Z",
-      "msg": "Added T94 (BUILD) after end: WASM compiler: use globals for top-level let variables"
-    },
-    {
-      "time": "2026-04-26T18:19:33.509Z",
-      "msg": "Added T95 (BUILD) after end: Add cursor support to PL/HenryDB (DECLARE CURSOR, OPEN, FETCH, CLOSE)"
-    },
-    {
-      "time": "2026-04-26T18:19:33.628Z",
-      "msg": "Added T96 (BUILD) after end: Add WASM table section + indirect calls for higher-order functions"
-    },
-    {
-      "time": "2026-04-26T18:19:33.746Z",
-      "msg": "Added T97 (EXPLORE) after end: Run henrydb full test suite, check for regressions"
-    },
-    {
-      "time": "2026-04-26T18:38:25.457Z",
-      "msg": "Added T98 (BUILD) after end: WASM compiler: compile higher-order functions using table + call_indirect"
-    },
-    {
-      "time": "2026-04-26T18:38:25.733Z",
-      "msg": "Added T99 (BUILD) after end: Add PL/HenryDB stored functions: CREATE FUNCTION + call from SQL"
-    },
-    {
-      "time": "2026-04-26T18:38:25.981Z",
-      "msg": "Added T100 (BUILD) after end: Monkey: add string interpolation syntax: f-strings or template literals"
-    },
-    {
-      "time": "2026-04-26T18:38:26.320Z",
-      "msg": "Added T101 (BUILD) after end: Fix HenryDB running sum window function partition bug"
+      "time": "2026-04-27T14:01:54.585Z",
+      "msg": "Added T18 (EXPLORE) after T17: Research WASM GC proposal and string encoding strategies"
     }
   ]
 }
