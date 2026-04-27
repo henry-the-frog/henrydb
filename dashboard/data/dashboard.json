@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-27T21:09:41.189Z",
+  "generated": "2026-04-27T21:15:46.964Z",
   "current": {
     "status": "in-progress",
     "mode": "MAINTAIN",
-    "task": "Git push + mid-session sync",
-    "startedAt": "2026-04-27T21:09:41.189Z",
-    "taskId": "T153"
+    "task": "Housekeeping + git push",
+    "startedAt": "2026-04-27T21:15:46.964Z",
+    "taskId": "T156"
   },
   "schedule": {
     "date": "2026-04-27",
@@ -9027,39 +9027,51 @@
       {
         "id": "T151",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "monkey-lang: WASM shared allocator (unify JS host + WASM heap to prevent future collisions)",
         "task": null,
         "project": "monkey-lang",
-        "started": "2026-04-27T21:06:27.851Z"
+        "started": "2026-04-27T21:06:27.851Z",
+        "completed": "2026-04-27T21:06:47.414Z",
+        "duration_ms": 60000,
+        "summary": "Plan: export WASM alloc function, have JS writeString/writeArray use it via memoryRef.alloc after instantiation. Falls back to jsHeapPtr if not available."
       },
       {
         "id": "T152",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "Export WASM alloc function + update writeString/writeArray/writeFloat to use it via memoryRef.alloc",
         "plan_ref": "T151",
-        "project": "monkey-lang"
+        "project": "monkey-lang",
+        "started": "2026-04-27T21:07:00.368Z",
+        "completed": "2026-04-27T21:09:27.770Z",
+        "duration_ms": 300000,
+        "summary": "Unified shared allocator: exported WASM alloc function as __alloc. JS host writeString/writeArray/writeFloat now use WASM allocator directly via memoryRef.alloc. Eliminates dual-allocator collision class of bugs. 374/374 tests pass."
       },
       {
         "id": "T153",
         "mode": "MAINTAIN",
-        "status": "upcoming",
-        "task": "Git push + mid-session sync"
+        "status": "done",
+        "task": "Git push + mid-session sync",
+        "started": "2026-04-27T21:09:41.154Z",
+        "completed": "2026-04-27T21:09:59.181Z",
+        "duration_ms": 30000,
+        "summary": "Git push all repos"
       },
       {
         "id": "T154",
         "mode": "PLAN",
-        "status": "upcoming",
+        "status": "in-progress",
         "goal": "HenryDB: UPDATE OF column syntax for triggers",
         "task": null,
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-27T21:10:12.606Z"
       },
       {
         "id": "T155",
         "mode": "BUILD",
         "status": "upcoming",
-        "task": null,
+        "task": "HenryDB: Parse UPDATE OF columns in CREATE TRIGGER + fire only when specified columns change",
         "plan_ref": "T154",
         "project": "henrydb"
       },
@@ -9092,13 +9104,13 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 135,
+    "blocksCompleted": 138,
     "blocksTotal": 159,
     "modeDistribution": {
       "THINK": 26,
-      "PLAN": 13,
-      "BUILD": 72,
-      "MAINTAIN": 14,
+      "PLAN": 14,
+      "BUILD": 73,
+      "MAINTAIN": 15,
       "EXPLORE": 10
     }
   },

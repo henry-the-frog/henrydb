@@ -1605,31 +1605,43 @@
     {
       "id": "T153",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Git push + mid-session sync",
-      "started": "2026-04-27T21:09:41.154Z"
+      "started": "2026-04-27T21:09:41.154Z",
+      "completed": "2026-04-27T21:09:59.181Z",
+      "duration_ms": 30000,
+      "summary": "Git push all repos"
     },
     {
       "id": "T154",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "HenryDB: UPDATE OF column syntax for triggers",
       "task": null,
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-27T21:10:12.606Z",
+      "completed": "2026-04-27T21:11:08.204Z",
+      "duration_ms": 120000,
+      "summary": "Plan: parse UPDATE OF col1,col2 in CREATE TRIGGER, store columns array, check on UPDATE fire if specified columns changed."
     },
     {
       "id": "T155",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null,
+      "status": "done",
+      "task": "HenryDB: Parse UPDATE OF columns in CREATE TRIGGER + fire only when specified columns change",
       "plan_ref": "T154",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-27T21:11:18.177Z",
+      "completed": "2026-04-27T21:15:33.672Z",
+      "duration_ms": 300000,
+      "summary": "HenryDB: UPDATE OF column syntax for triggers. Parser handles OF col1,col2 between event and ON. Triggers only fire when specified columns change. 4 new tests, 8/8 pass. Also added OF to keyword list."
     },
     {
       "id": "T156",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Housekeeping + git push"
+      "status": "in-progress",
+      "task": "Housekeeping + git push",
+      "started": "2026-04-27T21:15:46.927Z"
     },
     {
       "id": "T157",
@@ -2348,6 +2360,10 @@
     {
       "time": "2026-04-27T21:06:42.337Z",
       "msg": "PLAN T151 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-04-27T21:11:01.975Z",
+      "msg": "PLAN T154 filled 1 BUILD tasks"
     }
   ]
 }
