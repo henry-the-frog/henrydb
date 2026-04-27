@@ -1025,6 +1025,14 @@ export function evalFunction(db, func, args, row) {
       }
       return JSON.stringify(obj);
     }
+    case 'JSON': {
+      // json(X): validates and formats JSON, returns minified JSON or NULL if invalid
+      const val = db._evalValue(args[0], row);
+      if (val == null) return null;
+      try {
+        return JSON.stringify(JSON.parse(String(val)));
+      } catch { return null; }
+    }
     case 'JSON_ARRAY': {
       const arr = args.map(a => db._evalValue(a, row));
       return JSON.stringify(arr);
