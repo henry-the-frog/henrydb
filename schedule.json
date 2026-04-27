@@ -671,6 +671,95 @@
       "completed": "2026-04-27T16:58:18.200Z",
       "duration_ms": 120000,
       "summary": "WASM binary size analysis: base module 780 bytes, fib 898B, class 1221B, inheritance 1455B. Very compact — features add 50-700 bytes each. 25 host imports per module."
+    },
+    {
+      "id": "T64",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Assess WASM optimization opportunities: env_ptr removal, closure type propagation, non-capturing function optimization",
+      "started": "2026-04-27T17:31:13.055Z",
+      "completed": "2026-04-27T17:31:51.566Z",
+      "duration_ms": 120000,
+      "summary": "Assessed WASM optimization ops: (1) env_ptr removal for 0-capture closures saves alloc+param, (2) closure capture type propagation for knownInt, (3) direct call when binding is statically known. env_ptr removal is highest value — affects every function-as-value."
+    },
+    {
+      "id": "T65",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "WASM optimization: env_ptr removal for non-capturing functions + closure type propagation",
+      "task": null,
+      "started": "2026-04-27T17:31:59.230Z",
+      "completed": "2026-04-27T17:32:20.957Z",
+      "duration_ms": 120000,
+      "summary": "Planned 3 BUILD tasks: (1) closure capture type propagation for knownInt, (2) skip env allocation for 0-capture function literals, (3) benchmark closure workloads. Key insight: keep env_ptr calling convention uniform but propagate type info through captures."
+    },
+    {
+      "id": "T66",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "WASM: closure capture type propagation — pass knownInt status through captures into closure body",
+      "plan_ref": "T65",
+      "project": "monkey-lang",
+      "started": "2026-04-27T17:32:28.534Z",
+      "completed": "2026-04-27T17:34:10.200Z",
+      "duration_ms": 300000,
+      "summary": "Closure capture type propagation: captures now carry knownInt from outer scope. 217 WASM tests pass. Closures capturing integers use direct i32 ops."
+    },
+    {
+      "id": "T72",
+      "mode": "BUILD",
+      "task": "WASM: skip environment allocation for 0-capture function literals (allocate minimal 4-byte env instead of full struct)",
+      "status": "done",
+      "plan_ref": "T65",
+      "started": "2026-04-27T17:34:19.268Z",
+      "completed": "2026-04-27T17:34:58.656Z",
+      "duration_ms": 300000,
+      "summary": "Skip env allocation for 0-capture closures. Set env_ptr=0 instead of allocating a 4-byte struct. Saves 1 alloc + 1 store per non-capturing closure. 217 tests pass."
+    },
+    {
+      "id": "T73",
+      "mode": "BUILD",
+      "task": "WASM: benchmark closure-heavy workloads to measure optimization impact",
+      "status": "done",
+      "plan_ref": "T65",
+      "started": "2026-04-27T17:35:04.681Z",
+      "completed": "2026-04-27T17:36:00.217Z",
+      "duration_ms": 300000,
+      "summary": "Benchmark post-optimization: WASM 34.4x VM, 11.0x JIT. Closure factory: 0.86ms (5.9x VM, 1.7x JIT). WASM wins on 4 benchmarks (sum, nested loops, closure factory, if/else). All perf tests pass."
+    },
+    {
+      "id": "T67",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Housekeeping",
+      "started": "2026-04-27T17:36:07.109Z"
+    },
+    {
+      "id": "T68",
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "Direction check: HenryDB improvements or monkey-lang depth?"
+    },
+    {
+      "id": "T69",
+      "mode": "PLAN",
+      "status": "upcoming",
+      "goal": "HenryDB: super.method fix + class method collision in monkey-lang",
+      "task": null
+    },
+    {
+      "id": "T70",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null,
+      "plan_ref": "T69",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T71",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Final housekeeping + git push"
     }
   ],
   "focusProjects": [
@@ -946,6 +1035,42 @@
     {
       "time": "2026-04-27T16:57:38.623Z",
       "msg": "Added T63 (EXPLORE) after end: Monkey-lang: analyze WASM binary sizes for various programs"
+    },
+    {
+      "time": "2026-04-27T17:30:46.018Z",
+      "msg": "Added T64 (THINK) after end: Assess WASM optimization opportunities: env_ptr removal, closure type propagation, non-capturing function optimization"
+    },
+    {
+      "time": "2026-04-27T17:30:50.819Z",
+      "msg": "Added T65 (PLAN) after end: WASM optimization: env_ptr removal for non-capturing functions + closure type propagation"
+    },
+    {
+      "time": "2026-04-27T17:30:57.499Z",
+      "msg": "Added T66 (BUILD) after end: null"
+    },
+    {
+      "time": "2026-04-27T17:31:01.679Z",
+      "msg": "Added T67 (MAINTAIN) after end: Housekeeping"
+    },
+    {
+      "time": "2026-04-27T17:31:01.794Z",
+      "msg": "Added T68 (THINK) after end: Direction check: HenryDB improvements or monkey-lang depth?"
+    },
+    {
+      "time": "2026-04-27T17:31:06.028Z",
+      "msg": "Added T69 (PLAN) after end: HenryDB: super.method fix + class method collision in monkey-lang"
+    },
+    {
+      "time": "2026-04-27T17:31:06.144Z",
+      "msg": "Added T70 (BUILD) after end: null"
+    },
+    {
+      "time": "2026-04-27T17:31:06.259Z",
+      "msg": "Added T71 (MAINTAIN) after end: Final housekeeping + git push"
+    },
+    {
+      "time": "2026-04-27T17:32:16.558Z",
+      "msg": "PLAN T65 filled 3 BUILD tasks"
     }
   ]
 }
