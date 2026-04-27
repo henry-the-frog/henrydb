@@ -264,3 +264,71 @@ describe('INSTEAD OF triggers for views', () => {
     }, /Cannot INSERT into view v/);
   });
 });
+
+describe('Comprehensive trigger integration', () => {
+  it('combines UPDATE OF + WHEN + cascading + || operator', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE orders (id INTEGER PRIMARY KEY, total INTEGER, status TEXT)');
+    db.execute('CREATE TABLE order_history (order_id INTEGER, old_status TEXT, new_status TEXT)');
+    db.execute('CREATE TABLE notifications (msg TEXT)');
+
+    // Trigger 1: log all status changes (UPDATE OF)
+    db.execute("CREATE TRIGGER status_log AFTER UPDATE OF status ON orders BEGIN INSERT INTO order_history VALUES (NEW.id, OLD.status, NEW.status) END");
+
+    // Trigger 2: notify on high-value completion (UPDATE OF + WHEN + ||)
+    db.execute("CREATE TRIGGER big_complete AFTER UPDATE OF status ON orders WHEN NEW.status = 'complete' AND NEW.total > 1000 BEGIN INSERT INTO notifications VALUES ('Order ' || NEW.id || ' completed: $' || NEW.total) END");
+
+    db.execute("INSERT INTO orders VALUES (1, 500, 'pending')");
+    db.execute("INSERT INTO orders VALUES (2, 2000, 'pending')");
+
+    // Complete small order
+    db.execute("UPDATE orders SET status = 'complete' WHERE id = 1");
+    assert.equal(db.execute('SELECT count(*) as cnt FROM order_history').rows[0].cnt, 1);
+    assert.equal(db.execute('SELECT count(*) as cnt FROM notifications').rows[0].cnt, 0);
+
+    // Complete big order
+    db.execute("UPDATE orders SET status = 'complete' WHERE id = 2");
+    assert.equal(db.execute('SELECT count(*) as cnt FROM order_history').rows[0].cnt, 2);
+    assert.equal(db.execute('SELECT count(*) as cnt FROM notifications').rows[0].cnt, 1);
+
+    const notif = db.execute('SELECT * FROM notifications').rows[0];
+    assert.equal(notif.msg, 'Order 2 completed: $2000');
+  });
+
+  it('INSTEAD OF INSERT with WHEN on base table trigger', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE emp (id INTEGER PRIMARY KEY, name TEXT, salary INTEGER, dept TEXT)');
+    db.execute('CREATE TABLE audit (msg TEXT)');
+    db.execute("CREATE VIEW eng AS SELECT id, name, salary FROM emp WHERE dept = 'Eng'");
+
+    // INSTEAD OF INSERT on view
+    db.execute("CREATE TRIGGER eng_ins INSTEAD OF INSERT ON eng BEGIN INSERT INTO emp VALUES (NEW.id, NEW.name, NEW.salary, 'Eng') END");
+
+    // WHEN trigger on base table
+    db.execute("CREATE TRIGGER high_salary AFTER INSERT ON emp WHEN NEW.salary > 100000 BEGIN INSERT INTO audit VALUES ('High salary: ' || NEW.name) END");
+
+    // Insert low salary via view → no audit
+    db.execute("INSERT INTO eng (id, name, salary) VALUES (1, 'Alice', 80000)");
+    assert.equal(db.execute('SELECT count(*) as cnt FROM audit').rows[0].cnt, 0);
+
+    // Insert high salary via view → cascading trigger fires
+    db.execute("INSERT INTO eng (id, name, salary) VALUES (2, 'Bob', 150000)");
+    assert.equal(db.execute('SELECT count(*) as cnt FROM audit').rows[0].cnt, 1);
+    assert.equal(db.execute('SELECT * FROM audit').rows[0].msg, 'High salary: Bob');
+
+    // Verify both in base table and view
+    assert.equal(db.execute('SELECT count(*) as cnt FROM emp').rows[0].cnt, 2);
+    assert.equal(db.execute('SELECT count(*) as cnt FROM eng').rows[0].cnt, 2);
+  });
+
+  it('recursive trigger with WHEN termination and depth limit', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE tree (id INTEGER, depth INTEGER)');
+    db.execute("CREATE TRIGGER grow AFTER INSERT ON tree WHEN NEW.depth < 5 BEGIN INSERT INTO tree VALUES (NEW.id * 2, NEW.depth + 1); INSERT INTO tree VALUES (NEW.id * 2 + 1, NEW.depth + 1) END");
+    db.execute('INSERT INTO tree VALUES (1, 0)');
+
+    // Binary tree: 2^6 - 1 = 63 nodes
+    const count = db.execute('SELECT count(*) as cnt FROM tree').rows[0].cnt;
+    assert.equal(count, 63);
+  });
+});
