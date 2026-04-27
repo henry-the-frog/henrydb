@@ -562,6 +562,17 @@
       "completed": "2026-04-27T16:36:48.492Z",
       "duration_ms": 120000,
       "summary": "WASM has 217 tests vs evaluator 174 — more comprehensive. WASM covers: ints, bools, arithmetic, comparisons, functions, closures, classes (with inheritance + super), arrays, strings, hashes, match, enums, comprehensions, try/catch, integration. Untested: module imports (stubbed), generators (stubbed), match guards (parser)."
+    },
+    {
+      "id": "T54",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: implement json_each table-valued function",
+      "project": "henrydb",
+      "started": "2026-04-27T16:37:17.940Z",
+      "completed": "2026-04-27T16:42:40.429Z",
+      "duration_ms": 600000,
+      "summary": "Implemented json_each() and generate_series() table-valued functions! json_each works with arrays and objects, supports WHERE filtering and aggregation. generate_series supports start/stop/step. 106 regression tests pass."
     }
   ],
   "focusProjects": [
@@ -797,6 +808,10 @@
     {
       "time": "2026-04-27T16:35:50.962Z",
       "msg": "Added T53 (EXPLORE) after end: Monkey-lang: compare WASM test coverage vs evaluator test coverage — find untested WASM paths"
+    },
+    {
+      "time": "2026-04-27T16:37:11.334Z",
+      "msg": "Added T54 (BUILD) after end: HenryDB: implement json_each table-valued function"
     }
   ]
 }

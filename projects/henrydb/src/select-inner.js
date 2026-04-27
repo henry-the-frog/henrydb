@@ -3,6 +3,59 @@
 
 import { pushdownPredicates } from './pushdown.js';
 import { canVectorize, vectorizedGroupBy } from './vectorized-bridge.js';
+
+// Built-in table-valued functions
+function executeBuiltinTVF(funcName, args, db) {
+  const argValues = args.map(a => {
+    if (a.type === 'literal' || a.type === 'number') return a.value;
+    if (a.type === 'string') return a.value;
+    // Try to evaluate
+    try { return db._evalValue(a, {}); } catch { return a.value; }
+  });
+  
+  switch (funcName.toLowerCase()) {
+    case 'json_each': {
+      let data;
+      try { data = JSON.parse(argValues[0]); } catch { return { rows: [] }; }
+      const rows = [];
+      if (Array.isArray(data)) {
+        for (let i = 0; i < data.length; i++) {
+          const v = data[i];
+          rows.push({
+            key: i,
+            value: typeof v === 'object' ? JSON.stringify(v) : v,
+            type: typeof v === 'object' ? (Array.isArray(v) ? 'array' : 'object') : typeof v,
+            atom: typeof v === 'object' ? null : v,
+          });
+        }
+      } else if (typeof data === 'object' && data !== null) {
+        for (const [key, v] of Object.entries(data)) {
+          rows.push({
+            key,
+            value: typeof v === 'object' ? JSON.stringify(v) : v,
+            type: typeof v === 'object' ? (Array.isArray(v) ? 'array' : 'object') : typeof v,
+            atom: typeof v === 'object' ? null : v,
+          });
+        }
+      }
+      return { rows };
+    }
+    
+    case 'generate_series': {
+      const start = Number(argValues[0]) || 0;
+      const stop = Number(argValues[1]) || 0;
+      const step = Number(argValues[2]) || 1;
+      const rows = [];
+      for (let v = start; step > 0 ? v <= stop : v >= stop; v += step) {
+        rows.push({ value: v });
+      }
+      return { rows };
+    }
+    
+    default:
+      return null; // Not a built-in TVF
+  }
+}
 import { sqliteCompare } from './type-affinity.js';
 
 // Deduplicate column name within a result row object
@@ -106,21 +159,31 @@ export function selectInner(db, ast) {
   // Check if FROM is a function call (table-returning function)
   if (tableName === '__func_call') {
     const funcName = ast.from.func;
-    const funcDef = db._functions?.get(funcName);
-    if (!funcDef) throw new Error(`Function ${funcName} does not exist`);
-    if (funcDef.returnType !== 'TABLE') throw new Error(`Function ${funcName} does not return TABLE`);
     
-    // Evaluate arguments
-    const evalArgs = ast.from.args.map(a => db._evalValue(a, {}));
-    const result = db._callUserFunction(funcDef, evalArgs);
-    let funcRows = result.rows || [];
+    // Check for built-in TVFs first
+    const builtinTVF = executeBuiltinTVF(funcName, ast.from.args, db);
+    if (builtinTVF) {
+      const funcAlias = ast.from.alias || funcName;
+      ast.from.subquery = { _virtualRows: builtinTVF.rows };
+      ast.from.alias = funcAlias;
+      tableName = '__subquery';
+    } else {
+      const funcDef = db._functions?.get(funcName);
+      if (!funcDef) throw new Error(`Function ${funcName} does not exist`);
+      if (funcDef.returnType !== 'TABLE') throw new Error(`Function ${funcName} does not return TABLE`);
     
-    // Transform to a subquery-style result and process as subquery
-    const funcAlias = ast.from.alias || funcName;
-    ast.from.subquery = { _virtualRows: funcRows };
-    ast.from.alias = funcAlias;
-    // Fall through to the __subquery handler
-    tableName = '__subquery';
+      // Evaluate arguments
+      const evalArgs = ast.from.args.map(a => db._evalValue(a, {}));
+      const result = db._callUserFunction(funcDef, evalArgs);
+      let funcRows = result.rows || [];
+    
+      // Transform to a subquery-style result and process as subquery
+      const funcAlias = ast.from.alias || funcName;
+      ast.from.subquery = { _virtualRows: funcRows };
+      ast.from.alias = funcAlias;
+      // Fall through to the __subquery handler
+      tableName = '__subquery';
+    }
   }
 
   // VALUES clause in FROM: (VALUES (1, 'a'), (2, 'b')) AS t(id, name)

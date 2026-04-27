@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-27T16:36:48.527Z",
+  "generated": "2026-04-27T16:42:40.463Z",
   "current": {
     "status": "done",
-    "mode": "EXPLORE",
-    "task": "Monkey-lang: compare WASM test coverage vs evaluator test coverage — find untested WASM paths",
-    "completedAt": "2026-04-27T16:36:48.527Z",
-    "taskId": "T53",
-    "summary": "WASM has 217 tests vs evaluator 174 — more comprehensive. WASM covers: ints, bools, arithmetic, comparisons, functions, closures, classes (with inheritance + super), arrays, strings, hashes, match, enums, comprehensions, try/catch, integration. Untested: module imports (stubbed), generators (stubbed), match guards (parser).",
-    "durationMs": 120000
+    "mode": "BUILD",
+    "task": "HenryDB: implement json_each table-valued function",
+    "completedAt": "2026-04-27T16:42:40.463Z",
+    "taskId": "T54",
+    "summary": "Implemented json_each() and generate_series() table-valued functions! json_each works with arrays and objects, supports WHERE filtering and aggregation. generate_series supports start/stop/step. 106 regression tests pass.",
+    "durationMs": 600000
   },
   "schedule": {
     "date": "2026-04-27",
@@ -7744,12 +7744,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 48,
+    "blocksCompleted": 49,
     "blocksTotal": 29,
     "modeDistribution": {
       "THINK": 9,
       "PLAN": 4,
-      "BUILD": 25,
+      "BUILD": 26,
       "MAINTAIN": 4,
       "EXPLORE": 6
     }

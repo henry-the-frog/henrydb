@@ -45,6 +45,87 @@ export function explainPlan(ast, tables, indexCatalog, tableStats) {
  * @param {Map} tables — database tables map (name → { heap, schema, indexes })
  * @param {Map} [indexCatalog] — optional index catalog for INL join selection
  */
+// Execute table-valued functions (TVFs)
+function executeTVF(funcName, args, db) {
+  const argValues = args.map(a => {
+    if (a.type === 'literal') return a.value;
+    if (a.type === 'number') return a.value;
+    return a.value;
+  });
+  
+  switch (funcName.toLowerCase()) {
+    case 'json_each': {
+      const jsonStr = argValues[0];
+      const rootPath = argValues[1] || '$';
+      let data;
+      try {
+        data = JSON.parse(jsonStr);
+      } catch (e) {
+        return { schema: [{ name: 'key' }, { name: 'value' }, { name: 'type' }], rows: [] };
+      }
+      
+      const rows = [];
+      if (Array.isArray(data)) {
+        for (let i = 0; i < data.length; i++) {
+          const v = data[i];
+          rows.push({
+            key: i,
+            value: typeof v === 'object' ? JSON.stringify(v) : v,
+            type: typeof v === 'object' ? (Array.isArray(v) ? 'array' : 'object') : typeof v,
+            atom: typeof v === 'object' ? null : v,
+            id: i,
+            parent: null,
+            fullkey: `${rootPath}[${i}]`,
+            path: rootPath,
+          });
+        }
+      } else if (typeof data === 'object' && data !== null) {
+        let i = 0;
+        for (const [key, v] of Object.entries(data)) {
+          rows.push({
+            key,
+            value: typeof v === 'object' ? JSON.stringify(v) : v,
+            type: typeof v === 'object' ? (Array.isArray(v) ? 'array' : 'object') : typeof v,
+            atom: typeof v === 'object' ? null : v,
+            id: i++,
+            parent: null,
+            fullkey: `${rootPath}.${key}`,
+            path: rootPath,
+          });
+        }
+      }
+      
+      return {
+        schema: [
+          { name: 'key' }, { name: 'value' }, { name: 'type' },
+          { name: 'atom' }, { name: 'id' }, { name: 'parent' },
+          { name: 'fullkey' }, { name: 'path' },
+        ],
+        rows,
+      };
+    }
+    
+    case 'json_tree': {
+      // Simplified json_tree — just returns top-level elements like json_each
+      return executeTVF('json_each', args, db);
+    }
+    
+    case 'generate_series': {
+      const start = Number(argValues[0]) || 0;
+      const stop = Number(argValues[1]) || 0;
+      const step = Number(argValues[2]) || 1;
+      const rows = [];
+      for (let v = start; step > 0 ? v <= stop : v >= stop; v += step) {
+        rows.push({ value: v });
+      }
+      return { schema: [{ name: 'value' }], rows };
+    }
+    
+    default:
+      throw new Error(`Unknown table-valued function: ${funcName}`);
+  }
+}
+
 export function buildPlan(ast, tables, indexCatalog, tableStats) {
   // Create a local copy to avoid mutating the caller's tables map
   tables = new Map(tables);
@@ -199,6 +280,18 @@ export function buildPlan(ast, tables, indexCatalog, tableStats) {
     tables = new Map(tables);
     tables.set(alias, virtualTable);
     // Rewrite ast.from to reference the virtual table
+    ast = { ...ast, from: { table: alias, alias } };
+  }
+  
+  // Handle table-valued functions (TVFs) like json_each()
+  if (ast.from && ast.from.table === '__func_call') {
+    const tvfResult = executeTVF(ast.from.func, ast.from.args, db);
+    const alias = ast.from.alias || ast.from.func;
+    const virtualTable = {
+      schema: tvfResult.schema,
+      heap: { scan: function*() { for (const row of tvfResult.rows) yield row; }, rowCount: tvfResult.rows.length },
+    };
+    tables.set(alias, virtualTable);
     ast = { ...ast, from: { table: alias, alias } };
   }
   
