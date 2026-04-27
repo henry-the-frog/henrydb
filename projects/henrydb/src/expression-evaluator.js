@@ -25,6 +25,20 @@ function sqlCmp(left, right, op) {
   }
 }
 
+// Helper: RFC 7396 JSON Merge Patch
+function _jsonMergePatch(target, patch) {
+  if (typeof patch !== 'object' || patch === null || Array.isArray(patch)) return patch;
+  if (typeof target !== 'object' || target === null || Array.isArray(target)) target = {};
+  for (const [key, value] of Object.entries(patch)) {
+    if (value === null) {
+      delete target[key];
+    } else {
+      target[key] = _jsonMergePatch(target[key], value);
+    }
+  }
+  return target;
+}
+
 // Helper: set a value at a JSON path
 function _jsonSetPath(data, path, value, createMissing) {
   const parts = path.replace(/^\$\.?/, '').split(/\.|\[(\d+)\]/).filter(Boolean);

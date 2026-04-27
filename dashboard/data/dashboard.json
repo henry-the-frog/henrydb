@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-27T16:52:44.375Z",
+  "generated": "2026-04-27T16:54:38.807Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "HenryDB: add json_set() and json_replace() functions for JSON mutation",
-    "completedAt": "2026-04-27T16:52:44.375Z",
-    "taskId": "T60",
-    "summary": "Added json_set(), json_replace(), json_insert(), json_remove() functions. Full SQLite JSON1 extension compatibility (except json_tree and json_patch). All regression tests pass.",
+    "task": "HenryDB: add json_object() and json_array() constructor functions",
+    "completedAt": "2026-04-27T16:54:38.807Z",
+    "taskId": "T61",
+    "summary": "Added json_object(), json_array(), json_quote(), json_patch(). HenryDB now has complete JSON1 extension (16 functions). All regression tests pass.",
     "durationMs": 300000
   },
   "schedule": {
@@ -7744,12 +7744,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 55,
+    "blocksCompleted": 56,
     "blocksTotal": 29,
     "modeDistribution": {
       "THINK": 10,
       "PLAN": 4,
-      "BUILD": 30,
+      "BUILD": 31,
       "MAINTAIN": 5,
       "EXPLORE": 6
     }
