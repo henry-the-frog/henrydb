@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-27T15:27:56.085Z",
+  "generated": "2026-04-27T15:31:05.159Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Add WASM exception handling to WasmModuleBuilder (tag section, try/catch/throw opcodes)",
-    "completedAt": "2026-04-27T15:27:56.085Z",
-    "taskId": "T28",
-    "summary": "Added WASM exception handling to WasmModuleBuilder: tag section (Section.Tag=13), try_/catch_/throw_/catchAll/rethrow opcodes, addTag() method. Verified with PoC: throw+catch and no-throw paths both work. All 204 tests pass.",
-    "durationMs": 300000
+    "task": "WASM compiler: real try/catch/throw using exception handling proposal",
+    "completedAt": "2026-04-27T15:31:05.159Z",
+    "taskId": "T29",
+    "summary": "Real WASM try/catch/throw using exception handling proposal! Replaced stub implementations with native WASM EH: try_ opcode creates try blocks, throw_ propagates i32 values, catch_ binds caught values. Nested try/catch and re-throw work. 208 WASM tests, 1794 total.",
+    "durationMs": 600000
   },
   "schedule": {
     "date": "2026-04-27",
@@ -7744,12 +7744,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 24,
+    "blocksCompleted": 25,
     "blocksTotal": 29,
     "modeDistribution": {
       "THINK": 5,
       "PLAN": 4,
-      "BUILD": 9,
+      "BUILD": 10,
       "MAINTAIN": 4,
       "EXPLORE": 2
     }

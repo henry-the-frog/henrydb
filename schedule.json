@@ -296,8 +296,12 @@
       "id": "T29",
       "mode": "BUILD",
       "task": "WASM compiler: real try/catch/throw using exception handling proposal",
-      "status": "upcoming",
-      "plan_ref": "T27"
+      "status": "done",
+      "plan_ref": "T27",
+      "started": "2026-04-27T15:28:30.386Z",
+      "completed": "2026-04-27T15:31:05.124Z",
+      "duration_ms": 600000,
+      "summary": "Real WASM try/catch/throw using exception handling proposal! Replaced stub implementations with native WASM EH: try_ opcode creates try blocks, throw_ propagates i32 values, catch_ binds caught values. Nested try/catch and re-throw work. 208 WASM tests, 1794 total."
     }
   ],
   "focusProjects": [
