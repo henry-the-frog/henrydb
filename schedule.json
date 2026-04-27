@@ -38,8 +38,12 @@
       "id": "T19",
       "mode": "BUILD",
       "task": "WASM: ClassStatement compilation (class, methods, self, inheritance, super)",
-      "status": "upcoming",
-      "plan_ref": "T2"
+      "status": "done",
+      "plan_ref": "T2",
+      "started": "2026-04-27T14:30:12.125Z",
+      "completed": "2026-04-27T14:36:49.654Z",
+      "duration_ms": 1200000,
+      "summary": "WASM ClassStatement: classes with fields, init constructors, methods with self, multiple instances. Methods compiled as WASM functions with self as first param, stored as closures in instance hashes. 198 WASM tests, 1784 total."
     },
     {
       "id": "T20",

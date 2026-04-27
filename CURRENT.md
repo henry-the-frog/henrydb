@@ -1,6 +1,6 @@
 status: done
 mode: BUILD
-task: WASM ArrayComprehension + HashDestructuringLet + TryExpression/ThrowExpression
+task: WASM ClassStatement compilation
 context-files: projects/monkey-lang/projects/monkey-lang/src/wasm-compiler.js
-current_position: T3
-tasks_completed_this_session: 3
+current_position: T19
+tasks_completed_this_session: 4

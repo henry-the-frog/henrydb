@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-27T14:29:28.494Z",
+  "generated": "2026-04-27T14:36:49.688Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "WASM: ArrayComprehension + HashDestructuringLet + TryExpression/ThrowExpression support",
-    "completedAt": "2026-04-27T14:29:28.494Z",
-    "taskId": "T3",
-    "summary": "WASM: ArrayComprehension (with/without filter), HashDestructuringLet, TryExpression/ThrowExpression. Fixed critical runtime bug: integer/pointer confusion in __add/__eq/__lt/__gt when small integers collided with data segment addresses. Fix: moved data segment to offset 65536 + strict isStrPtr validation. 192 WASM tests passing, 1778 total.",
-    "durationMs": 900000
+    "task": "WASM: ClassStatement compilation (class, methods, self, inheritance, super)",
+    "completedAt": "2026-04-27T14:36:49.688Z",
+    "taskId": "T19",
+    "summary": "WASM ClassStatement: classes with fields, init constructors, methods with self, multiple instances. Methods compiled as WASM functions with self as first param, stored as closures in instance hashes. 198 WASM tests, 1784 total.",
+    "durationMs": 1200000
   },
   "schedule": {
     "date": "2026-04-27",
@@ -7594,12 +7594,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 3,
+    "blocksCompleted": 4,
     "blocksTotal": 20,
     "modeDistribution": {
       "THINK": 1,
       "PLAN": 1,
-      "BUILD": 1
+      "BUILD": 2
     }
   },
   "artifacts": [],
