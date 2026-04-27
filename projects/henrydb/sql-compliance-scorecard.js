@@ -398,7 +398,7 @@ check('MATH', 'SQRT', () => db.execute('SELECT SQRT(16) as r').rows[0].r === 4);
 check('MATH', 'LOG', () => db.execute('SELECT LOG(100) as r').rows[0].r > 4);
 check('MATH', 'RANDOM', () => {
   const r = db.execute('SELECT RANDOM() as r').rows[0].r;
-  return r >= 0 && r <= 1;
+  return typeof r === 'number' && Number.isInteger(r);
 });
 check('DATE', 'STRFTIME', () => {
   try { return db.execute("SELECT STRFTIME('%Y', '2024-01-15') as r").rows[0].r === '2024'; }

@@ -1027,7 +1027,10 @@ export function parse(sql) {
       if (isKeyword('DISTINCT')) { distinct = true; advance(); }
       let arg;
       if (match('*')) arg = '*';
-      else {
+      else if (peek().type === ')') {
+        // count() with no args — treat as count(*)
+        arg = '*';
+      } else {
         // Parse full expression for aggregate argument (e.g., SUM(qty * price))
         const argExpr = parseExpr();
         // If it's a simple column ref, use just the name for backward compat

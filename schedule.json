@@ -842,16 +842,20 @@
       "id": "T80",
       "mode": "BUILD",
       "task": "Add printf/format function and total() aggregate",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T78",
-      "started": "2026-04-27T18:04:44.436Z"
+      "started": "2026-04-27T18:04:44.436Z",
+      "completed": "2026-04-27T18:10:54.527Z",
+      "duration_ms": 600000,
+      "summary": "Added printf/format function (supports %d,%f,%s,%x,%X,%o,%c with width/precision) and total() aggregate (returns 0.0 for empty sets). 33 regression tests pass, 323/323 compliance."
     },
     {
       "id": "T81",
       "mode": "BUILD",
       "task": "Fix count() no-args, random() return type, group_concat single-row",
-      "status": "upcoming",
-      "plan_ref": "T78"
+      "status": "in-progress",
+      "plan_ref": "T78",
+      "started": "2026-04-27T18:11:12.902Z"
     }
   ],
   "focusProjects": [

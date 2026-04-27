@@ -507,7 +507,11 @@ export function evalFunction(db, func, args, row) {
     case 'SQRT': return Math.sqrt(db._evalValue(args[0], row));
     case 'LOG': return args.length > 1 ? Math.log(db._evalValue(args[1], row)) / Math.log(db._evalValue(args[0], row)) : Math.log(db._evalValue(args[0], row));
     case 'EXP': return Math.exp(db._evalValue(args[0], row));
-    case 'RANDOM': return Math.random();
+    case 'RANDOM': {
+      // SQLite random() returns a random integer between -9223372036854775808 and +9223372036854775807
+      // In JS we return a random 32-bit signed integer
+      return (Math.random() * 4294967296 - 2147483648) | 0;
+    }
     case 'GEN_RANDOM_UUID': case 'UUID': {
       // Generate UUID v4
       const hex = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx';

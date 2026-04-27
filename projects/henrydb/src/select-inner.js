@@ -76,6 +76,12 @@ export function selectInner(db, ast) {
   }
   // Handle SELECT without FROM (e.g., SELECT 1 AS n)
   if (!ast.from) {
+    // Check if any columns are aggregates — if so, use _computeAggregates with 1 implicit row
+    const hasAgg = ast.columns.some(c => c.type === 'aggregate');
+    if (hasAgg) {
+      const implicitRows = [{}]; // One implicit row for aggregate evaluation
+      return { type: 'ROWS', rows: [db._computeAggregates(ast.columns, implicitRows)] };
+    }
     const row = {};
     let noFromExprIdx = 0;
     for (const col of ast.columns) {
@@ -88,7 +94,6 @@ export function selectInner(db, ast) {
         row[name] = subResult.length > 0 ? Object.values(subResult[0])[0] : null;
       } else if (col.type === 'column') {
         const name = col.alias || String(col.name);
-        // If the column name is a number literal, use it directly
         row[name] = typeof col.name === 'number' ? col.name : col.name;
       } else if (col.type === 'function') {
         const name = dedup(col.alias || `${col.func}(...)`, row);
