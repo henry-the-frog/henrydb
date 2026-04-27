@@ -1364,43 +1364,175 @@
     {
       "id": "T128",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Housekeeping",
-      "started": "2026-04-27T20:41:49.799Z"
+      "started": "2026-04-27T20:41:49.799Z",
+      "completed": "2026-04-27T20:42:12.170Z",
+      "duration_ms": 30000,
+      "summary": "Git push all repos"
     },
     {
       "id": "T129",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Assess progress, plan final cycle"
+      "status": "done",
+      "task": "Assess progress, plan final cycle",
+      "started": "2026-04-27T20:42:21.345Z",
+      "completed": "2026-04-27T20:43:08.335Z",
+      "duration_ms": 120000,
+      "summary": "Replanned remaining session: fix GC imports, add sort/forEach, clean TODO, WASM caching, HOF stress test, WASM sort. Queue of 11 tasks for ~5h remaining."
     },
     {
       "id": "T130",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "skipped",
       "goal": "monkey-lang: WASM binary caching for fast recompilation",
-      "task": null
+      "task": null,
+      "skip_reason": "Replanning with higher-value work"
     },
     {
       "id": "T131",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "skipped",
       "task": null,
       "plan_ref": "T130",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "skip_reason": "Replanning"
     },
     {
       "id": "T132",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Final housekeeping + git push"
+      "status": "skipped",
+      "task": "Final housekeeping + git push",
+      "skip_reason": "Replanning"
     },
     {
       "id": "T133",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "skipped",
       "task": "Research WASM component model for monkey-lang module imports",
+      "project": "monkey-lang",
+      "skip_reason": "Replanning"
+    },
+    {
+      "id": "T136",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Fix pre-existing GC test failure: add missing __sub/__mul/__div + HOF imports to wasm-gc.js",
+      "project": "monkey-lang",
+      "started": "2026-04-27T20:43:15.957Z",
+      "completed": "2026-04-27T20:45:40.426Z",
+      "duration_ms": 300000,
+      "summary": "Fixed GC imports: added __sub/__mul/__div/__mod/__neg + 30 other missing imports including all 6 HOF functions. Fixed pre-existing fibonacci GC test failure. 362/362 total WASM tests pass."
+    },
+    {
+      "id": "T137",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Add sort() and forEach() WASM builtins using HOF callback mechanism",
+      "project": "monkey-lang",
+      "started": "2026-04-27T20:45:54.922Z",
+      "completed": "2026-04-27T20:48:11.736Z",
+      "duration_ms": 300000,
+      "summary": "Added sort(arr)/sort(arr,cmpFn) and forEach(arr,fn) WASM builtins. Default sort is ascending integer; custom sort uses closure comparator callback. 304/304 tests pass (9 new)."
+    },
+    {
+      "id": "T138",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Clean up TODO.md (mark completed items)",
+      "started": "2026-04-27T20:48:31.025Z",
+      "completed": "2026-04-27T20:48:46.433Z",
+      "duration_ms": 30000,
+      "summary": "Cleaned TODO.md: removed completed items (filter/map/reduce builtins, window functions). Kept remaining items."
+    },
+    {
+      "id": "T139",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "WASM binary caching for monkey-lang REPL",
+      "task": null,
+      "started": "2026-04-27T20:48:57.212Z",
+      "completed": "2026-04-27T20:50:02.328Z",
+      "duration_ms": 120000,
+      "summary": "Planned WASM caching: (1) Module cache via source hashing, (2) REPL incremental compilation. Current compile overhead is only ~7ms so caching is modest win for REPL; bigger win for --compile pipeline and repeated evaluations."
+    },
+    {
+      "id": "T147",
+      "mode": "BUILD",
+      "task": "WASM module cache: hash source → cache WebAssembly.Module + binary, skip recompile on cache hit",
+      "status": "done",
+      "plan_ref": "T139",
+      "started": "2026-04-27T20:50:12.479Z",
+      "completed": "2026-04-27T20:52:29.028Z",
+      "duration_ms": 300000,
+      "summary": "WASM module cache: LRU(64) keyed by FNV-1a hash. Cold: 7.4ms → Hot: 0ms. 371/371 WASM tests pass. Exports clearModuleCache/getModuleCacheStats."
+    },
+    {
+      "id": "T148",
+      "mode": "BUILD",
+      "task": "REPL incremental: in WASM REPL mode, persist compiler state across evaluations instead of recompiling from scratch",
+      "status": "done",
+      "plan_ref": "T139",
+      "started": "2026-04-27T20:52:40.125Z",
+      "completed": "2026-04-27T20:54:47.401Z",
+      "duration_ms": 300000,
+      "summary": "WASM REPL incremental compilation: accumulates let/fn/class definitions in history, recompiles full history + current input each evaluation. Module cache makes repeated evals instant. Shows cache-hit in timing. :reset clears history."
+    },
+    {
+      "id": "T140",
+      "mode": "BUILD",
+      "status": "done",
+      "task": null,
+      "plan_ref": "T140",
+      "project": "monkey-lang",
+      "started": "2026-04-27T20:55:02.288Z",
+      "completed": "2026-04-27T20:55:02.430Z",
+      "duration_ms": 1000,
+      "summary": "Empty placeholder BUILD - work already done in T147/T148"
+    },
+    {
+      "id": "T141",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Git push + housekeeping",
+      "started": "2026-04-27T20:55:12.472Z"
+    },
+    {
+      "id": "T142",
+      "mode": "EXPLORE",
+      "status": "upcoming",
+      "task": "Depth: stress test HOF builtins with edge cases + closures with captured mutations",
       "project": "monkey-lang"
+    },
+    {
+      "id": "T143",
+      "mode": "PLAN",
+      "status": "upcoming",
+      "goal": "regex-engine: Fix empty string matching and anchor support",
+      "task": null,
+      "project": "regex-engine"
+    },
+    {
+      "id": "T144",
+      "mode": "PLAN",
+      "status": "upcoming",
+      "goal": "monkey-lang: WASM sort() implementation with comparison function callback",
+      "task": null,
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T145",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null,
+      "plan_ref": "T144",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T146",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Final git push + session close"
     }
   ],
   "focusProjects": [
@@ -1988,6 +2120,70 @@
     {
       "time": "2026-04-27T20:31:47.648Z",
       "msg": "PLAN T126 filled 3 BUILD tasks"
+    },
+    {
+      "time": "2026-04-27T20:42:43.148Z",
+      "msg": "Removed T130: Replanning with higher-value work"
+    },
+    {
+      "time": "2026-04-27T20:42:43.263Z",
+      "msg": "Removed T131: Replanning"
+    },
+    {
+      "time": "2026-04-27T20:42:43.378Z",
+      "msg": "Removed T132: Replanning"
+    },
+    {
+      "time": "2026-04-27T20:42:43.493Z",
+      "msg": "Removed T133: Replanning"
+    },
+    {
+      "time": "2026-04-27T20:42:54.351Z",
+      "msg": "Added T136 (BUILD) after end: Fix pre-existing GC test failure: add missing __sub/__mul/__div + HOF imports to wasm-gc.js"
+    },
+    {
+      "time": "2026-04-27T20:42:54.467Z",
+      "msg": "Added T137 (BUILD) after end: Add sort() and forEach() WASM builtins using HOF callback mechanism"
+    },
+    {
+      "time": "2026-04-27T20:42:54.582Z",
+      "msg": "Added T138 (MAINTAIN) after end: Clean up TODO.md (mark completed items)"
+    },
+    {
+      "time": "2026-04-27T20:42:54.698Z",
+      "msg": "Added T139 (PLAN) after end: WASM binary caching for monkey-lang REPL"
+    },
+    {
+      "time": "2026-04-27T20:42:54.814Z",
+      "msg": "Added T140 (BUILD) after end: null"
+    },
+    {
+      "time": "2026-04-27T20:42:54.929Z",
+      "msg": "Added T141 (MAINTAIN) after end: Git push + housekeeping"
+    },
+    {
+      "time": "2026-04-27T20:42:55.045Z",
+      "msg": "Added T142 (EXPLORE) after end: Depth: stress test HOF builtins with edge cases + closures with captured mutations"
+    },
+    {
+      "time": "2026-04-27T20:42:55.160Z",
+      "msg": "Added T143 (PLAN) after end: regex-engine: Fix empty string matching and anchor support"
+    },
+    {
+      "time": "2026-04-27T20:43:02.784Z",
+      "msg": "Added T144 (PLAN) after end: monkey-lang: WASM sort() implementation with comparison function callback"
+    },
+    {
+      "time": "2026-04-27T20:43:02.900Z",
+      "msg": "Added T145 (BUILD) after end: null"
+    },
+    {
+      "time": "2026-04-27T20:43:03.015Z",
+      "msg": "Added T146 (MAINTAIN) after end: Final git push + session close"
+    },
+    {
+      "time": "2026-04-27T20:49:55.569Z",
+      "msg": "PLAN T139 filled 2 BUILD tasks"
     }
   ]
 }

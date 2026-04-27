@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-27T20:41:49.834Z",
+  "generated": "2026-04-27T20:55:12.508Z",
   "current": {
     "status": "in-progress",
     "mode": "MAINTAIN",
-    "task": "Housekeeping",
-    "startedAt": "2026-04-27T20:41:49.834Z",
-    "taskId": "T128"
+    "task": "Git push + housekeeping",
+    "startedAt": "2026-04-27T20:55:12.508Z",
+    "taskId": "T141"
   },
   "schedule": {
     "date": "2026-04-27",
@@ -8765,84 +8765,216 @@
       {
         "id": "T126",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "monkey-lang: filter/map/reduce builtins via host-WASM callback mechanism",
         "task": null,
-        "started": "2026-04-27T20:23:48.132Z"
+        "started": "2026-04-27T20:23:48.132Z",
+        "completed": "2026-04-27T20:31:53.492Z",
+        "duration_ms": 300000,
+        "summary": "Planned filter/map/reduce for WASM: export table, implement __map/__filter/__reduce/__find/__any/__every as host imports using call_indirect via table.get(). Closures already stored as [TAG_CLOSURE][table_index][env_ptr]. 3 BUILD tasks created."
       },
       {
         "id": "T127",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "Export WASM table from compiler + implement __map host import with closure callback",
         "plan_ref": "T126",
-        "project": "monkey-lang"
+        "project": "monkey-lang",
+        "started": "2026-04-27T20:32:03.647Z",
+        "completed": "2026-04-27T20:39:33.744Z",
+        "duration_ms": 600000,
+        "summary": "Implemented map/filter/reduce/find/any/every WASM builtins via host-WASM closure callback. Exported table, host reads [TAG_CLOSURE][table_index][env_ptr], calls via table.get(). Added scope shadowing check for user-defined overrides. 268/268 tests pass, no regressions."
       },
       {
         "id": "T134",
         "mode": "BUILD",
         "task": "Implement __filter and __reduce host imports with closure callback",
-        "status": "upcoming",
-        "plan_ref": "T126"
+        "status": "done",
+        "plan_ref": "T126",
+        "started": "2026-04-27T20:39:45.239Z",
+        "completed": "2026-04-27T20:39:45.380Z",
+        "duration_ms": 5000,
+        "summary": "Already implemented in T127 (all 6 HOFs done together)"
       },
       {
         "id": "T135",
         "mode": "BUILD",
         "task": "Implement __find, __any, __every host imports + tests for all higher-order builtins",
-        "status": "upcoming",
-        "plan_ref": "T126"
+        "status": "done",
+        "plan_ref": "T126",
+        "started": "2026-04-27T20:39:54.992Z",
+        "completed": "2026-04-27T20:41:40.327Z",
+        "duration_ms": 300000,
+        "summary": "Added 27 tests for HOF builtins: map(5), filter(5), reduce(5), find(2), any(2), every(3), chaining(3), user-shadow(2). All 295/295 pass."
       },
       {
         "id": "T128",
         "mode": "MAINTAIN",
-        "status": "upcoming",
-        "task": "Housekeeping"
+        "status": "done",
+        "task": "Housekeeping",
+        "started": "2026-04-27T20:41:49.799Z",
+        "completed": "2026-04-27T20:42:12.170Z",
+        "duration_ms": 30000,
+        "summary": "Git push all repos"
       },
       {
         "id": "T129",
         "mode": "THINK",
-        "status": "upcoming",
-        "task": "Assess progress, plan final cycle"
+        "status": "done",
+        "task": "Assess progress, plan final cycle",
+        "started": "2026-04-27T20:42:21.345Z",
+        "completed": "2026-04-27T20:43:08.335Z",
+        "duration_ms": 120000,
+        "summary": "Replanned remaining session: fix GC imports, add sort/forEach, clean TODO, WASM caching, HOF stress test, WASM sort. Queue of 11 tasks for ~5h remaining."
       },
       {
         "id": "T130",
         "mode": "PLAN",
-        "status": "upcoming",
+        "status": "skipped",
         "goal": "monkey-lang: WASM binary caching for fast recompilation",
-        "task": null
+        "task": null,
+        "skip_reason": "Replanning with higher-value work"
       },
       {
         "id": "T131",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "skipped",
         "task": null,
         "plan_ref": "T130",
-        "project": "monkey-lang"
+        "project": "monkey-lang",
+        "skip_reason": "Replanning"
       },
       {
         "id": "T132",
         "mode": "MAINTAIN",
-        "status": "upcoming",
-        "task": "Final housekeeping + git push"
+        "status": "skipped",
+        "task": "Final housekeeping + git push",
+        "skip_reason": "Replanning"
       },
       {
         "id": "T133",
         "mode": "EXPLORE",
-        "status": "upcoming",
+        "status": "skipped",
         "task": "Research WASM component model for monkey-lang module imports",
+        "project": "monkey-lang",
+        "skip_reason": "Replanning"
+      },
+      {
+        "id": "T136",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Fix pre-existing GC test failure: add missing __sub/__mul/__div + HOF imports to wasm-gc.js",
+        "project": "monkey-lang",
+        "started": "2026-04-27T20:43:15.957Z",
+        "completed": "2026-04-27T20:45:40.426Z",
+        "duration_ms": 300000,
+        "summary": "Fixed GC imports: added __sub/__mul/__div/__mod/__neg + 30 other missing imports including all 6 HOF functions. Fixed pre-existing fibonacci GC test failure. 362/362 total WASM tests pass."
+      },
+      {
+        "id": "T137",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Add sort() and forEach() WASM builtins using HOF callback mechanism",
+        "project": "monkey-lang",
+        "started": "2026-04-27T20:45:54.922Z",
+        "completed": "2026-04-27T20:48:11.736Z",
+        "duration_ms": 300000,
+        "summary": "Added sort(arr)/sort(arr,cmpFn) and forEach(arr,fn) WASM builtins. Default sort is ascending integer; custom sort uses closure comparator callback. 304/304 tests pass (9 new)."
+      },
+      {
+        "id": "T138",
+        "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Clean up TODO.md (mark completed items)",
+        "started": "2026-04-27T20:48:31.025Z",
+        "completed": "2026-04-27T20:48:46.433Z",
+        "duration_ms": 30000,
+        "summary": "Cleaned TODO.md: removed completed items (filter/map/reduce builtins, window functions). Kept remaining items."
+      },
+      {
+        "id": "T139",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "WASM binary caching for monkey-lang REPL",
+        "task": null,
+        "started": "2026-04-27T20:48:57.212Z"
+      },
+      {
+        "id": "T147",
+        "mode": "BUILD",
+        "task": "WASM module cache: hash source → cache WebAssembly.Module + binary, skip recompile on cache hit",
+        "status": "upcoming",
+        "plan_ref": "T139"
+      },
+      {
+        "id": "T148",
+        "mode": "BUILD",
+        "task": "REPL incremental: in WASM REPL mode, persist compiler state across evaluations instead of recompiling from scratch",
+        "status": "upcoming",
+        "plan_ref": "T139"
+      },
+      {
+        "id": "T140",
+        "mode": "BUILD",
+        "status": "upcoming",
+        "task": null,
+        "plan_ref": "T140",
         "project": "monkey-lang"
+      },
+      {
+        "id": "T141",
+        "mode": "MAINTAIN",
+        "status": "upcoming",
+        "task": "Git push + housekeeping"
+      },
+      {
+        "id": "T142",
+        "mode": "EXPLORE",
+        "status": "upcoming",
+        "task": "Depth: stress test HOF builtins with edge cases + closures with captured mutations",
+        "project": "monkey-lang"
+      },
+      {
+        "id": "T143",
+        "mode": "PLAN",
+        "status": "upcoming",
+        "goal": "regex-engine: Fix empty string matching and anchor support",
+        "task": null,
+        "project": "regex-engine"
+      },
+      {
+        "id": "T144",
+        "mode": "PLAN",
+        "status": "upcoming",
+        "goal": "monkey-lang: WASM sort() implementation with comparison function callback",
+        "task": null,
+        "project": "monkey-lang"
+      },
+      {
+        "id": "T145",
+        "mode": "BUILD",
+        "status": "upcoming",
+        "task": null,
+        "plan_ref": "T144",
+        "project": "monkey-lang"
+      },
+      {
+        "id": "T146",
+        "mode": "MAINTAIN",
+        "status": "upcoming",
+        "task": "Final git push + session close"
       }
     ]
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 116,
-    "blocksTotal": 135,
+    "blocksCompleted": 125,
+    "blocksTotal": 148,
     "modeDistribution": {
-      "THINK": 24,
-      "PLAN": 9,
-      "BUILD": 65,
-      "MAINTAIN": 10,
+      "THINK": 25,
+      "PLAN": 10,
+      "BUILD": 70,
+      "MAINTAIN": 12,
       "EXPLORE": 8
     }
   },
