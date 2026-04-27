@@ -1203,10 +1203,21 @@
     {
       "id": "T115",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: add substr() alias + changes() and last_insert_rowid() functions",
       "project": "henrydb",
-      "started": "2026-04-27T19:32:28.571Z"
+      "started": "2026-04-27T19:32:28.571Z",
+      "completed": "2026-04-27T19:35:13.401Z",
+      "duration_ms": 180000,
+      "summary": "Added changes(), last_insert_rowid(), total_changes(), sqlite_version(). State tracking for insert counts. 33 regression, 323/323 compliance."
+    },
+    {
+      "id": "T116",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "HenryDB: add date/time functions (date, time, datetime, julianday, strftime)",
+      "project": "henrydb",
+      "started": "2026-04-27T19:35:49.364Z"
     }
   ],
   "focusProjects": [
@@ -1710,6 +1721,10 @@
     {
       "time": "2026-04-27T19:32:22.408Z",
       "msg": "Added T115 (BUILD) after end: HenryDB: add substr() alias + changes() and last_insert_rowid() functions"
+    },
+    {
+      "time": "2026-04-27T19:35:38.857Z",
+      "msg": "Added T116 (BUILD) after end: HenryDB: add date/time functions (date, time, datetime, julianday, strftime)"
     }
   ]
 }

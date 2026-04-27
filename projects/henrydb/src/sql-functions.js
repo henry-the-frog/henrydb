@@ -936,15 +936,44 @@ export function evalFunction(db, func, args, row) {
     }
     case 'STRFTIME': {
       const fmt = db._evalValue(args[0], row);
-      const dateStr = args[1] ? db._evalValue(args[1], row) : new Date().toISOString();
-      const d = new Date(dateStr);
+      const dateStr = args[1] ? db._evalValue(args[1], row) : 'now';
+      let d;
+      if (dateStr === 'now' || dateStr === 'NOW') {
+        d = new Date();
+      } else {
+        d = new Date(dateStr);
+      }
+      if (isNaN(d.getTime())) return null;
       return String(fmt)
         .replace('%Y', String(d.getUTCFullYear()))
         .replace('%m', String(d.getUTCMonth() + 1).padStart(2, '0'))
         .replace('%d', String(d.getUTCDate()).padStart(2, '0'))
         .replace('%H', String(d.getUTCHours()).padStart(2, '0'))
         .replace('%M', String(d.getUTCMinutes()).padStart(2, '0'))
-        .replace('%S', String(d.getUTCSeconds()).padStart(2, '0'));
+        .replace('%S', String(d.getUTCSeconds()).padStart(2, '0'))
+        .replace('%j', String(Math.floor((d - new Date(d.getUTCFullYear(), 0, 0)) / 86400000)).padStart(3, '0'))
+        .replace('%w', String(d.getUTCDay()))
+        .replace('%W', String(Math.floor((d.getTime() - new Date(d.getUTCFullYear(), 0, 1).getTime()) / 604800000)).padStart(2, '0'))
+        .replace('%s', String(Math.floor(d.getTime() / 1000)))
+        .replace('%f', String(d.getUTCSeconds()).padStart(2, '0') + '.' + String(d.getUTCMilliseconds()).padStart(3, '0') + '000')
+        .replace('%%', '%');
+    }
+    case 'JULIANDAY': {
+      const dateStr = args[0] ? db._evalValue(args[0], row) : 'now';
+      let d;
+      if (dateStr === 'now' || dateStr === 'NOW') d = new Date();
+      else d = new Date(dateStr);
+      if (isNaN(d.getTime())) return null;
+      // Julian Day Number = days since Nov 24, 4714 BC
+      return d.getTime() / 86400000 + 2440587.5;
+    }
+    case 'UNIXEPOCH': {
+      const dateStr = args[0] ? db._evalValue(args[0], row) : 'now';
+      let d;
+      if (dateStr === 'now' || dateStr === 'NOW') d = new Date();
+      else d = new Date(dateStr);
+      if (isNaN(d.getTime())) return null;
+      return Math.floor(d.getTime() / 1000);
     }
     
     // JSON functions
