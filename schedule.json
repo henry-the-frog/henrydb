@@ -551,6 +551,17 @@
       "task": "WASM: optimize comparison chains — if(n < 2) should use br_if(i32_lt_s) directly without going through runtime",
       "project": "monkey-lang",
       "skip_reason": ""
+    },
+    {
+      "id": "T53",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Monkey-lang: compare WASM test coverage vs evaluator test coverage — find untested WASM paths",
+      "project": "monkey-lang",
+      "started": "2026-04-27T16:36:00.334Z",
+      "completed": "2026-04-27T16:36:48.492Z",
+      "duration_ms": 120000,
+      "summary": "WASM has 217 tests vs evaluator 174 — more comprehensive. WASM covers: ints, bools, arithmetic, comparisons, functions, closures, classes (with inheritance + super), arrays, strings, hashes, match, enums, comprehensions, try/catch, integration. Untested: module imports (stubbed), generators (stubbed), match guards (parser)."
     }
   ],
   "focusProjects": [
@@ -782,6 +793,10 @@
     {
       "time": "2026-04-27T16:35:06.147Z",
       "msg": "Removed T52: "
+    },
+    {
+      "time": "2026-04-27T16:35:50.962Z",
+      "msg": "Added T53 (EXPLORE) after end: Monkey-lang: compare WASM test coverage vs evaluator test coverage — find untested WASM paths"
     }
   ]
 }

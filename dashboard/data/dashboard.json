@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-27T16:33:50.344Z",
+  "generated": "2026-04-27T16:36:48.527Z",
   "current": {
     "status": "done",
-    "mode": "BUILD",
-    "task": "Monkey-lang WASM: implement super.method() for calling parent class methods",
-    "completedAt": "2026-04-27T16:33:50.344Z",
-    "taskId": "T51",
-    "summary": "Implemented super.method() for WASM classes. Parent method resolved via class registry, called with self via callIndirect. Works with args and field access. 217 WASM tests, 1803 total.",
-    "durationMs": 600000
+    "mode": "EXPLORE",
+    "task": "Monkey-lang: compare WASM test coverage vs evaluator test coverage — find untested WASM paths",
+    "completedAt": "2026-04-27T16:36:48.527Z",
+    "taskId": "T53",
+    "summary": "WASM has 217 tests vs evaluator 174 — more comprehensive. WASM covers: ints, bools, arithmetic, comparisons, functions, closures, classes (with inheritance + super), arrays, strings, hashes, match, enums, comprehensions, try/catch, integration. Untested: module imports (stubbed), generators (stubbed), match guards (parser).",
+    "durationMs": 120000
   },
   "schedule": {
     "date": "2026-04-27",
@@ -7744,14 +7744,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 47,
+    "blocksCompleted": 48,
     "blocksTotal": 29,
     "modeDistribution": {
       "THINK": 9,
       "PLAN": 4,
       "BUILD": 25,
       "MAINTAIN": 4,
-      "EXPLORE": 5
+      "EXPLORE": 6
     }
   },
   "artifacts": [],
