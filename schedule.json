@@ -1728,38 +1728,54 @@
     {
       "id": "T164",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Git push",
-      "started": "2026-04-27T21:25:28.259Z"
+      "started": "2026-04-27T21:25:28.259Z",
+      "completed": "2026-04-27T21:26:00.808Z",
+      "duration_ms": 30000,
+      "summary": "Git push all repos"
     },
     {
       "id": "T165",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "HenryDB: INSTEAD OF triggers for views",
       "task": null,
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-27T21:26:08.135Z",
+      "completed": "2026-04-27T21:26:58.104Z",
+      "duration_ms": 60000,
+      "summary": "Plan INSTEAD OF INSERT: intercept Table not found for views, check for INSTEAD OF trigger, fire if found. Parser needs INSTEAD OF timing."
     },
     {
       "id": "T166",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null,
+      "status": "done",
+      "task": "HenryDB: INSTEAD OF INSERT triggers for views (intercept view INSERT, check for INSTEAD OF trigger, fire if found)",
       "plan_ref": "T165",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-27T21:27:05.061Z",
+      "completed": "2026-04-27T21:31:58.586Z",
+      "duration_ms": 600000,
+      "summary": "HenryDB INSTEAD OF INSERT triggers for views. Parser handles INSTEAD OF timing. INSERT on view with INSTEAD OF trigger executes trigger body with NEW.col bindings. 3 new tests, 18/18 pass."
     },
     {
       "id": "T167",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "Benchmark: WASM HOFs vs VM eval for map/filter/reduce performance comparison",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-27T21:32:20.935Z",
+      "completed": "2026-04-27T21:33:23.372Z",
+      "duration_ms": 120000,
+      "summary": "Benchmark results: WASM HOFs are 2.5-3.9x faster than tree-walk eval for map/filter/reduce/chain. Sort is 2x SLOWER in WASM due to callback overhead. Best: filter at 3.9x, chain at 3.1x."
     },
     {
       "id": "T168",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Final git push + evening summary"
+      "status": "in-progress",
+      "task": "Final git push + evening summary",
+      "started": "2026-04-27T21:33:41.187Z"
     }
   ],
   "focusProjects": [
@@ -2507,6 +2523,10 @@
     {
       "time": "2026-04-27T21:22:30.586Z",
       "msg": "PLAN T162 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-04-27T21:26:50.895Z",
+      "msg": "PLAN T165 filled 1 BUILD tasks"
     }
   ]
 }

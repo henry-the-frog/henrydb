@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-27T21:25:28.295Z",
+  "generated": "2026-04-27T21:33:41.222Z",
   "current": {
     "status": "in-progress",
     "mode": "MAINTAIN",
-    "task": "Git push",
-    "startedAt": "2026-04-27T21:25:28.295Z",
-    "taskId": "T164"
+    "task": "Final git push + evening summary",
+    "startedAt": "2026-04-27T21:33:41.222Z",
+    "taskId": "T168"
   },
   "schedule": {
     "date": "2026-04-27",
@@ -9150,39 +9150,51 @@
       {
         "id": "T162",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "monkey-lang: WASM flatMap builtin + zip/enumerate HOFs",
         "task": null,
         "project": "monkey-lang",
-        "started": "2026-04-27T21:22:18.430Z"
+        "started": "2026-04-27T21:22:18.430Z",
+        "completed": "2026-04-27T21:22:35.677Z",
+        "duration_ms": 60000,
+        "summary": "Plan flatMap/zip/enumerate: host imports using shared allocator, compiler builtin cases, tests."
       },
       {
         "id": "T163",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "WASM flatMap/zip/enumerate builtins: host imports + compiler cases + tests",
         "plan_ref": "T162",
-        "project": "monkey-lang"
+        "project": "monkey-lang",
+        "started": "2026-04-27T21:22:41.929Z",
+        "completed": "2026-04-27T21:25:12.014Z",
+        "duration_ms": 300000,
+        "summary": "flatMap/zip/enumerate WASM builtins: flatMap maps+flattens, zip pairs from 2 arrays, enumerate pairs with index. 10 new tests, 317/317 pass."
       },
       {
         "id": "T164",
         "mode": "MAINTAIN",
-        "status": "upcoming",
-        "task": "Git push"
+        "status": "done",
+        "task": "Git push",
+        "started": "2026-04-27T21:25:28.259Z",
+        "completed": "2026-04-27T21:26:00.808Z",
+        "duration_ms": 30000,
+        "summary": "Git push all repos"
       },
       {
         "id": "T165",
         "mode": "PLAN",
-        "status": "upcoming",
+        "status": "in-progress",
         "goal": "HenryDB: INSTEAD OF triggers for views",
         "task": null,
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-27T21:26:08.135Z"
       },
       {
         "id": "T166",
         "mode": "BUILD",
         "status": "upcoming",
-        "task": null,
+        "task": "HenryDB: INSTEAD OF INSERT triggers for views (intercept view INSERT, check for INSTEAD OF trigger, fire if found)",
         "plan_ref": "T165",
         "project": "henrydb"
       },
@@ -9203,14 +9215,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 146,
+    "blocksCompleted": 150,
     "blocksTotal": 168,
     "modeDistribution": {
       "THINK": 27,
-      "PLAN": 16,
-      "BUILD": 75,
-      "MAINTAIN": 17,
-      "EXPLORE": 11
+      "PLAN": 17,
+      "BUILD": 76,
+      "MAINTAIN": 18,
+      "EXPLORE": 12
     }
   },
   "artifacts": [],
