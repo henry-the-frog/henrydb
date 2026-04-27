@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-27T16:01:51.180Z",
+  "generated": "2026-04-27T16:04:59.038Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "WASM: propagate knownInt through function parameters (if all call sites pass integers, mark params as knownInt)",
-    "completedAt": "2026-04-27T16:01:51.180Z",
-    "taskId": "T41",
-    "summary": "Added function parameter type inference via body scanning. Parameters used in arithmetic/comparisons marked knownInt. No benchmark regression. fib unchanged (bottleneck is indirect call overhead, not arithmetic). All 208 tests pass.",
+    "task": "WASM: optimize named recursive functions to use direct call instead of call_indirect",
+    "completedAt": "2026-04-27T16:04:59.038Z",
+    "taskId": "T42",
+    "summary": "Fixed self-reference in recursive functions (selfName not counted as free variable). fib was already compiled as direct function — performance unchanged because env_ptr parameter overhead remains. 208 tests pass.",
     "durationMs": 300000
   },
   "schedule": {
@@ -7744,12 +7744,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 37,
+    "blocksCompleted": 38,
     "blocksTotal": 29,
     "modeDistribution": {
       "THINK": 6,
       "PLAN": 4,
-      "BUILD": 19,
+      "BUILD": 20,
       "MAINTAIN": 4,
       "EXPLORE": 4
     }

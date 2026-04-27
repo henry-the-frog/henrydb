@@ -434,6 +434,17 @@
       "completed": "2026-04-27T16:01:51.145Z",
       "duration_ms": 300000,
       "summary": "Added function parameter type inference via body scanning. Parameters used in arithmetic/comparisons marked knownInt. No benchmark regression. fib unchanged (bottleneck is indirect call overhead, not arithmetic). All 208 tests pass."
+    },
+    {
+      "id": "T42",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "WASM: optimize named recursive functions to use direct call instead of call_indirect",
+      "project": "monkey-lang",
+      "started": "2026-04-27T16:02:48.384Z",
+      "completed": "2026-04-27T16:04:59.004Z",
+      "duration_ms": 300000,
+      "summary": "Fixed self-reference in recursive functions (selfName not counted as free variable). fib was already compiled as direct function — performance unchanged because env_ptr parameter overhead remains. 208 tests pass."
     }
   ],
   "focusProjects": [
@@ -617,6 +628,10 @@
     {
       "time": "2026-04-27T15:58:55.698Z",
       "msg": "Added T41 (BUILD) after end: WASM: propagate knownInt through function parameters (if all call sites pass integers, mark params as knownInt)"
+    },
+    {
+      "time": "2026-04-27T16:02:40.899Z",
+      "msg": "Added T42 (BUILD) after end: WASM: optimize named recursive functions to use direct call instead of call_indirect"
     }
   ]
 }
