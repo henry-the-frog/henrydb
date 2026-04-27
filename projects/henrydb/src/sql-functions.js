@@ -516,10 +516,21 @@ export function evalFunction(db, func, args, row) {
       const json = db._evalValue(args[0], row);
       if (json == null) return 'null';
       try {
-        const val = typeof json === 'string' ? JSON.parse(json) : json;
+        let val = typeof json === 'string' ? JSON.parse(json) : json;
+        // Navigate path if provided
+        if (args.length > 1) {
+          const path = String(db._evalValue(args[1], row));
+          const parts = path.replace(/^\$\.?/, '').split(/\.|\[(\d+)\]/).filter(Boolean);
+          for (const p of parts) {
+            val = val?.[/^\d+$/.test(p) ? parseInt(p) : p];
+          }
+        }
+        if (val === null || val === undefined) return 'null';
         if (Array.isArray(val)) return 'array';
         if (typeof val === 'object') return 'object';
-        return typeof val;
+        if (typeof val === 'boolean') return val ? 'true' : 'false';
+        if (typeof val === 'number') return Number.isInteger(val) ? 'integer' : 'real';
+        return 'text';
       } catch { return 'text'; }
     }
     // json_build_object(key1, val1, key2, val2, ...) → JSON string
