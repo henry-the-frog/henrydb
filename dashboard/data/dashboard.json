@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-27T16:16:13.902Z",
+  "generated": "2026-04-27T16:18:25.320Z",
   "current": {
     "status": "done",
-    "mode": "THINK",
-    "task": "Session reflection: capture key insights and update MEMORY.md",
-    "completedAt": "2026-04-27T16:16:13.902Z",
-    "taskId": "T46",
-    "summary": "Session reflection written to memory/reflections/2026-04-27.md. Key insight: WASM host import crossings are the dominant cost, type inference that eliminates them has 8x impact.",
+    "mode": "BUILD",
+    "task": "WASM: propagate knownInt through closure captures and for-in loop variables",
+    "completedAt": "2026-04-27T16:18:25.320Z",
+    "taskId": "T47",
+    "summary": "Propagated knownInt through for-in loop variables (range iterables mark var as knownInt). for (i in 0..10000) { sum = sum + i } now 100% direct. 1794 tests pass.",
     "durationMs": 300000
   },
   "schedule": {
@@ -7744,12 +7744,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 42,
+    "blocksCompleted": 43,
     "blocksTotal": 29,
     "modeDistribution": {
       "THINK": 9,
       "PLAN": 4,
-      "BUILD": 21,
+      "BUILD": 22,
       "MAINTAIN": 4,
       "EXPLORE": 4
     }

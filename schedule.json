@@ -488,6 +488,17 @@
       "completed": "2026-04-27T16:16:13.867Z",
       "duration_ms": 300000,
       "summary": "Session reflection written to memory/reflections/2026-04-27.md. Key insight: WASM host import crossings are the dominant cost, type inference that eliminates them has 8x impact."
+    },
+    {
+      "id": "T47",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "WASM: propagate knownInt through closure captures and for-in loop variables",
+      "project": "monkey-lang",
+      "started": "2026-04-27T16:16:41.168Z",
+      "completed": "2026-04-27T16:18:25.285Z",
+      "duration_ms": 300000,
+      "summary": "Propagated knownInt through for-in loop variables (range iterables mark var as knownInt). for (i in 0..10000) { sum = sum + i } now 100% direct. 1794 tests pass."
     }
   ],
   "focusProjects": [
@@ -691,6 +702,10 @@
     {
       "time": "2026-04-27T16:15:34.329Z",
       "msg": "Added T46 (THINK) after end: Session reflection: capture key insights and update MEMORY.md"
+    },
+    {
+      "time": "2026-04-27T16:16:33.206Z",
+      "msg": "Added T47 (BUILD) after end: WASM: propagate knownInt through closure captures and for-in loop variables"
     }
   ]
 }
