@@ -605,6 +605,17 @@
       "completed": "2026-04-28T16:37:01.936Z",
       "duration_ms": 180000,
       "summary": "Lazy runtime functions: hard to implement due to WASM function index dependencies. Simplest approach is module caching for repeated execution. 39ms compile time is acceptable for most use cases."
+    },
+    {
+      "id": "T57",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Compare JIT vs WASM on HOF-heavy code and array-heavy code to understand when each backend excels",
+      "project": "monkey-lang",
+      "started": "2026-04-28T16:47:26.671Z",
+      "completed": "2026-04-28T16:48:06.954Z",
+      "duration_ms": 180000,
+      "summary": "JIT beats WASM for everything except recursion. JIT: 2x faster for loops, 2.5x for HOFs, 2x for arrays. WASM only wins 1.2x for deep recursion. V8 optimization advantage."
     }
   ],
   "focusProjects": [
@@ -844,6 +855,10 @@
     {
       "time": "2026-04-28T16:36:18.732Z",
       "msg": "Added T56 (THINK) after end: Design lazy runtime functions: emit only used functions. Profile which functions a typical program uses."
+    },
+    {
+      "time": "2026-04-28T16:47:20.708Z",
+      "msg": "Added T57 (EXPLORE) after end: Compare JIT vs WASM on HOF-heavy code and array-heavy code to understand when each backend excels"
     }
   ]
 }
