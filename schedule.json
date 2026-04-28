@@ -514,15 +514,79 @@
     {
       "id": "T50",
       "mode": "THINK",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB json_group_object bug investigation",
-      "started": "2026-04-28T18:56:36.568Z"
+      "started": "2026-04-28T18:56:36.568Z",
+      "completed": "2026-04-28T18:59:55.197Z",
+      "duration_ms": 300000,
+      "summary": "Fixed pre-existing json_group_object bug. Two issues: (1) parser didnt include in TWO_ARG_AGGS so parsing failed, (2) executor used placeholder pair logic instead of evaluating both arg columns per row. Fixed: add to TWO_ARG_AGGS + use _resolveColumn for both args. Test passes."
     },
     {
       "id": "T51",
       "mode": "THINK",
+      "status": "done",
+      "task": "monkey-lang: investigate WASM GC backend feasibility with Node.js v22",
+      "started": "2026-04-28T19:00:04.447Z",
+      "completed": "2026-04-28T19:02:02.239Z",
+      "duration_ms": 300000,
+      "summary": "WASM GC confirmed working in Node.js v22! Struct types compile and instantiate. struct.new returns opaque JS object managed by V8 GC. No experimental flags needed. This enables a WASM GC backend: compile monkey-lang objects as WASM GC structs instead of linear memory. Major project but high value for eliminating manual GC."
+    },
+    {
+      "id": "T52",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Design scratch: WASM GC backend for monkey-lang — type mapping",
+      "started": "2026-04-28T19:02:19.499Z",
+      "completed": "2026-04-28T19:03:05.048Z",
+      "duration_ms": 300000,
+      "summary": "Wrote WASM GC backend design doc: type mapping (Value struct with tag+i32+refval), 6-phase plan (ints→strings→arrays→closures→hashes→parity), key challenges (no sum types, hash/string via JS interop). Saved to scratch/wasm-gc-design.md."
+    },
+    {
+      "id": "T53",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: run full regression on json tests after json_group_object fix",
+      "project": "henrydb",
+      "started": "2026-04-28T19:03:14.211Z",
+      "completed": "2026-04-28T19:04:02.418Z",
+      "duration_ms": 60000,
+      "summary": "JSON test regression: 55/56 pass. Only pre-existing JSON_TYPE failure (integer vs number). No new regressions from json_group_object fix or compiled-expr."
+    },
+    {
+      "id": "T54",
+      "mode": "THINK",
+      "status": "done",
+      "task": "monkey-lang: investigate what WASM opcodes the inline reduce produces vs runtime",
+      "started": "2026-04-28T19:04:21.380Z",
+      "completed": "2026-04-28T19:04:53.967Z",
+      "duration_ms": 120000,
+      "summary": "Inline reduce: 986 vs 1052 bytes (6.3% smaller), 12 vs 13 functions (eliminates callback). Real win is eliminating N indirect function calls for large arrays. Code generated is a simple WASM loop with accumulator local vs runtime path that calls through closure for each element."
+    },
+    {
+      "id": "T55",
+      "mode": "THINK",
+      "status": "done",
+      "task": "HenryDB: analyze what makes SELECT with JOINs slow at scale",
+      "started": "2026-04-28T19:05:02.597Z",
+      "completed": "2026-04-28T19:05:31.971Z",
+      "duration_ms": 120000,
+      "summary": "JOIN perf at 1K×5K: PK=0.5ms, single JOIN=1.6ms, full JOIN+GROUP=19ms. All expected for nested loop join. Hash join would help but is a major optimization. Filed for future."
+    },
+    {
+      "id": "T56",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Review all changes from Session B — write comprehensive evening summary",
+      "started": "2026-04-28T19:05:40.677Z",
+      "completed": "2026-04-28T19:06:30.151Z",
+      "duration_ms": 180000,
+      "summary": "Evening summary written. 27 tasks, 19 BUILDs. Major: HeapFile 88,000x fix, compiled-expr with correlated subquery fix, WASM GC confirmed, json_group_object fix. Learning captures documented."
+    },
+    {
+      "id": "T57",
+      "mode": "MAINTAIN",
       "status": "upcoming",
-      "task": "monkey-lang: investigate WASM GC backend feasibility with Node.js v22"
+      "task": "Push all repos"
     }
   ],
   "focusProjects": [
@@ -770,6 +834,30 @@
     {
       "time": "2026-04-28T18:56:27.972Z",
       "msg": "Added T51 (THINK) after end: monkey-lang: investigate WASM GC backend feasibility with Node.js v22"
+    },
+    {
+      "time": "2026-04-28T19:02:12.209Z",
+      "msg": "Added T52 (THINK) after end: Design scratch: WASM GC backend for monkey-lang — type mapping"
+    },
+    {
+      "time": "2026-04-28T19:02:12.322Z",
+      "msg": "Added T53 (BUILD) after end: HenryDB: run full regression on json tests after json_group_object fix"
+    },
+    {
+      "time": "2026-04-28T19:04:13.908Z",
+      "msg": "Added T54 (THINK) after end: monkey-lang: investigate what WASM opcodes the inline reduce produces vs runtime"
+    },
+    {
+      "time": "2026-04-28T19:04:14.024Z",
+      "msg": "Added T55 (THINK) after end: HenryDB: analyze what makes SELECT with JOINs slow at scale"
+    },
+    {
+      "time": "2026-04-28T19:05:40.451Z",
+      "msg": "Added T56 (THINK) after end: Review all changes from Session B — write comprehensive evening summary"
+    },
+    {
+      "time": "2026-04-28T19:05:40.564Z",
+      "msg": "Added T57 (MAINTAIN) after end: Push all repos"
     }
   ]
 }
