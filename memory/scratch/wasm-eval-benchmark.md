@@ -48,3 +48,21 @@ This would turn map/filter from ~3x to ~100x+ speedup.
 2. **Lazy runtime functions**: Only emit runtime functions actually used. Would cut AST→IR time by ~50%.
 3. **Streaming compilation**: Use WebAssembly.compileStreaming() if available.
 4. **JIT threshold**: Only compile to WASM if program is likely CPU-bound.
+
+## Three-Way Benchmark (Eval vs JIT vs WASM)
+
+| Backend | fib(25) time | Speedup vs Eval |
+|---------|-------------|-----------------|
+| Evaluator | 3103ms | 1x |
+| JIT (tracing) | 102ms | 30x |
+| WASM | 87ms | 36x |
+| WASM (exec only) | 1.4ms | 2216x |
+
+Key insight: JIT and WASM are nearly equivalent for total time (~100ms).
+The JIT compiles to JavaScript → V8 JIT → native, while WASM goes direct to native.
+For one-shot execution, they're within ~15% of each other.
+
+The right approach: auto-select backend based on program complexity:
+- < 1ms eval time → use evaluator (zero compile overhead)
+- 1ms-100ms eval time → use JIT (fast compile, decent execution)
+- > 100ms eval time → use WASM (slower compile, fastest execution)
