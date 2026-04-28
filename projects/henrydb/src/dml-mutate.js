@@ -36,8 +36,9 @@ function _getFastPathMeta(db, tableName) {
   
   const hasGenerated = table.schema.some(c => c.generated);
   const hasTriggers = db.triggers?.some(t => t.table === tableName && t.event === 'UPDATE') || false;
+  const hasChecks = table.schema.some(c => c.check) || (table.tableChecks?.length > 0);
   
-  meta = { _tableRef: table, table, pkIndex, pkColName, pkColNameLower: pkColName.toLowerCase(), colMap, hasTriggers, hasGenerated };
+  meta = { _tableRef: table, table, pkIndex, pkColName, pkColNameLower: pkColName.toLowerCase(), colMap, hasTriggers, hasGenerated, hasChecks };
   _fastPathCache.set(tableName, meta);
   return meta;
 }
@@ -46,7 +47,7 @@ function _tryFastUpdate(db, ast) {
   if (ast.from || ast.returning || ast.limit) return null;
   
   const meta = _getFastPathMeta(db, ast.table);
-  if (!meta || meta.hasTriggers || meta.hasGenerated) return null;
+  if (!meta || meta.hasTriggers || meta.hasGenerated || meta.hasChecks) return null;
   
   const where = ast.where;
   if (!where || where.type !== 'COMPARE' || where.op !== 'EQ') return null;
@@ -85,7 +86,10 @@ function _tryFastUpdate(db, ast) {
     
     const vt = value.type;
     if (vt === 'number' || vt === 'string' || vt === 'literal' || vt === 'param' || vt === 'PARAM') {
-      newValues[colIdx] = value.value;
+      const newVal = value.value;
+      // NOT NULL check
+      if ((newVal === null || newVal === undefined) && colSchema?.notNull) return null;
+      newValues[colIdx] = newVal;
     } else return null;
   }
   
