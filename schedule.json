@@ -1070,6 +1070,46 @@
       "completed": "2026-04-28T19:46:06.423Z",
       "duration_ms": 30000,
       "summary": "WASM compiler handles ~30+ AST node types: all literals, identifiers, let/assign, infix/prefix, if/while/do-while/for-in, functions/calls/return, arrays/indexing/hashes, match/try-catch/throw, classes/dot/super, spread/range/string-interpolation, pipe/comprehension. 222 case/instanceof checks."
+    },
+    {
+      "id": "T105",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Quick: what monkey-lang feature would be most fun to add next?",
+      "started": "2026-04-28T19:46:49.353Z",
+      "completed": "2026-04-28T19:47:02.825Z",
+      "duration_ms": 30000,
+      "summary": "Fun features: (1) pattern matching on arrays, (2) string interpolation WASM, (3) generators, (4) operator overloading, (5) modules, (6) REPL, (7) playground website (weekend project, most impactful), (8) web API bindings, (9) visualization, (10) self-hosting (ultimate goal). Playground is best next step."
+    },
+    {
+      "id": "T106",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Quick: what's the memory footprint of a monkey-lang WASM program?",
+      "started": "2026-04-28T19:47:14.090Z",
+      "completed": "2026-04-28T19:47:33.841Z",
+      "duration_ms": 30000,
+      "summary": "WASM memory: simple program ~348KB, complex (1K array) ~413KB. Total Node.js heap: 4.9MB. Each instance uses WASM linear memory (64KB min page) + module + imports. Very lightweight."
+    },
+    {
+      "id": "T107",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Quick: what does monkey-lang output format look like?",
+      "started": "2026-04-28T19:47:41.218Z",
+      "completed": "2026-04-28T19:48:02.029Z",
+      "duration_ms": 30000,
+      "summary": "puts() output: integers and strings format correctly, arrays show [1,2,3]. But booleans show as 0/1 (not true/false), null as 0, hashes and functions as raw memory addresses. Formatting improvement needed for non-numeric types."
+    },
+    {
+      "id": "T108",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Quick: how many builtin functions does monkey-lang WASM support?",
+      "started": "2026-04-28T19:48:09.022Z",
+      "completed": "2026-04-28T19:48:36.715Z",
+      "duration_ms": 30000,
+      "summary": "25 WASM builtins: any, assert, delete, every, filter, find, first, floor, forEach, int, join, keys, last, len, map, max, min, print, push, puts, range, reduce, rest, sort, split, str, type, values. Solid standard library for a small language."
     }
   ],
   "focusProjects": [
@@ -1529,6 +1569,22 @@
     {
       "time": "2026-04-28T19:45:42.526Z",
       "msg": "Added T104 (THINK) after end: Quick: how many different AST node types does the monkey-lang WASM compiler handle?"
+    },
+    {
+      "time": "2026-04-28T19:46:49.238Z",
+      "msg": "Added T105 (THINK) after end: Quick: what monkey-lang feature would be most fun to add next?"
+    },
+    {
+      "time": "2026-04-28T19:47:13.975Z",
+      "msg": "Added T106 (THINK) after end: Quick: what's the memory footprint of a monkey-lang WASM program?"
+    },
+    {
+      "time": "2026-04-28T19:47:41.102Z",
+      "msg": "Added T107 (THINK) after end: Quick: what does monkey-lang output format look like?"
+    },
+    {
+      "time": "2026-04-28T19:48:08.825Z",
+      "msg": "Added T108 (THINK) after end: Quick: how many builtin functions does monkey-lang WASM support?"
     }
   ]
 }
