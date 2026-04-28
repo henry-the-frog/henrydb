@@ -529,6 +529,28 @@
       "completed": "2026-04-28T16:18:59.568Z",
       "duration_ms": 300000,
       "summary": "WASM vs eval benchmark: fib(25) 33x total / 2071x exec. Sum 978x exec. HOFs only 3x exec (host import overhead). Compilation overhead ~70-90ms makes WASM best for compute-heavy programs."
+    },
+    {
+      "id": "T50",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Design inline HOF compilation: compile map/filter/reduce bodies as WASM loops instead of host imports. Would give 100x+ speedup for HOFs.",
+      "project": "monkey-lang",
+      "started": "2026-04-28T16:20:00.934Z",
+      "completed": "2026-04-28T16:20:22.299Z",
+      "duration_ms": 300000,
+      "summary": "Designed inline HOF compilation. Detect builtin + literal callback at compile time, emit WASM loop. Phase 1: no-capture callbacks. Phase 2: captures. Phase 3: sort. Expected 100x+ speedup for map/filter."
+    },
+    {
+      "id": "T51",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Inline map() compilation: when callback is literal with no captures, emit WASM loop instead of host import",
+      "project": "monkey-lang",
+      "started": "2026-04-28T16:20:40.451Z",
+      "completed": "2026-04-28T16:24:02.839Z",
+      "duration_ms": 600000,
+      "summary": "Implemented inline map() and filter() compilation. 4x speedup for no-capture callbacks. Falls back to host import for closures. 339/339 pass."
     }
   ],
   "focusProjects": [
@@ -740,6 +762,14 @@
     {
       "time": "2026-04-28T16:16:41.712Z",
       "msg": "Added T49 (EXPLORE) after end: Benchmark WASM vs evaluator: compare performance on fib, sort, comprehensions"
+    },
+    {
+      "time": "2026-04-28T16:19:48.906Z",
+      "msg": "Added T50 (THINK) after end: Design inline HOF compilation: compile map/filter/reduce bodies as WASM loops instead of host imports. Would give 100x+ speedup for HOFs."
+    },
+    {
+      "time": "2026-04-28T16:20:33.698Z",
+      "msg": "Added T51 (BUILD) after end: Inline map() compilation: when callback is literal with no captures, emit WASM loop instead of host import"
     }
   ]
 }
