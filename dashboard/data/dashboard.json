@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-28T18:19:23.299Z",
+  "generated": "2026-04-28T18:27:00.193Z",
   "current": {
     "status": "in-progress",
     "mode": "BUILD",
-    "task": "Add early-return to _handleForeignKeyUpdate when no FK references exist",
-    "startedAt": "2026-04-28T18:19:23.299Z",
-    "taskId": "T34"
+    "task": "Implement compiled expression evaluator for simple WHERE clauses",
+    "startedAt": "2026-04-28T18:27:00.193Z",
+    "taskId": "T39"
   },
   "schedule": {
     "date": "2026-04-28",
@@ -5005,43 +5005,94 @@
       {
         "id": "T33",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "HenryDB: optimize query execution (evaluate scan strategy)",
         "task": null,
-        "started": "2026-04-28T18:18:50.536Z"
+        "started": "2026-04-28T18:18:50.536Z",
+        "completed": "2026-04-28T18:19:07.535Z",
+        "duration_ms": 60000,
+        "summary": "Planned 2 BUILD: (1) FK early-return, (2) UPDATE pipeline profiling. FK check adds 2ms even with no FKs."
       },
       {
         "id": "T34",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "Add early-return to _handleForeignKeyUpdate when no FK references exist",
         "plan_ref": "T33",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-28T18:19:23.265Z",
+        "completed": "2026-04-28T18:20:44.375Z",
+        "duration_ms": 300000,
+        "summary": "FK cascade early-return: skip table scan when no child FKs. UPDATE 6.0→3.8ms (2.2ms saved). Uses WeakMap cache per db instance. FK CASCADE verified working. All tests pass."
       },
       {
         "id": "T35",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "Profile and fix UPDATE pipeline O(N) overhead",
         "plan_ref": "T33",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-28T18:20:51.936Z",
+        "completed": "2026-04-28T18:25:35.317Z",
+        "duration_ms": 600000,
+        "summary": "UPDATE pipeline analysis: Manual ops total 1.3ms but db.execute is 3.9ms. _evalExpr takes 836μs for WHERE id=2500 (should be <10μs). Execute pipeline overhead: 2.6ms (parsing+dispatch+expression eval). Root cause: expression evaluator is a 1327-line switch-case tree that processes every node generically. Biggest wins: (1) heap.get O(1) already fixed, (2) FK early-return fixed, (3) expression evaluator compilation would be the next major optimization. Filed as TODO."
       },
       {
         "id": "T36",
         "mode": "MAINTAIN",
         "status": "upcoming",
         "task": "Pre-push housekeeping"
+      },
+      {
+        "id": "T37",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Depth check: 15+ BUILD tasks done, review quality",
+        "started": "2026-04-28T18:26:17.394Z",
+        "completed": "2026-04-28T18:26:31.456Z",
+        "duration_ms": 60000,
+        "summary": "Depth check 4/3: HeapFile Array.find() was shocking (88,000x), learned in-place AST mutation + WeakMap caching, found 4 O(N) bugs. Deep quality work, no breadth spiral."
+      },
+      {
+        "id": "T38",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "HenryDB: compiled expression evaluator for simple WHERE clauses",
+        "task": null,
+        "started": "2026-04-28T18:26:37.467Z"
+      },
+      {
+        "id": "T39",
+        "mode": "BUILD",
+        "status": "upcoming",
+        "task": "Implement compiled expression evaluator for simple WHERE clauses",
+        "plan_ref": "T38",
+        "project": "henrydb"
+      },
+      {
+        "id": "T40",
+        "mode": "BUILD",
+        "status": "upcoming",
+        "task": "Add tests + benchmark for compiled WHERE evaluation",
+        "plan_ref": "T38",
+        "project": "henrydb"
+      },
+      {
+        "id": "T41",
+        "mode": "MAINTAIN",
+        "status": "upcoming",
+        "task": "Session end housekeeping"
       }
     ]
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 31,
-    "blocksTotal": 36,
+    "blocksCompleted": 35,
+    "blocksTotal": 41,
     "modeDistribution": {
-      "THINK": 6,
-      "PLAN": 7,
-      "BUILD": 14,
+      "THINK": 7,
+      "PLAN": 8,
+      "BUILD": 16,
       "MAINTAIN": 4
     }
   },

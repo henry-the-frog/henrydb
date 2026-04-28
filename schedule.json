@@ -356,25 +356,76 @@
     {
       "id": "T34",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Add early-return to _handleForeignKeyUpdate when no FK references exist",
       "plan_ref": "T33",
       "project": "henrydb",
-      "started": "2026-04-28T18:19:23.265Z"
+      "started": "2026-04-28T18:19:23.265Z",
+      "completed": "2026-04-28T18:20:44.375Z",
+      "duration_ms": 300000,
+      "summary": "FK cascade early-return: skip table scan when no child FKs. UPDATE 6.0→3.8ms (2.2ms saved). Uses WeakMap cache per db instance. FK CASCADE verified working. All tests pass."
     },
     {
       "id": "T35",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "Profile and fix UPDATE pipeline O(N) overhead",
       "plan_ref": "T33",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-28T18:20:51.936Z",
+      "completed": "2026-04-28T18:25:35.317Z",
+      "duration_ms": 600000,
+      "summary": "UPDATE pipeline analysis: Manual ops total 1.3ms but db.execute is 3.9ms. _evalExpr takes 836μs for WHERE id=2500 (should be <10μs). Execute pipeline overhead: 2.6ms (parsing+dispatch+expression eval). Root cause: expression evaluator is a 1327-line switch-case tree that processes every node generically. Biggest wins: (1) heap.get O(1) already fixed, (2) FK early-return fixed, (3) expression evaluator compilation would be the next major optimization. Filed as TODO."
     },
     {
       "id": "T36",
       "mode": "MAINTAIN",
       "status": "upcoming",
       "task": "Pre-push housekeeping"
+    },
+    {
+      "id": "T37",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Depth check: 15+ BUILD tasks done, review quality",
+      "started": "2026-04-28T18:26:17.394Z",
+      "completed": "2026-04-28T18:26:31.456Z",
+      "duration_ms": 60000,
+      "summary": "Depth check 4/3: HeapFile Array.find() was shocking (88,000x), learned in-place AST mutation + WeakMap caching, found 4 O(N) bugs. Deep quality work, no breadth spiral."
+    },
+    {
+      "id": "T38",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "HenryDB: compiled expression evaluator for simple WHERE clauses",
+      "task": null,
+      "started": "2026-04-28T18:26:37.467Z",
+      "completed": "2026-04-28T18:26:56.150Z",
+      "duration_ms": 60000,
+      "summary": "Planned: compile WHERE AST to JS function via new Function(). Phase 1: simple ops (=,<,>,AND,OR,NOT,IS NULL). Expected improvement: 836μs→<1μs for simple WHERE. 2 BUILD tasks."
+    },
+    {
+      "id": "T39",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Implement compiled expression evaluator for simple WHERE clauses",
+      "plan_ref": "T38",
+      "project": "henrydb",
+      "started": "2026-04-28T18:27:00.158Z"
+    },
+    {
+      "id": "T40",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Add tests + benchmark for compiled WHERE evaluation",
+      "plan_ref": "T38",
+      "project": "henrydb"
+    },
+    {
+      "id": "T41",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Session end housekeeping"
     }
   ],
   "focusProjects": [
@@ -554,6 +605,30 @@
     {
       "time": "2026-04-28T18:19:01.015Z",
       "msg": "PLAN T33 filled 2 BUILD tasks"
+    },
+    {
+      "time": "2026-04-28T18:26:09.452Z",
+      "msg": "Added T37 (THINK) after end: Depth check: 15+ BUILD tasks done, review quality"
+    },
+    {
+      "time": "2026-04-28T18:26:09.567Z",
+      "msg": "Added T38 (PLAN) after end: HenryDB: compiled expression evaluator for simple WHERE clauses"
+    },
+    {
+      "time": "2026-04-28T18:26:09.681Z",
+      "msg": "Added T39 (BUILD) after end: null"
+    },
+    {
+      "time": "2026-04-28T18:26:09.797Z",
+      "msg": "Added T40 (BUILD) after end: null"
+    },
+    {
+      "time": "2026-04-28T18:26:09.912Z",
+      "msg": "Added T41 (MAINTAIN) after end: Session end housekeeping"
+    },
+    {
+      "time": "2026-04-28T18:26:48.739Z",
+      "msg": "PLAN T38 filled 2 BUILD tasks"
     }
   ]
 }

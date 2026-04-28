@@ -1,4 +1,5 @@
 // dml-mutate.js — UPDATE and DELETE handlers extracted from db.js
+import { getCompiledExpr } from './compiled-expr.js';
 
 export function update(db, ast) {
   const table = db.tables.get(ast.table);
@@ -58,10 +59,16 @@ export function update(db, ast) {
         const colNameLower = colName.toLowerCase();
         const index = table.indexes.get(colName) || table.indexes.get(colNameLower);
         if (index && typeof index.search === 'function') {
-          // Use range() for non-unique indexes to get ALL matching rows
-          // search() only returns one match which misses duplicates
+          // For unique/PK indexes, search() returns single RID (fast)
+          // For non-unique, use range() to get ALL matching rows
           let rids;
-          if (typeof index.range === 'function') {
+          const colSchema = table.schema.find(c => c.name === colName || c.name.toLowerCase() === colNameLower);
+          const isUnique = colSchema && (colSchema.unique || colSchema.primaryKey);
+          
+          if (isUnique) {
+            const result = index.search(val);
+            rids = result !== undefined && result !== null ? [result] : [];
+          } else if (typeof index.range === 'function') {
             const rangeResults = index.range(val, val);
             rids = rangeResults.map(r => r.value || r);
           } else {
@@ -70,13 +77,15 @@ export function update(db, ast) {
               (Array.isArray(results) ? results : [results]) : [];
           }
           if (rids.length > 0) {
+            const compiledWhere = getCompiledExpr(ast.where);
+            const evalWhere = compiledWhere || ((row) => db._evalExpr(ast.where, row));
             for (const rid of rids) {
               try {
                 const tuple = table.heap.get(rid.pageId, rid.slotIdx);
                 if (tuple) {
                   const values = Array.isArray(tuple) ? tuple : (tuple.values || tuple);
                   const row = db._valuesToRow(values, table.schema, ast.table);
-                  if (db._evalExpr(ast.where, row)) {
+                  if (evalWhere(row)) {
                     toUpdate.push({ pageId: rid.pageId, slotIdx: rid.slotIdx, values: [...values], mergedRow: row });
                   }
                 }
@@ -93,10 +102,12 @@ export function update(db, ast) {
     }
     
     if (!usedIndex) {
-      // Fallback: full table scan
+      // Fallback: full table scan with compiled WHERE for performance
+      const compiledWhere = ast.where ? getCompiledExpr(ast.where) : null;
+      const evalWhere = compiledWhere || (ast.where ? (row) => db._evalExpr(ast.where, row) : null);
       for (const { pageId, slotIdx, values } of table.heap.scan()) {
         const row = db._valuesToRow(values, table.schema, ast.table);
-        if (!ast.where || db._evalExpr(ast.where, row)) {
+        if (!evalWhere || evalWhere(row)) {
           toUpdate.push({ pageId, slotIdx, values: [...values], mergedRow: row });
         }
       }
@@ -308,9 +319,11 @@ export function executeDelete(db, ast) {
     }
     
     if (!usedIndex) {
+      const compiledWhere = ast.where ? getCompiledExpr(ast.where) : null;
+      const evalWhere = compiledWhere || (ast.where ? (row) => db._evalExpr(ast.where, row) : null);
       for (const { pageId, slotIdx, values } of table.heap.scan()) {
         const row = db._valuesToRow(values, table.schema, ast.table);
-        if (!ast.where || db._evalExpr(ast.where, row)) {
+        if (!evalWhere || evalWhere(row)) {
           toDelete.push({ pageId, slotIdx });
         }
       }
