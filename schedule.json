@@ -583,6 +583,17 @@
       "completed": "2026-04-28T16:28:02.581Z",
       "duration_ms": 180000,
       "summary": "WASM compile time breakdown: parse 3ms, AST→IR 39ms (runtime function setup), encode 2ms, V8 compile 42ms. Solutions: cache compiled modules, lazy runtime functions."
+    },
+    {
+      "id": "T55",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Coverage analysis: what WASM features are tested vs untested? Find gaps in the 339-test suite.",
+      "project": "monkey-lang",
+      "started": "2026-04-28T16:30:22.817Z",
+      "completed": "2026-04-28T16:32:05.416Z",
+      "duration_ms": 180000,
+      "summary": "Coverage gaps found: do-while (0 tests, works), for-in (0 tests, works), inline map/filter (0 tests). Template literals minimal (2 tests). 339 tests cover most features well."
     }
   ],
   "focusProjects": [
@@ -814,6 +825,10 @@
     {
       "time": "2026-04-28T16:26:41.516Z",
       "msg": "Added T54 (EXPLORE) after end: Profile WASM compilation: where does the 70-90ms compilation time go? Parser, analysis, codegen, module building?"
+    },
+    {
+      "time": "2026-04-28T16:30:16.980Z",
+      "msg": "Added T55 (EXPLORE) after end: Coverage analysis: what WASM features are tested vs untested? Find gaps in the 339-test suite."
     }
   ]
 }
