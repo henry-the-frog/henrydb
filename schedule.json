@@ -124,36 +124,63 @@
     {
       "id": "T8",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Housekeeping: git push, dashboard, email check",
-      "started": "2026-04-28T14:48:12.958Z"
+      "started": "2026-04-28T14:48:12.958Z",
+      "completed": "2026-04-28T14:49:10.966Z",
+      "duration_ms": 120000,
+      "summary": "Git push (henrydb + workspace). Updated scratch note for closure bugs. Knowledge captured."
     },
     {
       "id": "T9",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Mid-day reflection: depth vs breadth check"
+      "status": "done",
+      "task": "Mid-day reflection: depth vs breadth check",
+      "started": "2026-04-28T14:49:22.142Z",
+      "completed": "2026-04-28T14:50:44.340Z",
+      "duration_ms": 180000,
+      "summary": "Mid-day reflection: 6 BUILDs, all high quality. Updated TASKS.md. Next: generate NaN-boxing THINK/PLAN/BUILD cycle for monkey-lang."
     },
     {
       "id": "T10",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "WASM array/GC improvements based on morning findings",
-      "task": null
+      "task": null,
+      "started": "2026-04-28T14:51:00.306Z",
+      "completed": "2026-04-28T14:51:39.463Z",
+      "duration_ms": 120000,
+      "summary": "Planned WASM array improvement: THINK to research current impl, then PLAN mutable array design."
     },
     {
       "id": "T11",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null,
+      "status": "done",
+      "task": "THINK: Research current array implementation in WASM compiler — understand push, immutable copy semantics, and memory layout",
       "plan_ref": "T10",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-28T14:51:50.473Z",
+      "completed": "2026-04-28T14:52:35.457Z",
+      "duration_ms": 180000,
+      "summary": "Researched WASM array: push is O(N) copy-on-append. Layout is [TAG][len][elem...]. Need capacity field at offset 8, shifting elements to offset 12. ~17 code sites to update."
+    },
+    {
+      "id": "T23",
+      "mode": "BUILD",
+      "task": "PLAN: Design mutable array with capacity-based growth (amortized O(1) push)",
+      "status": "done",
+      "plan_ref": "T10",
+      "started": "2026-04-28T14:52:45.584Z",
+      "completed": "2026-04-28T14:53:26.823Z",
+      "duration_ms": 120000,
+      "summary": "Designed mutable array: [TAG][len][capacity][elems...]. 3 BUILD tasks: layout change, amortized push, stress test."
     },
     {
       "id": "T12",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Housekeeping: git push, dashboard, GitHub notifications"
+      "status": "in-progress",
+      "task": "Housekeeping: git push, dashboard, GitHub notifications",
+      "started": "2026-04-28T14:53:39.848Z"
     },
     {
       "id": "T13",
@@ -195,6 +222,27 @@
       "status": "upcoming",
       "task": "HenryDB stress test: concurrent transactions, MVCC edge cases",
       "project": "henrydb"
+    },
+    {
+      "id": "T24",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Update WASM array layout: add capacity field at offset 8. Update make_array, array_get, array_set, push to use 12-byte header. Update host-side allocArray and formatWasmValue.",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T25",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Implement amortized O(1) push: check capacity, grow 2x when full, in-place append when room",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T26",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Add array push stress test: 10K pushes should complete in <1s (was crashing at 3-5K)",
+      "project": "monkey-lang"
     }
   ],
   "focusProjects": [
@@ -286,6 +334,22 @@
     {
       "time": "2026-04-28T14:36:49.728Z",
       "msg": "PLAN T6 filled 2 BUILD tasks"
+    },
+    {
+      "time": "2026-04-28T14:51:31.930Z",
+      "msg": "PLAN T10 filled 2 BUILD tasks"
+    },
+    {
+      "time": "2026-04-28T14:53:06.530Z",
+      "msg": "Added T24 (BUILD) after end: Update WASM array layout: add capacity field at offset 8. Update make_array, array_get, array_set, push to use 12-byte header. Update host-side allocArray and formatWasmValue."
+    },
+    {
+      "time": "2026-04-28T14:53:11.311Z",
+      "msg": "Added T25 (BUILD) after end: Implement amortized O(1) push: check capacity, grow 2x when full, in-place append when room"
+    },
+    {
+      "time": "2026-04-28T14:53:20.067Z",
+      "msg": "Added T26 (BUILD) after end: Add array push stress test: 10K pushes should complete in <1s (was crashing at 3-5K)"
     }
   ]
 }

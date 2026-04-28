@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-28T14:48:12.993Z",
+  "generated": "2026-04-28T14:53:39.883Z",
   "current": {
     "status": "in-progress",
     "mode": "MAINTAIN",
-    "task": "Housekeeping: git push, dashboard, email check",
-    "startedAt": "2026-04-28T14:48:12.993Z",
-    "taskId": "T8"
+    "task": "Housekeeping: git push, dashboard, GitHub notifications",
+    "startedAt": "2026-04-28T14:53:39.883Z",
+    "taskId": "T12"
   },
   "schedule": {
     "date": "2026-04-28",
@@ -4750,52 +4750,79 @@
       {
         "id": "T6",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "HenryDB INSERT bottleneck fix (remove redundant heap scans)",
         "task": null,
-        "started": "2026-04-28T14:36:24.785Z"
+        "started": "2026-04-28T14:36:24.785Z",
+        "completed": "2026-04-28T14:36:54.994Z",
+        "duration_ms": 120000,
+        "summary": "Planned INSERT fix: 2 BUILD tasks — remove redundant heap scans, verify + benchmark."
       },
       {
         "id": "T7",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "Remove redundant heap scan constraint checks in dml-insert.js _insert() — lines 168-175 (UNIQUE/PK) and 184-206 (UNIQUE INDEX)",
         "plan_ref": "T6",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-28T14:37:02.031Z",
+        "completed": "2026-04-28T14:46:38.145Z",
+        "duration_ms": 420000,
+        "summary": "Removed redundant O(N) heap scan for single-column UNIQUE/PK constraints. Kept composite unique check. 71/71 constraint tests pass."
       },
       {
         "id": "T22",
         "mode": "BUILD",
         "task": "Run full HenryDB test suite to verify no regressions, then benchmark INSERT performance improvement",
-        "status": "upcoming",
-        "plan_ref": "T6"
+        "status": "done",
+        "plan_ref": "T6",
+        "started": "2026-04-28T14:46:49.871Z",
+        "completed": "2026-04-28T14:48:03.164Z",
+        "duration_ms": 300000,
+        "summary": "INSERT 167x faster: 3.5ms→0.021ms per row. 10K inserts: 35s→210ms. 147/147 constraint tests pass."
       },
       {
         "id": "T8",
         "mode": "MAINTAIN",
-        "status": "upcoming",
-        "task": "Housekeeping: git push, dashboard, email check"
+        "status": "done",
+        "task": "Housekeeping: git push, dashboard, email check",
+        "started": "2026-04-28T14:48:12.958Z",
+        "completed": "2026-04-28T14:49:10.966Z",
+        "duration_ms": 120000,
+        "summary": "Git push (henrydb + workspace). Updated scratch note for closure bugs. Knowledge captured."
       },
       {
         "id": "T9",
         "mode": "THINK",
-        "status": "upcoming",
-        "task": "Mid-day reflection: depth vs breadth check"
+        "status": "done",
+        "task": "Mid-day reflection: depth vs breadth check",
+        "started": "2026-04-28T14:49:22.142Z",
+        "completed": "2026-04-28T14:50:44.340Z",
+        "duration_ms": 180000,
+        "summary": "Mid-day reflection: 6 BUILDs, all high quality. Updated TASKS.md. Next: generate NaN-boxing THINK/PLAN/BUILD cycle for monkey-lang."
       },
       {
         "id": "T10",
         "mode": "PLAN",
-        "status": "upcoming",
+        "status": "in-progress",
         "goal": "WASM array/GC improvements based on morning findings",
-        "task": null
+        "task": null,
+        "started": "2026-04-28T14:51:00.306Z"
       },
       {
         "id": "T11",
         "mode": "BUILD",
         "status": "upcoming",
-        "task": null,
+        "task": "THINK: Research current array implementation in WASM compiler — understand push, immutable copy semantics, and memory layout",
         "plan_ref": "T10",
         "project": "monkey-lang"
+      },
+      {
+        "id": "T23",
+        "mode": "BUILD",
+        "task": "PLAN: Design mutable array with capacity-based growth (amortized O(1) push)",
+        "status": "upcoming",
+        "plan_ref": "T10"
       },
       {
         "id": "T12",
@@ -4848,13 +4875,13 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 11,
-    "blocksTotal": 22,
+    "blocksCompleted": 16,
+    "blocksTotal": 23,
     "modeDistribution": {
-      "THINK": 2,
-      "PLAN": 2,
-      "BUILD": 6,
-      "MAINTAIN": 1
+      "THINK": 3,
+      "PLAN": 3,
+      "BUILD": 8,
+      "MAINTAIN": 2
     }
   },
   "artifacts": [],

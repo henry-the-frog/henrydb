@@ -8,9 +8,8 @@
 - **LOC:** 24K source + 15K test = 39K total
 - **Features:** Full language in WASM — closures, classes (3-level inheritance + super), exceptions (native WASM EH), floats, type inference, TCO, 9 string methods, 9 utility builtins, 6 HOF builtins (map/filter/reduce/find/any/every + sort/forEach), module cache (LRU-64), REPL incremental compilation
 - **Optimizations:** knownInt param inference, return type inference, closure capture type propagation, constant folding, dead code elimination, tail-call optimization, 0-capture env skip
+- **Box/cell closures:** ✅ Fixed (Apr 28) — shared mutable state, self-ref+captures, recursive+mutable all working
 - **Known issues:** 
-  - Sibling closures don't share mutable state (need box/cell pattern)
-  - Self-referencing closures with multiple captures fail (env stores 0 for uninitialized self-ref)
   - Array push is O(N²) due to immutable copy semantics (crashes at ~3-5K items)
   - GC is no-op for WASM-internal allocations (bump allocator never frees)
   - i32 overflow for large numbers (factorial(20), sum 100k)
@@ -20,8 +19,8 @@
 - **LOC:** 81K source + 130K test = 211K total
 - **JSON support:** Full JSON1 extension (16+ functions) + json_each/json_tree TVFs
 - **Recent (Apr 27):** Triggers (UPDATE OF + WHEN + INSTEAD OF + cascade + recursion depth limit), unified cost model, adaptive engine integration, EXPLAIN ANALYZE multi-engine, PL/SQL recursive functions + string concat fixes, json_set/replace/insert/remove/patch, generate_series, printf, total()
+- **INSERT perf:** ✅ Fixed (Apr 28) — 167x faster (3.5ms → 0.021ms/row) by removing redundant heap scans
 - **Known issues:**
-  - INSERT bottleneck: triple constraint checking (2 redundant O(N) heap scans before B-tree validation)
   - Cost model multipliers are aspirational (not calibrated — all engines ~same speed at current scale)
 
 ### neural-net
@@ -29,9 +28,7 @@
 - **No active work needed**
 
 ## Backlog
-- monkey-lang: Box/cell pattern for mutable captured variables (fixes 3 closure bugs)
 - monkey-lang: NaN-boxing for typed value representation
 - monkey-lang: Module resolution for import statements
-- HenryDB: Fix INSERT bottleneck (remove redundant heap scans in dml-insert.js)
 - type-infer: Add recursive types and polymorphic container tests
 - regex-engine: Fix empty string matching and anchor support
