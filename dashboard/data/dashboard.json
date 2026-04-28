@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-28T00:54:51.279Z",
+  "generated": "2026-04-28T01:02:42.562Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "JIT: fix sieve trace by blacklisting nested-loop back-edges from outer trace recording",
-    "completedAt": "2026-04-28T00:54:51.279Z",
-    "taskId": "T273",
-    "summary": "🎉 FIXED the last JIT skip! Sieve nested-loop trace stitching: abort outer recording when inner loop back-edge has no compiled trace. Prevents constant-folding inner loop values. Sieve: 25 primes ✓ (was 57). 1930 pass, 0 fail, 0 skip — FIRST TIME WITH 0 SKIPS!",
-    "durationMs": 900000
+    "task": "Run comprehensive benchmarks across all monkey-lang execution engines and document final state",
+    "completedAt": "2026-04-28T01:02:42.562Z",
+    "taskId": "T278",
+    "summary": "Final benchmarks: WASM wins every test! fib(30)=7.7ms (457x vs eval), loop 1M=2ms (530x), closure 100K=0.8ms (376x), counter 100K=0.6ms (540x), TCO sum 1M=2ms (only WASM handles this). JIT: strong on fib (119ms) but slower than WASM.",
+    "durationMs": 180000
   },
   "schedule": {
     "date": "2026-04-27",
@@ -10026,13 +10026,13 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 249,
+    "blocksCompleted": 253,
     "blocksTotal": 244,
     "modeDistribution": {
       "THINK": 37,
       "PLAN": 31,
-      "BUILD": 114,
-      "MAINTAIN": 46,
+      "BUILD": 116,
+      "MAINTAIN": 48,
       "EXPLORE": 21
     }
   },

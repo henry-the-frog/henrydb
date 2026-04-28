@@ -2844,8 +2844,57 @@
     {
       "id": "T274",
       "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Final final session close",
+      "started": "2026-04-28T00:55:28.258Z",
+      "completed": "2026-04-28T00:55:28.402Z",
+      "duration_ms": 5000,
+      "summary": "Deferred to actual session end."
+    },
+    {
+      "id": "T275",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Fix HenryDB PL/SQL recursive function returning NaN",
+      "project": "henrydb",
+      "started": "2026-04-28T00:55:43.394Z",
+      "completed": "2026-04-28T01:01:08.228Z",
+      "duration_ms": 600000,
+      "summary": "Fixed both PL/SQL bugs: (1) recursive functions - added user-defined function call handling in evaluateExpression, (2) string concatenation - fixed || parser to respect quoted strings. 41 PL/SQL tests pass."
+    },
+    {
+      "id": "T276",
+      "mode": "BUILD",
       "status": "upcoming",
-      "task": "Final final session close"
+      "task": "Fix HenryDB PL/SQL string concatenation || operator",
+      "project": "henrydb"
+    },
+    {
+      "id": "T277",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Actual session close",
+      "started": "2026-04-28T01:01:53.064Z",
+      "completed": "2026-04-28T01:01:53.301Z",
+      "duration_ms": 5000,
+      "summary": "Deferred."
+    },
+    {
+      "id": "T278",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Run comprehensive benchmarks across all monkey-lang execution engines and document final state",
+      "project": "monkey-lang",
+      "started": "2026-04-28T01:01:58.658Z",
+      "completed": "2026-04-28T01:02:42.457Z",
+      "duration_ms": 180000,
+      "summary": "Final benchmarks: WASM wins every test! fib(30)=7.7ms (457x vs eval), loop 1M=2ms (530x), closure 100K=0.8ms (376x), counter 100K=0.6ms (540x), TCO sum 1M=2ms (only WASM handles this). JIT: strong on fib (119ms) but slower than WASM."
+    },
+    {
+      "id": "T279",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Session final close"
     },
     {
       "id": "T243",
@@ -4060,6 +4109,26 @@
     {
       "time": "2026-04-28T00:53:06.169Z",
       "msg": "Added T274 (MAINTAIN) after T273: Final final session close"
+    },
+    {
+      "time": "2026-04-28T00:55:36.570Z",
+      "msg": "Added T275 (BUILD) after T274: Fix HenryDB PL/SQL recursive function returning NaN"
+    },
+    {
+      "time": "2026-04-28T00:55:36.688Z",
+      "msg": "Added T276 (BUILD) after T275: Fix HenryDB PL/SQL string concatenation || operator"
+    },
+    {
+      "time": "2026-04-28T00:55:36.806Z",
+      "msg": "Added T277 (MAINTAIN) after T276: Actual session close"
+    },
+    {
+      "time": "2026-04-28T01:01:52.683Z",
+      "msg": "Added T278 (BUILD) after T277: Run comprehensive benchmarks across all monkey-lang execution engines and document final state"
+    },
+    {
+      "time": "2026-04-28T01:01:52.876Z",
+      "msg": "Added T279 (MAINTAIN) after T278: Session final close"
     }
   ]
 }
