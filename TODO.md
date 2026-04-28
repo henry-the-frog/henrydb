@@ -5,7 +5,7 @@
 
 ## Normal
 - HenryDB: Unified cost model across all 4 execution engines (benchmark shows all engines sub-0.01ms at 5K rows — calibration may not matter until 50K+ rows)
-- HenryDB: Prepared statements for INSERT (eliminate SQL parsing overhead)
+- HenryDB: SQL-level prepared statements (`db.prepare('INSERT INTO t VALUES (?, ?)')` → parse once, bind params) — existing PreparedQueryCache only accepts AST objects
 - HenryDB: OOM at 5K rows with 3 indexes (memory efficiency issue)
 - monkey-lang: Test coverage gaps — do-while (0 tests), for-in (0 tests), inline map/filter (0 tests)
 
