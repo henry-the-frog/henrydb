@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-28T17:45:40.394Z",
+  "generated": "2026-04-28T17:47:39.677Z",
   "current": {
     "status": "in-progress",
     "mode": "BUILD",
-    "task": "Fix RETURNING: use rid from _insertRow instead of heap scan",
-    "startedAt": "2026-04-28T17:45:40.394Z",
-    "taskId": "T12"
+    "task": "Fix ON CONFLICT upsert: use PK index instead of heap scan",
+    "startedAt": "2026-04-28T17:47:39.677Z",
+    "taskId": "T13"
   },
   "schedule": {
     "date": "2026-04-28",
@@ -4830,12 +4830,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 11,
+    "blocksCompleted": 12,
     "blocksTotal": 18,
     "modeDistribution": {
       "THINK": 2,
       "PLAN": 3,
-      "BUILD": 4,
+      "BUILD": 5,
       "MAINTAIN": 2
     }
   },

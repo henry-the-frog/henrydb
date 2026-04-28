@@ -105,15 +105,30 @@ export function insert(db, ast) {
       }
       
       if (conflictIdx >= 0 && orderedValues[conflictIdx] != null) {
-        // Check if conflict column value already exists
+        // Check if conflict column value already exists — use index if available (O(log N))
         let existing = null;
         let existingRid = null;
-        for (const tuple of table.heap.scan()) {
-          const tupleValues = tuple.values || tuple;
-          if (tupleValues[conflictIdx] === orderedValues[conflictIdx]) { 
-            existing = tupleValues; 
-            existingRid = { pageId: tuple.pageId, slotIdx: tuple.slotIdx };
-            break; 
+        const conflictColName = table.schema[conflictIdx].name;
+        const idx = table.indexes?.get(conflictColName);
+        if (idx && typeof idx.search === 'function') {
+          // Use B-tree index for O(log N) lookup
+          const rid = idx.search(orderedValues[conflictIdx]);
+          if (rid && typeof rid === 'object' && rid.pageId !== undefined) {
+            existingRid = rid;
+            const tuple = table.heap.get(rid.pageId, rid.slotIdx);
+            if (tuple) {
+              existing = Array.isArray(tuple) ? tuple : (tuple.values || tuple);
+            }
+          }
+        } else {
+          // Fallback: heap scan for columns without indexes
+          for (const tuple of table.heap.scan()) {
+            const tupleValues = Array.isArray(tuple) ? tuple : (tuple.values || tuple);
+            if (tupleValues[conflictIdx] === orderedValues[conflictIdx]) { 
+              existing = tupleValues; 
+              existingRid = { pageId: tuple.pageId, slotIdx: tuple.slotIdx };
+              break; 
+            }
           }
         }
         

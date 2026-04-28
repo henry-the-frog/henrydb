@@ -123,19 +123,23 @@
     {
       "id": "T12",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Fix RETURNING: use rid from _insertRow instead of heap scan",
       "plan_ref": "T11",
       "project": "henrydb",
-      "started": "2026-04-28T17:45:40.360Z"
+      "started": "2026-04-28T17:45:40.360Z",
+      "completed": "2026-04-28T17:47:30.415Z",
+      "duration_ms": 300000,
+      "summary": "Fixed INSERT RETURNING: O(1) rid lookup replaces O(N) heap scan. New _readRowByRid uses heap.get(pageId,slotIdx). Works for normal and ON CONFLICT RETURNING. 0.052ms/insert at 2K rows. All tests pass."
     },
     {
       "id": "T13",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "in-progress",
       "task": "Fix ON CONFLICT upsert: use PK index instead of heap scan",
       "plan_ref": "T11",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-28T17:47:39.642Z"
     },
     {
       "id": "T14",
