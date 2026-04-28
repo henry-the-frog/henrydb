@@ -101,18 +101,22 @@
     {
       "id": "T7",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Remove redundant heap scan constraint checks in dml-insert.js _insert() — lines 168-175 (UNIQUE/PK) and 184-206 (UNIQUE INDEX)",
       "plan_ref": "T6",
       "project": "henrydb",
-      "started": "2026-04-28T14:37:02.031Z"
+      "started": "2026-04-28T14:37:02.031Z",
+      "completed": "2026-04-28T14:46:38.145Z",
+      "duration_ms": 420000,
+      "summary": "Removed redundant O(N) heap scan for single-column UNIQUE/PK constraints. Kept composite unique check. 71/71 constraint tests pass."
     },
     {
       "id": "T22",
       "mode": "BUILD",
       "task": "Run full HenryDB test suite to verify no regressions, then benchmark INSERT performance improvement",
-      "status": "upcoming",
-      "plan_ref": "T6"
+      "status": "in-progress",
+      "plan_ref": "T6",
+      "started": "2026-04-28T14:46:49.871Z"
     },
     {
       "id": "T8",
