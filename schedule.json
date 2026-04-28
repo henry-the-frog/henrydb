@@ -409,6 +409,47 @@
       "completed": "2026-04-28T15:56:30.525Z",
       "duration_ms": 120000,
       "summary": "Added 4 regression tests for hash closures + deep nesting. 339/339 pass."
+    },
+    {
+      "id": "T39",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Test advanced closure patterns: iterators, state machines, event emitters, memoization with shared cache",
+      "project": "monkey-lang",
+      "started": "2026-04-28T15:57:32.181Z",
+      "completed": "2026-04-28T15:58:10.614Z",
+      "duration_ms": 300000,
+      "summary": "All 4 advanced patterns work: iterator (sum=150✓), memoized fib(10)=55✓, state machine✓, accumulator with array push✓. Box/cell is robust for real-world patterns."
+    },
+    {
+      "id": "T40",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Stress-test INSERT performance with realistic workloads: bulk insert, concurrent transactions, large values, indexes",
+      "project": "henrydb",
+      "started": "2026-04-28T15:58:51.440Z",
+      "completed": "2026-04-28T16:01:47.861Z",
+      "duration_ms": 300000,
+      "summary": "INSERT stress test: PK-only is fast (437ms/1K). UNIQUE TEXT still O(N) but from B-tree search, not heap scan. SERIAL works. OOM at 5K with 3 indexes (memory limit, not perf)."
+    },
+    {
+      "id": "T41",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Research HenryDB cost model: understand current adaptive engine, 4 execution engines, and how cost estimation works",
+      "project": "henrydb",
+      "started": "2026-04-28T16:02:36.012Z",
+      "completed": "2026-04-28T16:03:16.636Z",
+      "duration_ms": 180000,
+      "summary": "Reviewed adaptive engine cost model: heuristic-based, not calibrated. 4 engines (vectorized, codegen, compiled, volcano). Thresholds set without benchmarking. compileThreshold=5K might be too high. Runtime feedback exists but needs 3+ samples. Calibration needs benchmark suite."
+    },
+    {
+      "id": "T42",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Create engine benchmark script: test each engine on point query, scan, join, aggregation at 100/1K/10K rows",
+      "project": "henrydb",
+      "started": "2026-04-28T16:03:34.760Z"
     }
   ],
   "focusProjects": [
@@ -576,6 +617,22 @@
     {
       "time": "2026-04-28T15:55:32.989Z",
       "msg": "Added T38 (BUILD) after end: Add regression tests for hash-stored closures and deep nesting box patterns"
+    },
+    {
+      "time": "2026-04-28T15:57:22.054Z",
+      "msg": "Added T39 (EXPLORE) after end: Test advanced closure patterns: iterators, state machines, event emitters, memoization with shared cache"
+    },
+    {
+      "time": "2026-04-28T15:58:42.546Z",
+      "msg": "Added T40 (EXPLORE) after end: Stress-test INSERT performance with realistic workloads: bulk insert, concurrent transactions, large values, indexes"
+    },
+    {
+      "time": "2026-04-28T16:02:24.753Z",
+      "msg": "Added T41 (THINK) after end: Research HenryDB cost model: understand current adaptive engine, 4 execution engines, and how cost estimation works"
+    },
+    {
+      "time": "2026-04-28T16:03:26.485Z",
+      "msg": "Added T42 (BUILD) after end: Create engine benchmark script: test each engine on point query, scan, join, aggregation at 100/1K/10K rows"
     }
   ]
 }
