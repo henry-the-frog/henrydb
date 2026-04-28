@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-28T03:40:35.086Z",
+  "generated": "2026-04-28T03:46:40.024Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "HenryDB: test CHECK constraints and DEFAULT values",
-    "completedAt": "2026-04-28T03:40:35.086Z",
-    "taskId": "T330",
-    "summary": "All constraints work: CHECK(price>0) blocks negatives, NOT NULL blocks nulls, UNIQUE blocks duplicates, DEFAULT applied when column omitted. Clear error messages for all violations. Full constraint enforcement.",
+    "task": "monkey-lang: test OOP protocols (iterable, comparable, hashable)",
+    "completedAt": "2026-04-28T03:46:40.024Z",
+    "taskId": "T332",
+    "summary": "OOP protocols work: Python-style dunder methods (__add__, __sub__, __mul__, __eq__, __lt__, toString). Operator overloading for classes, string concatenation with custom toString, sorting with __lt__. 12/12 tests pass.",
     "durationMs": 120000
   },
   "schedule": {
@@ -10026,14 +10026,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 306,
+    "blocksCompleted": 308,
     "blocksTotal": 244,
     "modeDistribution": {
       "THINK": 38,
       "PLAN": 31,
       "BUILD": 117,
       "MAINTAIN": 50,
-      "EXPLORE": 70
+      "EXPLORE": 72
     }
   },
   "artifacts": [],
