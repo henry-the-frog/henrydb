@@ -78,6 +78,11 @@ function _tryFastUpdate(db, ast) {
     const { column, value } = ast.assignments[i];
     const colIdx = meta.colMap.get(column) ?? meta.colMap.get(column.toLowerCase());
     if (colIdx === undefined) return null;
+    
+    // Bail if updating a UNIQUE column (need constraint validation)
+    const colSchema = meta.table.schema[colIdx];
+    if (colSchema && colSchema.unique && !colSchema.primaryKey) return null;
+    
     const vt = value.type;
     if (vt === 'number' || vt === 'string' || vt === 'literal' || vt === 'param' || vt === 'PARAM') {
       newValues[colIdx] = value.value;
