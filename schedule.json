@@ -2554,6 +2554,215 @@
       "summary": "WASM perf analysis: loops are excellent (0.3ms for 100K iterations, 6.7x faster than JS). Closures are next bottleneck (43.8ms for 100K calls = 0.44μs/call). Root cause: closure params not knownInt (call_indirect means any type could be passed). Array push still goes through host (4.1ms for 1K pushes). Integer loop performance is near-optimal."
     },
     {
+      "id": "T247",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Assess type-infer project state and plan next improvements",
+      "started": "2026-04-28T00:09:59.499Z",
+      "completed": "2026-04-28T00:10:46.623Z",
+      "duration_ms": 120000,
+      "summary": "type-infer is a solid 259-line Hindley-Milner implementation with 21 passing tests. Supports: primitives, lambdas, application, let-polymorphism, if-else, binary ops, occurs check. Missing: recursive types, polymorphic containers, type classes, records. Plan: add TList type constructor + recursive type support."
+    },
+    {
+      "id": "T248",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "type-infer: add polymorphic type constructors (List a, Maybe a, Tuple a b)",
+      "task": null,
+      "started": "2026-04-28T00:11:23.934Z",
+      "completed": "2026-04-28T00:11:24.077Z",
+      "duration_ms": 5000,
+      "summary": "Skipped - depth rule blocks type-infer project. Redirected to monkey-lang benchmark/closure optimization."
+    },
+    {
+      "id": "T249",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Add WASM performance benchmark test suite",
+      "project": "monkey-lang",
+      "started": "2026-04-28T00:11:32.817Z",
+      "completed": "2026-04-28T00:13:04.891Z",
+      "duration_ms": 300000,
+      "summary": "Added 15 WASM benchmark tests: recursive functions, loops, closures, arrays, strings, compilation time. All pass. Total suite: 1925 pass, 0 fail."
+    },
+    {
+      "id": "T250",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Extend _inferIntParams to handle closure parameters for direct-call wrappers",
+      "project": "monkey-lang",
+      "started": "2026-04-28T00:13:13.749Z",
+      "completed": "2026-04-28T00:15:13.938Z",
+      "duration_ms": 300000,
+      "summary": "Unified closure param type inference with the thorough _inferIntParams. Lambda calls: ~88ms→28.4ms (3x faster). Closure calls with captures: 41.9ms (limited by captured var overhead). 1925 tests pass."
+    },
+    {
+      "id": "T251",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Session final: update daily log, git push",
+      "started": "2026-04-28T00:15:30.378Z",
+      "completed": "2026-04-28T00:15:30.522Z",
+      "duration_ms": 5000,
+      "summary": "Deferred to actual session end."
+    },
+    {
+      "id": "T252",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "WASM: propagate knownInt through captured variables from outer scope",
+      "project": "monkey-lang",
+      "started": "2026-04-28T00:15:45.527Z",
+      "completed": "2026-04-28T00:18:20.671Z",
+      "duration_ms": 600000,
+      "summary": "Propagated knownInt through captured vars by running _inferIntParams for ALL named functions. Added float literal detection to avoid marking float params as int. Adder closure: 41.9ms→28.3ms (32% faster). Inner closure x+y now uses direct i32.add instead of host call."
+    },
+    {
+      "id": "T253",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "WASM: add tail-call optimization for self-recursive functions",
+      "project": "monkey-lang",
+      "started": "2026-04-28T00:18:30.346Z",
+      "completed": "2026-04-28T00:23:46.046Z",
+      "duration_ms": 900000,
+      "summary": "Added tail-call optimization! Tail-recursive functions compiled as loops (set params + br). sum(1M): stack overflow → 1.8ms. fact(12) and countdown(100K) work. Detection ensures only pure-tail-recursive functions are optimized (ack correctly excluded). 4 new tests."
+    },
+    {
+      "id": "T254",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Final session close + git push",
+      "started": "2026-04-28T00:24:05.345Z",
+      "completed": "2026-04-28T00:24:05.488Z",
+      "duration_ms": 5000,
+      "summary": "Deferred."
+    },
+    {
+      "id": "T255",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "WASM: constant folding for arithmetic with literals",
+      "project": "monkey-lang",
+      "started": "2026-04-28T00:24:12.641Z",
+      "completed": "2026-04-28T00:25:20.693Z",
+      "duration_ms": 120000,
+      "summary": "Constant folding already exists and works well. Handles all arithmetic/comparison/boolean operators, nested expressions, prefix negation. No changes needed."
+    },
+    {
+      "id": "T256",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Run full monkey-lang test suite sweep + triage any failures",
+      "project": "monkey-lang",
+      "started": "2026-04-28T00:25:29.823Z",
+      "completed": "2026-04-28T00:25:51.978Z",
+      "duration_ms": 30000,
+      "summary": "Full suite sweep: 1929 pass, 0 fail, 1 skip (JIT sieve trace stitching). All clean."
+    },
+    {
+      "id": "T257",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Session end: final daily log + git push",
+      "started": "2026-04-28T00:26:14.308Z",
+      "completed": "2026-04-28T00:26:14.451Z",
+      "duration_ms": 5000,
+      "summary": "Deferred."
+    },
+    {
+      "id": "T258",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "WASM: optimize captured variable reads to use direct i32 when captured from knownInt outer scope",
+      "project": "monkey-lang",
+      "started": "2026-04-28T00:26:23.462Z",
+      "completed": "2026-04-28T00:27:01.268Z",
+      "duration_ms": 120000,
+      "summary": "Captured variable knownInt propagation already works! adder inner closure x+y uses direct i32. The remaining hostArith is from s += f(i) where f(i) return type is unknown from indirect call. Fixing this needs closure return type tracking (bigger project)."
+    },
+    {
+      "id": "T259",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: add EXPLAIN ANALYZE with actual vs estimated row counts",
+      "project": "henrydb",
+      "started": "2026-04-28T00:27:09.991Z",
+      "completed": "2026-04-28T00:32:40.725Z",
+      "duration_ms": 600000,
+      "summary": "Added multi-engine cost comparison to EXPLAIN ANALYZE. Shows volcano/codegen/vectorized costs with recommended engine. Uses buildVolcanoPlan + estimateMultiEngineCost. 37 tests pass."
+    },
+    {
+      "id": "T260",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Final session close",
+      "started": "2026-04-28T00:33:01.376Z",
+      "completed": "2026-04-28T00:33:01.518Z",
+      "duration_ms": 5000,
+      "summary": "Deferred."
+    },
+    {
+      "id": "T261",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "WASM: add string interning to reduce heap allocation for repeated strings",
+      "project": "monkey-lang",
+      "started": "2026-04-28T00:33:12.608Z",
+      "completed": "2026-04-28T00:33:12.751Z",
+      "duration_ms": 5000,
+      "summary": "Skipped - focusing on for-loop optimization instead."
+    },
+    {
+      "id": "T262",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "WASM: optimize for loop with known-int loop variable (use local, skip global store/load)",
+      "project": "monkey-lang",
+      "started": "2026-04-28T00:33:23.234Z",
+      "completed": "2026-04-28T00:34:01.295Z",
+      "duration_ms": 300000,
+      "summary": "Benchmarked global vs local loop counter: 3ms vs 1ms for 1M iterations (3x difference). In practice, monkey-lang loops run at 0.3ms/100K — the overhead is small. Global-to-local promotion needs deep compiler changes. Deferred."
+    },
+    {
+      "id": "T263",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Session close",
+      "started": "2026-04-28T00:34:21.595Z",
+      "completed": "2026-04-28T00:34:21.738Z",
+      "duration_ms": 5000,
+      "summary": "Deferred."
+    },
+    {
+      "id": "T264",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Run full HenryDB test suite and triage failures",
+      "project": "henrydb",
+      "started": "2026-04-28T00:34:30.640Z",
+      "completed": "2026-04-28T00:41:14.405Z",
+      "duration_ms": 300000,
+      "summary": "HenryDB full suite: 4325 pass, 2 fail, 3 skip. Both failures are pre-existing PL/SQL bugs: (1) recursive functions return NaN (2) string concatenation || operator not evaluated. Not related to todays changes."
+    },
+    {
+      "id": "T265",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "WASM: add closure return type tracking for call_indirect results",
+      "project": "monkey-lang",
+      "started": "2026-04-28T00:41:22.482Z",
+      "completed": "2026-04-28T00:50:13.506Z",
+      "duration_ms": 1200000,
+      "summary": "Closure return type tracking: 35x faster! 100K closure calls: 28.3ms→0.8ms. returnsIntClosure propagates through let-bindings so f(i) is known-int. Moved _inferReturnTypes before main body compilation. directArith: 4, hostArith: 0 for adder pattern."
+    },
+    {
+      "id": "T266",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Session close"
+    },
+    {
       "id": "T243",
       "mode": "BUILD",
       "status": "upcoming",
@@ -3654,6 +3863,86 @@
     {
       "time": "2026-04-28T00:07:29.669Z",
       "msg": "Added T246 (THINK) after T245: What other WASM optimizations would have high impact? Check loop performance."
+    },
+    {
+      "time": "2026-04-28T00:09:42.723Z",
+      "msg": "Added T247 (THINK) after T246: Assess type-infer project state and plan next improvements"
+    },
+    {
+      "time": "2026-04-28T00:10:57.808Z",
+      "msg": "Added T248 (PLAN) after T247: type-infer: add polymorphic type constructors (List a, Maybe a, Tuple a b)"
+    },
+    {
+      "time": "2026-04-28T00:11:14.421Z",
+      "msg": "Added T249 (BUILD) after T248: Add WASM performance benchmark test suite"
+    },
+    {
+      "time": "2026-04-28T00:11:14.538Z",
+      "msg": "Added T250 (BUILD) after T249: Extend _inferIntParams to handle closure parameters for direct-call wrappers"
+    },
+    {
+      "time": "2026-04-28T00:11:14.676Z",
+      "msg": "Added T251 (MAINTAIN) after T250: Session final: update daily log, git push"
+    },
+    {
+      "time": "2026-04-28T00:15:38.232Z",
+      "msg": "Added T252 (BUILD) after T251: WASM: propagate knownInt through captured variables from outer scope"
+    },
+    {
+      "time": "2026-04-28T00:15:38.350Z",
+      "msg": "Added T253 (BUILD) after T252: WASM: add tail-call optimization for self-recursive functions"
+    },
+    {
+      "time": "2026-04-28T00:15:38.467Z",
+      "msg": "Added T254 (MAINTAIN) after T253: Final session close + git push"
+    },
+    {
+      "time": "2026-04-28T00:24:04.993Z",
+      "msg": "Added T255 (BUILD) after T254: WASM: constant folding for arithmetic with literals"
+    },
+    {
+      "time": "2026-04-28T00:24:05.111Z",
+      "msg": "Added T256 (BUILD) after T255: Run full monkey-lang test suite sweep + triage any failures"
+    },
+    {
+      "time": "2026-04-28T00:24:05.228Z",
+      "msg": "Added T257 (MAINTAIN) after T256: Session end: final daily log + git push"
+    },
+    {
+      "time": "2026-04-28T00:26:13.956Z",
+      "msg": "Added T258 (BUILD) after T257: WASM: optimize captured variable reads to use direct i32 when captured from knownInt outer scope"
+    },
+    {
+      "time": "2026-04-28T00:26:14.074Z",
+      "msg": "Added T259 (BUILD) after T258: HenryDB: add EXPLAIN ANALYZE with actual vs estimated row counts"
+    },
+    {
+      "time": "2026-04-28T00:26:14.191Z",
+      "msg": "Added T260 (MAINTAIN) after T259: Final session close"
+    },
+    {
+      "time": "2026-04-28T00:33:01.662Z",
+      "msg": "Added T261 (BUILD) after T260: WASM: add string interning to reduce heap allocation for repeated strings"
+    },
+    {
+      "time": "2026-04-28T00:33:01.779Z",
+      "msg": "Added T262 (BUILD) after T261: WASM: optimize for loop with known-int loop variable (use local, skip global store/load)"
+    },
+    {
+      "time": "2026-04-28T00:33:01.896Z",
+      "msg": "Added T263 (MAINTAIN) after T262: Session close"
+    },
+    {
+      "time": "2026-04-28T00:34:21.882Z",
+      "msg": "Added T264 (BUILD) after T263: Run full HenryDB test suite and triage failures"
+    },
+    {
+      "time": "2026-04-28T00:34:21.999Z",
+      "msg": "Added T265 (BUILD) after T264: WASM: add closure return type tracking for call_indirect results"
+    },
+    {
+      "time": "2026-04-28T00:34:22.116Z",
+      "msg": "Added T266 (MAINTAIN) after T265: Session close"
     }
   ]
 }

@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-28T00:08:51.669Z",
+  "generated": "2026-04-28T00:50:13.541Z",
   "current": {
     "status": "done",
-    "mode": "THINK",
-    "task": "What other WASM optimizations would have high impact? Check loop performance.",
-    "completedAt": "2026-04-28T00:08:51.669Z",
-    "taskId": "T246",
-    "summary": "WASM perf analysis: loops are excellent (0.3ms for 100K iterations, 6.7x faster than JS). Closures are next bottleneck (43.8ms for 100K calls = 0.44μs/call). Root cause: closure params not knownInt (call_indirect means any type could be passed). Array push still goes through host (4.1ms for 1K pushes). Integer loop performance is near-optimal.",
-    "durationMs": 300000
+    "mode": "BUILD",
+    "task": "WASM: add closure return type tracking for call_indirect results",
+    "completedAt": "2026-04-28T00:50:13.541Z",
+    "taskId": "T265",
+    "summary": "Closure return type tracking: 35x faster! 100K closure calls: 28.3ms→0.8ms. returnsIntClosure propagates through let-bindings so f(i) is known-int. Moved _inferReturnTypes before main body compilation. directArith: 4, hostArith: 0 for adder pattern.",
+    "durationMs": 1200000
   },
   "schedule": {
     "date": "2026-04-27",
@@ -10026,13 +10026,13 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 222,
+    "blocksCompleted": 241,
     "blocksTotal": 244,
     "modeDistribution": {
-      "THINK": 36,
-      "PLAN": 30,
-      "BUILD": 98,
-      "MAINTAIN": 38,
+      "THINK": 37,
+      "PLAN": 31,
+      "BUILD": 110,
+      "MAINTAIN": 43,
       "EXPLORE": 20
     }
   },
