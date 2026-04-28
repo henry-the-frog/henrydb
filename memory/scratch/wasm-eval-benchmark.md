@@ -31,3 +31,20 @@ This would turn map/filter from ~3x to ~100x+ speedup.
 1. Add a `compileIfBeneficial(code)` function that estimates whether WASM compilation would help
 2. Consider caching compiled modules for repeated execution
 3. Long-term: inline HOF compilation to avoid host import overhead
+
+## Compilation Time Breakdown (fib program)
+| Phase | Time | Notes |
+|-------|------|-------|
+| Parse | 3.2ms | Lexer + Parser |
+| AST → WASM IR | 39.1ms | Runtime function setup dominates |
+| Encode bytes | 2.0ms | WasmModuleBuilder.build() |
+| V8 compile | 41.5ms | WebAssembly.Module() |
+| Instantiate | 3.0ms | WebAssembly.Instance() |
+| Execute | 1.5ms | fib(25) computation |
+| **Total** | **86.4ms** | |
+
+## Optimization Opportunities
+1. **Module caching**: Hash source code, cache compiled Module. 2nd run: 4.5ms.
+2. **Lazy runtime functions**: Only emit runtime functions actually used. Would cut AST→IR time by ~50%.
+3. **Streaming compilation**: Use WebAssembly.compileStreaming() if available.
+4. **JIT threshold**: Only compile to WASM if program is likely CPU-bound.
