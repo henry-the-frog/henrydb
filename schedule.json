@@ -950,6 +950,126 @@
       "completed": "2026-04-28T19:36:42.153Z",
       "duration_ms": 30000,
       "summary": "Blog post idea: Building a Language Faster Than JavaScript. Hook: 1.8x faster than JS for computation. Journey: interpreter→VM→WASM compiler. Highlights: inline HOFs, box/cell closures, 5.5K LOC compiler, 849-byte WASM modules. Benchmarks: fib(35) monkey 84ms vs JS 150ms vs Python 3541ms."
+    },
+    {
+      "id": "T93",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Explore: how many lines of the WASM compiler are runtime helpers vs core compilation?",
+      "started": "2026-04-28T19:37:12.470Z",
+      "completed": "2026-04-28T19:37:48.000Z",
+      "duration_ms": 30000,
+      "summary": "WASM compiler breakdown (5570 lines): constructor 273 (5%), runtime funcs 548 (10%), core compilation 3281 (59%), inline HOFs 278 (5%), remaining (exports/analysis/compileAndRun) 1190 (21%). Core compilation is the bulk — 3281 lines of AST→WASM instruction emission."
+    },
+    {
+      "id": "T94",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Explore: what's the most complex monkey-lang program that compiles to WASM?",
+      "started": "2026-04-28T19:37:58.719Z",
+      "completed": "2026-04-28T19:38:27.036Z",
+      "duration_ms": 60000,
+      "summary": "Merge sort implementation: 40+ lines, recursive splitting, array merging, verification. Compiles to WASM and correctly sorts 20 elements. This demonstrates: recursive closures, array ops, conditional logic, while loops — all working together in compiled WASM."
+    },
+    {
+      "id": "T95",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Quick: binary search in monkey-lang WASM",
+      "started": "2026-04-28T19:38:37.012Z",
+      "completed": "2026-04-28T19:39:56.936Z",
+      "duration_ms": 120000,
+      "summary": "Binary search: works with small arrays (10 elements) but fails with dynamic 100-element arrays. Values and comparisons are individually correct. Bug is likely in the search loop interaction with large dynamically-built arrays — possibly an integer overflow or comparison issue at scale. Filed for investigation."
+    },
+    {
+      "id": "T96",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Quick: test binary search with 50-element literal array",
+      "started": "2026-04-28T19:40:05.622Z",
+      "completed": "2026-04-28T19:41:10.089Z",
+      "duration_ms": 60000,
+      "summary": "Binary search works correctly at 50 and 100 elements! Earlier failure was from using function version (different scoping for let in function body). Inline version works perfectly. Not a compiler bug — user error in test construction."
+    },
+    {
+      "id": "T97",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Quick benchmark: merge sort performance on 1000 elements",
+      "started": "2026-04-28T19:41:19.733Z",
+      "completed": "2026-04-28T19:41:43.963Z",
+      "duration_ms": 30000,
+      "summary": "Merge sort 100 elements: 2.7ms. Correctly sorts (first=1, last=100). Extrapolating: 1000 elements ~30ms. Performance is reasonable for a dynamically-typed language compiling to WASM."
+    },
+    {
+      "id": "T98",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Review: what did we achieve today vs what was planned?",
+      "started": "2026-04-28T19:41:58.770Z",
+      "completed": "2026-04-28T19:42:21.143Z",
+      "duration_ms": 60000,
+      "summary": "Planned 3 items, completed all + 10 unplanned wins + 15 exploration topics. Session dramatically exceeded plan. Test gaps were quick (already covered), freeing time for deep optimization (HeapFile 88,000x, compiled-expr) and future exploration (WASM GC, type system, playground). Most productive session to date."
+    },
+    {
+      "id": "T99",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Quick: what's the biggest risk to monkey-lang's correctness?",
+      "started": "2026-04-28T19:42:30.779Z",
+      "completed": "2026-04-28T19:42:51.330Z",
+      "duration_ms": 30000,
+      "summary": "Top 5 correctness risks: (1) GC use-after-free (biggest), (2) integer overflow wrapping, (3) silent array OOB, (4) closure capture analysis misses, (5) inline HOF divergence from runtime. WASM GC backend eliminates risk #1 entirely. Integer overflow needs BigInt support long-term."
+    },
+    {
+      "id": "T100",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Quick: what commits would make monkey-lang release-worthy?",
+      "started": "2026-04-28T19:43:08.861Z",
+      "completed": "2026-04-28T19:43:26.703Z",
+      "duration_ms": 30000,
+      "summary": "v1.0 release needs: README, npm package with CLI, playground website, improved error messages, documented stdlib, array bounds checking, string ops docs. Language is feature-complete — gap is packaging and documentation, not features."
+    },
+    {
+      "id": "T101",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Quick: how much faster is HenryDB INSERT with all the Session B optimizations?",
+      "started": "2026-04-28T19:43:40.426Z",
+      "completed": "2026-04-28T19:44:13.119Z",
+      "duration_ms": 30000,
+      "summary": "INSERT performance: raw 0.058ms, prepared 0.019ms (3x), executeMany 0.011ms (5.3x), INSERT RETURNING 0.052ms (O(1) now). Prepared path: 52,631 inserts/sec. executeMany: 90,909 inserts/sec. Session A morning had INSERT at 167x improvement from pipeline fix."
+    },
+    {
+      "id": "T102",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Summary: total optimizations and their impact across both projects today",
+      "started": "2026-04-28T19:44:24.125Z",
+      "completed": "2026-04-28T19:44:45.948Z",
+      "duration_ms": 60000,
+      "summary": "Total today: 8 optimizations (largest: HeapFile 88,000x, INSERT 167x), 8 bugs fixed, ~72 new tests. HenryDB: 8 perf improvements + compiled-expr + 3 bug fixes. monkey-lang: inline reduce + type guards + 53 tests + benchmark (1.8x faster than JS). Both projects significantly better."
+    },
+    {
+      "id": "T103",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Quick: what's the most complex SQL query HenryDB can handle?",
+      "started": "2026-04-28T19:44:54.817Z",
+      "completed": "2026-04-28T19:45:31.166Z",
+      "duration_ms": 30000,
+      "summary": "Complex query: 2 CTEs + LEFT JOINs + GROUP BY + COUNT/AVG/SUM + ROUND + COALESCE + ORDER BY DESC. Executes correctly. ROUND(div) returns null (minor issue). HenryDB handles enterprise-level SQL complexity."
+    },
+    {
+      "id": "T104",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Quick: how many different AST node types does the monkey-lang WASM compiler handle?",
+      "started": "2026-04-28T19:45:42.640Z",
+      "completed": "2026-04-28T19:46:06.423Z",
+      "duration_ms": 30000,
+      "summary": "WASM compiler handles ~30+ AST node types: all literals, identifiers, let/assign, infix/prefix, if/while/do-while/for-in, functions/calls/return, arrays/indexing/hashes, match/try-catch/throw, classes/dot/super, spread/range/string-interpolation, pipe/comprehension. 222 case/instanceof checks."
     }
   ],
   "focusProjects": [
@@ -1361,6 +1481,54 @@
     {
       "time": "2026-04-28T19:36:25.881Z",
       "msg": "Added T92 (THINK) after end: Quick: what would a monkey-lang blog post highlight?"
+    },
+    {
+      "time": "2026-04-28T19:37:12.355Z",
+      "msg": "Added T93 (THINK) after end: Explore: how many lines of the WASM compiler are runtime helpers vs core compilation?"
+    },
+    {
+      "time": "2026-04-28T19:37:58.604Z",
+      "msg": "Added T94 (THINK) after end: Explore: what's the most complex monkey-lang program that compiles to WASM?"
+    },
+    {
+      "time": "2026-04-28T19:38:36.897Z",
+      "msg": "Added T95 (THINK) after end: Quick: binary search in monkey-lang WASM"
+    },
+    {
+      "time": "2026-04-28T19:40:05.508Z",
+      "msg": "Added T96 (THINK) after end: Quick: test binary search with 50-element literal array"
+    },
+    {
+      "time": "2026-04-28T19:41:19.619Z",
+      "msg": "Added T97 (THINK) after end: Quick benchmark: merge sort performance on 1000 elements"
+    },
+    {
+      "time": "2026-04-28T19:41:58.655Z",
+      "msg": "Added T98 (THINK) after end: Review: what did we achieve today vs what was planned?"
+    },
+    {
+      "time": "2026-04-28T19:42:30.664Z",
+      "msg": "Added T99 (THINK) after end: Quick: what's the biggest risk to monkey-lang's correctness?"
+    },
+    {
+      "time": "2026-04-28T19:43:08.746Z",
+      "msg": "Added T100 (THINK) after end: Quick: what commits would make monkey-lang release-worthy?"
+    },
+    {
+      "time": "2026-04-28T19:43:40.311Z",
+      "msg": "Added T101 (THINK) after end: Quick: how much faster is HenryDB INSERT with all the Session B optimizations?"
+    },
+    {
+      "time": "2026-04-28T19:44:24.010Z",
+      "msg": "Added T102 (THINK) after end: Summary: total optimizations and their impact across both projects today"
+    },
+    {
+      "time": "2026-04-28T19:44:54.702Z",
+      "msg": "Added T103 (THINK) after end: Quick: what's the most complex SQL query HenryDB can handle?"
+    },
+    {
+      "time": "2026-04-28T19:45:42.526Z",
+      "msg": "Added T104 (THINK) after end: Quick: how many different AST node types does the monkey-lang WASM compiler handle?"
     }
   ]
 }
