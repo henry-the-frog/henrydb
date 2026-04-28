@@ -127,6 +127,20 @@ export class BTreeTable {
   }
 
   /**
+   * In-place update by rid. Reuses the same RID (no dead tuple, no MVCC).
+   * For use in fast-path UPDATE when no concurrent readers need the old version.
+   */
+  update(pageId, slotIdx, newValues) {
+    const ridNum = pageId * this._syntheticPageSize + slotIdx;
+    const pk = this._ridToPk.get(ridNum);
+    if (pk === undefined) return null;
+    
+    // Update the B-tree entry in place
+    this._tree.insert(pk, newValues);
+    return { pageId, slotIdx };
+  }
+
+  /**
    * Delete by rid (HeapFile compat).
    */
   delete(pageId, slotIdx) {

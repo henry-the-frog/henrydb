@@ -2,6 +2,104 @@
 import { getCompiledExpr } from './compiled-expr.js';
 
 export function update(db, ast) {
+  // Fast path: simple PK-based UPDATE with no complex features
+  const fastResult = _tryFastUpdate(db, ast);
+  if (fastResult !== null) return fastResult;
+  
+  return _fullUpdate(db, ast);
+}
+
+// Per-table fast-path metadata cache
+const _fastPathCache = new Map();
+
+function _getFastPathMeta(db, tableName) {
+  let meta = _fastPathCache.get(tableName);
+  if (meta && meta._tableRef === db.tables.get(tableName)) return meta;
+  
+  const table = db.tables.get(tableName);
+  if (!table) return null;
+  
+  let pkColName = null;
+  for (const col of table.schema) {
+    if (col.primaryKey) { pkColName = col.name; break; }
+  }
+  if (!pkColName) return null;
+  
+  const pkIndex = table.indexes.get(pkColName);
+  if (!pkIndex || typeof pkIndex.search !== 'function') return null;
+  
+  const colMap = new Map();
+  for (let i = 0; i < table.schema.length; i++) {
+    colMap.set(table.schema[i].name, i);
+    colMap.set(table.schema[i].name.toLowerCase(), i);
+  }
+  
+  const hasGenerated = table.schema.some(c => c.generated);
+  const hasTriggers = db.triggers?.some(t => t.table === tableName && t.event === 'UPDATE') || false;
+  
+  meta = { _tableRef: table, table, pkIndex, pkColName, pkColNameLower: pkColName.toLowerCase(), colMap, hasTriggers, hasGenerated };
+  _fastPathCache.set(tableName, meta);
+  return meta;
+}
+
+function _tryFastUpdate(db, ast) {
+  if (ast.from || ast.returning || ast.limit) return null;
+  
+  const meta = _getFastPathMeta(db, ast.table);
+  if (!meta || meta.hasTriggers || meta.hasGenerated) return null;
+  
+  const where = ast.where;
+  if (!where || where.type !== 'COMPARE' || where.op !== 'EQ') return null;
+  
+  let searchVal = null;
+  const left = where.left, right = where.right;
+  if (left.type === 'column_ref') {
+    const cn = left.name.includes('.') ? left.name.split('.').pop() : left.name;
+    if (cn !== meta.pkColName && cn !== meta.pkColNameLower) return null;
+    if (right.type === 'number' || right.type === 'string' || right.type === 'literal') searchVal = right.value;
+    else return null;
+  } else if (right.type === 'column_ref') {
+    const cn = right.name.includes('.') ? right.name.split('.').pop() : right.name;
+    if (cn !== meta.pkColName && cn !== meta.pkColNameLower) return null;
+    if (left.type === 'number' || left.type === 'string' || left.type === 'literal') searchVal = left.value;
+    else return null;
+  } else return null;
+  
+  const rid = meta.pkIndex.search(searchVal);
+  if (!rid || rid.pageId === undefined) return null;
+  
+  const tuple = meta.table.heap.get(rid.pageId, rid.slotIdx);
+  if (!tuple) return null;
+  
+  const oldValues = Array.isArray(tuple) ? tuple : (tuple.values || tuple);
+  const newValues = [...oldValues];
+  
+  for (let i = 0; i < ast.assignments.length; i++) {
+    const { column, value } = ast.assignments[i];
+    const colIdx = meta.colMap.get(column) ?? meta.colMap.get(column.toLowerCase());
+    if (colIdx === undefined) return null;
+    const vt = value.type;
+    if (vt === 'number' || vt === 'string' || vt === 'literal' || vt === 'param' || vt === 'PARAM') {
+      newValues[colIdx] = value.value;
+    } else return null;
+  }
+  
+  // Update: use in-place update if available, else delete + insert
+  const heap = meta.table.heap;
+  let newRid;
+  if (typeof heap.update === 'function') {
+    newRid = heap.update(rid.pageId, rid.slotIdx, newValues);
+  }
+  if (!newRid) {
+    heap.delete(rid.pageId, rid.slotIdx);
+    newRid = heap.insert(newValues);
+  }
+  db.wal.appendUpdate(db._currentTxId || db._nextTxId++, ast.table, newRid.pageId, newRid.slotIdx ?? newRid.slotId, oldValues, newValues);
+  
+  return { type: 'OK', message: '1 row(s) updated', count: 1 };
+}
+
+function _fullUpdate(db, ast) {
   const table = db.tables.get(ast.table);
   if (!table) {
     // Check for INSTEAD OF UPDATE trigger on view
