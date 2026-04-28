@@ -1,7 +1,7 @@
 # TODO.md
 
 ## Urgent
-(none)
+- monkey-lang WASM BUG: Multiple assignments to same variable inside if/else branch don't propagate correctly (second `stack = stack[0:N-1]` in else block sees old value). Discovered via RPN evaluator test. (since 2026-04-28)
 
 ## Normal
 - HenryDB: Unified cost model across all 4 execution engines (benchmark shows all engines sub-0.01ms at 5K rows — calibration may not matter until 50K+ rows)
