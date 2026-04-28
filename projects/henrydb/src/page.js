@@ -333,7 +333,7 @@ export class FreeSpaceMap {
 export class HeapFile {
   constructor(name) {
     this.name = name;
-    this.pages = [];
+    this.pages = new Map();  // pageId → Page (O(1) lookup)
     this.nextPageId = 0;
     this.fsm = new FreeSpaceMap();
     this._rowCount = 0;
@@ -349,7 +349,7 @@ export class HeapFile {
 
   _allocPage() {
     const page = new Page(this.nextPageId++);
-    this.pages.push(page);
+    this.pages.set(page.id, page);
     this.fsm.update(page.id, page.freeSpace());
     return page;
   }
@@ -360,7 +360,7 @@ export class HeapFile {
     // Try FSM first for targeted insert
     const targetPageId = this.fsm.findPage(tupleBytes.length + 4); // +4 for slot entry
     if (targetPageId >= 0) {
-      const page = this.pages.find(p => p.id === targetPageId);
+      const page = this.pages.get(targetPageId);
       if (page) {
         const slotIdx = page.insertTuple(tupleBytes);
         if (slotIdx >= 0) {
@@ -372,7 +372,7 @@ export class HeapFile {
     }
     
     // Fall back to scanning pages
-    for (const page of this.pages) {
+    for (const page of this.pages.values()) {
       const slotIdx = page.insertTuple(tupleBytes);
       if (slotIdx >= 0) {
         this.fsm.update(page.id, page.freeSpace());
@@ -393,7 +393,7 @@ export class HeapFile {
   }
 
   get(pageId, slotIdx) {
-    const page = this.pages.find(p => p.id === pageId);
+    const page = this.pages.get(pageId);
     if (!page) return null;
     const tuple = page.getTuple(slotIdx);
     if (!tuple) return null;
@@ -401,7 +401,7 @@ export class HeapFile {
   }
 
   delete(pageId, slotIdx) {
-    const page = this.pages.find(p => p.id === pageId);
+    const page = this.pages.get(pageId);
     if (!page) return false;
     const result = page.deleteTuple(slotIdx);
     if (result) this._rowCount--;
@@ -414,7 +414,7 @@ export class HeapFile {
    * Returns the RID (same pageId:slotIdx) or null if the slot doesn't exist.
    */
   update(pageId, slotIdx, newValues) {
-    const page = this.pages.find(p => p.id === pageId);
+    const page = this.pages.get(pageId);
     if (!page) return null;
     const data = encodeTuple(newValues);
     if (page.updateTuple) {
@@ -426,7 +426,7 @@ export class HeapFile {
   }
 
   *scan() {
-    for (const page of this.pages) {
+    for (const page of this.pages.values()) {
       for (const { slotIdx, data } of page.scanTuples()) {
         yield { pageId: page.id, slotIdx, values: decodeTuple(data) };
       }
@@ -435,13 +435,13 @@ export class HeapFile {
 
   get tupleCount() {
     let count = 0;
-    for (const page of this.pages) {
+    for (const page of this.pages.values()) {
       for (const _ of page.scanTuples()) count++;
     }
     return count;
   }
 
-  get pageCount() { return this.pages.length; }
+  get pageCount() { return this.pages.size; }
 
   /**
    * Record a HOT chain link: old RID → new RID.

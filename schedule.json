@@ -263,44 +263,110 @@
     {
       "id": "T25",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Add tests for ? placeholder and executeMany batch insert",
       "project": "henrydb",
-      "started": "2026-04-28T18:02:59.204Z"
+      "started": "2026-04-28T18:02:59.204Z",
+      "completed": "2026-04-28T18:04:37.714Z",
+      "duration_ms": 300000,
+      "summary": "Added 19 tests covering ? placeholders (7: INSERT/WHERE/UPDATE/DELETE/5-param), executeMany (8: basic/$N/results/empty/single/100-batch/reuse/SELECT), fast bind (4: reuse/varying/null/special-chars). All pass."
     },
     {
       "id": "T26",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "Add pipe operator tests to WASM compiler test suite",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-28T18:04:44.890Z",
+      "completed": "2026-04-28T18:05:30.060Z",
+      "duration_ms": 180000,
+      "summary": "Added 8 pipe operator tests: simple, len, user fn, chain, extra args, map, filter+reduce pipeline, let binding. All pass. 384 wasm-compiler tests now."
     },
     {
       "id": "T27",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Evaluate monkey-lang inline reduce/sort: complexity vs value"
+      "status": "done",
+      "task": "Evaluate monkey-lang inline reduce/sort: complexity vs value",
+      "started": "2026-04-28T18:05:38.338Z",
+      "completed": "2026-04-28T18:06:03.390Z",
+      "duration_ms": 120000,
+      "summary": "Inline reduce is high value + medium complexity. Pattern: accumulator in local, inline callback body with 2 params (acc + el). forEach is low value, sort is too complex. Decided to implement inline reduce only. Existing _compileInlineMap is good template."
     },
     {
       "id": "T28",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "monkey-lang: inline reduce compilation for WASM",
-      "task": null
+      "task": null,
+      "started": "2026-04-28T18:06:07.273Z",
+      "completed": "2026-04-28T18:06:24.638Z",
+      "duration_ms": 60000,
+      "summary": "Planned 2 BUILD tasks: implement _compileInlineReduce + tests. Pattern: acc local + loop + inline body. Hook after existing reduce detection."
     },
     {
       "id": "T29",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null,
+      "status": "done",
+      "task": "Implement _compileInlineReduce in WASM compiler + hook into reduce path",
       "plan_ref": "T28",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-28T18:06:31.338Z",
+      "completed": "2026-04-28T18:08:50.270Z",
+      "duration_ms": 600000,
+      "summary": "Implemented _compileInlineReduce: WASM loop with accumulator for no-capture 2-param callbacks. Supports init/no-init, if-else body, chained map→reduce. ~2% faster with caching. 1992/1992 tests pass."
+    },
+    {
+      "id": "T31",
+      "mode": "BUILD",
+      "task": "Add tests for inline reduce: arithmetic sum, chained map|>reduce, edge cases",
+      "status": "done",
+      "plan_ref": "T28",
+      "started": "2026-04-28T18:08:55.515Z",
+      "completed": "2026-04-28T18:10:03.523Z",
+      "duration_ms": 180000,
+      "summary": "Added 12 inline reduce tests: sum, product, no-init, max, single-element, 100-element, inline/runtime equivalence, chained map→reduce, chained filter→reduce, pipe→reduce, subtraction, counting. 396 wasm-compiler tests."
     },
     {
       "id": "T30",
       "mode": "MAINTAIN",
       "status": "upcoming",
       "task": "Final housekeeping + push + evening summary"
+    },
+    {
+      "id": "T32",
+      "mode": "THINK",
+      "status": "in-progress",
+      "task": "HenryDB: what's the next most impactful optimization? Review query execution pipeline",
+      "started": "2026-04-28T18:10:32.913Z"
+    },
+    {
+      "id": "T33",
+      "mode": "PLAN",
+      "status": "upcoming",
+      "goal": "HenryDB: optimize query execution (evaluate scan strategy)",
+      "task": null
+    },
+    {
+      "id": "T34",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null,
+      "plan_ref": "T33",
+      "project": "henrydb"
+    },
+    {
+      "id": "T35",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null,
+      "plan_ref": "T33",
+      "project": "henrydb"
+    },
+    {
+      "id": "T36",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Pre-push housekeeping"
     }
   ],
   "focusProjects": [
@@ -452,6 +518,30 @@
     {
       "time": "2026-04-28T18:02:42.443Z",
       "msg": "Added T30 (MAINTAIN) after end: Final housekeeping + push + evening summary"
+    },
+    {
+      "time": "2026-04-28T18:06:17.372Z",
+      "msg": "PLAN T28 filled 2 BUILD tasks"
+    },
+    {
+      "time": "2026-04-28T18:10:20.216Z",
+      "msg": "Added T32 (THINK) after end: HenryDB: what's the next most impactful optimization? Review query execution pipeline"
+    },
+    {
+      "time": "2026-04-28T18:10:20.331Z",
+      "msg": "Added T33 (PLAN) after end: HenryDB: optimize query execution (evaluate scan strategy)"
+    },
+    {
+      "time": "2026-04-28T18:10:20.445Z",
+      "msg": "Added T34 (BUILD) after end: null"
+    },
+    {
+      "time": "2026-04-28T18:10:20.560Z",
+      "msg": "Added T35 (BUILD) after end: null"
+    },
+    {
+      "time": "2026-04-28T18:10:20.674Z",
+      "msg": "Added T36 (MAINTAIN) after end: Pre-push housekeeping"
     }
   ]
 }

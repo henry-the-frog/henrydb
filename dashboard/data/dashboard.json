@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-28T18:02:59.238Z",
+  "generated": "2026-04-28T18:10:32.948Z",
   "current": {
     "status": "in-progress",
-    "mode": "BUILD",
-    "task": "Add tests for ? placeholder and executeMany batch insert",
-    "startedAt": "2026-04-28T18:02:59.238Z",
-    "taskId": "T25"
+    "mode": "THINK",
+    "task": "HenryDB: what's the next most impactful optimization? Review query execution pipeline",
+    "startedAt": "2026-04-28T18:10:32.948Z",
+    "taskId": "T32"
   },
   "schedule": {
     "date": "2026-04-28",
@@ -4889,36 +4889,108 @@
       {
         "id": "T22",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "monkey-lang: stress test WASM compiler with complex programs",
         "task": null,
-        "started": "2026-04-28T17:57:28.252Z"
+        "started": "2026-04-28T17:57:28.252Z",
+        "completed": "2026-04-28T17:57:42.904Z",
+        "duration_ms": 60000,
+        "summary": "5 hypotheses for stress testing: nested closures, large arrays, recursive closures, class methods, try-catch closures. 1 BUILD task."
       },
       {
         "id": "T24",
         "mode": "BUILD",
         "task": "Stress test: nested closures, large arrays, recursive closures, class method chains, try-catch closures",
-        "status": "upcoming",
-        "plan_ref": "T22"
+        "status": "done",
+        "plan_ref": "T22",
+        "started": "2026-04-28T17:57:47.976Z",
+        "completed": "2026-04-28T18:01:38.816Z",
+        "duration_ms": 600000,
+        "summary": "Added 10 stress tests: nested closures (5 levels), 1K array ops, recursive+mutable closures, class method chains, try-catch closures, nested for-in, do-while+break combos, pipeline on 100 elements, match patterns, loop closure capture. All pass. Found class syntax requires field decls + ClassName() not ClassName.init()."
       },
       {
         "id": "T23",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": null,
         "plan_ref": "T21",
+        "project": "monkey-lang",
+        "started": "2026-04-28T18:02:06.749Z",
+        "completed": "2026-04-28T18:02:06.888Z",
+        "duration_ms": 0,
+        "summary": "Skipped - parent task T21 already completed."
+      },
+      {
+        "id": "T25",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Add tests for ? placeholder and executeMany batch insert",
+        "project": "henrydb",
+        "started": "2026-04-28T18:02:59.204Z",
+        "completed": "2026-04-28T18:04:37.714Z",
+        "duration_ms": 300000,
+        "summary": "Added 19 tests covering ? placeholders (7: INSERT/WHERE/UPDATE/DELETE/5-param), executeMany (8: basic/$N/results/empty/single/100-batch/reuse/SELECT), fast bind (4: reuse/varying/null/special-chars). All pass."
+      },
+      {
+        "id": "T26",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Add pipe operator tests to WASM compiler test suite",
+        "project": "monkey-lang",
+        "started": "2026-04-28T18:04:44.890Z",
+        "completed": "2026-04-28T18:05:30.060Z",
+        "duration_ms": 180000,
+        "summary": "Added 8 pipe operator tests: simple, len, user fn, chain, extra args, map, filter+reduce pipeline, let binding. All pass. 384 wasm-compiler tests now."
+      },
+      {
+        "id": "T27",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Evaluate monkey-lang inline reduce/sort: complexity vs value",
+        "started": "2026-04-28T18:05:38.338Z",
+        "completed": "2026-04-28T18:06:03.390Z",
+        "duration_ms": 120000,
+        "summary": "Inline reduce is high value + medium complexity. Pattern: accumulator in local, inline callback body with 2 params (acc + el). forEach is low value, sort is too complex. Decided to implement inline reduce only. Existing _compileInlineMap is good template."
+      },
+      {
+        "id": "T28",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "monkey-lang: inline reduce compilation for WASM",
+        "task": null,
+        "started": "2026-04-28T18:06:07.273Z"
+      },
+      {
+        "id": "T29",
+        "mode": "BUILD",
+        "status": "upcoming",
+        "task": "Implement _compileInlineReduce in WASM compiler + hook into reduce path",
+        "plan_ref": "T28",
         "project": "monkey-lang"
+      },
+      {
+        "id": "T31",
+        "mode": "BUILD",
+        "task": "Add tests for inline reduce: arithmetic sum, chained map|>reduce, edge cases",
+        "status": "upcoming",
+        "plan_ref": "T28"
+      },
+      {
+        "id": "T30",
+        "mode": "MAINTAIN",
+        "status": "upcoming",
+        "task": "Final housekeeping + push + evening summary"
       }
     ]
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 23,
-    "blocksTotal": 24,
+    "blocksCompleted": 29,
+    "blocksTotal": 31,
     "modeDistribution": {
-      "THINK": 4,
-      "PLAN": 5,
-      "BUILD": 10,
+      "THINK": 5,
+      "PLAN": 6,
+      "BUILD": 14,
       "MAINTAIN": 4
     }
   },
