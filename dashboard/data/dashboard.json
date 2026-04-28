@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-28T03:01:29.198Z",
+  "generated": "2026-04-28T03:06:06.117Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "HenryDB: investigate 3.5ms per INSERT bottleneck — where does the time go?",
-    "completedAt": "2026-04-28T03:01:29.197Z",
-    "taskId": "T292",
-    "summary": "INSERT bottleneck found: insertRow itself is 0.005ms, but execute() is 1.76ms (352x overhead). Parsing=0.009ms (1%), validation=0.002ms (0%). The 99% overhead is in SQL execution pipeline: routing, AST evaluation, WAL management. Direct insertRow is fast. Need prepared statement bypass path.",
+    "task": "HenryDB: profile execute() dispatch — where is the 1.75ms going exactly?",
+    "completedAt": "2026-04-28T03:06:06.117Z",
+    "taskId": "T295",
+    "summary": "FOUND IT: dml-insert.js does TRIPLE constraint checking! (1) Full heap scan for PK uniqueness at lines 168-175, (2) Full heap scan for UNIQUE INDEX at lines 184-206, (3) insertRow -> _validateConstraints (uses B-tree index). The redundant O(N) scans explain the linear INSERT degradation. Fix: remove scans 1 and 2 — insertRow already validates correctly. This would make INSERT O(log N) instead of O(N).",
     "durationMs": 600000
   },
   "schedule": {
@@ -10026,14 +10026,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 268,
+    "blocksCompleted": 271,
     "blocksTotal": 244,
     "modeDistribution": {
       "THINK": 38,
       "PLAN": 31,
       "BUILD": 117,
       "MAINTAIN": 50,
-      "EXPLORE": 32
+      "EXPLORE": 35
     }
   },
   "artifacts": [],

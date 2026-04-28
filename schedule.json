@@ -3098,6 +3098,39 @@
       "completed": "2026-04-28T03:01:29.160Z",
       "duration_ms": 600000,
       "summary": "INSERT bottleneck found: insertRow itself is 0.005ms, but execute() is 1.76ms (352x overhead). Parsing=0.009ms (1%), validation=0.002ms (0%). The 99% overhead is in SQL execution pipeline: routing, AST evaluation, WAL management. Direct insertRow is fast. Need prepared statement bypass path."
+    },
+    {
+      "id": "T293",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "monkey-lang: test WASM while loop + array patterns — is array growth O(n^2)?",
+      "project": "monkey-lang",
+      "started": "2026-04-28T03:02:13.252Z",
+      "completed": "2026-04-28T03:02:52.875Z",
+      "duration_ms": 300000,
+      "summary": "Array growth is O(N^2) due to immutable push (copies entire array). 100=8ms, 1000=7ms, 2000=18ms. Crashes at ~3000-5000 items — exhausts 16MB max WASM memory. Allocates N^2/2 elements total. Fix: mutable arrays or copying GC."
+    },
+    {
+      "id": "T294",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "monkey-lang: investigate how the GC works in WASM — what happens at high allocation pressure?",
+      "project": "monkey-lang",
+      "started": "2026-04-28T03:03:09.406Z",
+      "completed": "2026-04-28T03:03:55.505Z",
+      "duration_ms": 300000,
+      "summary": "GC investigation: WASM uses bump allocator (never frees), JS-side GC has mark-sweep+free-list but only for JS-side allocations. WASM-internal allocs register with GC for tracking but sweep cant reclaim bump space. The GC is effectively a no-op for WASM allocs. Need: copying GC, region allocator, or redirect WASM allocs through JS GC."
+    },
+    {
+      "id": "T295",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: profile execute() dispatch — where is the 1.75ms going exactly?",
+      "project": "henrydb",
+      "started": "2026-04-28T03:04:10.402Z",
+      "completed": "2026-04-28T03:06:06.080Z",
+      "duration_ms": 600000,
+      "summary": "FOUND IT: dml-insert.js does TRIPLE constraint checking! (1) Full heap scan for PK uniqueness at lines 168-175, (2) Full heap scan for UNIQUE INDEX at lines 184-206, (3) insertRow -> _validateConstraints (uses B-tree index). The redundant O(N) scans explain the linear INSERT degradation. Fix: remove scans 1 and 2 — insertRow already validates correctly. This would make INSERT O(log N) instead of O(N)."
     }
   ],
   "focusProjects": [
@@ -4365,6 +4398,18 @@
     {
       "time": "2026-04-28T02:56:15.597Z",
       "msg": "Added T292 (EXPLORE) after T291: HenryDB: investigate 3.5ms per INSERT bottleneck — where does the time go?"
+    },
+    {
+      "time": "2026-04-28T03:01:54.450Z",
+      "msg": "Added T293 (EXPLORE) after end: monkey-lang: test WASM while loop + array patterns — is array growth O(n^2)?"
+    },
+    {
+      "time": "2026-04-28T03:02:00.531Z",
+      "msg": "Added T294 (EXPLORE) after T293: monkey-lang: investigate how the GC works in WASM — what happens at high allocation pressure?"
+    },
+    {
+      "time": "2026-04-28T03:02:05.632Z",
+      "msg": "Added T295 (EXPLORE) after T294: HenryDB: profile execute() dispatch — where is the 1.75ms going exactly?"
     }
   ]
 }
