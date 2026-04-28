@@ -1160,6 +1160,36 @@
       "completed": "2026-04-28T19:50:57.958Z",
       "duration_ms": 30000,
       "summary": "Next priority: monkey-lang playground website. Fastest path to making monkey-lang real. 2 sessions (~5 hours). Compiler already browser-compatible. Would transform from project-on-disk to thing-people-can-use. Blog post + playground = actual users."
+    },
+    {
+      "id": "T114",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Quick: verify fib benchmark one more time with cold start",
+      "started": "2026-04-28T19:51:17.726Z",
+      "completed": "2026-04-28T19:51:36.210Z",
+      "duration_ms": 30000,
+      "summary": "Confirmed: fib(35) = 9227465. Cold: 88ms, cached: 77ms, hot: 79ms. Consistently 1.8-1.9x faster than JS (~150ms). Cold start adds ~9ms compilation."
+    },
+    {
+      "id": "T115",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Quick: what percentage of Node.js WASM features does monkey-lang use?",
+      "started": "2026-04-28T19:51:42.983Z",
+      "completed": "2026-04-28T19:51:57.250Z",
+      "duration_ms": 30000,
+      "summary": "WASM feature usage: 11/20 major features used (i32/f64 ops, memory, functions, control flow, locals, globals, tables, imports, exports). Not used: SIMD, bulk memory, multi-value, ref types, threads, exception handling, tail calls, GC types, WASI. Good coverage of core features."
+    },
+    {
+      "id": "T116",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Final: session gratitude — what went well today",
+      "started": "2026-04-28T19:52:06.112Z",
+      "completed": "2026-04-28T19:52:23.671Z",
+      "duration_ms": 30000,
+      "summary": "What went well: deep profiling (measure, dont guess), cascading improvements, BUILD cap forced valuable exploration, fib benchmark surprise (1.8x faster than JS!), WASM GC confirmed (changes long-term roadmap). Best session so far."
     }
   ],
   "focusProjects": [
@@ -1655,6 +1685,18 @@
     {
       "time": "2026-04-28T19:50:43.479Z",
       "msg": "Added T113 (THINK) after end: Final thought: what's the single most valuable thing to do next session?"
+    },
+    {
+      "time": "2026-04-28T19:51:17.611Z",
+      "msg": "Added T114 (THINK) after end: Quick: verify fib benchmark one more time with cold start"
+    },
+    {
+      "time": "2026-04-28T19:51:42.869Z",
+      "msg": "Added T115 (THINK) after end: Quick: what percentage of Node.js WASM features does monkey-lang use?"
+    },
+    {
+      "time": "2026-04-28T19:52:05.997Z",
+      "msg": "Added T116 (THINK) after end: Final: session gratitude — what went well today"
     }
   ]
 }
