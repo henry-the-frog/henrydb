@@ -449,22 +449,72 @@
     {
       "id": "T43",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Session BUILD cap pivot: run full test sweep across both projects",
-      "started": "2026-04-28T21:28:31.992Z"
+      "started": "2026-04-28T21:28:31.992Z",
+      "completed": "2026-04-28T21:29:10.479Z",
+      "duration_ms": 120000,
+      "summary": "Full test sweep: 105 WASM tests (monkey-lang) + 83 DB tests (henrydb) all green. Playground re-deployed with capacity fix."
     },
     {
       "id": "T44",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "Stress test playground in browser-like environment",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-28T21:29:19.460Z",
+      "completed": "2026-04-28T21:32:10.617Z",
+      "duration_ms": 300000,
+      "summary": "10 EXPLORE tasks. Found: capacity bug fix works, string detection improved, all examples verified, fib 1.85x faster than JS. Surprises: class parse error, URL length limits, empty block parses as HashLiteral."
     },
     {
       "id": "T45",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Session review and daily log"
+      "status": "done",
+      "task": "Session review and daily log",
+      "started": "2026-04-28T21:32:31.162Z",
+      "completed": "2026-04-28T21:32:59.665Z",
+      "duration_ms": 120000,
+      "summary": "Session B summary written. 20 BUILDs, 105 WASM tests, playground live, UPDATE fast-path 8x. 4 bugs found and fixed."
+    },
+    {
+      "id": "T46",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Investigate WASM compiler code quality: read and annotate the full compiler",
+      "project": "monkey-lang",
+      "started": "2026-04-28T21:33:35.875Z",
+      "completed": "2026-04-28T21:35:04.056Z",
+      "duration_ms": 300000,
+      "summary": "Code quality exploration: 10 edge cases tested, ALL passed. Compiler handles: closures over globals, param shadowing, multiple returns, deep nesting, booleans, nested anon functions. No issues found — compiler is solid."
+    },
+    {
+      "id": "T47",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Design proper array reallocation for WASM (growth strategy)",
+      "started": "2026-04-28T21:35:11.795Z",
+      "completed": "2026-04-28T21:36:02.075Z",
+      "duration_ms": 300000,
+      "summary": "Designed handle-based array reallocation system. Analyzed 5 approaches. Current capacity-256 is adequate for now; handle system needed for GC phase. Design doc written."
+    },
+    {
+      "id": "T48",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Stress test HenryDB UPDATE fast-path edge cases",
+      "project": "henrydb",
+      "started": "2026-04-28T21:36:10.437Z",
+      "completed": "2026-04-28T21:42:16.207Z",
+      "duration_ms": 600000,
+      "summary": "CRITICAL: found 4 constraint bypass bugs in UPDATE fast-path (UNIQUE, CHECK, NOT NULL, FK). All fixed. High-value depth testing — every constraint type was bypassed by the performance optimization."
+    },
+    {
+      "id": "T49",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Clean up TODO.md and update MEMORY.md with session learnings",
+      "started": "2026-04-28T21:42:32.497Z"
     }
   ],
   "focusProjects": [
@@ -668,6 +718,22 @@
     {
       "time": "2026-04-28T21:25:31.048Z",
       "msg": "Added T45 (THINK) after end: Session review and daily log"
+    },
+    {
+      "time": "2026-04-28T21:33:16.796Z",
+      "msg": "Added T46 (EXPLORE) after end: Investigate WASM compiler code quality: read and annotate the full compiler"
+    },
+    {
+      "time": "2026-04-28T21:33:16.910Z",
+      "msg": "Added T47 (THINK) after end: Design proper array reallocation for WASM (growth strategy)"
+    },
+    {
+      "time": "2026-04-28T21:33:17.026Z",
+      "msg": "Added T48 (EXPLORE) after end: Stress test HenryDB UPDATE fast-path edge cases"
+    },
+    {
+      "time": "2026-04-28T21:33:17.141Z",
+      "msg": "Added T49 (MAINTAIN) after end: Clean up TODO.md and update MEMORY.md with session learnings"
     }
   ]
 }
