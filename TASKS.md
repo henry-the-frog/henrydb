@@ -9,7 +9,8 @@
 - **Known issues:** 
   - Sibling closures don't share mutable state (need box/cell pattern)
   - Self-referencing closures with multiple captures fail (env stores 0 for uninitialized self-ref)
-  - Recursive closure + mutable state causes compiler hang
+  - Recursive closure + mutable state causes runtime crash (table index OOB)
+  - Compiler OOM was misdiagnosis (ESM timer kept process alive, compile takes 9ms)
   - i32 overflow for large numbers (factorial(20), sum 100k)
 
 ### HenryDB

@@ -34,9 +34,9 @@ When the closure is called and tries to call `f(n-1)`, it reads `f` from env →
 2. **Self-reference detection in _findCaptures:** Exclude the variable being defined from captures, and instead compile self-calls as direct calls to the WASM function index
 3. **Box/cell pattern:** All captured mutable variables go through heap-allocated boxes
 
-## Bug 2: Sibling Closures Don't Share Mutable State
+## Bug 2: Closures Don't Share Mutable State With Enclosing Scope
 
-**Symptom:** Two closures that capture the same variable see independent copies.
+**Symptom 2a:** Two closures that capture the same variable see independent copies.
 
 ```monkey
 let make = fn() {
@@ -52,10 +52,23 @@ inc();
 get()  // Returns 0 instead of 1
 ```
 
-**Root cause:** Each closure gets its own environment with a COPY of `x`. When `inc` mutates `x`, it writes back to ITS env only. `get` has a separate env with its own copy of `x=0`.
+**Symptom 2b:** Outer scope can't read mutations made by inner closure.
+
+```monkey
+let f = fn() {
+  let result = 0;
+  let inner = fn(i) { result = result + i; result };
+  inner(1); inner(2); inner(3);
+  result    // Returns 0 instead of 6! Outer local not updated.
+};
+```
+
+**Root cause:** Each closure gets its own env with a COPY of captured vars (at creation time). Mutations write back to the closure's OWN env, not the outer scope's local. The outer scope and sibling closures all reference different storage locations.
+
+**Note:** Single closures that both read and mutate DO work (e.g., counter pattern). The bug only manifests when two entities (two closures, or a closure + its enclosing scope) both need to see the same variable.
 
 **Fix:** The proper solution is the **box/cell pattern**:
-1. During analysis, identify variables that are captured by multiple closures (or captured and mutated)
+1. During analysis, identify variables that are captured and mutated (or captured by multiple closures)
 2. Heap-allocate these variables as "boxes" (4-byte cells)
 3. All closures and the outer scope reference the box pointer, not the value directly
 4. Reads: dereference box pointer → value
@@ -63,9 +76,9 @@ get()  // Returns 0 instead of 1
 
 This is how most real closure implementations work (Python cells, Lua upvalues, V8 Context objects).
 
-## Bug 3: Recursive Closure + Mutable State = Crash
+## Bug 3: Self-Referencing Closures with Multiple Captures = Crash
 
-**Symptom:** Recursive closure with a captured mutable variable crashes at runtime.
+**Symptom:** Recursive closure with other captured variables crashes at runtime.
 
 ```monkey
 let make = fn() {
@@ -76,12 +89,29 @@ let make = fn() {
 make()  // RuntimeError: table index is out of bounds
 ```
 
-**Root cause:** Combination of Bug 1 (self-reference = 0 in env) and Bug 2 (mutable state isolation). When the compiler hangs, it's likely an infinite loop in analysis rather than a runtime crash.
+**Root cause:** Combination of Bug 1 (self-reference = 0 in env) and Bug 2 (mutable state isolation). `loop` captures `[result, loop]` but at closure creation time, `loop`'s local is 0 (uninitialized — the let is being defined). The closure reads `loop` from env → 0 → invalid table index → crash.
 
-Actually: compilation itself hangs (SIGKILL after ~10s). The compiler may be entering an infinite loop during type inference or some other analysis pass when a closure captures a mutable variable AND references itself.
+**Note:** Compilation does NOT hang/OOM (earlier reports were misleading — the process stayed alive due to open timers from module imports, not infinite loops). Compilation takes ~9ms.
 
-## Priority
+## Debunked: Compiler OOM Bug
 
-Bug 2 (shared mutable state) is the most architecturally significant — it requires the box/cell pattern.
-Bug 1 (self-reference) could be fixed independently with env patching.
-Both are related and the box/cell pattern would fix both.
+The "compiler OOM" reported in Session B was a misdiagnosis. The WasmCompiler does NOT hang or OOM. The issue was `process.exit()` vs open timers from ESM module imports keeping the event loop alive. Adding `process.exit(0)` after compilation confirms it takes 9ms and produces correct output. This bug can be removed from TASKS.md.
+
+## Priority and Fix Strategy
+
+**Box/cell pattern** fixes ALL THREE bugs:
+- Bug 1 (self-ref): box for `f` gets patched after closure creation
+- Bug 2 (shared state): all references go through the same box pointer
+- Bug 3 (recursive + mutable): combination of fixes 1 and 2
+
+**Implementation sketch:**
+1. Analysis pass: for each scope, identify "boxed" variables — those that are (captured AND mutated) OR (captured by multiple closures) OR (self-referencing)
+2. At variable definition: `alloc(4)` → box_ptr, store initial value via `i32.store(box_ptr, value)`, store box_ptr in local
+3. At variable read: `i32.load(local)` → box_ptr, `i32.load(box_ptr)` → value
+4. At variable write: `i32.load(local)` → box_ptr, `i32.store(box_ptr, new_value)`
+5. In closure capture: store box_ptr, not value. Inner scope reads/writes through same box.
+6. After self-referencing let: patch `i32.store(box_ptr, closure_ptr)` 
+
+**Alternative minimal fix for Bug 1 only:** After `let loop = fn(i){...}` where loop captures itself, emit `i32.store(env + loop_offset, loop_closure_ptr)` to patch the env. Quick win but doesn't fix shared state (Bug 2).
+
+**Estimated effort:** Box/cell ~200 LOC changes, touches Scope, compileFunctionLiteral, compileLetStatement, compileAssignExpression, compileIdentifier.

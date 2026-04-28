@@ -2993,9 +2993,111 @@
     {
       "id": "T283",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Housekeeping",
-      "started": "2026-04-28T02:30:56.105Z"
+      "started": "2026-04-28T02:30:56.105Z",
+      "completed": "2026-04-28T02:31:27.755Z",
+      "duration_ms": 300000,
+      "summary": "Housekeeping: committed scratch notes, pushed workspace, cleaned unfilled placeholders from queue."
+    },
+    {
+      "id": "T284",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "WASM: investigate compiler hang on recursive closure + mutable state",
+      "project": "monkey-lang",
+      "started": "2026-04-28T02:31:54.445Z",
+      "completed": "2026-04-28T02:36:54.089Z",
+      "duration_ms": 900000,
+      "summary": "Deep investigation of compiler hang + 3 closure bugs. DEBUNKED: compiler OOM was misdiagnosis (open timers from ESM, not actual hang — compile takes 9ms). Real bugs: (1) self-ref closure + multiple captures = table index OOB, (2) shared mutable state not visible across closures/outer scope, (3) recursive + mutable = crash (combo of 1+2). All caused by copy-based capture. Box/cell pattern is the fix. Updated scratch notes with full analysis + fix strategy."
+    },
+    {
+      "id": "T285",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "WASM: investigate OOM/compiler hang (was blocking Session B analysis)",
+      "project": "monkey-lang",
+      "started": "2026-04-28T02:37:16.605Z",
+      "completed": "2026-04-28T02:37:16.752Z",
+      "duration_ms": 5000,
+      "summary": "DEBUNKED in T284 — not a real OOM, just ESM timer keeping process alive."
+    },
+    {
+      "id": "T286",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: explore cost model calibration — what multipliers are actually correct?",
+      "project": "henrydb",
+      "started": "2026-04-28T02:37:36.547Z",
+      "completed": "2026-04-28T02:46:22.689Z",
+      "duration_ms": 600000,
+      "summary": "Cost model calibration: found (1) lost multi-engine code at repo root vs project copy, (2) all engine multipliers are aspirational — actual benchmarks show 0.002ms for all engines at 5K rows, JS overhead dominates. The cost model is architecturally sound but academically-calibrated until engines have real JIT/SIMD."
+    },
+    {
+      "id": "T287",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Stress test monkey-lang WASM: find the perf ceiling with fib(35) and other heavy workloads",
+      "project": "monkey-lang",
+      "started": "2026-04-28T02:46:50.399Z",
+      "completed": "2026-04-28T02:49:21.022Z",
+      "duration_ms": 600000,
+      "summary": "WASM perf ceiling: fib(25)=34x, fib(30)=428x, fib(35)=521x (86ms vs 45s), fib(40)=935ms, fib(45)=10s. 400-500x for compute-heavy recursive work. TCO works: sum(1M)=4.3ms. Compile overhead (~5ms) makes trivial ops slower. i32 overflow confirmed for large sums."
+    },
+    {
+      "id": "T288",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: explore what happens at 100K rows — memory usage, query times, GC pressure",
+      "project": "henrydb",
+      "started": "2026-04-28T02:49:28.961Z",
+      "completed": "2026-04-28T02:54:16.674Z",
+      "duration_ms": 600000,
+      "summary": "HenryDB scaling: INSERT is bottleneck (3.5ms each, 35s for 10K). Queries at 10K are all sub-ms. Memory ~717 bytes/row. Read path is excellent, write path needs bulk INSERT or prepared stmt optimization. 50K insert OOMed/timed out."
+    },
+    {
+      "id": "T289",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "monkey-lang: test string handling in WASM — concatenation, len, comparison",
+      "project": "monkey-lang",
+      "started": "2026-04-28T02:54:23.630Z",
+      "completed": "2026-04-28T02:55:50.109Z",
+      "duration_ms": 300000,
+      "summary": "WASM strings are very solid: comparison (== !=), concat (+), len, hash keys, str+int coercion, puts — all work. Only limitation: compileAndRun returns raw pointer for string results (needs decode step in host). UTF-8 byte-level len (cafe=5 not 4). Edge cases all pass."
+    },
+    {
+      "id": "T290",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "monkey-lang: test WASM class/OOP features — methods, inheritance, this binding",
+      "project": "monkey-lang",
+      "started": "2026-04-28T02:56:25.510Z",
+      "completed": "2026-04-28T02:57:15.556Z",
+      "duration_ms": 300000,
+      "summary": "WASM classes fully working: basic class+init+methods, field access via self, multiple instances, method calling method, inheritance, method override, super calls, 3-level inheritance chains. All pass. Very complete OOP implementation."
+    },
+    {
+      "id": "T291",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "monkey-lang: test WASM error handling — what happens with division by zero, stack overflow, type errors",
+      "project": "monkey-lang",
+      "started": "2026-04-28T02:57:28.572Z",
+      "completed": "2026-04-28T02:58:16.600Z",
+      "duration_ms": 300000,
+      "summary": "WASM error handling: div/mod by zero = WASM traps (good). Undefined var = compile error (good). Int overflow wraps (expected i32). Array OOB returns 0. -string negates pointer (bug). bool+bool=1 (int semantics). null=0. call non-fn = CompileError. No stack overflow protection (process killed)."
+    },
+    {
+      "id": "T292",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: investigate 3.5ms per INSERT bottleneck — where does the time go?",
+      "project": "henrydb",
+      "started": "2026-04-28T02:58:30.069Z",
+      "completed": "2026-04-28T03:01:29.160Z",
+      "duration_ms": 600000,
+      "summary": "INSERT bottleneck found: insertRow itself is 0.005ms, but execute() is 1.76ms (352x overhead). Parsing=0.009ms (1%), validation=0.002ms (0%). The 99% overhead is in SQL execution pipeline: routing, AST evaluation, WAL management. Direct insertRow is fast. Need prepared statement bypass path."
     }
   ],
   "focusProjects": [
@@ -4227,6 +4329,42 @@
     {
       "time": "2026-04-28T02:20:39.966Z",
       "msg": "Removed T221: Unfilled think placeholder"
+    },
+    {
+      "time": "2026-04-28T02:31:33.256Z",
+      "msg": "Added T284 (EXPLORE) after end: WASM: investigate compiler hang on recursive closure + mutable state"
+    },
+    {
+      "time": "2026-04-28T02:31:37.917Z",
+      "msg": "Added T285 (EXPLORE) after T284: WASM: investigate OOM/compiler hang (was blocking Session B analysis)"
+    },
+    {
+      "time": "2026-04-28T02:31:44.670Z",
+      "msg": "Added T286 (EXPLORE) after T285: HenryDB: explore cost model calibration — what multipliers are actually correct?"
+    },
+    {
+      "time": "2026-04-28T02:46:33.078Z",
+      "msg": "Added T287 (EXPLORE) after end: Stress test monkey-lang WASM: find the perf ceiling with fib(35) and other heavy workloads"
+    },
+    {
+      "time": "2026-04-28T02:46:37.934Z",
+      "msg": "Added T288 (EXPLORE) after T287: HenryDB: explore what happens at 100K rows — memory usage, query times, GC pressure"
+    },
+    {
+      "time": "2026-04-28T02:46:42.499Z",
+      "msg": "Added T289 (EXPLORE) after T288: monkey-lang: test string handling in WASM — concatenation, len, comparison"
+    },
+    {
+      "time": "2026-04-28T02:56:05.291Z",
+      "msg": "Added T290 (EXPLORE) after end: monkey-lang: test WASM class/OOP features — methods, inheritance, this binding"
+    },
+    {
+      "time": "2026-04-28T02:56:11.106Z",
+      "msg": "Added T291 (EXPLORE) after T290: monkey-lang: test WASM error handling — what happens with division by zero, stack overflow, type errors"
+    },
+    {
+      "time": "2026-04-28T02:56:15.597Z",
+      "msg": "Added T292 (EXPLORE) after T291: HenryDB: investigate 3.5ms per INSERT bottleneck — where does the time go?"
     }
   ]
 }
