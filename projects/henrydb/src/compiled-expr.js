@@ -10,6 +10,8 @@ export function compileExpr(expr) {
   if (!expr) return () => true;
   
   try {
+    // Don't compile if AST contains mutable param nodes (prepared stmts use in-place mutation)
+    if (_containsParam(expr)) return null;
     const code = _emitExpr(expr);
     if (code === null) return null;
     // Use Function constructor for fast execution
@@ -17,6 +19,26 @@ export function compileExpr(expr) {
   } catch {
     return null; // Fallback to interpreter
   }
+}
+
+/**
+ * Check if an AST contains any PARAM or mutable nodes.
+ */
+function _containsParam(node) {
+  if (!node || typeof node !== 'object') return false;
+  if (node.type === 'PARAM') return true;
+  // Check if any value previously held a PARAM (after fastBind mutation)
+  for (const key of Object.keys(node)) {
+    const val = node[key];
+    if (Array.isArray(val)) {
+      for (const item of val) {
+        if (_containsParam(item)) return true;
+      }
+    } else if (val && typeof val === 'object' && val.type) {
+      if (_containsParam(val)) return true;
+    }
+  }
+  return false;
 }
 
 /**
@@ -40,10 +62,10 @@ function _emitExpr(node) {
     
     case 'column_ref': {
       const name = node.name;
-      // Handle qualified names: table.column
-      const col = name.includes('.') ? name.split('.').pop() : name;
-      // Use bracket notation for safety
-      return `row[${JSON.stringify(col)}]`;
+      // Don't compile qualified column refs (table.col) — they may reference outer scope
+      // in correlated subqueries
+      if (name.includes('.')) return null;
+      return `row[${JSON.stringify(name)}]`;
     }
     
     case 'COMPARE': {
@@ -146,21 +168,11 @@ function _emitExpr(node) {
 }
 
 /**
- * Expression compiler cache: AST hash → compiled function
- */
-const _exprCache = new WeakMap();
-
-/**
  * Get or create a compiled expression function for a WHERE clause.
- * Uses WeakMap keyed on AST node for caching.
+ * Does NOT cache (AST may be mutated by prepared statement fast-bind).
+ * Compilation is fast enough (~1μs) that caching is unnecessary.
  */
 export function getCompiledExpr(expr) {
   if (!expr) return () => true;
-  
-  let fn = _exprCache.get(expr);
-  if (fn !== undefined) return fn; // null means "not compilable"
-  
-  fn = compileExpr(expr);
-  _exprCache.set(expr, fn);
-  return fn;
+  return compileExpr(expr);
 }

@@ -3,6 +3,7 @@
 
 import { pushdownPredicates } from './pushdown.js';
 import { canVectorize, vectorizedGroupBy } from './vectorized-bridge.js';
+import { getCompiledExpr } from './compiled-expr.js';
 
 // Built-in table-valued functions
 function executeBuiltinTVF(funcName, args, db) {
@@ -129,6 +130,16 @@ function dedup(name, result) {
   return `${name}_${suffix}`;
 }
 
+/**
+ * Apply WHERE filter using compiled expression when possible, falling back to _evalExpr.
+ */
+function _filterWhere(db, ast, rows) {
+  if (!ast.where) return rows;
+  const compiled = getCompiledExpr(ast.where);
+  if (compiled) return rows.filter(compiled);
+  return rows.filter(row => db._evalExpr(ast.where, row));
+}
+
 export function selectInner(db, ast) {
   // Resolve limitExpr (e.g., subqueries) at execution time
   if (ast.limitExpr != null && ast.limit == null) {
@@ -197,7 +208,7 @@ export function selectInner(db, ast) {
       }
     }
     // Apply WHERE
-    if (ast.where) rows = rows.filter(row => db._evalExpr(ast.where, row));
+    rows = _filterWhere(db, ast, rows);
     
     // Handle aggregates / GROUP BY on GENERATE_SERIES results
     const gsHasAggregates = ast.columns.some(c => c.type === 'aggregate');
@@ -228,7 +239,7 @@ export function selectInner(db, ast) {
     let rows = tvfResult ? tvfResult.rows : [];
     
     // Apply WHERE
-    if (ast.where) rows = rows.filter(row => db._evalExpr(ast.where, row));
+    rows = _filterWhere(db, ast, rows);
     
     const hasAgg = ast.columns.some(c => c.type === 'aggregate');
     if (ast.groupBy) return db._selectWithGroupBy(ast, rows);
@@ -247,7 +258,7 @@ export function selectInner(db, ast) {
     const colName = ast.from.columnAlias || 'value';
     let rows = arr.map(v => ({ [colName]: v }));
     
-    if (ast.where) rows = rows.filter(row => db._evalExpr(ast.where, row));
+    rows = _filterWhere(db, ast, rows);
     if (ast.groupBy) return db._selectWithGroupBy(ast, rows);
     
     const hasAgg = ast.columns.some(c => c.type === 'aggregate');
@@ -373,7 +384,7 @@ export function selectInner(db, ast) {
         }
       }
     }
-    if (ast.where) rows = rows.filter(row => db._evalExpr(ast.where, row));
+    rows = _filterWhere(db, ast, rows);
     for (const join of ast.joins || []) {
       rows = db._executeJoin(rows, join, ast.from.alias || '__subquery');
     }
@@ -435,7 +446,7 @@ export function selectInner(db, ast) {
 
     // Apply WHERE — only if no JOINs, otherwise apply after JOINs
     if (ast.where && (!ast.joins || ast.joins.length === 0)) {
-      rows = rows.filter(row => db._evalExpr(ast.where, row));
+      rows = _filterWhere(db, ast, rows);
     }
 
     // Handle JOINs on view results
@@ -445,7 +456,7 @@ export function selectInner(db, ast) {
 
     // Apply WHERE after JOINs (when JOINs exist)
     if (ast.where && ast.joins && ast.joins.length > 0) {
-      rows = rows.filter(row => db._evalExpr(ast.where, row));
+      rows = _filterWhere(db, ast, rows);
     }
 
     // Handle aggregates / GROUP BY on view results
@@ -606,9 +617,10 @@ export function selectInner(db, ast) {
         !ast.having && !db._columnsHaveWindow(ast.columns);
       const earlyLimit = canEarlyLimit && ast.limit >= 0 ? (ast.limit + (ast.offset || 0)) : Infinity;
       
+      const compiledWhere = ast.where ? (getCompiledExpr(ast.where) || ((row) => db._evalExpr(ast.where, row))) : null;
       for (const { pageId, slotIdx, values } of table.heap.scan()) {
         const row = db._valuesToRow(values, table.schema, ast.from.alias || ast.from.table);
-        if (ast.where && !db._evalExpr(ast.where, row)) continue;
+        if (compiledWhere && !compiledWhere(row)) continue;
         rows.push(row);
         if (rows.length >= earlyLimit) break;
       }

@@ -27,9 +27,9 @@ describe('Compiled Expression Evaluator', () => {
       assert.strictEqual(fn({ id: 42 }), 42);
     });
 
-    it('qualified column (table.col)', () => {
+    it('qualified column (table.col) returns null (may be outer scope ref)', () => {
       const fn = compileExpr({ type: 'column_ref', name: 't.id' });
-      assert.strictEqual(fn({ id: 42 }), 42);
+      assert.strictEqual(fn, null);
     });
   });
 
@@ -187,12 +187,12 @@ describe('Compiled Expression Evaluator', () => {
     });
   });
 
-  describe('getCompiledExpr caching', () => {
-    it('returns same function for same AST node', () => {
+  describe('getCompiledExpr', () => {
+    it('returns a working function for simple expr', () => {
       const ast = { type: 'COMPARE', op: 'EQ', left: { type: 'column_ref', name: 'id' }, right: { type: 'literal', value: 5 } };
-      const fn1 = getCompiledExpr(ast);
-      const fn2 = getCompiledExpr(ast);
-      assert.strictEqual(fn1, fn2);
+      const fn = getCompiledExpr(ast);
+      assert.strictEqual(fn({ id: 5 }), true);
+      assert.strictEqual(fn({ id: 6 }), false);
     });
 
     it('null expr returns always-true', () => {
