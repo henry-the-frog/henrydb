@@ -59,36 +59,75 @@
     {
       "id": "T4",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Mid-session housekeeping",
-      "started": "2026-04-28T20:27:19.379Z"
+      "started": "2026-04-28T20:27:19.379Z",
+      "completed": "2026-04-28T20:27:53.435Z",
+      "duration_ms": 60000,
+      "summary": "Git push all repos: monkey-lang (rebased+pushed), henrydb (pulled+pushed), workspace (committed+pushed). All clean."
     },
     {
       "id": "T5",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Assess playground progress, decide next focus"
+      "status": "done",
+      "task": "Assess playground progress, decide next focus",
+      "started": "2026-04-28T20:28:02.284Z",
+      "completed": "2026-04-28T20:28:19.836Z",
+      "duration_ms": 60000,
+      "summary": "Playground MVP complete. Next: deploy to GitHub Pages (fast), then HenryDB TODO fixes. Added PLAN+BUILD for deployment."
+    },
+    {
+      "id": "T15",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Deploy monkey-lang playground to GitHub Pages",
+      "task": null,
+      "started": "2026-04-28T20:28:27.610Z",
+      "completed": "2026-04-28T20:28:40.535Z",
+      "duration_ms": 60000,
+      "summary": "Plan: use GitHub Actions to deploy playground/ to GitHub Pages. One BUILD task."
+    },
+    {
+      "id": "T16",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Set up GitHub Pages deployment for playground (Actions workflow or /docs)",
+      "plan_ref": "T15",
+      "project": "monkey-lang",
+      "started": "2026-04-28T20:28:48.122Z",
+      "completed": "2026-04-28T20:29:40.388Z",
+      "duration_ms": 180000,
+      "summary": "Created GH Actions workflow for playground deployment. Pages enabled at henry-the-frog.github.io/monkey-lang/. Workflow triggered, deploying."
     },
     {
       "id": "T6",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "HenryDB TODO fixes: JSON_TYPE bug + other quick wins",
-      "task": null
+      "task": null,
+      "started": "2026-04-28T20:29:48.424Z",
+      "completed": "2026-04-28T20:30:54.968Z",
+      "duration_ms": 120000,
+      "summary": "Investigated JSON_TYPE: actually correct (SQLite convention: integer/real, not number). Removed from TODO. Planned: composite unique constraint fix."
     },
     {
       "id": "T7",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null,
+      "status": "done",
+      "task": "Fix HenryDB composite unique constraint heap scan in dml-insert.js",
       "plan_ref": "T6",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-28T20:31:14.690Z",
+      "completed": "2026-04-28T20:37:32.159Z",
+      "duration_ms": 300000,
+      "summary": "Composite unique constraint: O(N) heap scan → O(log N) index lookup. Uses first column B+ tree to find candidates, then verifies remaining columns. Fallback to scan when no index. All tests pass."
     },
     {
       "id": "T8",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Housekeeping + git push"
+      "status": "in-progress",
+      "task": "Housekeeping + git push",
+      "started": "2026-04-28T20:37:46.426Z"
     },
     {
       "id": "T9",
@@ -179,6 +218,22 @@
     {
       "time": "2026-04-28T20:17:18.004Z",
       "msg": "PLAN T2 filled 3 BUILD tasks"
+    },
+    {
+      "time": "2026-04-28T20:28:15.027Z",
+      "msg": "Added T15 (PLAN) after T5: Deploy monkey-lang playground to GitHub Pages"
+    },
+    {
+      "time": "2026-04-28T20:28:15.144Z",
+      "msg": "Added T16 (BUILD) after T15: null"
+    },
+    {
+      "time": "2026-04-28T20:28:36.109Z",
+      "msg": "PLAN T15 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-04-28T20:30:50.456Z",
+      "msg": "PLAN T6 filled 1 BUILD tasks"
     }
   ]
 }
