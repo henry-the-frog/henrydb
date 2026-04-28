@@ -66,3 +66,13 @@ The right approach: auto-select backend based on program complexity:
 - < 1ms eval time → use evaluator (zero compile overhead)
 - 1ms-100ms eval time → use JIT (fast compile, decent execution)
 - > 100ms eval time → use WASM (slower compile, fastest execution)
+
+## Architecture Notes (monkey-lang execution backends)
+Three execution backends with different tradeoffs:
+1. **Evaluator**: Tree-walking interpreter. Zero compile time, slowest execution (~3000x slower than WASM exec).
+2. **JIT (tracing)**: Records hot loops, compiles to JavaScript → V8 JIT → native. ~100ms startup. Best for simple loops, HOFs, string ops (leverages V8 optimizations).
+3. **WASM compiler**: Compiles to WebAssembly → native. ~85ms startup. Best for deep recursion. Has type-guided optimization (knownInt) with 23 optimization points.
+
+Other subsystems: bytecode compiler + VM, type inference (Hindley-Milner), LSP, formatter, linter, optimizer, GC, profiler, debugger, REPL, package manager.
+
+Type inference integration: WASM compiler uses `knownInt` flag to skip tagging/untagging for integer-only operations. This optimization is pervasive (23 code points).
