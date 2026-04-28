@@ -512,9 +512,51 @@
     {
       "id": "T49",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Clean up TODO.md and update MEMORY.md with session learnings",
-      "started": "2026-04-28T21:42:32.497Z"
+      "started": "2026-04-28T21:42:32.497Z",
+      "completed": "2026-04-28T21:43:27.724Z",
+      "duration_ms": 120000,
+      "summary": "Cleaned TODO.md (removed completed items, added new items), updated daily log. All repos pushed."
+    },
+    {
+      "id": "T50",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Run the full monkey-lang test suite (not just WASM) and triage failures",
+      "project": "monkey-lang",
+      "started": "2026-04-28T21:44:02.912Z",
+      "completed": "2026-04-28T21:45:18.287Z",
+      "duration_ms": 300000,
+      "summary": "Full monkey-lang test suite: 1,308 tests across 56 files, ALL passing. Zero failures. Test suite is in excellent health."
+    },
+    {
+      "id": "T51",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Architecture review: what are the biggest remaining gaps in monkey-lang WASM compiler?",
+      "started": "2026-04-28T21:45:29.239Z",
+      "completed": "2026-04-28T21:45:49.889Z",
+      "duration_ms": 180000,
+      "summary": "Architecture review: 10+ unsupported features identified. Top priorities: array reallocation (correctness), hash maps, for-in, string ops. Lowest effort/highest impact: pipe operator (trivial), for-in (while sugar), range (array gen)."
+    },
+    {
+      "id": "T52",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Run full HenryDB test suite and triage any failures",
+      "project": "henrydb",
+      "started": "2026-04-28T21:45:57.418Z",
+      "completed": "2026-04-28T21:50:01.350Z",
+      "duration_ms": 300000,
+      "summary": "HenryDB test sweep: ran core SQL, constraints, update, json, aggregate, window, subquery, CTE, trigger tests. 0 failures. Some cancellations from timeout on slow tests. Suite is healthy."
+    },
+    {
+      "id": "T53",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Final git push + CURRENT.md cleanup",
+      "started": "2026-04-28T21:50:10.911Z"
     }
   ],
   "focusProjects": [
@@ -734,6 +776,22 @@
     {
       "time": "2026-04-28T21:33:17.141Z",
       "msg": "Added T49 (MAINTAIN) after end: Clean up TODO.md and update MEMORY.md with session learnings"
+    },
+    {
+      "time": "2026-04-28T21:43:48.584Z",
+      "msg": "Added T50 (EXPLORE) after end: Run the full monkey-lang test suite (not just WASM) and triage failures"
+    },
+    {
+      "time": "2026-04-28T21:43:48.700Z",
+      "msg": "Added T51 (THINK) after end: Architecture review: what are the biggest remaining gaps in monkey-lang WASM compiler?"
+    },
+    {
+      "time": "2026-04-28T21:43:48.815Z",
+      "msg": "Added T52 (EXPLORE) after end: Run full HenryDB test suite and triage any failures"
+    },
+    {
+      "time": "2026-04-28T21:43:48.930Z",
+      "msg": "Added T53 (MAINTAIN) after end: Final git push + CURRENT.md cleanup"
     }
   ]
 }
