@@ -34,3 +34,11 @@ Both fixes are critical for real-world patterns (counter objects, deeply nested 
 
 ### Key Lesson
 The box analysis AST walker MUST traverse ALL node types (hash pairs, spread elements, etc.) and recurse through ALL nesting levels. Missing any node type or depth limit will cause silent bugs that only appear in real-world patterns.
+
+### Bug 6: Slice [0:0] returned full array (Apr 28, same session)
+Not a closure bug but found during closure stress testing. The `__slice` host function treated `end=0` as "not specified" and defaulted to full length. Fixed by using `-1` as sentinel.
+
+## Final Status: All 6 bugs FIXED
+- 14 regression tests
+- 9 stress tests (counter, iterator, memoization, state machine, linked list, stack, RPN eval, currying, for-loop capture)
+- 1947/1947 full project tests passing
