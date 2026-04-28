@@ -4,29 +4,75 @@
     {
       "id": "T1",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Review yesterday: 3 sessions, 100+ tasks. Set direction — box/cell vs INSERT fix priority"
+      "status": "done",
+      "task": "Review yesterday: 3 sessions, 100+ tasks. Set direction — box/cell vs INSERT fix priority",
+      "started": "2026-04-28T14:15:22.976Z",
+      "completed": "2026-04-28T14:15:40.779Z",
+      "duration_ms": 60000,
+      "summary": "Reviewed yesterday: 55+ explore tasks, 3 WASM closure bugs identified, INSERT bottleneck found. Queue order correct: box/cell first, INSERT fix second. No changes needed."
     },
     {
       "id": "T2",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "WASM box/cell pattern for mutable closure captures (fixes 3 bugs)",
-      "task": null
+      "task": null,
+      "started": "2026-04-28T14:15:55.674Z",
+      "completed": "2026-04-28T14:16:54.047Z",
+      "duration_ms": 120000,
+      "summary": "Planned box/cell pattern: 4 BUILD tasks — analysis pass, box alloc/read/write, closure capture update, regression tests"
     },
     {
       "id": "T3",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null,
+      "status": "done",
+      "task": "Add box analysis pass: identify variables needing boxing (captured+mutated, captured by multiple closures, self-referencing)",
       "plan_ref": "T2",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-28T14:17:03.327Z",
+      "completed": "2026-04-28T14:19:04.303Z",
+      "duration_ms": 300000,
+      "summary": "Added _analyzeBoxedVariables pass: identifies vars needing boxing (captured+mutated, multi-capture, self-ref). All 268 tests pass. Verified on all 3 bug patterns."
+    },
+    {
+      "id": "T19",
+      "mode": "BUILD",
+      "task": "Implement box allocation in compileLetStatement and box read/write in compileIdentifier/compileAssignExpression",
+      "status": "done",
+      "plan_ref": "T2",
+      "started": "2026-04-28T14:19:12.821Z",
+      "completed": "2026-04-28T14:21:39.420Z",
+      "duration_ms": 480000,
+      "summary": "Box alloc/read/write in compileLetStatement, compileIdentifier, compileAssignExpression. 266/268 tests pass. 2 expected regressions on self-ref closures (need T20 for closure capture update)."
+    },
+    {
+      "id": "T20",
+      "mode": "BUILD",
+      "task": "Update compileFunctionLiteral to capture box pointers instead of values, and patch self-referencing closures after creation",
+      "status": "done",
+      "plan_ref": "T2",
+      "started": "2026-04-28T14:21:47.721Z",
+      "completed": "2026-04-28T14:28:04.947Z",
+      "duration_ms": 600000,
+      "summary": "Box/cell pattern fully working. Fixed all 3 WASM closure bugs: self-ref+captures, shared mutable state, recursive+mutable. Updated compileFunctionLiteral, compileCallExpression, added scope ID tracking. 268/268 tests pass."
+    },
+    {
+      "id": "T21",
+      "mode": "BUILD",
+      "task": "Add WASM closure bug regression tests: self-ref+captures, shared mutable state, recursive+mutable combo",
+      "status": "done",
+      "plan_ref": "T2",
+      "started": "2026-04-28T14:28:14.233Z",
+      "completed": "2026-04-28T14:28:50.069Z",
+      "duration_ms": 180000,
+      "summary": "Added 10 regression tests for box/cell closure bugs. All 278 tests pass."
     },
     {
       "id": "T4",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Housekeeping: git push, dashboard health, knowledge capture"
+      "status": "in-progress",
+      "task": "Housekeeping: git push, dashboard health, knowledge capture",
+      "started": "2026-04-28T14:28:58.619Z"
     },
     {
       "id": "T5",
@@ -205,6 +251,10 @@
     {
       "time": "2026-04-28T14:01:14.158Z",
       "msg": "Added T18 (EXPLORE) after T17: HenryDB stress test: concurrent transactions, MVCC edge cases"
+    },
+    {
+      "time": "2026-04-28T14:16:48.432Z",
+      "msg": "PLAN T2 filled 4 BUILD tasks"
     }
   ]
 }
