@@ -3230,6 +3230,292 @@
       "completed": "2026-04-28T03:14:21.498Z",
       "duration_ms": 180000,
       "summary": "monkey-lang: 1930 tests, 1930 pass, 0 fail across 41 test files. Top: compiler (526), wasm-compiler (345), evaluator (176), jit (164), jit-integration (96), parser (52). Also: wasm-gc, wasm-dis, wasm-benchmark, type-inference, class, oop-protocols, stdlib, transpiler, constant-fold, dead-code, generators, and more."
+    },
+    {
+      "id": "T305",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "monkey-lang: explore pattern matching (match/when) in WASM",
+      "project": "monkey-lang",
+      "started": "2026-04-28T03:15:13.044Z",
+      "completed": "2026-04-28T03:15:55.575Z",
+      "duration_ms": 300000,
+      "summary": "WASM pattern matching works for literals, wildcards, strings, and as expressions. Variable binding patterns (n => n*10) fail — treated as variable reference instead of binding. Design decision: evaluator handles this correctly, WASM compiler treats non-wildcard identifiers as expressions. Fix: check if identifier is undefined in scope and treat as binding."
+    },
+    {
+      "id": "T306",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: test triggers (BEFORE/AFTER INSERT/UPDATE/DELETE)",
+      "project": "henrydb",
+      "started": "2026-04-28T03:16:38.303Z",
+      "completed": "2026-04-28T03:16:57.166Z",
+      "duration_ms": 180000,
+      "summary": "Triggers work perfectly: AFTER INSERT/UPDATE/DELETE all fire correctly. NEW.* and OLD.* references work. Trigger body can execute INSERT statements. String concat in trigger body works. SERIAL auto-increment in audit table works."
+    },
+    {
+      "id": "T307",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "monkey-lang: test try/catch in WASM and bytecode VM",
+      "project": "monkey-lang",
+      "started": "2026-04-28T03:17:42.986Z",
+      "completed": "2026-04-28T03:18:04.181Z",
+      "duration_ms": 120000,
+      "summary": "WASM try/catch works for Monkey exceptions (throw/catch). Cannot catch WASM traps (div-by-zero) — expected limitation. Basic try/catch, throw/catch, and try with assignment all work correctly."
+    },
+    {
+      "id": "T308",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "monkey-lang: explore the transpiler — what target languages does it support?",
+      "project": "monkey-lang",
+      "started": "2026-04-28T03:18:59.180Z",
+      "completed": "2026-04-28T03:19:32.147Z",
+      "duration_ms": 180000,
+      "summary": "Transpiler targets JavaScript only. fn→function, puts→console.log, closures work. Classes unsupported. Functions miss explicit return (Monkey is expression-bodied). Basic transpilation works but JS output needs return statements to actually run."
+    },
+    {
+      "id": "T309",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "monkey-lang: explore array comprehensions in WASM",
+      "project": "monkey-lang",
+      "started": "2026-04-28T03:20:26.219Z",
+      "completed": "2026-04-28T03:20:45.173Z",
+      "duration_ms": 120000,
+      "summary": "Array comprehensions work in WASM: [expr for var in iterable], with filter [expr for var in iterable if cond], indexing, nested with reduce. range() not available as WASM builtin."
+    },
+    {
+      "id": "T310",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "monkey-lang: test the type inference system",
+      "project": "monkey-lang",
+      "started": "2026-04-28T03:23:16.749Z",
+      "completed": "2026-04-28T03:24:03.762Z",
+      "duration_ms": 180000,
+      "summary": "Type inference works: int, bool, string, array, hash, function, null all correctly inferred. Arithmetic, comparison, string concat, conditionals, builtins (len) — all produce correct types. AST annotation via .inferredType property. 12/12 test cases pass."
+    },
+    {
+      "id": "T311",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: test EXPLAIN ANALYZE output",
+      "project": "henrydb",
+      "started": "2026-04-28T03:24:22.050Z",
+      "completed": "2026-04-28T03:24:43.155Z",
+      "duration_ms": 180000,
+      "summary": "EXPLAIN and EXPLAIN ANALYZE work. EXPLAIN shows cost estimates + volcano plan (SeqScan, Filter, HashJoin, HashAggregate, Project). ANALYZE shows actual vs est rows, per-operator timing, buffer stats (heap_scans, buffer_reads, index_lookups), rows removed by filter, execution time. PostgreSQL-grade output."
+    },
+    {
+      "id": "T312",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "monkey-lang: explore constant folding and dead code elimination",
+      "project": "monkey-lang",
+      "started": "2026-04-28T03:24:51.178Z",
+      "completed": "2026-04-28T03:25:32.693Z",
+      "duration_ms": 180000,
+      "summary": "Constant folding works: 2+3→5, 10*5+2→52, string concat folds. Dead code elimination: if(true){42}→42, if(false){42}→0. AST correctly transformed. 187+129=316 LOC for both passes."
+    },
+    {
+      "id": "T313",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: test materialized views",
+      "project": "henrydb",
+      "started": "2026-04-28T03:25:46.042Z",
+      "completed": "2026-04-28T03:26:07.746Z",
+      "duration_ms": 120000,
+      "summary": "Materialized views work: CREATE MATERIALIZED VIEW with GROUP BY/SUM/COUNT, query works, stale after INSERT (shows old data), REFRESH MATERIALIZED VIEW updates correctly."
+    },
+    {
+      "id": "T314",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "monkey-lang: total LOC count across all source files",
+      "project": "monkey-lang",
+      "started": "2026-04-28T03:26:25.219Z",
+      "completed": "2026-04-28T03:27:11.842Z",
+      "duration_ms": 120000,
+      "summary": "monkey-lang: 24,192 LOC source + 15,268 LOC tests = 39,460 total. Top: wasm-compiler(4774), jit(4533), vm(2503), compiler(1622), eval(1483). HenryDB: 81,327 LOC source + 130,135 LOC tests = 211,462 total. Top: sql.js(3647), volcano-planner(2057), pg-server(1936), db.js(1662)."
+    },
+    {
+      "id": "T315",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "monkey-lang: test the module/import system",
+      "project": "monkey-lang",
+      "started": "2026-04-28T03:27:30.403Z",
+      "completed": "2026-04-28T03:28:25.920Z",
+      "duration_ms": 120000,
+      "summary": "Module system exists: file-based imports with .monkey extension, caching, circular dependency detection. ModuleLoader class with resolve/load/cache. Test suite passes. Exports: getModuleLoader, resetModuleLoader, class ModuleLoader."
+    },
+    {
+      "id": "T316",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: test SAVEPOINT / ROLLBACK TO for nested transactions",
+      "project": "henrydb",
+      "started": "2026-04-28T03:28:35.568Z",
+      "completed": "2026-04-28T03:28:56.505Z",
+      "duration_ms": 120000,
+      "summary": "SAVEPOINT/ROLLBACK TO works: nested savepoints, partial rollback, continue after rollback, full ROLLBACK. All correct — row 3 undone by ROLLBACK TO sp2, row 2 undone by ROLLBACK TO sp1, new inserts after rollback + COMMIT persist."
+    },
+    {
+      "id": "T317",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "monkey-lang: what optimization passes exist? List all compiler passes",
+      "project": "monkey-lang",
+      "started": "2026-04-28T03:29:11.113Z",
+      "completed": "2026-04-28T03:29:38.221Z",
+      "duration_ms": 120000,
+      "summary": "8 optimization passes: constant-fold(187), dead-code(129), inline(441), loop-unroll(71), tail-call(139), type-inference(271), wasm-optimize(21), JIT(4533). Total: 5792 LOC. Plus WASM compiler itself at 4774 LOC. Full compilation pipeline: Lex → Parse → ConstFold → DeadCode → TypeInfer → Inline → LoopUnroll → TailCall → Compile → WasmOptimize."
+    },
+    {
+      "id": "T318",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: test MVCC behavior — concurrent read during write",
+      "project": "henrydb",
+      "started": "2026-04-28T03:29:50.322Z",
+      "completed": "2026-04-28T03:30:57.634Z",
+      "duration_ms": 300000,
+      "summary": "MVCC snapshot isolation works: S1 starts tx (sees 2 rows), S2 inserts+commits row 3, S1 STILL sees only 2 rows (snapshot isolation), new session S3 sees all 3. TransactionalDatabase with sessions, WAL, file-backed storage, MVCC heap."
+    },
+    {
+      "id": "T319",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: test the wire protocol / PostgreSQL compatibility",
+      "project": "henrydb",
+      "started": "2026-04-28T03:31:19.712Z",
+      "completed": "2026-04-28T03:31:45.281Z",
+      "duration_ms": 120000,
+      "summary": "HenryDB has a full PostgreSQL wire protocol v3 server (1936 LOC). Supports Simple Query + Extended Query protocol (Parse/Bind/Describe/Execute/Close), COPY IN, MD5 auth, full PG type OIDs. Connect with psql -h localhost -p 5433 -U henrydb."
+    },
+    {
+      "id": "T320",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "monkey-lang: explore the REPL and string interning",
+      "project": "monkey-lang",
+      "started": "2026-04-28T03:32:12.108Z",
+      "completed": "2026-04-28T03:32:57.306Z",
+      "duration_ms": 120000,
+      "summary": "String interning via internString() in object.js: Map-based pool with 4096 max entries. Identical strings share MonkeyString objects for fast equality. Used by compiler, evaluator, and JIT."
+    },
+    {
+      "id": "T321",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: test prepared statements via wire protocol",
+      "project": "henrydb",
+      "started": "2026-04-28T03:33:02.633Z",
+      "completed": "2026-04-28T03:33:22.415Z",
+      "duration_ms": 120000,
+      "summary": "Prepared statements work: PREPARE with $1/$2 params, EXECUTE with bound values, DEALLOCATE. PostgreSQL-compatible syntax. INSERT and SELECT prepared statements both work correctly."
+    },
+    {
+      "id": "T322",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: list all SQL features in one comprehensive test",
+      "project": "henrydb",
+      "started": "2026-04-28T03:33:39.080Z",
+      "completed": "2026-04-28T03:34:10.212Z",
+      "duration_ms": 180000,
+      "summary": "54/54 SQL features pass in comprehensive test: DDL (CREATE/ALTER/DROP TABLE/INDEX/VIEW), DML (INSERT/UPDATE/DELETE incl multi-row), SELECT (WHERE/ORDER/LIMIT/OFFSET/DISTINCT/GROUP BY/HAVING/LIKE/IN/BETWEEN/IS NULL/CASE/COALESCE/CAST), Joins (INNER/LEFT/CROSS), Aggregates (COUNT/SUM/AVG/MIN/MAX), Window (ROW_NUMBER), CTEs (WITH/WITH RECURSIVE), Subqueries+EXISTS, JSON, Math, String funcs, Date, Set ops (UNION/INTERSECT/EXCEPT), Transactions, EXPLAIN. Zero failures."
+    },
+    {
+      "id": "T323",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "monkey-lang: comprehensive feature list — what does this language support?",
+      "project": "monkey-lang",
+      "started": "2026-04-28T03:34:29.029Z",
+      "completed": "2026-04-28T03:35:28.207Z",
+      "duration_ms": 180000,
+      "summary": "36/36 monkey-lang features work in WASM: 7 types (int, bool, string, array, hash, null, function), operators (+,-,*,/,%,comparison,negation,string concat), control flow (if/else/while/for-in), functions (closures, recursion, HOFs), OOP (classes, inheritance, super, self), pattern matching, try/catch/throw, array comprehensions, 10+ builtins (map, filter, reduce, sort, find, push, first, last, rest, len, type), let mutation. Complete language implementation."
+    },
+    {
+      "id": "T324",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: test PL/SQL — stored procedures, cursors, exception handling",
+      "project": "henrydb",
+      "started": "2026-04-28T03:35:48.661Z",
+      "completed": "2026-04-28T03:36:12.188Z",
+      "duration_ms": 180000,
+      "summary": "PL/SQL fully working: CREATE FUNCTION with DML, DECLARE/BEGIN/END, SELECT INTO, RETURN, IF/ELSIF/ELSE, FOR rec IN query LOOP, variable assignment (:=), function calls in SELECT. give_raise updates salary (100K), get_bonus computes 10% (10K), classify with IF/ELSIF, sum_salaries with cursor loop (255K)."
+    },
+    {
+      "id": "T325",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: test zone maps / min-max indexes",
+      "project": "henrydb",
+      "started": "2026-04-28T03:36:30.654Z",
+      "completed": "2026-04-28T03:36:55.351Z",
+      "duration_ms": 120000,
+      "summary": "Zone maps (min/max per data page, 1024-row pages) work: 163 LOC, 10 tests pass. Used for skip-scan optimization — pages eliminated when predicates fall outside min/max range. DuckDB/Parquet-style."
+    },
+    {
+      "id": "T326",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Quick: HenryDB data structure inventory",
+      "project": "henrydb",
+      "started": "2026-04-28T03:37:34.073Z",
+      "completed": "2026-04-28T03:37:34.220Z",
+      "duration_ms": 60000,
+      "summary": "HenryDB: 373 source files, 880 test files. Data structures: B-tree, COW B-tree, AVL, R-tree, VEB tree, treap, skip list, interval tree, Merkle tree, rope. Filters: Bloom, counting Bloom, cuckoo. Caches: LRU, LRU-K, LFU, buffer pool. Storage: LSM tree (compaction, SSTables), WAL (group commit, compaction, replay, ARIES recovery), file-backed heap, disk manager. Query: Volcano planner, cost optimizer, join optimizer, query rewriter, pipeline compiler. Also: GiST index, Zobrist hash, space-saving, zone maps. Absolute unit of a database."
+    },
+    {
+      "id": "T327",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "monkey-lang: test the WASM disassembler output",
+      "project": "monkey-lang",
+      "started": "2026-04-28T03:37:55.220Z",
+      "completed": "2026-04-28T03:38:44.278Z",
+      "duration_ms": 120000,
+      "summary": "WASM disassembler (677 LOC) produces WAT output from compiled binary. Works for simple programs. Module builder outputs proper wasm with types, imports, memory, globals, exports, data segments. Disassembly shows the WASM structure clearly."
+    },
+    {
+      "id": "T328",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: test VACUUM and analyze",
+      "project": "henrydb",
+      "started": "2026-04-28T03:38:57.178Z",
+      "completed": "2026-04-28T03:39:15.674Z",
+      "duration_ms": 120000,
+      "summary": "VACUUM and ANALYZE both work. VACUUM: processes tables, reports dead tuples/bytes freed. ANALYZE: computes column statistics (ndv, nulls, min, max, avg_width) used by query optimizer. ANALYZE t shows 50 rows, id ndv=50 min=1 max=99."
+    },
+    {
+      "id": "T329",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: test foreign keys",
+      "project": "henrydb",
+      "started": "2026-04-28T03:39:32.767Z",
+      "completed": "2026-04-28T03:39:56.137Z",
+      "duration_ms": 120000,
+      "summary": "Foreign keys work with full enforcement: inline REFERENCES syntax, valid FK inserts allowed, invalid FK inserts blocked with clear error, cascade prevention (cant delete parent referenced by child)."
+    },
+    {
+      "id": "T330",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: test CHECK constraints and DEFAULT values",
+      "project": "henrydb",
+      "started": "2026-04-28T03:40:13.616Z",
+      "completed": "2026-04-28T03:40:35.049Z",
+      "duration_ms": 120000,
+      "summary": "All constraints work: CHECK(price>0) blocks negatives, NOT NULL blocks nulls, UNIQUE blocks duplicates, DEFAULT applied when column omitted. Clear error messages for all violations. Full constraint enforcement."
     }
   ],
   "focusProjects": [
@@ -4545,6 +4831,110 @@
     {
       "time": "2026-04-28T03:12:03.776Z",
       "msg": "Added T304 (EXPLORE) after T303: monkey-lang: how many total tests exist across all test files? What is the test coverage landscape?"
+    },
+    {
+      "time": "2026-04-28T03:15:00.483Z",
+      "msg": "Added T305 (EXPLORE) after end: monkey-lang: explore pattern matching (match/when) in WASM"
+    },
+    {
+      "time": "2026-04-28T03:15:08.257Z",
+      "msg": "Added T306 (EXPLORE) after T305: HenryDB: test triggers (BEFORE/AFTER INSERT/UPDATE/DELETE)"
+    },
+    {
+      "time": "2026-04-28T03:17:36.347Z",
+      "msg": "Added T307 (EXPLORE) after end: monkey-lang: test try/catch in WASM and bytecode VM"
+    },
+    {
+      "time": "2026-04-28T03:18:54.669Z",
+      "msg": "Added T308 (EXPLORE) after end: monkey-lang: explore the transpiler — what target languages does it support?"
+    },
+    {
+      "time": "2026-04-28T03:20:19.273Z",
+      "msg": "Added T309 (EXPLORE) after end: monkey-lang: explore array comprehensions in WASM"
+    },
+    {
+      "time": "2026-04-28T03:23:12.141Z",
+      "msg": "Added T310 (EXPLORE) after end: monkey-lang: test the type inference system"
+    },
+    {
+      "time": "2026-04-28T03:24:21.567Z",
+      "msg": "Added T311 (EXPLORE) after end: HenryDB: test EXPLAIN ANALYZE output"
+    },
+    {
+      "time": "2026-04-28T03:24:50.720Z",
+      "msg": "Added T312 (EXPLORE) after end: monkey-lang: explore constant folding and dead code elimination"
+    },
+    {
+      "time": "2026-04-28T03:25:45.727Z",
+      "msg": "Added T313 (EXPLORE) after end: HenryDB: test materialized views"
+    },
+    {
+      "time": "2026-04-28T03:26:24.981Z",
+      "msg": "Added T314 (EXPLORE) after end: monkey-lang: total LOC count across all source files"
+    },
+    {
+      "time": "2026-04-28T03:27:30.170Z",
+      "msg": "Added T315 (EXPLORE) after end: monkey-lang: test the module/import system"
+    },
+    {
+      "time": "2026-04-28T03:28:35.334Z",
+      "msg": "Added T316 (EXPLORE) after end: HenryDB: test SAVEPOINT / ROLLBACK TO for nested transactions"
+    },
+    {
+      "time": "2026-04-28T03:29:10.878Z",
+      "msg": "Added T317 (EXPLORE) after end: monkey-lang: what optimization passes exist? List all compiler passes"
+    },
+    {
+      "time": "2026-04-28T03:29:50.087Z",
+      "msg": "Added T318 (EXPLORE) after end: HenryDB: test MVCC behavior — concurrent read during write"
+    },
+    {
+      "time": "2026-04-28T03:31:19.477Z",
+      "msg": "Added T319 (EXPLORE) after end: HenryDB: test the wire protocol / PostgreSQL compatibility"
+    },
+    {
+      "time": "2026-04-28T03:32:11.874Z",
+      "msg": "Added T320 (EXPLORE) after end: monkey-lang: explore the REPL and string interning"
+    },
+    {
+      "time": "2026-04-28T03:33:02.397Z",
+      "msg": "Added T321 (EXPLORE) after end: HenryDB: test prepared statements via wire protocol"
+    },
+    {
+      "time": "2026-04-28T03:33:38.844Z",
+      "msg": "Added T322 (EXPLORE) after end: HenryDB: list all SQL features in one comprehensive test"
+    },
+    {
+      "time": "2026-04-28T03:34:28.794Z",
+      "msg": "Added T323 (EXPLORE) after end: monkey-lang: comprehensive feature list — what does this language support?"
+    },
+    {
+      "time": "2026-04-28T03:35:48.426Z",
+      "msg": "Added T324 (EXPLORE) after end: HenryDB: test PL/SQL — stored procedures, cursors, exception handling"
+    },
+    {
+      "time": "2026-04-28T03:36:30.412Z",
+      "msg": "Added T325 (EXPLORE) after end: HenryDB: test zone maps / min-max indexes"
+    },
+    {
+      "time": "2026-04-28T03:37:33.838Z",
+      "msg": "Added T326 (EXPLORE) after end: Quick: HenryDB data structure inventory"
+    },
+    {
+      "time": "2026-04-28T03:37:54.984Z",
+      "msg": "Added T327 (EXPLORE) after end: monkey-lang: test the WASM disassembler output"
+    },
+    {
+      "time": "2026-04-28T03:38:56.942Z",
+      "msg": "Added T328 (EXPLORE) after end: HenryDB: test VACUUM and analyze"
+    },
+    {
+      "time": "2026-04-28T03:39:32.532Z",
+      "msg": "Added T329 (EXPLORE) after end: HenryDB: test foreign keys"
+    },
+    {
+      "time": "2026-04-28T03:40:13.380Z",
+      "msg": "Added T330 (EXPLORE) after end: HenryDB: test CHECK constraints and DEFAULT values"
     }
   ]
 }

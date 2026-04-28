@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-28T03:14:21.536Z",
+  "generated": "2026-04-28T03:40:35.086Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "monkey-lang: how many total tests exist across all test files? What is the test coverage landscape?",
-    "completedAt": "2026-04-28T03:14:21.535Z",
-    "taskId": "T304",
-    "summary": "monkey-lang: 1930 tests, 1930 pass, 0 fail across 41 test files. Top: compiler (526), wasm-compiler (345), evaluator (176), jit (164), jit-integration (96), parser (52). Also: wasm-gc, wasm-dis, wasm-benchmark, type-inference, class, oop-protocols, stdlib, transpiler, constant-fold, dead-code, generators, and more.",
-    "durationMs": 180000
+    "task": "HenryDB: test CHECK constraints and DEFAULT values",
+    "completedAt": "2026-04-28T03:40:35.086Z",
+    "taskId": "T330",
+    "summary": "All constraints work: CHECK(price>0) blocks negatives, NOT NULL blocks nulls, UNIQUE blocks duplicates, DEFAULT applied when column omitted. Clear error messages for all violations. Full constraint enforcement.",
+    "durationMs": 120000
   },
   "schedule": {
     "date": "2026-04-27",
@@ -10026,14 +10026,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 280,
+    "blocksCompleted": 306,
     "blocksTotal": 244,
     "modeDistribution": {
       "THINK": 38,
       "PLAN": 31,
       "BUILD": 117,
       "MAINTAIN": 50,
-      "EXPLORE": 44
+      "EXPLORE": 70
     }
   },
   "artifacts": [],
