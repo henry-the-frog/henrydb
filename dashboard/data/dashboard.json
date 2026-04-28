@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-28T17:48:47.535Z",
+  "generated": "2026-04-28T17:54:56.942Z",
   "current": {
     "status": "in-progress",
     "mode": "MAINTAIN",
-    "task": "Mid-session housekeeping",
-    "startedAt": "2026-04-28T17:48:47.535Z",
-    "taskId": "T14"
+    "task": "Final housekeeping + push",
+    "startedAt": "2026-04-28T17:54:56.942Z",
+    "taskId": "T18"
   },
   "schedule": {
     "date": "2026-04-28",
@@ -4772,51 +4772,71 @@
       {
         "id": "T11",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "Fix HenryDB OOM at 5K rows + redundant heap scan in INSERT",
         "task": null,
-        "started": "2026-04-28T17:44:41.438Z"
+        "started": "2026-04-28T17:44:41.438Z",
+        "completed": "2026-04-28T17:45:31.087Z",
+        "duration_ms": 120000,
+        "summary": "Planned 2 BUILD tasks: (1) RETURNING fix — use rid from _insertRow to read back values O(1), (2) ON CONFLICT upsert — use PK index for conflict detection O(log N)."
       },
       {
         "id": "T12",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "Fix RETURNING: use rid from _insertRow instead of heap scan",
         "plan_ref": "T11",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-28T17:45:40.360Z",
+        "completed": "2026-04-28T17:47:30.415Z",
+        "duration_ms": 300000,
+        "summary": "Fixed INSERT RETURNING: O(1) rid lookup replaces O(N) heap scan. New _readRowByRid uses heap.get(pageId,slotIdx). Works for normal and ON CONFLICT RETURNING. 0.052ms/insert at 2K rows. All tests pass."
       },
       {
         "id": "T13",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "Fix ON CONFLICT upsert: use PK index instead of heap scan",
         "plan_ref": "T11",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-28T17:47:39.642Z",
+        "completed": "2026-04-28T17:48:38.598Z",
+        "duration_ms": 300000,
+        "summary": "Fixed ON CONFLICT upsert: O(log N) PK index lookup replaces O(N) heap scan. Falls back to scan for unindexed columns. 0.046ms/upsert at 5K rows. All tests pass."
       },
       {
         "id": "T14",
         "mode": "MAINTAIN",
-        "status": "upcoming",
-        "task": "Mid-session housekeeping"
+        "status": "done",
+        "task": "Mid-session housekeeping",
+        "started": "2026-04-28T17:48:47.500Z",
+        "completed": "2026-04-28T17:48:59.922Z",
+        "duration_ms": 30000,
+        "summary": "Git push all repos. Both clean."
       },
       {
         "id": "T15",
         "mode": "THINK",
-        "status": "upcoming",
-        "task": "Depth check: what surprised me in the last 5 BUILD tasks?"
+        "status": "done",
+        "task": "Depth check: what surprised me in the last 5 BUILD tasks?",
+        "started": "2026-04-28T17:49:04.247Z",
+        "completed": "2026-04-28T17:49:22.148Z",
+        "duration_ms": 60000,
+        "summary": "Depth check passed (3/3): RETURNING heap scan was surprising O(N) perf bug, learned in-place AST mutation pattern for prepared stmts, found 2 algorithmic issues. No breadth spiral."
       },
       {
         "id": "T16",
         "mode": "PLAN",
-        "status": "upcoming",
+        "status": "in-progress",
         "goal": "monkey-lang: lazy runtime function emission for WASM",
-        "task": null
+        "task": null,
+        "started": "2026-04-28T17:49:26.378Z"
       },
       {
         "id": "T17",
         "mode": "BUILD",
         "status": "upcoming",
-        "task": null,
+        "task": "Implement lazy runtime function emission: _requireRuntime() adds functions on first use",
         "plan_ref": "T16",
         "project": "monkey-lang"
       },
@@ -4830,13 +4850,13 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 13,
+    "blocksCompleted": 17,
     "blocksTotal": 18,
     "modeDistribution": {
-      "THINK": 2,
-      "PLAN": 3,
-      "BUILD": 6,
-      "MAINTAIN": 2
+      "THINK": 3,
+      "PLAN": 4,
+      "BUILD": 7,
+      "MAINTAIN": 3
     }
   },
   "artifacts": [],

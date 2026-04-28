@@ -147,36 +147,88 @@
     {
       "id": "T14",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Mid-session housekeeping",
-      "started": "2026-04-28T17:48:47.500Z"
+      "started": "2026-04-28T17:48:47.500Z",
+      "completed": "2026-04-28T17:48:59.922Z",
+      "duration_ms": 30000,
+      "summary": "Git push all repos. Both clean."
     },
     {
       "id": "T15",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Depth check: what surprised me in the last 5 BUILD tasks?"
+      "status": "done",
+      "task": "Depth check: what surprised me in the last 5 BUILD tasks?",
+      "started": "2026-04-28T17:49:04.247Z",
+      "completed": "2026-04-28T17:49:22.148Z",
+      "duration_ms": 60000,
+      "summary": "Depth check passed (3/3): RETURNING heap scan was surprising O(N) perf bug, learned in-place AST mutation pattern for prepared stmts, found 2 algorithmic issues. No breadth spiral."
     },
     {
       "id": "T16",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "monkey-lang: lazy runtime function emission for WASM",
-      "task": null
+      "task": null,
+      "started": "2026-04-28T17:49:26.378Z",
+      "completed": "2026-04-28T17:50:06.740Z",
+      "duration_ms": 120000,
+      "summary": "Planned 1 BUILD task: replace _addRuntimeFunctions() with _requireRuntime() lazy pattern. 49 runtime funcs registered upfront; many programs use <10. Approach: on-demand emission during compilation."
     },
     {
       "id": "T17",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null,
+      "status": "done",
+      "task": "Implement lazy runtime function emission: _requireRuntime() adds functions on first use",
       "plan_ref": "T16",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-28T17:50:10.807Z",
+      "completed": "2026-04-28T17:54:24.819Z",
+      "duration_ms": 300000,
+      "summary": "CANCELLED: Lazy runtime emission not worth it. Compile time is already 0.22-0.28ms. Savings would be ~0.1ms (30%). Found interesting false alarm: passing AST to compile() instead of string caused Lexer to tokenize [object Object], creating infinite loop. Not a compiler bug. Updated TODO to remove this item."
     },
     {
       "id": "T18",
       "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Final housekeeping + push",
+      "started": "2026-04-28T17:54:56.907Z"
+    },
+    {
+      "id": "T19",
+      "mode": "THINK",
       "status": "upcoming",
-      "task": "Final housekeeping + push"
+      "task": "What else in monkey-lang deserves exploration? Review WASM compiler for untested edge cases"
+    },
+    {
+      "id": "T20",
+      "mode": "PLAN",
+      "status": "skipped",
+      "goal": "HenryDB: add defensive guard for compile(ast) vs compile(string) misuse",
+      "task": null,
+      "skip_reason": ""
+    },
+    {
+      "id": "T21",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Add input type guard to WasmCompiler.compile() for non-string inputs",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T22",
+      "mode": "PLAN",
+      "status": "upcoming",
+      "goal": "monkey-lang: stress test WASM compiler with complex programs",
+      "task": null
+    },
+    {
+      "id": "T23",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null,
+      "plan_ref": "T21",
+      "project": "monkey-lang"
     }
   ],
   "focusProjects": [
@@ -272,6 +324,34 @@
     {
       "time": "2026-04-28T17:45:25.646Z",
       "msg": "PLAN T11 filled 2 BUILD tasks"
+    },
+    {
+      "time": "2026-04-28T17:49:59.818Z",
+      "msg": "PLAN T16 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-04-28T17:54:42.633Z",
+      "msg": "Added T19 (THINK) after end: What else in monkey-lang deserves exploration? Review WASM compiler for untested edge cases"
+    },
+    {
+      "time": "2026-04-28T17:54:42.747Z",
+      "msg": "Added T20 (PLAN) after end: HenryDB: add defensive guard for compile(ast) vs compile(string) misuse"
+    },
+    {
+      "time": "2026-04-28T17:54:51.909Z",
+      "msg": "Removed T20: "
+    },
+    {
+      "time": "2026-04-28T17:54:52.023Z",
+      "msg": "Added T21 (BUILD) after end: Add input type guard to WasmCompiler.compile() for non-string inputs"
+    },
+    {
+      "time": "2026-04-28T17:54:52.137Z",
+      "msg": "Added T22 (PLAN) after end: monkey-lang: stress test WASM compiler with complex programs"
+    },
+    {
+      "time": "2026-04-28T17:54:52.252Z",
+      "msg": "Added T23 (BUILD) after end: null"
     }
   ]
 }
