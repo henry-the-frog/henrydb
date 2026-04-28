@@ -710,6 +710,76 @@
       "completed": "2026-04-28T19:17:33.450Z",
       "duration_ms": 60000,
       "summary": "Closure benchmark (10K calls): monkey=2.8ms (cached), JS=0.28ms. ~10x gap. Cold compile adds 8ms. Gap is from box/cell heap allocation for mutable captures. WASM GC backend could reduce to ~2-3x via GC-managed structs."
+    },
+    {
+      "id": "T69",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Explore: what would monkey-lang compile to if it targeted WASM GC?",
+      "started": "2026-04-28T19:17:51.476Z",
+      "completed": "2026-04-28T19:19:25.743Z",
+      "duration_ms": 300000,
+      "summary": "Prototype WASM GC arithmetic: struct.new creates Value{tag,val}, struct.get reads fields. Full round-trip: JS→WASM(mkInt(42))→struct→WASM(getVal)→JS(42). This is the foundation for Phase 1 of the GC backend. Next: add function, implement add(a,b)→Value."
+    },
+    {
+      "id": "T70",
+      "mode": "THINK",
+      "status": "done",
+      "task": "WASM GC prototype: implement add(a,b) and benchmark vs linear memory",
+      "started": "2026-04-28T19:19:38.150Z",
+      "completed": "2026-04-28T19:20:49.299Z",
+      "duration_ms": 300000,
+      "summary": "WASM GC benchmarks: JS↔WASM calls 10.5x slower than pure JS (boundary overhead). Inner WASM GC loop: 0.042ms vs JS 0.889ms = **21x faster**! The key insight: keep hot loops inside WASM, minimize boundary crossings. The monkey-lang WASM GC backend would be very fast for compute-bound code."
+    },
+    {
+      "id": "T71",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Explore: what other JS DBs exist and how does HenryDB compare feature-wise?",
+      "started": "2026-04-28T19:20:58.171Z",
+      "completed": "2026-04-28T19:21:35.610Z",
+      "duration_ms": 120000,
+      "summary": "JS DB landscape: sql.js (SQLite→WASM, gold standard), DuckDB (OLAP), AlaSQL (pure JS, closest to HenryDB). HenryDB unique: pure JS from scratch, WAL, B-tree, compiled-expr, prepared stmts. Weakness: 25-300x slower than sql.js. Value is educational/architectural, not production performance."
+    },
+    {
+      "id": "T72",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Explore: what would a monkey-lang playground website look like?",
+      "started": "2026-04-28T19:21:47.629Z",
+      "completed": "2026-04-28T19:22:02.709Z",
+      "duration_ms": 60000,
+      "summary": "Playground design: CodeMirror editor + monkey-lang compiler (browser-compatible JS) + WASM execution + console output + performance metrics. Architecture: edit→compile→WASM→execute. Could be a weekend project — compiler has no Node.js deps in core."
+    },
+    {
+      "id": "T73",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Review: what reflections file updates are needed from today's work?",
+      "started": "2026-04-28T19:22:13.006Z",
+      "completed": "2026-04-28T19:22:54.267Z",
+      "duration_ms": 120000,
+      "summary": "Wrote session reflection: HeapFile Array→Map, V8 JIT cold-call, compiled-expr scope awareness, WeakMap+mutation bug, WASM GC benchmarks. Filed as reflections/2026-04-28-session-b.md."
+    },
+    {
+      "id": "T74",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Explore: how much of the monkey-lang interpreter is still used vs WASM compiler?",
+      "started": "2026-04-28T19:23:05.382Z",
+      "completed": "2026-04-28T19:23:28.671Z",
+      "duration_ms": 60000,
+      "summary": "Code distribution: WASM compiler 5570 lines (504 test entries) vs evaluator 1483 lines (200 test entries). Compiler is 3.8x larger and primary execution path. Evaluator is legacy (REPL/testing/fallback). The project has shifted from interpreter→compiler."
+    },
+    {
+      "id": "T75",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Count all tests across all projects",
+      "started": "2026-04-28T19:23:38.470Z",
+      "completed": "2026-04-28T19:24:09.926Z",
+      "duration_ms": 30000,
+      "summary": "Test count: monkey-lang 2,004 tests (41 files), HenryDB 882 test files (thousands of tests), type-infer 23 tests. Combined: ~5,000+ tests across 3 projects."
     }
   ],
   "focusProjects": [
@@ -1025,6 +1095,34 @@
     {
       "time": "2026-04-28T19:17:04.980Z",
       "msg": "Added T68 (THINK) after end: Explore: how monkey-lang closures compare to JavaScript closures in speed"
+    },
+    {
+      "time": "2026-04-28T19:17:51.361Z",
+      "msg": "Added T69 (THINK) after end: Explore: what would monkey-lang compile to if it targeted WASM GC?"
+    },
+    {
+      "time": "2026-04-28T19:19:38.035Z",
+      "msg": "Added T70 (THINK) after end: WASM GC prototype: implement add(a,b) and benchmark vs linear memory"
+    },
+    {
+      "time": "2026-04-28T19:20:58.057Z",
+      "msg": "Added T71 (THINK) after end: Explore: what other JS DBs exist and how does HenryDB compare feature-wise?"
+    },
+    {
+      "time": "2026-04-28T19:21:47.515Z",
+      "msg": "Added T72 (THINK) after end: Explore: what would a monkey-lang playground website look like?"
+    },
+    {
+      "time": "2026-04-28T19:22:12.892Z",
+      "msg": "Added T73 (THINK) after end: Review: what reflections file updates are needed from today's work?"
+    },
+    {
+      "time": "2026-04-28T19:23:05.268Z",
+      "msg": "Added T74 (THINK) after end: Explore: how much of the monkey-lang interpreter is still used vs WASM compiler?"
+    },
+    {
+      "time": "2026-04-28T19:23:38.356Z",
+      "msg": "Added T75 (THINK) after end: Count all tests across all projects"
     }
   ]
 }
