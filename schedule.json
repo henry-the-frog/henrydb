@@ -125,36 +125,189 @@
     {
       "id": "T8",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Housekeeping + git push",
-      "started": "2026-04-28T20:37:46.426Z"
+      "started": "2026-04-28T20:37:46.426Z",
+      "completed": "2026-04-28T20:38:45.513Z",
+      "duration_ms": 60000,
+      "summary": "Git push all repos. Playground deployment confirmed live at henry-the-frog.github.io/monkey-lang/. HenryDB pushed."
     },
     {
       "id": "T9",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Late afternoon direction"
+      "status": "done",
+      "task": "Late afternoon direction",
+      "started": "2026-04-28T20:38:54.338Z",
+      "completed": "2026-04-28T20:39:22.218Z",
+      "duration_ms": 60000,
+      "summary": "Direction: extend WASM compiler for arrays (directly improves playground). Added PLAN+BUILD. 5.5 hours remain."
+    },
+    {
+      "id": "T17",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Extend WASM compiler: array literals + index access + len() + push()",
+      "task": null,
+      "started": "2026-04-28T20:39:33.538Z",
+      "completed": "2026-04-28T20:40:09.822Z",
+      "duration_ms": 120000,
+      "summary": "Planned 3 BUILD tasks: (1) bump allocator + array literal, (2) index access + len(), (3) push() + playground update. Array layout: [tag:i32][len:i32][cap:i32][elements...]."
+    },
+    {
+      "id": "T18",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Add WASM bump allocator + array literal compilation (allocate + fill)",
+      "plan_ref": "T17",
+      "project": "monkey-lang",
+      "started": "2026-04-28T20:40:20.384Z",
+      "completed": "2026-04-28T20:44:16.089Z",
+      "duration_ms": 600000,
+      "summary": "WASM array support: ArrayLiteral, IndexExpression, len(), push(), bump allocator. Added memory ops to wasm.js. All 54 existing tests pass + 12 new array tests. Arrays work in functions, loops, computed indices."
+    },
+    {
+      "id": "T19",
+      "mode": "BUILD",
+      "task": "Add array index access and len() builtin in WASM compiler",
+      "status": "done",
+      "plan_ref": "T17",
+      "started": "2026-04-28T20:44:30.007Z",
+      "completed": "2026-04-28T20:44:30.146Z",
+      "duration_ms": 10000,
+      "summary": "Already completed in T18: array index access and len() both implemented and tested."
+    },
+    {
+      "id": "T20",
+      "mode": "BUILD",
+      "task": "Add push() builtin + update playground bundle and examples",
+      "status": "done",
+      "plan_ref": "T17",
+      "started": "2026-04-28T20:44:43.253Z",
+      "completed": "2026-04-28T20:50:23.454Z",
+      "duration_ms": 600000,
+      "summary": "push() already done; added set a[i]=val, fixed function index bug for arrays-in-functions, added Sieve example (10000→1229 primes), rebuilt playground bundle (104KB). All tests pass."
     },
     {
       "id": "T10",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "Continue highest-value work based on progress",
-      "task": null
+      "task": null,
+      "started": "2026-04-28T20:50:42.202Z",
+      "completed": "2026-04-28T20:51:04.963Z",
+      "duration_ms": 60000,
+      "summary": "Plan: (1) WASM array test suite, (2) map/filter/reduce builtins, (3) playground HOF examples. Focus on quality + capability."
     },
     {
       "id": "T11",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null,
+      "status": "done",
+      "task": "Write WASM array test suite (formal tests for array features)",
       "plan_ref": "T10",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-28T20:51:10.454Z",
+      "completed": "2026-04-28T20:52:07.270Z",
+      "duration_ms": 300000,
+      "summary": "23 WASM array tests: basics (7), push (4), set (3), functions (5), mixed (3). All 77 WASM tests pass. Sieve verified, recursion+arrays tested."
+    },
+    {
+      "id": "T21",
+      "mode": "BUILD",
+      "task": "Add map/filter/reduce builtins to WASM compiler",
+      "status": "done",
+      "plan_ref": "T10",
+      "started": "2026-04-28T20:52:20.514Z",
+      "completed": "2026-04-28T20:54:30.556Z",
+      "duration_ms": 600000,
+      "summary": "map/filter/reduce WASM builtins: inline-compiled with call_indirect. Pipeline verified: reduce(map(filter(...))) = 60. All 77 tests pass."
+    },
+    {
+      "id": "T22",
+      "mode": "BUILD",
+      "task": "Update playground with HOF array examples + rebuild",
+      "status": "done",
+      "plan_ref": "T10",
+      "started": "2026-04-28T20:54:45.367Z",
+      "completed": "2026-04-28T20:55:17.683Z",
+      "duration_ms": 120000,
+      "summary": "Updated playground: HOF pipeline example (filter→map→reduce), rebuilt bundle (115KB). Deployed."
     },
     {
       "id": "T12",
       "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Session end housekeeping",
+      "started": "2026-04-28T20:55:34.117Z",
+      "completed": "2026-04-28T20:55:34.257Z",
+      "duration_ms": 10000,
+      "summary": "Skipped — session not ending, 5+ hours remain. Will add more work."
+    },
+    {
+      "id": "T23",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Midpoint assessment: what's the highest-value next step?",
+      "started": "2026-04-28T20:56:32.963Z",
+      "completed": "2026-04-28T20:56:33.169Z",
+      "duration_ms": 30000,
+      "summary": "Midpoint: 12 BUILDs, all monkey-lang. Playground live with arrays+HOFs. Next: formalize HOF tests, add do-while to WASM compiler, then maybe switch to HenryDB for variety."
+    },
+    {
+      "id": "T24",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "WASM HOF tests + do-while compiler support",
+      "task": null,
+      "started": "2026-04-28T20:56:47.643Z",
+      "completed": "2026-04-28T20:56:55.668Z",
+      "duration_ms": 30000,
+      "summary": "Single BUILD task: HOF tests + do-while support (combined for efficiency)."
+    },
+    {
+      "id": "T25",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Write WASM HOF tests (map/filter/reduce) + add do-while to WASM compiler",
+      "plan_ref": "T24",
+      "project": "monkey-lang",
+      "started": "2026-04-28T20:57:01.711Z",
+      "completed": "2026-04-28T21:01:21.784Z",
+      "duration_ms": 600000,
+      "summary": "Anonymous functions (pre-scan+compile), do-while, 19 HOF tests, Collatz example. 96 total WASM tests. Inline fn(x){x*x} now works in map/filter/reduce."
+    },
+    {
+      "id": "T26",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Git push + daily log",
+      "started": "2026-04-28T21:01:33.389Z"
+    },
+    {
+      "id": "T27",
+      "mode": "THINK",
       "status": "upcoming",
-      "task": "Session end housekeeping"
+      "task": "Direction for remaining time"
+    },
+    {
+      "id": "T28",
+      "mode": "PLAN",
+      "status": "upcoming",
+      "goal": "Next focus area based on progress",
+      "task": null
+    },
+    {
+      "id": "T29",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null,
+      "plan_ref": "T28",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T30",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Push + housekeeping"
     }
   ],
   "focusProjects": [
@@ -234,6 +387,58 @@
     {
       "time": "2026-04-28T20:30:50.456Z",
       "msg": "PLAN T6 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-04-28T20:39:16.788Z",
+      "msg": "Added T17 (PLAN) after T9: Extend WASM compiler: array literals + index access + len() + push()"
+    },
+    {
+      "time": "2026-04-28T20:39:17.133Z",
+      "msg": "Added T18 (BUILD) after T17: null"
+    },
+    {
+      "time": "2026-04-28T20:40:04.451Z",
+      "msg": "PLAN T17 filled 3 BUILD tasks"
+    },
+    {
+      "time": "2026-04-28T20:50:59.383Z",
+      "msg": "PLAN T10 filled 3 BUILD tasks"
+    },
+    {
+      "time": "2026-04-28T20:56:04.156Z",
+      "msg": "Added T23 (THINK) after end: Midpoint assessment: what's the highest-value next step?"
+    },
+    {
+      "time": "2026-04-28T20:56:04.270Z",
+      "msg": "Added T24 (PLAN) after end: WASM HOF tests + do-while compiler support"
+    },
+    {
+      "time": "2026-04-28T20:56:04.386Z",
+      "msg": "Added T25 (BUILD) after end: null"
+    },
+    {
+      "time": "2026-04-28T20:56:04.500Z",
+      "msg": "Added T26 (MAINTAIN) after end: Git push + daily log"
+    },
+    {
+      "time": "2026-04-28T20:56:04.614Z",
+      "msg": "Added T27 (THINK) after end: Direction for remaining time"
+    },
+    {
+      "time": "2026-04-28T20:56:04.729Z",
+      "msg": "Added T28 (PLAN) after end: Next focus area based on progress"
+    },
+    {
+      "time": "2026-04-28T20:56:18.348Z",
+      "msg": "Added T29 (BUILD) after end: null"
+    },
+    {
+      "time": "2026-04-28T20:56:18.463Z",
+      "msg": "Added T30 (MAINTAIN) after end: Push + housekeeping"
+    },
+    {
+      "time": "2026-04-28T20:56:47.781Z",
+      "msg": "PLAN T24 filled 1 BUILD tasks"
     }
   ]
 }
