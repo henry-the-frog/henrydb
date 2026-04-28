@@ -329,8 +329,12 @@
     {
       "id": "T30",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Final housekeeping + push + evening summary"
+      "status": "done",
+      "task": "Final housekeeping + push + evening summary",
+      "started": "2026-04-28T19:07:04.345Z",
+      "completed": "2026-04-28T19:07:04.484Z",
+      "duration_ms": 30000,
+      "summary": "Final housekeeping done."
     },
     {
       "id": "T32",
@@ -380,8 +384,12 @@
     {
       "id": "T36",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Pre-push housekeeping"
+      "status": "done",
+      "task": "Pre-push housekeeping",
+      "started": "2026-04-28T19:07:14.799Z",
+      "completed": "2026-04-28T19:07:14.938Z",
+      "duration_ms": 10000,
+      "summary": "Already pushed. Clean."
     },
     {
       "id": "T37",
@@ -585,8 +593,50 @@
     {
       "id": "T57",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Push all repos"
+      "status": "done",
+      "task": "Push all repos",
+      "started": "2026-04-28T19:07:04.070Z",
+      "completed": "2026-04-28T19:07:04.208Z",
+      "duration_ms": 30000,
+      "summary": "All repos pushed."
+    },
+    {
+      "id": "T58",
+      "mode": "THINK",
+      "status": "done",
+      "task": "monkey-lang: what untested error paths exist in WASM compiler?",
+      "started": "2026-04-28T19:07:23.828Z",
+      "completed": "2026-04-28T19:08:50.342Z",
+      "duration_ms": 180000,
+      "summary": "Error path analysis: (1) empty program returns 0, (2) undefined var throws, (3) string+int concatenates, (4) div/0 traps, (5) array OOB returns 0 (silent), (6) infinite recursion OOMs (no stack limit — closures allocate heap per call). Key gaps: silent array OOB could mask bugs, infinite recursion has no protection."
+    },
+    {
+      "id": "T59",
+      "mode": "THINK",
+      "status": "done",
+      "task": "HenryDB: profile _evalValue — is it also slow like _evalExpr?",
+      "started": "2026-04-28T19:08:59.047Z",
+      "completed": "2026-04-28T19:09:45.192Z",
+      "duration_ms": 120000,
+      "summary": "KEY INSIGHT: _evalExpr cold call=846μs, hot=0.39μs (2,169x difference!). The slow UPDATE was V8 JIT compilation latency, not algorithmic. compiled-expr (new Function) pre-compiles so starts fast immediately. _evalValue is consistently fast (0.2-0.5μs). The UPDATE O(N) at 1160+ rows may be V8 deoptimization from polymorphic call sites."
+    },
+    {
+      "id": "T60",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Review type-infer project status",
+      "started": "2026-04-28T19:09:54.724Z",
+      "completed": "2026-04-28T19:10:46.251Z",
+      "duration_ms": 120000,
+      "summary": "type-infer: 259-line Hindley-Milner implementation (Algorithm W). 23 tests all pass. Covers: literals, lambdas, application, let-polymorphism, if-else, arithmetic, comparison, Church encodings. Missing: recursive types (μ), lists/containers, tuples, pattern matching. Small well-structured project, good candidate for weekend exploration."
+    },
+    {
+      "id": "T61",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "HenryDB: fix JSON_TYPE to return 'number' instead of 'integer' for numeric JSON values",
+      "project": "henrydb",
+      "started": "2026-04-28T19:11:04.804Z"
     }
   ],
   "focusProjects": [
@@ -858,6 +908,22 @@
     {
       "time": "2026-04-28T19:05:40.564Z",
       "msg": "Added T57 (MAINTAIN) after end: Push all repos"
+    },
+    {
+      "time": "2026-04-28T19:07:15.188Z",
+      "msg": "Added T58 (THINK) after end: monkey-lang: what untested error paths exist in WASM compiler?"
+    },
+    {
+      "time": "2026-04-28T19:07:15.304Z",
+      "msg": "Added T59 (THINK) after end: HenryDB: profile _evalValue — is it also slow like _evalExpr?"
+    },
+    {
+      "time": "2026-04-28T19:07:15.418Z",
+      "msg": "Added T60 (THINK) after end: Review type-infer project status"
+    },
+    {
+      "time": "2026-04-28T19:10:56.940Z",
+      "msg": "Added T61 (BUILD) after end: HenryDB: fix JSON_TYPE to return 'number' instead of 'integer' for numeric JSON values"
     }
   ]
 }

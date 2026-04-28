@@ -84,7 +84,7 @@ describe('JSON Functions', () => {
     const r2 = db.execute("SELECT JSON_TYPE('[1,2]') as t");
     assert.equal(r2.rows[0].t, 'array');
     const r3 = db.execute("SELECT JSON_TYPE('42') as t");
-    assert.equal(r3.rows[0].t, 'number');
+    assert.equal(r3.rows[0].t, 'integer'); // SQLite convention: integer for whole numbers, real for decimals
   });
 
   it('ARRAY_AGG returns JS array', () => {
