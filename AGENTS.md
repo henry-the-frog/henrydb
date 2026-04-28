@@ -104,6 +104,8 @@ Before an EXPLORE session, write 3-5 hypotheses about what might break or behave
 ### EXPLORE Batch Gate (hard gate, every 10 EXPLORE tasks)
 Every 10 EXPLORE tasks (cumulative in a session), pause and write one sentence answering: **"What surprised me in the last 10?"** If the honest answer is "nothing" — you are doing rote verification, not exploration. **MUST** switch: either move to a different project, do a THINK task, or write hypotheses for the next batch. The failure mode this prevents (observed Apr 25): 384 EXPLORE tasks with a 2.6% insight rate. Verification that everything works is a test suite's job, not yours. Your job is to find what's broken or unexpected.
 
+**Structural enforcement (added Apr 27):** Every EXPLORE task log entry MUST include a visible `[EXPLORE N/10]` counter tag. At N=10, the NEXT log entry must be a **"Batch Pause:"** line with a one-sentence surprise reflection before any more EXPLORE tasks proceed. The counter resets to 1 after each batch pause. You cannot write `[EXPLORE 14/10]` without noticing you blew past the gate — that's the point. If you find yourself wanting to skip the tag, that's the momentum talking. The tag IS the gate.
+
 ### EXPLORE/BUILD Distinction (hard definition)
 If a task produces new source files, new test files, or net-new functionality, it's **BUILD** — regardless of label. The test: "Did this task increase the codebase size?" If yes → BUILD. This applies to all caps and gates.
 - **EXPLORE** = reading code, running existing tests, investigating behavior, writing scratch notes, researching papers/docs.
