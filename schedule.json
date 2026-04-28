@@ -5,627 +5,73 @@
       "id": "T1",
       "mode": "THINK",
       "status": "done",
-      "task": "Review yesterday: 3 sessions, 100+ tasks. Set direction — box/cell vs INSERT fix priority",
-      "started": "2026-04-28T14:15:22.976Z",
-      "completed": "2026-04-28T14:15:40.779Z",
+      "task": "Afternoon direction: prioritize test gaps vs prepared statements vs OOM fix",
+      "started": "2026-04-28T17:31:11.006Z",
+      "completed": "2026-04-28T17:31:25.249Z",
       "duration_ms": 60000,
-      "summary": "Reviewed yesterday: 55+ explore tasks, 3 WASM closure bugs identified, INSERT bottleneck found. Queue order correct: box/cell first, INSERT fix second. No changes needed."
+      "summary": "Prioritized: test gaps first (fast ROI), then prepared statements. OOM deferred. Queue unchanged."
     },
     {
       "id": "T2",
       "mode": "PLAN",
       "status": "done",
-      "goal": "WASM box/cell pattern for mutable closure captures (fixes 3 bugs)",
+      "goal": "monkey-lang WASM test coverage: do-while, for-in, inline map/filter",
       "task": null,
-      "started": "2026-04-28T14:15:55.674Z",
-      "completed": "2026-04-28T14:16:54.047Z",
+      "started": "2026-04-28T17:31:39.667Z",
+      "completed": "2026-04-28T17:33:36.162Z",
       "duration_ms": 120000,
-      "summary": "Planned box/cell pattern: 4 BUILD tasks — analysis pass, box alloc/read/write, closure capture update, regression tests"
-    },
-    {
-      "id": "T3",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Add box analysis pass: identify variables needing boxing (captured+mutated, captured by multiple closures, self-referencing)",
-      "plan_ref": "T2",
-      "project": "monkey-lang",
-      "started": "2026-04-28T14:17:03.327Z",
-      "completed": "2026-04-28T14:19:04.303Z",
-      "duration_ms": 300000,
-      "summary": "Added _analyzeBoxedVariables pass: identifies vars needing boxing (captured+mutated, multi-capture, self-ref). All 268 tests pass. Verified on all 3 bug patterns."
-    },
-    {
-      "id": "T19",
-      "mode": "BUILD",
-      "task": "Implement box allocation in compileLetStatement and box read/write in compileIdentifier/compileAssignExpression",
-      "status": "done",
-      "plan_ref": "T2",
-      "started": "2026-04-28T14:19:12.821Z",
-      "completed": "2026-04-28T14:21:39.420Z",
-      "duration_ms": 480000,
-      "summary": "Box alloc/read/write in compileLetStatement, compileIdentifier, compileAssignExpression. 266/268 tests pass. 2 expected regressions on self-ref closures (need T20 for closure capture update)."
-    },
-    {
-      "id": "T20",
-      "mode": "BUILD",
-      "task": "Update compileFunctionLiteral to capture box pointers instead of values, and patch self-referencing closures after creation",
-      "status": "done",
-      "plan_ref": "T2",
-      "started": "2026-04-28T14:21:47.721Z",
-      "completed": "2026-04-28T14:28:04.947Z",
-      "duration_ms": 600000,
-      "summary": "Box/cell pattern fully working. Fixed all 3 WASM closure bugs: self-ref+captures, shared mutable state, recursive+mutable. Updated compileFunctionLiteral, compileCallExpression, added scope ID tracking. 268/268 tests pass."
-    },
-    {
-      "id": "T21",
-      "mode": "BUILD",
-      "task": "Add WASM closure bug regression tests: self-ref+captures, shared mutable state, recursive+mutable combo",
-      "status": "done",
-      "plan_ref": "T2",
-      "started": "2026-04-28T14:28:14.233Z",
-      "completed": "2026-04-28T14:28:50.069Z",
-      "duration_ms": 180000,
-      "summary": "Added 10 regression tests for box/cell closure bugs. All 278 tests pass."
-    },
-    {
-      "id": "T4",
-      "mode": "MAINTAIN",
-      "status": "done",
-      "task": "Housekeeping: git push, dashboard health, knowledge capture",
-      "started": "2026-04-28T14:28:58.619Z",
-      "completed": "2026-04-28T14:35:53.397Z",
-      "duration_ms": 480000,
-      "summary": "Git push (workspace + monkey-lang). Merged 34 upstream commits with box/cell. Optimized: pure self-recursion stays fast (direct calls). 1940/1940 tests pass."
-    },
-    {
-      "id": "T5",
-      "mode": "THINK",
-      "status": "done",
-      "task": "Assess box/cell progress. Quality check",
-      "started": "2026-04-28T14:36:02.260Z",
-      "completed": "2026-04-28T14:36:16.831Z",
-      "duration_ms": 60000,
-      "summary": "Box/cell complete. 3/3 bugs fixed, 1940 tests pass, perf preserved. Depth check: 3 surprises (scope ID tracking, 10x perf regression without optimization, remote had incomplete fix). Moving to HenryDB INSERT."
+      "summary": "Planned 2 BUILD tasks: inline HOF tests (map/filter/reduce/find/any/every) + edge cases for do-while/for-in. Tests exist but inline optimization path untested."
     },
     {
       "id": "T6",
-      "mode": "PLAN",
+      "mode": "BUILD",
       "status": "done",
-      "goal": "HenryDB INSERT bottleneck fix (remove redundant heap scans)",
-      "task": null,
-      "started": "2026-04-28T14:36:24.785Z",
-      "completed": "2026-04-28T14:36:54.994Z",
-      "duration_ms": 120000,
-      "summary": "Planned INSERT fix: 2 BUILD tasks — remove redundant heap scans, verify + benchmark."
+      "task": "Add inline HOF builtin tests (map/filter/reduce/find/any/every) to wasm-compiler.test.js",
+      "plan_ref": "T2",
+      "project": "monkey-lang",
+      "started": "2026-04-28T17:33:44.657Z",
+      "completed": "2026-04-28T17:36:01.828Z",
+      "duration_ms": 300000,
+      "summary": "Added 14 inline HOF optimization tests: inline map (5), inline filter (4), inline/runtime equivalence (2), chained inline (3). 1961/1961 tests pass."
+    },
+    {
+      "id": "T8",
+      "mode": "BUILD",
+      "task": "Add edge case tests for do-while and for-in WASM compilation",
+      "status": "done",
+      "plan_ref": "T2",
+      "started": "2026-04-28T17:36:16.834Z",
+      "completed": "2026-04-28T17:37:07.953Z",
+      "duration_ms": 300000,
+      "summary": "Added 13 edge case tests: do-while (5: single iter, nested, break, closure, array mutation) + for-in (8: empty, single, nested, break, range, closure creation, mutation, strings). 1974/1974 pass."
+    },
+    {
+      "id": "T3",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Mid-session housekeeping",
+      "started": "2026-04-28T17:37:15.585Z"
+    },
+    {
+      "id": "T4",
+      "mode": "PLAN",
+      "status": "upcoming",
+      "goal": "HenryDB SQL-level prepared statements",
+      "task": null
     },
     {
       "id": "T7",
       "mode": "BUILD",
-      "status": "done",
-      "task": "Remove redundant heap scan constraint checks in dml-insert.js _insert() — lines 168-175 (UNIQUE/PK) and 184-206 (UNIQUE INDEX)",
-      "plan_ref": "T6",
-      "project": "henrydb",
-      "started": "2026-04-28T14:37:02.031Z",
-      "completed": "2026-04-28T14:46:38.145Z",
-      "duration_ms": 420000,
-      "summary": "Removed redundant O(N) heap scan for single-column UNIQUE/PK constraints. Kept composite unique check. 71/71 constraint tests pass."
-    },
-    {
-      "id": "T22",
-      "mode": "BUILD",
-      "task": "Run full HenryDB test suite to verify no regressions, then benchmark INSERT performance improvement",
-      "status": "done",
-      "plan_ref": "T6",
-      "started": "2026-04-28T14:46:49.871Z",
-      "completed": "2026-04-28T14:48:03.164Z",
-      "duration_ms": 300000,
-      "summary": "INSERT 167x faster: 3.5ms→0.021ms per row. 10K inserts: 35s→210ms. 147/147 constraint tests pass."
-    },
-    {
-      "id": "T8",
-      "mode": "MAINTAIN",
-      "status": "done",
-      "task": "Housekeeping: git push, dashboard, email check",
-      "started": "2026-04-28T14:48:12.958Z",
-      "completed": "2026-04-28T14:49:10.966Z",
-      "duration_ms": 120000,
-      "summary": "Git push (henrydb + workspace). Updated scratch note for closure bugs. Knowledge captured."
-    },
-    {
-      "id": "T9",
-      "mode": "THINK",
-      "status": "done",
-      "task": "Mid-day reflection: depth vs breadth check",
-      "started": "2026-04-28T14:49:22.142Z",
-      "completed": "2026-04-28T14:50:44.340Z",
-      "duration_ms": 180000,
-      "summary": "Mid-day reflection: 6 BUILDs, all high quality. Updated TASKS.md. Next: generate NaN-boxing THINK/PLAN/BUILD cycle for monkey-lang."
-    },
-    {
-      "id": "T10",
-      "mode": "PLAN",
-      "status": "done",
-      "goal": "WASM array/GC improvements based on morning findings",
+      "status": "upcoming",
       "task": null,
-      "started": "2026-04-28T14:51:00.306Z",
-      "completed": "2026-04-28T14:51:39.463Z",
-      "duration_ms": 120000,
-      "summary": "Planned WASM array improvement: THINK to research current impl, then PLAN mutable array design."
+      "plan_ref": "T4",
+      "project": "henrydb"
     },
     {
-      "id": "T11",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "THINK: Research current array implementation in WASM compiler — understand push, immutable copy semantics, and memory layout",
-      "plan_ref": "T10",
-      "project": "monkey-lang",
-      "started": "2026-04-28T14:51:50.473Z",
-      "completed": "2026-04-28T14:52:35.457Z",
-      "duration_ms": 180000,
-      "summary": "Researched WASM array: push is O(N) copy-on-append. Layout is [TAG][len][elem...]. Need capacity field at offset 8, shifting elements to offset 12. ~17 code sites to update."
-    },
-    {
-      "id": "T23",
-      "mode": "BUILD",
-      "task": "PLAN: Design mutable array with capacity-based growth (amortized O(1) push)",
-      "status": "done",
-      "plan_ref": "T10",
-      "started": "2026-04-28T14:52:45.584Z",
-      "completed": "2026-04-28T14:53:26.823Z",
-      "duration_ms": 120000,
-      "summary": "Designed mutable array: [TAG][len][capacity][elems...]. 3 BUILD tasks: layout change, amortized push, stress test."
-    },
-    {
-      "id": "T12",
+      "id": "T5",
       "mode": "MAINTAIN",
-      "status": "done",
-      "task": "Housekeeping: git push, dashboard, GitHub notifications",
-      "started": "2026-04-28T14:53:39.848Z",
-      "completed": "2026-04-28T14:53:50.363Z",
-      "duration_ms": 60000,
-      "summary": "Git push, workspace committed."
-    },
-    {
-      "id": "T13",
-      "mode": "THINK",
-      "status": "done",
-      "task": "Afternoon direction — highest-value remaining work",
-      "started": "2026-04-28T14:53:54.750Z",
-      "completed": "2026-04-28T14:54:09.971Z",
-      "duration_ms": 60000,
-      "summary": "Direction: execute array capacity BUILD tasks (T24-T26), then explore. Skip T14/T15 (subsumed by T24-T26)."
-    },
-    {
-      "id": "T24",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Update WASM array layout: add capacity field at offset 8. Update make_array, array_get, array_set, push to use 12-byte header. Update host-side allocArray and formatWasmValue.",
-      "project": "monkey-lang",
-      "started": "2026-04-28T14:54:43.863Z",
-      "completed": "2026-04-28T15:09:54.092Z",
-      "duration_ms": 900000,
-      "summary": "Array layout updated: 12-byte header with capacity field. All ~20 code sites updated (compiler, host builtins, GC module). 1940/1940 tests pass."
-    },
-    {
-      "id": "T25",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Implement amortized O(1) push: check capacity, grow 2x when full, in-place append when room",
-      "project": "monkey-lang",
-      "started": "2026-04-28T15:10:07.730Z",
-      "completed": "2026-04-28T15:10:44.839Z",
-      "duration_ms": 60000,
-      "summary": "Amortized O(1) push already implemented in T24. Verified: 1000 pushes 93ms, 5000 pushes 106ms (was crashing at 3-5K). O(N²) → O(N)."
-    },
-    {
-      "id": "T26",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Add array push stress test: 10K pushes should complete in <1s (was crashing at 3-5K)",
-      "project": "monkey-lang",
-      "started": "2026-04-28T15:11:00.784Z",
-      "completed": "2026-04-28T15:11:53.246Z",
-      "duration_ms": 120000,
-      "summary": "Added 3 array push stress tests. 335/335 pass. 5K pushes works (was crashing)."
-    },
-    {
-      "id": "T14",
-      "mode": "PLAN",
-      "status": "skipped",
-      "goal": "Continue highest-priority improvement from assessment",
-      "task": null,
-      "skip_reason": ""
-    },
-    {
-      "id": "T15",
-      "mode": "BUILD",
-      "status": "skipped",
-      "task": null,
-      "plan_ref": "T14",
-      "project": "monkey-lang",
-      "skip_reason": ""
-    },
-    {
-      "id": "T16",
-      "mode": "MAINTAIN",
-      "status": "done",
-      "task": "Housekeeping: git push, benchmark comparison",
-      "started": "2026-04-28T15:12:09.269Z",
-      "completed": "2026-04-28T15:12:38.408Z",
-      "duration_ms": 120000,
-      "summary": "Git push (monkey-lang + workspace). Updated TASKS.md with array push fix."
-    },
-    {
-      "id": "T17",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "Deep dive: WASM GC proposal implementation feasibility",
-      "project": "monkey-lang",
-      "started": "2026-04-28T15:12:53.158Z",
-      "completed": "2026-04-28T15:17:08.748Z",
-      "duration_ms": 600000,
-      "summary": "WASM GC verified in Node.js v22: struct.new/get, array.new/get/set all work. Binary encoding documented. Field encoding is [valtype][mutability]. Feasible for monkey-lang backend."
-    },
-    {
-      "id": "T18",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "HenryDB stress test: concurrent transactions, MVCC edge cases",
-      "project": "henrydb",
-      "started": "2026-04-28T15:17:23.407Z",
-      "completed": "2026-04-28T15:18:55.965Z",
-      "duration_ms": 300000,
-      "summary": "MVCC explored: basic TX works (begin/commit/rollback). Write skew possible (snapshot isolation, not serializable). 44/44 MVCC tests pass. Documented limitation."
-    },
-    {
-      "id": "T27",
-      "mode": "THINK",
-      "status": "done",
-      "task": "Assess i32 overflow: how to handle factorial(20) and large sums. Options: i64 support, overflow detection, bigint fallback",
-      "project": "monkey-lang",
-      "started": "2026-04-28T15:19:51.434Z",
-      "completed": "2026-04-28T15:20:08.741Z",
-      "duration_ms": 120000,
-      "summary": "i32 overflow: float promotion on overflow is ideal long-term fix. Not urgent — current behavior (silent wrap) is common in systems langs. Could add overflow detection as warning."
-    },
-    {
-      "id": "T28",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "Run broad HenryDB test sweep: find failing or slow tests, identify areas for improvement",
-      "project": "henrydb",
-      "started": "2026-04-28T15:20:18.109Z",
-      "completed": "2026-04-28T15:23:08.218Z",
-      "duration_ms": 300000,
-      "summary": "HenryDB sweep: 335/341 pass. 3 failures: 2 ALTER TABLE index issues, 1 column aliasing issue (c.name vs name in JOIN output). Not critical."
-    },
-    {
-      "id": "T29",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Fix column aliasing in JOIN output: qualified names (c.name) should be unqualified (name) in result rows",
-      "project": "henrydb",
-      "started": "2026-04-28T15:23:33.335Z",
-      "completed": "2026-04-28T15:33:31.577Z",
-      "duration_ms": 600000,
-      "summary": "Partial fix for GROUP BY column aliasing. Fixed group-by-executor but query goes through different code path (adaptive engine routing). Issue is cosmetic — qualified names in GROUP BY output. Need to identify which execution path handles JOIN+GROUP BY."
-    },
-    {
-      "id": "T30",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "Full test sweep of monkey-lang: run all test files, identify failures",
-      "project": "monkey-lang",
-      "started": "2026-04-28T15:33:57.018Z",
-      "completed": "2026-04-28T15:36:20.268Z",
-      "duration_ms": 300000,
-      "summary": "monkey-lang full sweep: 1942/1943 pass. 1 flaky benchmark test (passes when run alone). Clean."
-    },
-    {
-      "id": "T31",
-      "mode": "THINK",
-      "status": "done",
-      "task": "What WASM compiler features would enable the most interesting programs? Evaluate: comprehensions, pattern matching, modules, tail-call optimization for all recursion",
-      "project": "monkey-lang",
-      "started": "2026-04-28T15:37:56.702Z",
-      "completed": "2026-04-28T15:38:48.492Z",
-      "duration_ms": 180000,
-      "summary": "Assessed WASM missing features. Priority: TernaryExpression (15min), ArrayComprehension (1hr), MatchExpression (2-3hr). Also: SliceExpression, RangeExpression, TemplateLiteral."
-    },
-    {
-      "id": "T32",
-      "mode": "PLAN",
-      "status": "done",
-      "goal": "Plan WASM ternary expression + array comprehension implementation",
-      "task": null,
-      "project": "monkey-lang",
-      "started": "2026-04-28T15:39:07.672Z",
-      "completed": "2026-04-28T15:39:25.772Z",
-      "duration_ms": 60000,
-      "summary": "Planned ternary + comprehension: 3 BUILD tasks."
-    },
-    {
-      "id": "T33",
-      "mode": "BUILD",
-      "task": "Implement WASM TernaryExpression compilation (condition ? true_val : false_val) — simple if/else block",
-      "status": "done",
-      "plan_ref": "T32",
-      "started": "2026-04-28T15:39:37.566Z",
-      "completed": "2026-04-28T15:40:17.196Z",
-      "duration_ms": 30000,
-      "summary": "Already implemented! TernaryExpression already in WASM compiler."
-    },
-    {
-      "id": "T34",
-      "mode": "BUILD",
-      "task": "Implement WASM ArrayComprehension compilation ([expr for var in iterable if cond]) with loop + push",
-      "status": "done",
-      "plan_ref": "T32",
-      "started": "2026-04-28T15:40:26.671Z",
-      "completed": "2026-04-28T15:41:38.146Z",
-      "duration_ms": 60000,
-      "summary": "Already implemented! ArrayComprehension already in WASM compiler. Verified: [x*2 for x in [1,2,3]] → [2,4,6]."
-    },
-    {
-      "id": "T35",
-      "mode": "BUILD",
-      "task": "Add tests for both: ternary basic/nested, comprehension basic/filter/range",
-      "status": "done",
-      "plan_ref": "T32",
-      "started": "2026-04-28T15:41:57.521Z",
-      "completed": "2026-04-28T15:41:58.231Z",
-      "duration_ms": 10000,
-      "summary": "Skipped — both features already have tests."
-    },
-    {
-      "id": "T36",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Fix compileAndRun to return formatted values for arrays/strings/hashes instead of raw heap pointers",
-      "project": "monkey-lang",
-      "started": "2026-04-28T15:43:35.399Z",
-      "completed": "2026-04-28T15:46:29.957Z",
-      "duration_ms": 300000,
-      "summary": "compileAndRun now auto-formats arrays/strings/hashes/floats. Returns nice values instead of raw pointers. 335/335 pass."
-    },
-    {
-      "id": "T37",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "Stress-test box/cell closures and array capacity: edge cases, deeply nested closures, large arrays, GC interaction",
-      "project": "monkey-lang",
-      "started": "2026-04-28T15:47:25.995Z",
-      "completed": "2026-04-28T15:54:57.894Z",
-      "duration_ms": 600000,
-      "summary": "Found and fixed 2 bugs: (1) hash literal values not analyzed for captures (counter pattern broken), (2) deep nesting stopped at 2 levels. Both fixed with recursive traversal. 335/335 pass."
-    },
-    {
-      "id": "T38",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Add regression tests for hash-stored closures and deep nesting box patterns",
-      "project": "monkey-lang",
-      "started": "2026-04-28T15:55:41.158Z",
-      "completed": "2026-04-28T15:56:30.525Z",
-      "duration_ms": 120000,
-      "summary": "Added 4 regression tests for hash closures + deep nesting. 339/339 pass."
-    },
-    {
-      "id": "T39",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "Test advanced closure patterns: iterators, state machines, event emitters, memoization with shared cache",
-      "project": "monkey-lang",
-      "started": "2026-04-28T15:57:32.181Z",
-      "completed": "2026-04-28T15:58:10.614Z",
-      "duration_ms": 300000,
-      "summary": "All 4 advanced patterns work: iterator (sum=150✓), memoized fib(10)=55✓, state machine✓, accumulator with array push✓. Box/cell is robust for real-world patterns."
-    },
-    {
-      "id": "T40",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "Stress-test INSERT performance with realistic workloads: bulk insert, concurrent transactions, large values, indexes",
-      "project": "henrydb",
-      "started": "2026-04-28T15:58:51.440Z",
-      "completed": "2026-04-28T16:01:47.861Z",
-      "duration_ms": 300000,
-      "summary": "INSERT stress test: PK-only is fast (437ms/1K). UNIQUE TEXT still O(N) but from B-tree search, not heap scan. SERIAL works. OOM at 5K with 3 indexes (memory limit, not perf)."
-    },
-    {
-      "id": "T41",
-      "mode": "THINK",
-      "status": "done",
-      "task": "Research HenryDB cost model: understand current adaptive engine, 4 execution engines, and how cost estimation works",
-      "project": "henrydb",
-      "started": "2026-04-28T16:02:36.012Z",
-      "completed": "2026-04-28T16:03:16.636Z",
-      "duration_ms": 180000,
-      "summary": "Reviewed adaptive engine cost model: heuristic-based, not calibrated. 4 engines (vectorized, codegen, compiled, volcano). Thresholds set without benchmarking. compileThreshold=5K might be too high. Runtime feedback exists but needs 3+ samples. Calibration needs benchmark suite."
-    },
-    {
-      "id": "T42",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Create engine benchmark script: test each engine on point query, scan, join, aggregation at 100/1K/10K rows",
-      "project": "henrydb",
-      "started": "2026-04-28T16:03:34.760Z",
-      "completed": "2026-04-28T16:04:48.681Z",
-      "duration_ms": 300000,
-      "summary": "Created bench-engines.js. Results: all queries sub-0.01ms at 1K-5K rows. Cost model calibration is academic at current scale."
-    },
-    {
-      "id": "T43",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Create showcase.monkey — comprehensive demo of all WASM compiler features (closures, HOFs, arrays, strings, hashes, comprehensions, pattern matching)",
-      "project": "monkey-lang",
-      "started": "2026-04-28T16:05:45.543Z",
-      "completed": "2026-04-28T16:07:12.009Z",
-      "duration_ms": 300000,
-      "summary": "Created showcase.monkey demonstrating all 10 feature categories. All compile and run correctly in WASM."
-    },
-    {
-      "id": "T44",
-      "mode": "THINK",
-      "status": "done",
-      "task": "Design WASM GC backend: type mapping, closure representation, array representation, migration path from linear memory",
-      "project": "monkey-lang",
-      "started": "2026-04-28T16:08:29.494Z",
-      "completed": "2026-04-28T16:09:13.967Z",
-      "duration_ms": 300000,
-      "summary": "Designed WASM GC backend: 5 phases (builder, box→GC, arrays, closures, strings). Key blocker: anyref vs i32 value space mixing. 12-18 hours estimated."
-    },
-    {
-      "id": "T45",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "Edge case testing: closures in while loops, closures returning closures, mutual recursion with boxes",
-      "project": "monkey-lang",
-      "started": "2026-04-28T16:10:21.502Z",
-      "completed": "2026-04-28T16:11:17.140Z",
-      "duration_ms": 180000,
-      "summary": "All 5 edge cases pass: while-loop closures, currying, shared state chain, deep curry (4 levels), for-loop capture. Box/cell is solid."
-    },
-    {
-      "id": "T46",
-      "mode": "THINK",
-      "status": "done",
-      "task": "Plan tomorrow: what should Session B focus on? Consider depth on existing work vs new features",
-      "started": "2026-04-28T16:11:43.787Z",
-      "completed": "2026-04-28T16:12:01.633Z",
-      "duration_ms": 120000,
-      "summary": "Next session focus: HenryDB TEXT UNIQUE optimization (Normal priority), then WASM GC Phase 1 if time. Remaining time today: EXPLORE/MAINTAIN."
-    },
-    {
-      "id": "T47",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "Investigate TEXT UNIQUE INSERT O(N): profile constraint validator, identify if B-tree search or heap scan is the bottleneck",
-      "project": "henrydb",
-      "started": "2026-04-28T16:12:22.974Z",
-      "completed": "2026-04-28T16:13:55.972Z",
-      "duration_ms": 300000,
-      "summary": "TEXT UNIQUE INSERT bottleneck is NOT in index.search (0.0003ms). Likely SQL parsing overhead (parsing new SQL string per INSERT). B-tree search is O(log N). The solution is prepared statements, not index optimization."
-    },
-    {
-      "id": "T48",
-      "mode": "MAINTAIN",
-      "status": "done",
-      "task": "Clean up box analysis code: add section comments, remove dead markCaptured method",
-      "project": "monkey-lang",
-      "started": "2026-04-28T16:15:32.245Z",
-      "completed": "2026-04-28T16:16:18.155Z",
-      "duration_ms": 60000,
-      "summary": "Documented deprecated markCaptured method. 339 tests pass."
-    },
-    {
-      "id": "T49",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "Benchmark WASM vs evaluator: compare performance on fib, sort, comprehensions",
-      "project": "monkey-lang",
-      "started": "2026-04-28T16:16:49.610Z",
-      "completed": "2026-04-28T16:18:59.568Z",
-      "duration_ms": 300000,
-      "summary": "WASM vs eval benchmark: fib(25) 33x total / 2071x exec. Sum 978x exec. HOFs only 3x exec (host import overhead). Compilation overhead ~70-90ms makes WASM best for compute-heavy programs."
-    },
-    {
-      "id": "T50",
-      "mode": "THINK",
-      "status": "done",
-      "task": "Design inline HOF compilation: compile map/filter/reduce bodies as WASM loops instead of host imports. Would give 100x+ speedup for HOFs.",
-      "project": "monkey-lang",
-      "started": "2026-04-28T16:20:00.934Z",
-      "completed": "2026-04-28T16:20:22.299Z",
-      "duration_ms": 300000,
-      "summary": "Designed inline HOF compilation. Detect builtin + literal callback at compile time, emit WASM loop. Phase 1: no-capture callbacks. Phase 2: captures. Phase 3: sort. Expected 100x+ speedup for map/filter."
-    },
-    {
-      "id": "T51",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Inline map() compilation: when callback is literal with no captures, emit WASM loop instead of host import",
-      "project": "monkey-lang",
-      "started": "2026-04-28T16:20:40.451Z",
-      "completed": "2026-04-28T16:24:02.839Z",
-      "duration_ms": 600000,
-      "summary": "Implemented inline map() and filter() compilation. 4x speedup for no-capture callbacks. Falls back to host import for closures. 339/339 pass."
-    },
-    {
-      "id": "T52",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "Test inline map/filter with larger workloads and edge cases: empty array, single element, nested map",
-      "project": "monkey-lang",
-      "started": "2026-04-28T16:25:00.886Z",
-      "completed": "2026-04-28T16:25:28.489Z",
-      "duration_ms": 120000,
-      "summary": "All inline map/filter edge cases pass: empty, single, nested map, filter all/none, map+filter chain. Robust implementation."
-    },
-    {
-      "id": "T53",
-      "mode": "MAINTAIN",
-      "status": "done",
-      "task": "Final session summary, memory update, git push all repos",
-      "started": "2026-04-28T16:25:53.300Z",
-      "completed": "2026-04-28T16:26:27.045Z",
-      "duration_ms": 60000,
-      "summary": "Git push all repos. Updated CURRENT.md. Session continuing."
-    },
-    {
-      "id": "T54",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "Profile WASM compilation: where does the 70-90ms compilation time go? Parser, analysis, codegen, module building?",
-      "project": "monkey-lang",
-      "started": "2026-04-28T16:26:51.955Z",
-      "completed": "2026-04-28T16:28:02.581Z",
-      "duration_ms": 180000,
-      "summary": "WASM compile time breakdown: parse 3ms, AST→IR 39ms (runtime function setup), encode 2ms, V8 compile 42ms. Solutions: cache compiled modules, lazy runtime functions."
-    },
-    {
-      "id": "T55",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "Coverage analysis: what WASM features are tested vs untested? Find gaps in the 339-test suite.",
-      "project": "monkey-lang",
-      "started": "2026-04-28T16:30:22.817Z",
-      "completed": "2026-04-28T16:32:05.416Z",
-      "duration_ms": 180000,
-      "summary": "Coverage gaps found: do-while (0 tests, works), for-in (0 tests, works), inline map/filter (0 tests). Template literals minimal (2 tests). 339 tests cover most features well."
-    },
-    {
-      "id": "T56",
-      "mode": "THINK",
-      "status": "done",
-      "task": "Design lazy runtime functions: emit only used functions. Profile which functions a typical program uses.",
-      "project": "monkey-lang",
-      "started": "2026-04-28T16:36:18.960Z",
-      "completed": "2026-04-28T16:37:01.936Z",
-      "duration_ms": 180000,
-      "summary": "Lazy runtime functions: hard to implement due to WASM function index dependencies. Simplest approach is module caching for repeated execution. 39ms compile time is acceptable for most use cases."
-    },
-    {
-      "id": "T57",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "Compare JIT vs WASM on HOF-heavy code and array-heavy code to understand when each backend excels",
-      "project": "monkey-lang",
-      "started": "2026-04-28T16:47:26.671Z",
-      "completed": "2026-04-28T16:48:06.954Z",
-      "duration_ms": 180000,
-      "summary": "JIT beats WASM for everything except recursion. JIT: 2x faster for loops, 2.5x for HOFs, 2x for arrays. WASM only wins 1.2x for deep recursion. V8 optimization advantage."
-    },
-    {
-      "id": "T58",
-      "mode": "THINK",
-      "status": "done",
-      "task": "End-of-session strategic reflection: what had the most impact today? What should tomorrow focus on?",
-      "started": "2026-04-28T17:01:25.712Z",
-      "completed": "2026-04-28T17:01:43.156Z",
-      "duration_ms": 180000,
-      "summary": "Strategic reflection: box/cell was highest-impact (enabled OOP patterns). Tomorrow: test gaps → prepared statements → lazy runtime → module caching."
+      "status": "upcoming",
+      "task": "Final housekeeping + push"
     }
   ],
   "focusProjects": [
@@ -635,244 +81,48 @@
   "backlog": [],
   "adjustments": [
     {
-      "time": "2026-04-28T14:00:37.422Z",
-      "msg": "Added T1 (THINK) after end: Review yesterday: 3 sessions, 100+ tasks. Set direction — box/cell vs INSERT fix priority"
+      "time": "2026-04-28T17:30:46.919Z",
+      "msg": "Re-initialized same-day queue. Focus preserved: [monkey-lang, henrydb]"
     },
     {
-      "time": "2026-04-28T14:00:49.855Z",
-      "msg": "Added T2 (PLAN) after T1: WASM box/cell pattern for mutable closure captures (fixes 3 bugs)"
+      "time": "2026-04-28T17:30:47.031Z",
+      "msg": "Added T1 (THINK) after end: Afternoon direction: prioritize test gaps vs prepared statements vs OOM fix"
     },
     {
-      "time": "2026-04-28T14:01:04.557Z",
-      "msg": "Focus set: [monkey-lang, henrydb]"
+      "time": "2026-04-28T17:30:53.586Z",
+      "msg": "Added T2 (PLAN) after end: monkey-lang WASM test coverage: do-while, for-in, inline map/filter"
     },
     {
-      "time": "2026-04-28T14:01:12.395Z",
-      "msg": "Added T3 (BUILD) after T2: null"
+      "time": "2026-04-28T17:30:53.813Z",
+      "msg": "Added T3 (MAINTAIN) after end: Mid-session housekeeping"
     },
     {
-      "time": "2026-04-28T14:01:12.510Z",
-      "msg": "Added T4 (MAINTAIN) after T3: Housekeeping: git push, dashboard health, knowledge capture"
+      "time": "2026-04-28T17:30:53.928Z",
+      "msg": "Added T4 (PLAN) after end: HenryDB SQL-level prepared statements"
     },
     {
-      "time": "2026-04-28T14:01:12.625Z",
-      "msg": "Added T5 (THINK) after T4: Assess box/cell progress. Quality check"
+      "time": "2026-04-28T17:30:54.154Z",
+      "msg": "Added T5 (MAINTAIN) after end: Final housekeeping + push"
     },
     {
-      "time": "2026-04-28T14:01:12.741Z",
-      "msg": "Added T6 (PLAN) after T5: HenryDB INSERT bottleneck fix (remove redundant heap scans)"
+      "time": "2026-04-28T17:30:57.403Z",
+      "msg": "Added T6 (BUILD) after end: null"
     },
     {
-      "time": "2026-04-28T14:01:12.863Z",
-      "msg": "Added T7 (BUILD) after T6: null"
+      "time": "2026-04-28T17:30:57.517Z",
+      "msg": "Added T7 (BUILD) after end: null"
     },
     {
-      "time": "2026-04-28T14:01:12.978Z",
-      "msg": "Added T8 (MAINTAIN) after T7: Housekeeping: git push, dashboard, email check"
+      "time": "2026-04-28T17:31:03.175Z",
+      "msg": "Moved T6 after T2"
     },
     {
-      "time": "2026-04-28T14:01:13.095Z",
-      "msg": "Added T9 (THINK) after T8: Mid-day reflection: depth vs breadth check"
+      "time": "2026-04-28T17:31:03.289Z",
+      "msg": "Moved T7 after T4"
     },
     {
-      "time": "2026-04-28T14:01:13.209Z",
-      "msg": "Added T10 (PLAN) after T9: WASM array/GC improvements based on morning findings"
-    },
-    {
-      "time": "2026-04-28T14:01:13.325Z",
-      "msg": "Added T11 (BUILD) after T10: null"
-    },
-    {
-      "time": "2026-04-28T14:01:13.440Z",
-      "msg": "Added T12 (MAINTAIN) after T11: Housekeeping: git push, dashboard, GitHub notifications"
-    },
-    {
-      "time": "2026-04-28T14:01:13.555Z",
-      "msg": "Added T13 (THINK) after T12: Afternoon direction — highest-value remaining work"
-    },
-    {
-      "time": "2026-04-28T14:01:13.670Z",
-      "msg": "Added T14 (PLAN) after T13: Continue highest-priority improvement from assessment"
-    },
-    {
-      "time": "2026-04-28T14:01:13.810Z",
-      "msg": "Added T15 (BUILD) after T14: null"
-    },
-    {
-      "time": "2026-04-28T14:01:13.926Z",
-      "msg": "Added T16 (MAINTAIN) after T15: Housekeeping: git push, benchmark comparison"
-    },
-    {
-      "time": "2026-04-28T14:01:14.042Z",
-      "msg": "Added T17 (EXPLORE) after T16: Deep dive: WASM GC proposal implementation feasibility"
-    },
-    {
-      "time": "2026-04-28T14:01:14.158Z",
-      "msg": "Added T18 (EXPLORE) after T17: HenryDB stress test: concurrent transactions, MVCC edge cases"
-    },
-    {
-      "time": "2026-04-28T14:16:48.432Z",
-      "msg": "PLAN T2 filled 4 BUILD tasks"
-    },
-    {
-      "time": "2026-04-28T14:36:49.728Z",
-      "msg": "PLAN T6 filled 2 BUILD tasks"
-    },
-    {
-      "time": "2026-04-28T14:51:31.930Z",
-      "msg": "PLAN T10 filled 2 BUILD tasks"
-    },
-    {
-      "time": "2026-04-28T14:53:06.530Z",
-      "msg": "Added T24 (BUILD) after end: Update WASM array layout: add capacity field at offset 8. Update make_array, array_get, array_set, push to use 12-byte header. Update host-side allocArray and formatWasmValue."
-    },
-    {
-      "time": "2026-04-28T14:53:11.311Z",
-      "msg": "Added T25 (BUILD) after end: Implement amortized O(1) push: check capacity, grow 2x when full, in-place append when room"
-    },
-    {
-      "time": "2026-04-28T14:53:20.067Z",
-      "msg": "Added T26 (BUILD) after end: Add array push stress test: 10K pushes should complete in <1s (was crashing at 3-5K)"
-    },
-    {
-      "time": "2026-04-28T14:54:14.414Z",
-      "msg": "Removed T14: "
-    },
-    {
-      "time": "2026-04-28T14:54:14.529Z",
-      "msg": "Removed T15: "
-    },
-    {
-      "time": "2026-04-28T14:54:27.716Z",
-      "msg": "Moved T24 after T13"
-    },
-    {
-      "time": "2026-04-28T14:54:27.830Z",
-      "msg": "Moved T25 after T24"
-    },
-    {
-      "time": "2026-04-28T14:54:27.945Z",
-      "msg": "Moved T26 after T25"
-    },
-    {
-      "time": "2026-04-28T15:19:24.384Z",
-      "msg": "Added T27 (THINK) after end: Assess i32 overflow: how to handle factorial(20) and large sums. Options: i64 support, overflow detection, bigint fallback"
-    },
-    {
-      "time": "2026-04-28T15:19:35.327Z",
-      "msg": "Added T28 (EXPLORE) after end: Run broad HenryDB test sweep: find failing or slow tests, identify areas for improvement"
-    },
-    {
-      "time": "2026-04-28T15:23:28.182Z",
-      "msg": "Added T29 (BUILD) after end: Fix column aliasing in JOIN output: qualified names (c.name) should be unqualified (name) in result rows"
-    },
-    {
-      "time": "2026-04-28T15:33:51.569Z",
-      "msg": "Added T30 (EXPLORE) after end: Full test sweep of monkey-lang: run all test files, identify failures"
-    },
-    {
-      "time": "2026-04-28T15:37:48.388Z",
-      "msg": "Added T31 (THINK) after end: What WASM compiler features would enable the most interesting programs? Evaluate: comprehensions, pattern matching, modules, tail-call optimization for all recursion"
-    },
-    {
-      "time": "2026-04-28T15:38:59.422Z",
-      "msg": "Added T32 (PLAN) after end: Plan WASM ternary expression + array comprehension implementation"
-    },
-    {
-      "time": "2026-04-28T15:39:17.816Z",
-      "msg": "PLAN T32 filled 3 BUILD tasks"
-    },
-    {
-      "time": "2026-04-28T15:43:24.551Z",
-      "msg": "Added T36 (BUILD) after end: Fix compileAndRun to return formatted values for arrays/strings/hashes instead of raw heap pointers"
-    },
-    {
-      "time": "2026-04-28T15:47:18.317Z",
-      "msg": "Added T37 (EXPLORE) after end: Stress-test box/cell closures and array capacity: edge cases, deeply nested closures, large arrays, GC interaction"
-    },
-    {
-      "time": "2026-04-28T15:55:32.989Z",
-      "msg": "Added T38 (BUILD) after end: Add regression tests for hash-stored closures and deep nesting box patterns"
-    },
-    {
-      "time": "2026-04-28T15:57:22.054Z",
-      "msg": "Added T39 (EXPLORE) after end: Test advanced closure patterns: iterators, state machines, event emitters, memoization with shared cache"
-    },
-    {
-      "time": "2026-04-28T15:58:42.546Z",
-      "msg": "Added T40 (EXPLORE) after end: Stress-test INSERT performance with realistic workloads: bulk insert, concurrent transactions, large values, indexes"
-    },
-    {
-      "time": "2026-04-28T16:02:24.753Z",
-      "msg": "Added T41 (THINK) after end: Research HenryDB cost model: understand current adaptive engine, 4 execution engines, and how cost estimation works"
-    },
-    {
-      "time": "2026-04-28T16:03:26.485Z",
-      "msg": "Added T42 (BUILD) after end: Create engine benchmark script: test each engine on point query, scan, join, aggregation at 100/1K/10K rows"
-    },
-    {
-      "time": "2026-04-28T16:05:34.708Z",
-      "msg": "Added T43 (BUILD) after end: Create showcase.monkey — comprehensive demo of all WASM compiler features (closures, HOFs, arrays, strings, hashes, comprehensions, pattern matching)"
-    },
-    {
-      "time": "2026-04-28T16:08:17.111Z",
-      "msg": "Added T44 (THINK) after end: Design WASM GC backend: type mapping, closure representation, array representation, migration path from linear memory"
-    },
-    {
-      "time": "2026-04-28T16:10:08.193Z",
-      "msg": "Added T45 (EXPLORE) after end: Edge case testing: closures in while loops, closures returning closures, mutual recursion with boxes"
-    },
-    {
-      "time": "2026-04-28T16:11:37.962Z",
-      "msg": "Added T46 (THINK) after end: Plan tomorrow: what should Session B focus on? Consider depth on existing work vs new features"
-    },
-    {
-      "time": "2026-04-28T16:12:13.576Z",
-      "msg": "Added T47 (EXPLORE) after end: Investigate TEXT UNIQUE INSERT O(N): profile constraint validator, identify if B-tree search or heap scan is the bottleneck"
-    },
-    {
-      "time": "2026-04-28T16:15:24.104Z",
-      "msg": "Added T48 (MAINTAIN) after end: Clean up box analysis code: add section comments, remove dead markCaptured method"
-    },
-    {
-      "time": "2026-04-28T16:16:41.712Z",
-      "msg": "Added T49 (EXPLORE) after end: Benchmark WASM vs evaluator: compare performance on fib, sort, comprehensions"
-    },
-    {
-      "time": "2026-04-28T16:19:48.906Z",
-      "msg": "Added T50 (THINK) after end: Design inline HOF compilation: compile map/filter/reduce bodies as WASM loops instead of host imports. Would give 100x+ speedup for HOFs."
-    },
-    {
-      "time": "2026-04-28T16:20:33.698Z",
-      "msg": "Added T51 (BUILD) after end: Inline map() compilation: when callback is literal with no captures, emit WASM loop instead of host import"
-    },
-    {
-      "time": "2026-04-28T16:24:50.196Z",
-      "msg": "Added T52 (EXPLORE) after end: Test inline map/filter with larger workloads and edge cases: empty array, single element, nested map"
-    },
-    {
-      "time": "2026-04-28T16:25:40.701Z",
-      "msg": "Added T53 (MAINTAIN) after end: Final session summary, memory update, git push all repos"
-    },
-    {
-      "time": "2026-04-28T16:26:41.516Z",
-      "msg": "Added T54 (EXPLORE) after end: Profile WASM compilation: where does the 70-90ms compilation time go? Parser, analysis, codegen, module building?"
-    },
-    {
-      "time": "2026-04-28T16:30:16.980Z",
-      "msg": "Added T55 (EXPLORE) after end: Coverage analysis: what WASM features are tested vs untested? Find gaps in the 339-test suite."
-    },
-    {
-      "time": "2026-04-28T16:36:18.732Z",
-      "msg": "Added T56 (THINK) after end: Design lazy runtime functions: emit only used functions. Profile which functions a typical program uses."
-    },
-    {
-      "time": "2026-04-28T16:47:20.708Z",
-      "msg": "Added T57 (EXPLORE) after end: Compare JIT vs WASM on HOF-heavy code and array-heavy code to understand when each backend excels"
-    },
-    {
-      "time": "2026-04-28T17:01:25.339Z",
-      "msg": "Added T58 (THINK) after end: End-of-session strategic reflection: what had the most impact today? What should tomorrow focus on?"
+      "time": "2026-04-28T17:33:31.078Z",
+      "msg": "PLAN T2 filled 2 BUILD tasks"
     }
   ]
 }
