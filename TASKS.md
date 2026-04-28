@@ -7,9 +7,10 @@
 - **Performance:** 30-34x VM, 8-11x JIT on computation-heavy benchmarks
 - **Features:** Full AST, closures, classes (3-level inheritance), super calls, exceptions, floats, type inference, 9 string methods, 9 utility builtins
 - **Known issues:** 
-  - Nested closure captures (3+ levels) return 0 for outer variables
+  - Sibling closures don't share mutable state (need box/cell pattern)
+  - Self-referencing closures with multiple captures fail (env stores 0 for uninitialized self-ref)
+  - Recursive closure + mutable state causes compiler hang
   - i32 overflow for large numbers (factorial(20), sum 100k)
-  - filter/map/reduce builtins need host→WASM callback mechanism
 
 ### HenryDB
 - **Tests:** 33 regression, 323/323 SQL compliance
@@ -23,11 +24,10 @@
 - **No active work needed**
 
 ## Backlog
-- monkey-lang: Fix nested closure captures (environment chain or box references)
+- monkey-lang: Box/cell pattern for mutable captured variables (fixes 3 closure bugs)
 - monkey-lang: NaN-boxing for typed value representation
 - monkey-lang: Module resolution for import statements
 - monkey-lang: WASM binary caching for recompilation avoidance
-- monkey-lang: filter/map/reduce via host→WASM callback (__call1 export)
 - HenryDB: Unified cost model across execution engines
 - HenryDB: Window functions (ROW_NUMBER, RANK, etc.)
 - HenryDB: UPDATE OF column syntax for triggers

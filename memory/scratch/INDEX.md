@@ -1,5 +1,8 @@
 # Scratch Notes Index
 
+## Session C (2026-04-27 evening) — New Files
+- `wasm-closure-bugs.md` — 3 closure bugs: self-ref with multi-capture, sibling shared state, recursive+mutable crash. Root cause: copy-based captures, need box/cell pattern.
+
 ## Session A (2026-04-27 morning) — New Files
 - `wasm-int-ptr-confusion.md` — Critical bug: integers colliding with data segment pointers (fix: offset 65536)
 - `wasm-gc-research.md` — Node.js v22 supports WASM GC structs/arrays, stringref not yet available

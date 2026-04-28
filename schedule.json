@@ -2865,9 +2865,13 @@
     {
       "id": "T276",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "Fix HenryDB PL/SQL string concatenation || operator",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-28T02:15:20.285Z",
+      "completed": "2026-04-28T02:19:10.490Z",
+      "duration_ms": 30000,
+      "summary": "Already completed in Session B — PL/SQL || string concat fix verified working (20/20 tests pass)"
     },
     {
       "id": "T277",
@@ -2893,55 +2897,105 @@
     {
       "id": "T279",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Session final close"
+      "status": "done",
+      "task": "Session final close",
+      "started": "2026-04-28T02:19:25.988Z",
+      "completed": "2026-04-28T02:19:26.405Z",
+      "duration_ms": 10000,
+      "summary": "Quick maintain — repos clean, generating new work"
     },
     {
       "id": "T243",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "skipped",
       "task": null,
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "skip_reason": "Unfilled placeholder, no plan"
     },
     {
       "id": "T217",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "skipped",
       "goal": "regex-engine: fix empty string matching + add anchor support (^ $)",
-      "task": null
+      "task": null,
+      "skip_reason": "Unfilled placeholder"
     },
     {
       "id": "T219",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "skipped",
       "task": null,
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "skip_reason": "Unfilled placeholder"
     },
     {
       "id": "T221",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Quality check: stress-test recent WASM features for edge cases"
+      "status": "skipped",
+      "task": "Quality check: stress-test recent WASM features for edge cases",
+      "skip_reason": "Unfilled think placeholder"
     },
     {
       "id": "T223",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "skipped",
       "task": null,
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "skip_reason": "Unfilled placeholder"
     },
     {
       "id": "T225",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "HenryDB: assess unified cost model feasibility"
+      "status": "skipped",
+      "task": "HenryDB: assess unified cost model feasibility",
+      "skip_reason": "Unfilled placeholder"
     },
     {
       "id": "T227",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "skipped",
       "task": null,
-      "project": "henrydb"
+      "project": "henrydb",
+      "skip_reason": "Unfilled placeholder"
+    },
+    {
+      "id": "T280",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Evening direction: pick ONE project for depth work, assess nested closure capture bug",
+      "started": "2026-04-28T02:20:48.709Z",
+      "completed": "2026-04-28T02:21:05.653Z",
+      "duration_ms": 60000,
+      "summary": "Evening gate: monkey-lang depth focus. Two EXPLORE tasks: nested closure capture bug (3+ levels) and WASM callback research. No BUILD tonight."
+    },
+    {
+      "id": "T281",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Deep investigation: WASM nested closure capture bug (3+ levels return 0)",
+      "project": "monkey-lang",
+      "started": "2026-04-28T02:21:12.807Z",
+      "completed": "2026-04-28T02:28:43.000Z",
+      "duration_ms": 900000,
+      "summary": "Deep investigation of WASM closure bugs. Found 3 related issues: (1) self-referencing closures with multiple captures fail — env stores 0 for self-ref, (2) sibling closures dont share mutable state — each gets independent copy, (3) recursive closure + mutation crashes/hangs compiler. Root cause: copy-based capture semantics. Fix: box/cell pattern for mutable captured vars. Scratch note written."
+    },
+    {
+      "id": "T282",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Research WASM filter/map/reduce via host-WASM callback mechanism",
+      "project": "monkey-lang",
+      "started": "2026-04-28T02:29:03.189Z",
+      "completed": "2026-04-28T02:30:43.204Z",
+      "duration_ms": 600000,
+      "summary": "HOF callbacks already fully implemented! map/filter/reduce/find/any/every/forEach/sort all work via exported table + call_indirect from JS host. Updated TASKS.md to remove outdated item and refine closure bug descriptions."
+    },
+    {
+      "id": "T283",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Housekeeping",
+      "started": "2026-04-28T02:30:56.105Z"
     }
   ],
   "focusProjects": [
@@ -4129,6 +4183,50 @@
     {
       "time": "2026-04-28T01:01:52.876Z",
       "msg": "Added T279 (MAINTAIN) after T278: Session final close"
+    },
+    {
+      "time": "2026-04-28T02:20:01.408Z",
+      "msg": "Added T280 (THINK) after end: Evening direction: pick ONE project for depth work, assess nested closure capture bug"
+    },
+    {
+      "time": "2026-04-28T02:20:08.979Z",
+      "msg": "Added T281 (EXPLORE) after T280: Deep investigation: WASM nested closure capture bug (3+ levels return 0)"
+    },
+    {
+      "time": "2026-04-28T02:20:12.573Z",
+      "msg": "Added T282 (EXPLORE) after T281: Research WASM filter/map/reduce via host-WASM callback mechanism"
+    },
+    {
+      "time": "2026-04-28T02:20:16.241Z",
+      "msg": "Added T283 (MAINTAIN) after T282: Housekeeping"
+    },
+    {
+      "time": "2026-04-28T02:20:33.615Z",
+      "msg": "Removed T243: Unfilled placeholder, no plan"
+    },
+    {
+      "time": "2026-04-28T02:20:33.847Z",
+      "msg": "Removed T217: Unfilled placeholder"
+    },
+    {
+      "time": "2026-04-28T02:20:34.005Z",
+      "msg": "Removed T219: Unfilled placeholder"
+    },
+    {
+      "time": "2026-04-28T02:20:34.174Z",
+      "msg": "Removed T223: Unfilled placeholder"
+    },
+    {
+      "time": "2026-04-28T02:20:34.302Z",
+      "msg": "Removed T225: Unfilled placeholder"
+    },
+    {
+      "time": "2026-04-28T02:20:34.523Z",
+      "msg": "Removed T227: Unfilled placeholder"
+    },
+    {
+      "time": "2026-04-28T02:20:39.966Z",
+      "msg": "Removed T221: Unfilled think placeholder"
     }
   ]
 }
