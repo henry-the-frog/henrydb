@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-28T21:20:11.615Z",
+  "generated": "2026-04-28T21:24:21.353Z",
   "current": {
     "status": "in-progress",
     "mode": "MAINTAIN",
-    "task": "Push + housekeeping",
-    "startedAt": "2026-04-28T21:20:11.615Z",
-    "taskId": "T30"
+    "task": "Git push + test sweep",
+    "startedAt": "2026-04-28T21:24:21.353Z",
+    "taskId": "T35"
   },
   "schedule": {
     "date": "2026-04-28",
@@ -4958,43 +4958,132 @@
       {
         "id": "T28",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "Next focus area based on progress",
         "task": null,
-        "started": "2026-04-28T21:02:18.914Z"
+        "started": "2026-04-28T21:02:18.914Z",
+        "completed": "2026-04-28T21:03:37.825Z",
+        "duration_ms": 120000,
+        "summary": "Plan: profile UPDATE, then implement fast-path. Current: 985μs, manual: 13μs. Key skippable overhead: _valuesToRow, trigger checks, constraint validation, full WHERE evaluation."
       },
       {
         "id": "T29",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "Profile HenryDB UPDATE pipeline to identify bottlenecks",
         "plan_ref": "T28",
-        "project": "monkey-lang"
+        "project": "monkey-lang",
+        "started": "2026-04-28T21:03:45.981Z",
+        "completed": "2026-04-28T21:19:47.292Z",
+        "duration_ms": 1200000,
+        "summary": "UPDATE fast-path: 12μs median (8x improvement from ~100μs). Cached per-table metadata, BTreeTable in-place update. Found and fixed critical data corruption bug (heap.update not existing on BTreeTable). All tests pass."
       },
       {
         "id": "T31",
         "mode": "BUILD",
         "task": "Implement UPDATE fast-path for simple PK row updates",
-        "status": "upcoming",
-        "plan_ref": "T28"
+        "status": "done",
+        "plan_ref": "T28",
+        "started": "2026-04-28T21:20:03.999Z",
+        "completed": "2026-04-28T21:20:04.138Z",
+        "duration_ms": 10000,
+        "summary": "Already done in T29. UPDATE fast-path fully implemented."
       },
       {
         "id": "T30",
         "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Push + housekeeping",
+        "started": "2026-04-28T21:20:11.581Z",
+        "completed": "2026-04-28T21:20:29.783Z",
+        "duration_ms": 30000,
+        "summary": "Pushed all repos."
+      },
+      {
+        "id": "T32",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Afternoon direction: which project benefits most from deeper work?",
+        "started": "2026-04-28T21:21:09.011Z",
+        "completed": "2026-04-28T21:21:22.281Z",
+        "duration_ms": 60000,
+        "summary": "At 17 BUILDs, focus on quality: UPDATE fast-path tests + monkey-lang README update. Skip hash maps (too complex for remaining budget)."
+      },
+      {
+        "id": "T33",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "monkey-lang: hash map support in WASM compiler",
+        "task": null,
+        "started": "2026-04-28T21:21:30.160Z"
+      },
+      {
+        "id": "T40",
+        "mode": "BUILD",
+        "task": "Write UPDATE fast-path test suite",
         "status": "upcoming",
-        "task": "Push + housekeeping"
+        "plan_ref": "T33"
+      },
+      {
+        "id": "T41",
+        "mode": "BUILD",
+        "task": "Update monkey-lang README with playground link and feature list",
+        "status": "upcoming",
+        "plan_ref": "T33"
+      },
+      {
+        "id": "T34",
+        "mode": "BUILD",
+        "status": "skipped",
+        "task": null,
+        "plan_ref": "T33",
+        "project": "monkey-lang",
+        "skip_reason": ""
+      },
+      {
+        "id": "T35",
+        "mode": "MAINTAIN",
+        "status": "upcoming",
+        "task": "Git push + test sweep"
+      },
+      {
+        "id": "T36",
+        "mode": "THINK",
+        "status": "upcoming",
+        "task": "Direction for final hours"
+      },
+      {
+        "id": "T37",
+        "mode": "PLAN",
+        "status": "upcoming",
+        "goal": "Best remaining work for the session",
+        "task": null
+      },
+      {
+        "id": "T38",
+        "mode": "BUILD",
+        "status": "upcoming",
+        "task": null,
+        "plan_ref": "T37",
+        "project": "monkey-lang"
+      },
+      {
+        "id": "T39",
+        "mode": "MAINTAIN",
+        "status": "upcoming",
+        "task": "Verify all test suites green and push latest changes"
       }
     ]
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 30,
-    "blocksTotal": 31,
+    "blocksCompleted": 35,
+    "blocksTotal": 41,
     "modeDistribution": {
-      "THINK": 5,
-      "PLAN": 7,
-      "BUILD": 14,
-      "MAINTAIN": 4
+      "THINK": 6,
+      "PLAN": 8,
+      "BUILD": 16,
+      "MAINTAIN": 5
     }
   },
   "artifacts": [],

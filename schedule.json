@@ -332,9 +332,98 @@
     {
       "id": "T30",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Push + housekeeping",
-      "started": "2026-04-28T21:20:11.581Z"
+      "started": "2026-04-28T21:20:11.581Z",
+      "completed": "2026-04-28T21:20:29.783Z",
+      "duration_ms": 30000,
+      "summary": "Pushed all repos."
+    },
+    {
+      "id": "T32",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Afternoon direction: which project benefits most from deeper work?",
+      "started": "2026-04-28T21:21:09.011Z",
+      "completed": "2026-04-28T21:21:22.281Z",
+      "duration_ms": 60000,
+      "summary": "At 17 BUILDs, focus on quality: UPDATE fast-path tests + monkey-lang README update. Skip hash maps (too complex for remaining budget)."
+    },
+    {
+      "id": "T33",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "monkey-lang: hash map support in WASM compiler",
+      "task": null,
+      "started": "2026-04-28T21:21:30.160Z",
+      "completed": "2026-04-28T21:21:44.395Z",
+      "duration_ms": 30000,
+      "summary": "Repurposed: UPDATE fast-path tests + monkey-lang README. Quality over features for remaining BUILD budget."
+    },
+    {
+      "id": "T40",
+      "mode": "BUILD",
+      "task": "Write UPDATE fast-path test suite",
+      "status": "done",
+      "plan_ref": "T33",
+      "started": "2026-04-28T21:21:53.437Z",
+      "completed": "2026-04-28T21:22:52.390Z",
+      "duration_ms": 300000,
+      "summary": "14 UPDATE fast-path tests: basics (6), repeated (3), fallback (4), indexes (1). All pass including 5000-update integrity stress test."
+    },
+    {
+      "id": "T41",
+      "mode": "BUILD",
+      "task": "Update monkey-lang README with playground link and feature list",
+      "status": "done",
+      "plan_ref": "T33",
+      "started": "2026-04-28T21:22:57.021Z",
+      "completed": "2026-04-28T21:24:13.509Z",
+      "duration_ms": 180000,
+      "summary": "Updated monkey-lang README: playground link, WASM compiler section (arrays, HOFs, closures, do-while), updated stats (27.5K lines, 1K+ tests, 94 files, 2.3K commits)."
+    },
+    {
+      "id": "T34",
+      "mode": "BUILD",
+      "status": "skipped",
+      "task": null,
+      "plan_ref": "T33",
+      "project": "monkey-lang",
+      "skip_reason": ""
+    },
+    {
+      "id": "T35",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Git push + test sweep",
+      "started": "2026-04-28T21:24:21.319Z"
+    },
+    {
+      "id": "T36",
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "Direction for final hours"
+    },
+    {
+      "id": "T37",
+      "mode": "PLAN",
+      "status": "upcoming",
+      "goal": "Best remaining work for the session",
+      "task": null
+    },
+    {
+      "id": "T38",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null,
+      "plan_ref": "T37",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T39",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Verify all test suites green and push latest changes"
     }
   ],
   "focusProjects": [
@@ -470,6 +559,46 @@
     {
       "time": "2026-04-28T21:03:24.124Z",
       "msg": "PLAN T28 filled 2 BUILD tasks"
+    },
+    {
+      "time": "2026-04-28T21:20:39.911Z",
+      "msg": "Added T32 (THINK) after end: Afternoon direction: which project benefits most from deeper work?"
+    },
+    {
+      "time": "2026-04-28T21:20:40.026Z",
+      "msg": "Added T33 (PLAN) after end: monkey-lang: hash map support in WASM compiler"
+    },
+    {
+      "time": "2026-04-28T21:20:40.140Z",
+      "msg": "Added T34 (BUILD) after end: null"
+    },
+    {
+      "time": "2026-04-28T21:20:40.254Z",
+      "msg": "Added T35 (MAINTAIN) after end: Git push + test sweep"
+    },
+    {
+      "time": "2026-04-28T21:20:40.369Z",
+      "msg": "Added T36 (THINK) after end: Direction for final hours"
+    },
+    {
+      "time": "2026-04-28T21:20:40.484Z",
+      "msg": "Added T37 (PLAN) after end: Best remaining work for the session"
+    },
+    {
+      "time": "2026-04-28T21:20:46.580Z",
+      "msg": "Added T38 (BUILD) after end: null"
+    },
+    {
+      "time": "2026-04-28T21:21:02.407Z",
+      "msg": "Added T39 (MAINTAIN) after end: Verify all test suites green and push latest changes"
+    },
+    {
+      "time": "2026-04-28T21:21:30.046Z",
+      "msg": "Removed T34: "
+    },
+    {
+      "time": "2026-04-28T21:21:37.148Z",
+      "msg": "PLAN T33 filled 2 BUILD tasks"
     }
   ]
 }
