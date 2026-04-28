@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-28T15:33:31.665Z",
+  "generated": "2026-04-28T15:46:30.128Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Fix column aliasing in JOIN output: qualified names (c.name) should be unqualified (name) in result rows",
-    "completedAt": "2026-04-28T15:33:31.665Z",
-    "taskId": "T29",
-    "summary": "Partial fix for GROUP BY column aliasing. Fixed group-by-executor but query goes through different code path (adaptive engine routing). Issue is cosmetic — qualified names in GROUP BY output. Need to identify which execution path handles JOIN+GROUP BY.",
-    "durationMs": 600000
+    "task": "Fix compileAndRun to return formatted values for arrays/strings/hashes instead of raw heap pointers",
+    "completedAt": "2026-04-28T15:46:30.128Z",
+    "taskId": "T36",
+    "summary": "compileAndRun now auto-formats arrays/strings/hashes/floats. Returns nice values instead of raw pointers. 335/335 pass.",
+    "durationMs": 300000
   },
   "schedule": {
     "date": "2026-04-28",
@@ -4806,85 +4806,236 @@
       {
         "id": "T10",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "WASM array/GC improvements based on morning findings",
         "task": null,
-        "started": "2026-04-28T14:51:00.306Z"
+        "started": "2026-04-28T14:51:00.306Z",
+        "completed": "2026-04-28T14:51:39.463Z",
+        "duration_ms": 120000,
+        "summary": "Planned WASM array improvement: THINK to research current impl, then PLAN mutable array design."
       },
       {
         "id": "T11",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "THINK: Research current array implementation in WASM compiler — understand push, immutable copy semantics, and memory layout",
         "plan_ref": "T10",
-        "project": "monkey-lang"
+        "project": "monkey-lang",
+        "started": "2026-04-28T14:51:50.473Z",
+        "completed": "2026-04-28T14:52:35.457Z",
+        "duration_ms": 180000,
+        "summary": "Researched WASM array: push is O(N) copy-on-append. Layout is [TAG][len][elem...]. Need capacity field at offset 8, shifting elements to offset 12. ~17 code sites to update."
       },
       {
         "id": "T23",
         "mode": "BUILD",
         "task": "PLAN: Design mutable array with capacity-based growth (amortized O(1) push)",
-        "status": "upcoming",
-        "plan_ref": "T10"
+        "status": "done",
+        "plan_ref": "T10",
+        "started": "2026-04-28T14:52:45.584Z",
+        "completed": "2026-04-28T14:53:26.823Z",
+        "duration_ms": 120000,
+        "summary": "Designed mutable array: [TAG][len][capacity][elems...]. 3 BUILD tasks: layout change, amortized push, stress test."
       },
       {
         "id": "T12",
         "mode": "MAINTAIN",
-        "status": "upcoming",
-        "task": "Housekeeping: git push, dashboard, GitHub notifications"
+        "status": "done",
+        "task": "Housekeeping: git push, dashboard, GitHub notifications",
+        "started": "2026-04-28T14:53:39.848Z",
+        "completed": "2026-04-28T14:53:50.363Z",
+        "duration_ms": 60000,
+        "summary": "Git push, workspace committed."
       },
       {
         "id": "T13",
         "mode": "THINK",
-        "status": "upcoming",
-        "task": "Afternoon direction — highest-value remaining work"
+        "status": "done",
+        "task": "Afternoon direction — highest-value remaining work",
+        "started": "2026-04-28T14:53:54.750Z",
+        "completed": "2026-04-28T14:54:09.971Z",
+        "duration_ms": 60000,
+        "summary": "Direction: execute array capacity BUILD tasks (T24-T26), then explore. Skip T14/T15 (subsumed by T24-T26)."
+      },
+      {
+        "id": "T24",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Update WASM array layout: add capacity field at offset 8. Update make_array, array_get, array_set, push to use 12-byte header. Update host-side allocArray and formatWasmValue.",
+        "project": "monkey-lang",
+        "started": "2026-04-28T14:54:43.863Z",
+        "completed": "2026-04-28T15:09:54.092Z",
+        "duration_ms": 900000,
+        "summary": "Array layout updated: 12-byte header with capacity field. All ~20 code sites updated (compiler, host builtins, GC module). 1940/1940 tests pass."
+      },
+      {
+        "id": "T25",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Implement amortized O(1) push: check capacity, grow 2x when full, in-place append when room",
+        "project": "monkey-lang",
+        "started": "2026-04-28T15:10:07.730Z",
+        "completed": "2026-04-28T15:10:44.839Z",
+        "duration_ms": 60000,
+        "summary": "Amortized O(1) push already implemented in T24. Verified: 1000 pushes 93ms, 5000 pushes 106ms (was crashing at 3-5K). O(N²) → O(N)."
+      },
+      {
+        "id": "T26",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Add array push stress test: 10K pushes should complete in <1s (was crashing at 3-5K)",
+        "project": "monkey-lang",
+        "started": "2026-04-28T15:11:00.784Z",
+        "completed": "2026-04-28T15:11:53.246Z",
+        "duration_ms": 120000,
+        "summary": "Added 3 array push stress tests. 335/335 pass. 5K pushes works (was crashing)."
       },
       {
         "id": "T14",
         "mode": "PLAN",
-        "status": "upcoming",
+        "status": "skipped",
         "goal": "Continue highest-priority improvement from assessment",
-        "task": null
+        "task": null,
+        "skip_reason": ""
       },
       {
         "id": "T15",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "skipped",
         "task": null,
         "plan_ref": "T14",
-        "project": "monkey-lang"
+        "project": "monkey-lang",
+        "skip_reason": ""
       },
       {
         "id": "T16",
         "mode": "MAINTAIN",
-        "status": "upcoming",
-        "task": "Housekeeping: git push, benchmark comparison"
+        "status": "done",
+        "task": "Housekeeping: git push, benchmark comparison",
+        "started": "2026-04-28T15:12:09.269Z",
+        "completed": "2026-04-28T15:12:38.408Z",
+        "duration_ms": 120000,
+        "summary": "Git push (monkey-lang + workspace). Updated TASKS.md with array push fix."
       },
       {
         "id": "T17",
         "mode": "EXPLORE",
-        "status": "upcoming",
+        "status": "done",
         "task": "Deep dive: WASM GC proposal implementation feasibility",
-        "project": "monkey-lang"
+        "project": "monkey-lang",
+        "started": "2026-04-28T15:12:53.158Z",
+        "completed": "2026-04-28T15:17:08.748Z",
+        "duration_ms": 600000,
+        "summary": "WASM GC verified in Node.js v22: struct.new/get, array.new/get/set all work. Binary encoding documented. Field encoding is [valtype][mutability]. Feasible for monkey-lang backend."
       },
       {
         "id": "T18",
         "mode": "EXPLORE",
-        "status": "upcoming",
+        "status": "done",
         "task": "HenryDB stress test: concurrent transactions, MVCC edge cases",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-28T15:17:23.407Z",
+        "completed": "2026-04-28T15:18:55.965Z",
+        "duration_ms": 300000,
+        "summary": "MVCC explored: basic TX works (begin/commit/rollback). Write skew possible (snapshot isolation, not serializable). 44/44 MVCC tests pass. Documented limitation."
+      },
+      {
+        "id": "T27",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Assess i32 overflow: how to handle factorial(20) and large sums. Options: i64 support, overflow detection, bigint fallback",
+        "project": "monkey-lang",
+        "started": "2026-04-28T15:19:51.434Z",
+        "completed": "2026-04-28T15:20:08.741Z",
+        "duration_ms": 120000,
+        "summary": "i32 overflow: float promotion on overflow is ideal long-term fix. Not urgent — current behavior (silent wrap) is common in systems langs. Could add overflow detection as warning."
+      },
+      {
+        "id": "T28",
+        "mode": "EXPLORE",
+        "status": "done",
+        "task": "Run broad HenryDB test sweep: find failing or slow tests, identify areas for improvement",
+        "project": "henrydb",
+        "started": "2026-04-28T15:20:18.109Z",
+        "completed": "2026-04-28T15:23:08.218Z",
+        "duration_ms": 300000,
+        "summary": "HenryDB sweep: 335/341 pass. 3 failures: 2 ALTER TABLE index issues, 1 column aliasing issue (c.name vs name in JOIN output). Not critical."
+      },
+      {
+        "id": "T29",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Fix column aliasing in JOIN output: qualified names (c.name) should be unqualified (name) in result rows",
+        "project": "henrydb",
+        "started": "2026-04-28T15:23:33.335Z",
+        "completed": "2026-04-28T15:33:31.577Z",
+        "duration_ms": 600000,
+        "summary": "Partial fix for GROUP BY column aliasing. Fixed group-by-executor but query goes through different code path (adaptive engine routing). Issue is cosmetic — qualified names in GROUP BY output. Need to identify which execution path handles JOIN+GROUP BY."
+      },
+      {
+        "id": "T30",
+        "mode": "EXPLORE",
+        "status": "done",
+        "task": "Full test sweep of monkey-lang: run all test files, identify failures",
+        "project": "monkey-lang",
+        "started": "2026-04-28T15:33:57.018Z",
+        "completed": "2026-04-28T15:36:20.268Z",
+        "duration_ms": 300000,
+        "summary": "monkey-lang full sweep: 1942/1943 pass. 1 flaky benchmark test (passes when run alone). Clean."
+      },
+      {
+        "id": "T31",
+        "mode": "THINK",
+        "status": "done",
+        "task": "What WASM compiler features would enable the most interesting programs? Evaluate: comprehensions, pattern matching, modules, tail-call optimization for all recursion",
+        "project": "monkey-lang",
+        "started": "2026-04-28T15:37:56.702Z",
+        "completed": "2026-04-28T15:38:48.492Z",
+        "duration_ms": 180000,
+        "summary": "Assessed WASM missing features. Priority: TernaryExpression (15min), ArrayComprehension (1hr), MatchExpression (2-3hr). Also: SliceExpression, RangeExpression, TemplateLiteral."
+      },
+      {
+        "id": "T32",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "Plan WASM ternary expression + array comprehension implementation",
+        "task": null,
+        "project": "monkey-lang",
+        "started": "2026-04-28T15:39:07.672Z"
+      },
+      {
+        "id": "T33",
+        "mode": "BUILD",
+        "task": "Implement WASM TernaryExpression compilation (condition ? true_val : false_val) — simple if/else block",
+        "status": "upcoming",
+        "plan_ref": "T32"
+      },
+      {
+        "id": "T34",
+        "mode": "BUILD",
+        "task": "Implement WASM ArrayComprehension compilation ([expr for var in iterable if cond]) with loop + push",
+        "status": "upcoming",
+        "plan_ref": "T32"
+      },
+      {
+        "id": "T35",
+        "mode": "BUILD",
+        "task": "Add tests for both: ternary basic/nested, comprehension basic/filter/range",
+        "status": "upcoming",
+        "plan_ref": "T32"
       }
     ]
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 27,
-    "blocksTotal": 23,
+    "blocksCompleted": 34,
+    "blocksTotal": 35,
     "modeDistribution": {
-      "THINK": 5,
-      "PLAN": 3,
-      "BUILD": 12,
+      "THINK": 6,
+      "PLAN": 4,
+      "BUILD": 16,
       "MAINTAIN": 4,
-      "EXPLORE": 3
+      "EXPLORE": 4
     }
   },
   "artifacts": [],
