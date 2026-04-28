@@ -3,19 +3,25 @@
 ## Projects
 
 ### monkey-lang (/Users/henry/projects/monkey-lang)
-- **What**: Complete programming language: lexer → parser → AST → evaluator & bytecode compiler → VM
-- **Size**: 22K LOC, 1149 tests, 78 source files, 2200+ commits
-- **Language features**: closures, pattern matching, destructuring, for-in, comprehensions, spread/rest, template literals, comments, import/export, enums, try-catch, pipe operator, ranges
-- **Infrastructure**: CFG, SSA, liveness analysis, escape analysis, register allocation, type inference, type checker, inline caching, GC
-- **55 VM builtins + 17 prelude HOFs** (map, filter, reduce, etc.)
-- **VM is 3-6x faster than tree-walking evaluator** for computation
+- **What**: Complete programming language: lexer → parser → AST → evaluator & **WASM compiler**
+- **Size**: ~9K+ LOC, **2004 tests**, 41+ test files
+- **WASM compiler is primary** (5570 lines vs 1483 evaluator — 3.8x larger)
+- **Language features**: closures, pattern matching, destructuring, for-in, do-while, comprehensions, spread/rest, template literals, pipe operator (`|>`), ranges, classes, match expressions, try-catch
+- **WASM inline HOFs**: map, filter, reduce compiled as WASM loops (no runtime call for simple callbacks)
+- **WASM GC**: Confirmed working in Node.js v22! Struct types compile + instantiate (no flags). Inner WASM loop 21x faster than JS.
+- **Performance**: 1000-line program compiles in 21ms (21μs/line), 0.28ms compile for simple programs
+- **Type guards**: compile()/compileAndRun() reject non-string inputs to prevent OOM
 - **Zero test failures**
 
 ### HenryDB (/Users/henry/.openclaw/workspace/projects/henrydb)
 - **What**: SQLite-compatible relational database from scratch in JavaScript
-- **Size**: 209K LOC, 1249 files, 4100+ commits
+- **Size**: 209K+ LOC, 882+ test files
 - **97.6% SQLite compatibility** (differential fuzzer)
 - **Features**: Full SQL (DDL, DML, JOINs, CTEs, window functions, triggers, views), WAL, B-tree storage, prepared statements, ARRAY literals, VALUES clause, GENERATE_SERIES, UNNEST
+- **Prepared stmts**: Fast bind/unbind (in-place AST mutation, 2.7x faster), ? placeholders, executeMany batch
+- **Compiled expressions**: WHERE AST → JS function via new Function() for fast scan filtering
+- **Key optimizations (Apr 28)**: HeapFile Array→Map (88,000x for page lookup), INSERT RETURNING O(1), ON CONFLICT O(log N), FK early-return
+- **Key bug**: V8 JIT cold-call latency: _evalExpr first call 846μs, hot 0.39μs (2169x diff)
 - **Key module**: `type-affinity.js` for SQLite-compatible comparisons and INSERT coercion
 
 ### neural-net — Deep Learning Framework (38K LOC, 318 files)
@@ -113,20 +119,14 @@
 - ShapedHash uses hidden classes with shape.transition() for new properties
 - parseFloat('0') || '0' returns '0' because 0 is falsy — use !isNaN(n) ? n : result
 - Always check opcode value table for collisions before adding new opcodes
+- **HeapFile.pages: Array.find() is O(N) per access — use Map for O(1) lookups (88,000x improvement)**
+- **In-place AST mutation + WeakMap caching = stale cache bug. Don't cache mutable objects by identity.**
+- **Qualified column refs (table.col) may reference outer scope in correlated subqueries — can't safely compile them**
+- **V8 JIT cold-call: first call to complex function can be 2000x slower than hot call. Use new Function() for pre-compilation.**
+- **WASM GC structs work in Node.js v22 without flags. Inner loops 21x faster than JS.**
 
-### Exploration Results
-- VM performance: ~33 MIPS estimated (vs WASM ~4000 MIPS native)
-- GC: 100K allocations → 6 collections, generational collection works
-- Tail call optimization: mutual recursion 100K deep works (is_even/is_odd)
-- SCCP: basic propagation works, misses phi-constant optimization (SSA builder limitation)
-- Optimizer: 6-10% bytecode reduction on real programs (constant folding is main win)
-- Enum + match expressions, try/catch, closures, modules: all verified working
-
-### Tomorrow's Focus
-1. Runtime method dispatch (OpMethodCall) — design complete in scratch/runtime-dispatch-plan.md
-2. WASM Phase 2: string support (linear memory)
-3. Wire SSA DCE into compilation pipeline
-
-### Test Counts
-- monkey-lang: 1149 → 1245 (+96)
-- HenryDB: ~4310 → 4321 (+11 PL/SQL)
+### Test Counts (Apr 28)
+- monkey-lang: 2004 (41 files)
+- HenryDB: 882 test files (thousands of tests)
+- type-infer: 23
+- Total: ~5000+

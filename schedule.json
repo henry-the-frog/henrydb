@@ -780,6 +780,176 @@
       "completed": "2026-04-28T19:24:09.926Z",
       "duration_ms": 30000,
       "summary": "Test count: monkey-lang 2,004 tests (41 files), HenryDB 882 test files (thousands of tests), type-infer 23 tests. Combined: ~5,000+ tests across 3 projects."
+    },
+    {
+      "id": "T76",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Explore: can the monkey-lang WASM compiler target WASI for standalone executables?",
+      "started": "2026-04-28T19:24:30.191Z",
+      "completed": "2026-04-28T19:24:49.825Z",
+      "duration_ms": 60000,
+      "summary": "WASI target: feasible. Core int/bool/control flow already WASI-compatible. Needs: WASI fd_write for puts(), self-contained string ops (currently JS imports), WASI-native runtime. Medium effort, high value for distribution. Would enable: compile monkey→WASM→run with wasmtime/wasmer anywhere."
+    },
+    {
+      "id": "T77",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Explore: what monkey-lang features could benefit from tail call optimization?",
+      "started": "2026-04-28T19:24:59.328Z",
+      "completed": "2026-04-28T19:25:32.894Z",
+      "duration_ms": 60000,
+      "summary": "TCO opportunities: tail-recursive patterns (factorial, list processing, mutual recursion). WASM has return_call/return_call_indirect opcodes (tail call proposal). Implementation: detect tail-position calls during compilation, emit return_call instead of call+return. Would eliminate stack overflow for tail-recursive monkey-lang programs. Need to verify WASM tail call availability in Node.js v22."
+    },
+    {
+      "id": "T78",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Review MEMORY.md and update with today's key learnings",
+      "started": "2026-04-28T19:25:40.995Z",
+      "completed": "2026-04-28T19:27:13.551Z",
+      "duration_ms": 180000,
+      "summary": "Updated MEMORY.md: monkey-lang section (WASM compiler primary, 2004 tests, GC confirmed), HenryDB section (new optimizations, compiled-expr, performance findings), Technical Lessons (5 new lessons), Test Counts updated."
+    },
+    {
+      "id": "T79",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Explore: benchmark HenryDB compiled-expr SELECT on 10K rows",
+      "started": "2026-04-28T19:27:27.785Z",
+      "completed": "2026-04-28T19:28:29.433Z",
+      "duration_ms": 120000,
+      "summary": "Real perf at 10K rows (varying queries): range scan=17ms, text EQ=1.7ms, count+WHERE=16ms. ~1.7μs per row for scan+filter. Previous bench showed 2μs total (was result caching). compiled-expr helps but expression eval still dominates scan time."
+    },
+    {
+      "id": "T80",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Explore: what monkey-lang programs would make great demos?",
+      "started": "2026-04-28T19:28:39.475Z",
+      "completed": "2026-04-28T19:29:27.240Z",
+      "duration_ms": 120000,
+      "summary": "4 demo programs verified working: (1) function composition (compose(double,add1)(5)=12), (2) pipeline with pipe operator (filter|>map|>reduce=220), (3) class method chaining (Builder().add(5).mul(3).add(2).mul(2).get()=34), (4) nested match expressions (FizzBuzz=1111). All compile to WASM and produce correct results."
+    },
+    {
+      "id": "T81",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Explore: what's the monkey-lang error message quality like?",
+      "started": "2026-04-28T19:29:40.313Z",
+      "completed": "2026-04-28T19:30:28.155Z",
+      "duration_ms": 60000,
+      "summary": "Error message quality: undefined vars/unknown funcs are good (with line numbers). Missing parens/brackets: decent. Issues: (1) wrong arg count shows WASM error not user error, (2) missing semicolons silently accepted, (3) unterminated strings silently accepted, (4) infinite recursion kills process. Needs: earlier arg-count validation, string termination check, recursion depth limit."
+    },
+    {
+      "id": "T82",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Explore: how would monkey-lang string interning work in WASM?",
+      "started": "2026-04-28T19:30:47.564Z",
+      "completed": "2026-04-28T19:31:03.261Z",
+      "duration_ms": 60000,
+      "summary": "String interning for WASM: 3 approaches. Best for linear memory: JS-side intern table (Map<string,id>), imported as WASM function. O(1) equality via intern ID comparison. For WASM GC: use externref JS strings directly. Most valuable for hash map keys and repeated comparisons."
+    },
+    {
+      "id": "T83",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Explore: how many LOC total across all 215 projects?",
+      "started": "2026-04-28T19:31:08.877Z",
+      "completed": "2026-04-28T19:31:30.266Z",
+      "duration_ms": 30000,
+      "summary": "Total LOC: ~498K JavaScript (124K in ~/projects + 374K in workspace/projects). Nearly half a million lines of hand-written JS across all projects."
+    },
+    {
+      "id": "T84",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Explore: what's the git commit history like? Total commits across projects?",
+      "started": "2026-04-28T19:31:41.027Z",
+      "completed": "2026-04-28T19:31:56.371Z",
+      "duration_ms": 30000,
+      "summary": "Git commits: monkey-lang 2322, HenryDB 4623. ~7000 unique commits total. Massive development history."
+    },
+    {
+      "id": "T85",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Explore: what would monkey-lang look like with async/await?",
+      "started": "2026-04-28T19:32:02.424Z",
+      "completed": "2026-04-28T19:32:18.637Z",
+      "duration_ms": 60000,
+      "summary": "Async/await for monkey-lang: best approach is CPS transformation at compile time. Rewrites await→continuation callbacks. Works in WASM without runtime support. Alternatives: JSPI (Chrome only), Asyncify (complex), event loop (Go-style goroutines). CPS is clean compiler transform."
+    },
+    {
+      "id": "T86",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Explore: what optimizations would a monkey-lang SSA IR enable?",
+      "started": "2026-04-28T19:32:32.992Z",
+      "completed": "2026-04-28T19:32:51.399Z",
+      "duration_ms": 60000,
+      "summary": "SSA IR would enable: DCE, constant prop, CSE, LICM, inlining, escape analysis, type specialization, bounds check elimination. monkey-lang has existing SSA builder from old VM. Key question: do optimization gains justify compile time increase? For hot code (inner loops), probably yes. For one-shot scripts, probably no. Could be opt-in flag."
+    },
+    {
+      "id": "T87",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Map out the monkey-lang compiler pipeline evolution: where we started vs where we are vs where we're going",
+      "started": "2026-04-28T19:33:03.365Z",
+      "completed": "2026-04-28T19:33:27.548Z",
+      "duration_ms": 60000,
+      "summary": "Pipeline evolution: V1 tree-walking (1x) → V2 bytecode VM (3-6x) → V3 WASM compiler (100-1000x, current) → V4 optimizing WASM (SSA+types) → V5 WASM GC (V8 managed, 21x faster inner loops). Clear path: types→optimization→GC backend. Each version builds on previous."
+    },
+    {
+      "id": "T88",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Explore: what is monkey-lang's WASM module size for different programs?",
+      "started": "2026-04-28T19:33:44.738Z",
+      "completed": "2026-04-28T19:34:15.941Z",
+      "duration_ms": 60000,
+      "summary": "WASM module sizes: minimum 849 bytes (12 runtime funcs), arithmetic +6, closure +165, class +310, complex program (fib+map+filter+reduce) 1218 bytes total. Runtime overhead dominates. Complex programs add surprisingly little code. Lazy emission would save ~200 bytes for trivial programs but compile time gain is negligible."
+    },
+    {
+      "id": "T89",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Explore: how fast is monkey-lang fibonacci vs C vs Python?",
+      "started": "2026-04-28T19:34:32.040Z",
+      "completed": "2026-04-28T19:35:10.729Z",
+      "duration_ms": 60000,
+      "summary": "fibonacci benchmark (fib(35)): monkey-lang WASM=84ms, JS=150ms, Python=3541ms. monkey-lang is 1.8x faster than JS and 42x faster than Python! WASM i32 arithmetic beats V8 tagged numbers. This is a compelling demo for the playground."
+    },
+    {
+      "id": "T90",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Explore: compare monkey-lang to other WASM-targeting languages",
+      "started": "2026-04-28T19:35:25.601Z",
+      "completed": "2026-04-28T19:35:40.535Z",
+      "duration_ms": 60000,
+      "summary": "WASM-targeting languages: C++ (Emscripten), Rust (wasm-pack), Go (tinygo), AssemblyScript, Grain, Moonbit. monkey-lang niche: educational (5K LOC compiler), dynamic typing, 1.8x faster than JS. Closest comparison: Grain (functional WASM language) but Grain is statically typed."
+    },
+    {
+      "id": "T91",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Quick: how many total tasks completed today across both sessions?",
+      "started": "2026-04-28T19:35:51.260Z",
+      "completed": "2026-04-28T19:36:10.642Z",
+      "duration_ms": 30000,
+      "summary": "Session B: ~50 tasks. 20 BUILDs (hit cap), ~22 THINKs, 5 PLANs, 5 MAINTAINs. Deep exploration phase after BUILD cap: WASM GC confirmed, benchmarks, design docs, error analysis, module size analysis. Session A (morning) produced another 20+ tasks with major features."
+    },
+    {
+      "id": "T92",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Quick: what would a monkey-lang blog post highlight?",
+      "started": "2026-04-28T19:36:25.994Z",
+      "completed": "2026-04-28T19:36:42.153Z",
+      "duration_ms": 30000,
+      "summary": "Blog post idea: Building a Language Faster Than JavaScript. Hook: 1.8x faster than JS for computation. Journey: interpreter→VM→WASM compiler. Highlights: inline HOFs, box/cell closures, 5.5K LOC compiler, 849-byte WASM modules. Benchmarks: fib(35) monkey 84ms vs JS 150ms vs Python 3541ms."
     }
   ],
   "focusProjects": [
@@ -1123,6 +1293,74 @@
     {
       "time": "2026-04-28T19:23:38.356Z",
       "msg": "Added T75 (THINK) after end: Count all tests across all projects"
+    },
+    {
+      "time": "2026-04-28T19:24:29.995Z",
+      "msg": "Added T76 (THINK) after end: Explore: can the monkey-lang WASM compiler target WASI for standalone executables?"
+    },
+    {
+      "time": "2026-04-28T19:24:59.214Z",
+      "msg": "Added T77 (THINK) after end: Explore: what monkey-lang features could benefit from tail call optimization?"
+    },
+    {
+      "time": "2026-04-28T19:25:40.881Z",
+      "msg": "Added T78 (THINK) after end: Review MEMORY.md and update with today's key learnings"
+    },
+    {
+      "time": "2026-04-28T19:27:27.670Z",
+      "msg": "Added T79 (THINK) after end: Explore: benchmark HenryDB compiled-expr SELECT on 10K rows"
+    },
+    {
+      "time": "2026-04-28T19:28:39.361Z",
+      "msg": "Added T80 (THINK) after end: Explore: what monkey-lang programs would make great demos?"
+    },
+    {
+      "time": "2026-04-28T19:29:40.198Z",
+      "msg": "Added T81 (THINK) after end: Explore: what's the monkey-lang error message quality like?"
+    },
+    {
+      "time": "2026-04-28T19:30:47.450Z",
+      "msg": "Added T82 (THINK) after end: Explore: how would monkey-lang string interning work in WASM?"
+    },
+    {
+      "time": "2026-04-28T19:31:08.763Z",
+      "msg": "Added T83 (THINK) after end: Explore: how many LOC total across all 215 projects?"
+    },
+    {
+      "time": "2026-04-28T19:31:40.913Z",
+      "msg": "Added T84 (THINK) after end: Explore: what's the git commit history like? Total commits across projects?"
+    },
+    {
+      "time": "2026-04-28T19:32:02.310Z",
+      "msg": "Added T85 (THINK) after end: Explore: what would monkey-lang look like with async/await?"
+    },
+    {
+      "time": "2026-04-28T19:32:32.877Z",
+      "msg": "Added T86 (THINK) after end: Explore: what optimizations would a monkey-lang SSA IR enable?"
+    },
+    {
+      "time": "2026-04-28T19:33:03.250Z",
+      "msg": "Added T87 (THINK) after end: Map out the monkey-lang compiler pipeline evolution: where we started vs where we are vs where we're going"
+    },
+    {
+      "time": "2026-04-28T19:33:44.624Z",
+      "msg": "Added T88 (THINK) after end: Explore: what is monkey-lang's WASM module size for different programs?"
+    },
+    {
+      "time": "2026-04-28T19:34:31.925Z",
+      "msg": "Added T89 (THINK) after end: Explore: how fast is monkey-lang fibonacci vs C vs Python?"
+    },
+    {
+      "time": "2026-04-28T19:35:25.487Z",
+      "msg": "Added T90 (THINK) after end: Explore: compare monkey-lang to other WASM-targeting languages"
+    },
+    {
+      "time": "2026-04-28T19:35:51.145Z",
+      "msg": "Added T91 (THINK) after end: Quick: how many total tasks completed today across both sessions?"
+    },
+    {
+      "time": "2026-04-28T19:36:25.881Z",
+      "msg": "Added T92 (THINK) after end: Quick: what would a monkey-lang blog post highlight?"
     }
   ]
 }
