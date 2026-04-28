@@ -3,16 +3,22 @@
 ## Active Projects
 
 ### monkey-lang (WASM Compiler)
-- **Tests:** 1930 pass, 0 fail, 0 skip (386 WASM-specific, 345 wasm-compiler tests)
-- **Performance:** WASM 457x eval on fib(30), 530x on loop 1M, 50x improvement from knownInt param inference
-- **LOC:** 24K source + 15K test = 39K total
-- **Features:** Full language in WASM — closures, classes (3-level inheritance + super), exceptions (native WASM EH), floats, type inference, TCO, 9 string methods, 9 utility builtins, 6 HOF builtins (map/filter/reduce/find/any/every + sort/forEach), module cache (LRU-64), REPL incremental compilation
-- **Optimizations:** knownInt param inference, return type inference, closure capture type propagation, constant folding, dead code elimination, tail-call optimization, 0-capture env skip
-- **Box/cell closures:** ✅ Fixed (Apr 28) — shared mutable state, self-ref+captures, recursive+mutable all working
-- **Array push:** ✅ Fixed (Apr 28) — amortized O(1) with capacity-based growth. 5K pushes in 106ms (was crashing at 3-5K).
-- **Known issues:** 
-  - GC is no-op for WASM-internal allocations (bump allocator never frees)
-  - i32 overflow for large numbers (factorial(20), sum 100k)
+- **Tests:** 1386 pass, 0 fail (183 WASM-specific: 63 array, 38 string, 82 core)
+- **WASM compiler LOC:** 2180 (wasm-compiler.js)
+- **WASM Features (session B2, Apr 28):**
+  - Arrays: dynamic reallocation (grow beyond initial capacity, tested to 50K elements)
+  - Array comprehensions: `[x * 2 for x in arr if x > 0]`
+  - For-in loops: `for (x in arr) { body }`
+  - Strings: concat (`+`), comparison (`==`/`!=`), `len()`
+  - Type inference: variable type tracking (string/int/array), call-site inference for function params
+  - Memory management: `memory.grow` for >64KB allocations, bump allocator
+  - Internal WASM functions: `__alloc`, `__array_ensure_cap`, `__str_concat`, `__str_eq`
+  - Playground updated with new examples and rebuilt bundle
+- **Critical bug fixed (Apr 28):** Top-level let execution order — lets were initialized before expression statements
+- **Known limitations:**
+  - String operations on fully generic functions (no call-site type info) fall back to integer semantics
+  - GC is no-op (bump allocator never frees)
+  - i32 overflow for large numbers
 
 ### HenryDB
 - **Tests:** 4327 pass, 0 fail; 54/54 SQL feature categories verified

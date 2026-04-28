@@ -5,7 +5,6 @@
 
 ## Normal
 - HenryDB: Expression evaluator slow (836μs for simple WHERE). Compiled-expr helps for scan paths but UPDATE pipeline still uses _evalExpr for many operations.
-- monkey-lang: WASM array reallocation — currently 256 cap for empty arrays, no growth. See docs/wasm-array-realloc-design.md
 
 ## Low  
 - monkey-lang: NaN-boxing for typed value representation

@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-28T22:35:56.322Z",
+  "generated": "2026-04-28T23:50:51.464Z",
   "current": {
     "status": "in-progress",
     "mode": "MAINTAIN",
-    "task": "Mid-session housekeeping",
-    "startedAt": "2026-04-28T22:35:56.322Z",
-    "taskId": "T4"
+    "task": "Full test sweep + session wrap",
+    "startedAt": "2026-04-28T23:50:51.464Z",
+    "taskId": "T66"
   },
   "schedule": {
     "date": "2026-04-28",
@@ -4686,105 +4686,408 @@
         "id": "T14",
         "mode": "BUILD",
         "task": "Implement __array_ensure_cap host import and wire into push compilation",
-        "status": "upcoming",
-        "plan_ref": "T2"
+        "status": "done",
+        "plan_ref": "T2",
+        "started": "2026-04-28T22:17:51.694Z",
+        "completed": "2026-04-28T22:25:24.895Z",
+        "duration_ms": 600000,
+        "summary": "Implemented __array_ensure_cap + memory.grow in __alloc. Arrays grow dynamically (2x capacity). Tested up to 50K elements. Added missing WASM opcodes (i32_le_u, i32_ge_u). 105 tests pass."
       },
       {
         "id": "T15",
         "mode": "BUILD",
         "task": "Add memory.grow support and large-array growth tests",
-        "status": "upcoming",
-        "plan_ref": "T2"
+        "status": "done",
+        "plan_ref": "T2",
+        "started": "2026-04-28T22:25:33.502Z",
+        "completed": "2026-04-28T22:26:21.618Z",
+        "duration_ms": 300000,
+        "summary": "9 reallocation tests: grow to 300/1000/5000/20000, data integrity, multiple arrays, in-function growth, memory.grow trigger, pre-sized growth, sum verification. 32 total array tests passing."
       },
       {
         "id": "T16",
         "mode": "BUILD",
         "task": "Edge case tests: grow from 0, grow during HOF, aliased arrays",
-        "status": "upcoming",
-        "plan_ref": "T2"
+        "status": "done",
+        "plan_ref": "T2",
+        "started": "2026-04-28T22:26:28.106Z",
+        "completed": "2026-04-28T22:35:39.024Z",
+        "duration_ms": 600000,
+        "summary": "CRITICAL FIX: top-level let execution order bug. Lets were initialized before expression statements, breaking let-after-push patterns. Fixed by inlining global init into main block. 8 edge case tests added (HOF+growth, filter/reduce on large arrays, interleaved push). 1325 total tests passing."
       },
       {
         "id": "T3",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "skipped",
         "task": null,
-        "project": "monkey-lang"
+        "project": "monkey-lang",
+        "skip_reason": "Reallocation goal fully completed in T14-T16"
       },
       {
         "id": "T4",
         "mode": "MAINTAIN",
-        "status": "upcoming",
-        "task": "Mid-session housekeeping"
+        "status": "done",
+        "task": "Mid-session housekeeping",
+        "started": "2026-04-28T22:35:56.288Z",
+        "completed": "2026-04-28T22:36:53.317Z",
+        "duration_ms": 120000,
+        "summary": "Git push all repos (monkey-lang, henrydb, workspace). Daily log updated. TODO updated (array realloc done). Scratch note for execution order bug."
       },
       {
         "id": "T5",
         "mode": "THINK",
-        "status": "upcoming",
-        "task": "Assess progress, pivot if needed"
+        "status": "done",
+        "task": "Assess progress, pivot if needed",
+        "started": "2026-04-28T22:37:02.615Z",
+        "completed": "2026-04-28T22:37:12.758Z",
+        "duration_ms": 30000,
+        "summary": "On track: 3 BUILDs done, critical bug found+fixed. Queue confirmed: HenryDB expr perf next, then WASM for-in."
       },
       {
         "id": "T6",
         "mode": "PLAN",
-        "status": "upcoming",
+        "status": "done",
         "goal": "HenryDB expression evaluator performance (836μs WHERE)",
-        "task": null
+        "task": null,
+        "started": "2026-04-28T22:37:21.329Z",
+        "completed": "2026-04-28T22:39:18.107Z",
+        "duration_ms": 180000,
+        "summary": "Plan: lightweight WHERE compiler (AST→JS function). 3 tasks: compile filter, wire into query paths, benchmark."
+      },
+      {
+        "id": "T17",
+        "mode": "BUILD",
+        "task": "Add _compileWhereFilter() that compiles WHERE ASTs into JS functions for row objects",
+        "status": "done",
+        "plan_ref": "T6",
+        "started": "2026-04-28T22:39:27.202Z",
+        "completed": "2026-04-28T22:41:01.807Z",
+        "duration_ms": 600000,
+        "summary": "WHERE compiler: AST→JS function codegen. Handles COMPARE, AND/OR/NOT, IS_NULL, BETWEEN, LIKE, IN_LIST. 0.1μs/row (8000x vs interpreted). 14 tests passing."
+      },
+      {
+        "id": "T18",
+        "mode": "BUILD",
+        "task": "Wire compiled WHERE filters into main SELECT/UPDATE/DELETE paths",
+        "status": "done",
+        "plan_ref": "T6",
+        "started": "2026-04-28T22:41:13.355Z",
+        "completed": "2026-04-28T22:49:04.290Z",
+        "duration_ms": 600000,
+        "summary": "Wired compiled WHERE into _evalExpr with lazy compilation. Auto-compiles on first call, caches on AST node. Safety checks prevent subquery/correlated compilation. Fixed IN_HASHSET property bug. 253 tests passing."
+      },
+      {
+        "id": "T19",
+        "mode": "BUILD",
+        "task": "Benchmark compiled vs interpreted WHERE performance",
+        "status": "done",
+        "plan_ref": "T6",
+        "started": "2026-04-28T22:49:12.840Z",
+        "completed": "2026-04-28T22:50:39.472Z",
+        "duration_ms": 300000,
+        "summary": "Benchmarked: 3-4μs/row total query time on 10K rows. WHERE no longer the bottleneck — parsing+heap scan+row construction dominate. Compiled filter adds sub-μs overhead."
       },
       {
         "id": "T7",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "skipped",
         "task": null,
-        "project": "henrydb"
+        "project": "henrydb",
+        "skip_reason": "HenryDB expr perf completed in T17-T19"
       },
       {
         "id": "T8",
         "mode": "MAINTAIN",
-        "status": "upcoming",
-        "task": "Git push + test sweep"
+        "status": "done",
+        "task": "Git push + test sweep",
+        "started": "2026-04-28T22:50:58.071Z",
+        "completed": "2026-04-28T22:51:41.132Z",
+        "duration_ms": 120000,
+        "summary": "Git push both repos. monkey-lang: 1325/1325 tests pass. HenryDB pushed."
       },
       {
         "id": "T9",
         "mode": "THINK",
-        "status": "upcoming",
-        "task": "Evening direction: depth vs breadth"
+        "status": "done",
+        "task": "Evening direction: depth vs breadth",
+        "started": "2026-04-28T22:51:52.185Z",
+        "completed": "2026-04-28T22:52:05.575Z",
+        "duration_ms": 30000,
+        "summary": "Depth check passed (2 surprises, 2 bugs). 6 BUILDs done. Next: WASM for-in loops for monkey-lang (high playground value)."
       },
       {
         "id": "T10",
         "mode": "PLAN",
-        "status": "upcoming",
+        "status": "done",
         "goal": "monkey-lang WASM new feature (for-in or hash maps)",
-        "task": null
+        "task": null,
+        "started": "2026-04-28T22:52:18.877Z",
+        "completed": "2026-04-28T22:52:58.119Z",
+        "duration_ms": 60000,
+        "summary": "Plan: WASM for-in loop compilation. 2 tasks: implement + tests."
+      },
+      {
+        "id": "T20",
+        "mode": "BUILD",
+        "task": "Implement for-in loop WASM compilation for arrays",
+        "status": "done",
+        "plan_ref": "T10",
+        "started": "2026-04-28T22:53:03.186Z",
+        "completed": "2026-04-28T22:54:49.529Z",
+        "duration_ms": 300000,
+        "summary": "Implemented for-in loop WASM compilation. Iterates arrays efficiently (ptr+len, index local, element load). Works with literals, pushed arrays, and functions. 122 WASM tests pass."
+      },
+      {
+        "id": "T21",
+        "mode": "BUILD",
+        "task": "Tests: for-in basics, accumulator, nested for-in, for-in + push",
+        "status": "done",
+        "plan_ref": "T10",
+        "started": "2026-04-28T22:55:00.617Z",
+        "completed": "2026-04-28T22:56:06.334Z",
+        "duration_ms": 300000,
+        "summary": "10 for-in tests: sum, empty array, push, pushed array, nested, function, conditional, large array, transformation, counting. 1335 total tests passing."
       },
       {
         "id": "T11",
+        "mode": "BUILD",
+        "status": "skipped",
+        "task": null,
+        "project": "monkey-lang",
+        "skip_reason": "for-in goal completed in T20-T21"
+      },
+      {
+        "id": "T12",
+        "mode": "EXPLORE",
+        "status": "done",
+        "task": "Stress test recent features across both projects",
+        "project": "monkey-lang",
+        "started": "2026-04-28T22:56:24.292Z",
+        "completed": "2026-04-28T22:57:55.768Z",
+        "duration_ms": 300000,
+        "summary": "10 hypotheses tested, all confirmed. for-in: push during iteration safe (cached length), variable shadowing correct, map results work, 50K elements fine, sequential for-in with same variable OK, function calls in body work. No bugs found."
+      },
+      {
+        "id": "T13",
+        "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Final cleanup and push",
+        "started": "2026-04-28T22:58:14.755Z",
+        "completed": "2026-04-28T22:58:30.903Z",
+        "duration_ms": 30000,
+        "summary": "Pushed both repos."
+      },
+      {
+        "id": "T22",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Next feature: array comprehensions in WASM? Check what AST exists",
+        "started": "2026-04-28T22:59:19.162Z",
+        "completed": "2026-04-28T23:00:24.794Z",
+        "duration_ms": 60000,
+        "summary": "ArrayComprehension AST exists: body, variable (Identifier), iterable, condition. Syntax: [body for var in iterable if condition]. Compilation approach: for-in + push into new array."
+      },
+      {
+        "id": "T23",
+        "mode": "PLAN",
+        "status": "done",
+        "goal": "WASM array comprehensions [x*2 for x in arr]",
+        "task": null,
+        "started": "2026-04-28T23:00:35.370Z",
+        "completed": "2026-04-28T23:00:49.899Z",
+        "duration_ms": 30000,
+        "summary": "Plan: for-in + push-to-result pattern. 2 tasks."
+      },
+      {
+        "id": "T31",
+        "mode": "BUILD",
+        "task": "Implement ArrayComprehension WASM compilation",
+        "status": "done",
+        "plan_ref": "T23",
+        "started": "2026-04-28T23:00:56.675Z",
+        "completed": "2026-04-28T23:03:22.621Z",
+        "duration_ms": 300000,
+        "summary": "Implemented ArrayComprehension WASM compilation. [body for var in iterable if condition] compiles to efficient iteration + array building. Filter support with early continue. 132 WASM tests pass."
+      },
+      {
+        "id": "T32",
+        "mode": "BUILD",
+        "task": "Tests: comprehensions with/without filter, nested, in functions",
+        "status": "done",
+        "plan_ref": "T23",
+        "started": "2026-04-28T23:03:38.163Z",
+        "completed": "2026-04-28T23:04:21.051Z",
+        "duration_ms": 300000,
+        "summary": "13 comprehension tests: map, identity, filter, empty, pushed, function, complex body, chained, large (500), all-pass/none-pass filter, for-in consumer. 145 WASM tests passing."
+      },
+      {
+        "id": "T24",
+        "mode": "BUILD",
+        "status": "skipped",
+        "task": null,
+        "project": "monkey-lang",
+        "skip_reason": "Comprehension goal completed"
+      },
+      {
+        "id": "T25",
+        "mode": "THINK",
+        "status": "done",
+        "task": "String support in WASM compiler — feasibility assessment",
+        "started": "2026-04-28T23:04:42.606Z",
+        "completed": "2026-04-28T23:05:33.075Z",
+        "duration_ms": 120000,
+        "summary": "String support partially exists: literals stored in data segment, __str_concat import declared, string constants emit. Needs: host function impl, comparison, len, result extraction. Achievable in 2.5h."
+      },
+      {
+        "id": "T26",
+        "mode": "PLAN",
+        "status": "done",
+        "goal": "WASM string operations (concat, length, comparison)",
+        "task": null,
+        "started": "2026-04-28T23:05:44.573Z",
+        "completed": "2026-04-28T23:06:02.953Z",
+        "duration_ms": 30000,
+        "summary": "Plan: internal __str_concat function, string EQ comparison, len() for strings, result extraction. 3 tasks."
+      },
+      {
+        "id": "T33",
+        "mode": "BUILD",
+        "task": "Implement __str_concat as internal WASM function + string comparison",
+        "status": "done",
+        "plan_ref": "T26",
+        "started": "2026-04-28T23:06:09.402Z",
+        "completed": "2026-04-28T23:11:02.039Z",
+        "duration_ms": 600000,
+        "summary": "Internal __str_concat + __str_eq WASM functions. Byte-by-byte copy and comparison. Works for literal strings. 145 WASM tests pass. Limitation: type tracking needed for variable-based string ops."
+      },
+      {
+        "id": "T34",
+        "mode": "BUILD",
+        "task": "Add string len() support and result extraction from WASM memory",
+        "status": "done",
+        "plan_ref": "T26",
+        "started": "2026-04-28T23:11:10.598Z",
+        "completed": "2026-04-28T23:12:43.422Z",
+        "duration_ms": 300000,
+        "summary": "String len() works naturally (same layout as arrays). 23 string tests: literals, len, concat, comparison. Result extraction via memory read. 168 WASM tests total."
+      },
+      {
+        "id": "T35",
+        "mode": "BUILD",
+        "task": "String operation tests: concat, len, comparison, mixed expressions",
+        "status": "done",
+        "plan_ref": "T26",
+        "started": "2026-04-28T23:13:06.263Z",
+        "completed": "2026-04-28T23:13:06.403Z",
+        "duration_ms": 5000,
+        "summary": "Already completed in T34 — 23 string tests covering all operations."
+      },
+      {
+        "id": "T27",
+        "mode": "BUILD",
+        "status": "skipped",
+        "task": null,
+        "project": "monkey-lang",
+        "skip_reason": "String goal completed"
+      },
+      {
+        "id": "T28",
+        "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Push and test sweep",
+        "started": "2026-04-28T23:13:20.807Z",
+        "completed": "2026-04-28T23:13:57.248Z",
+        "duration_ms": 120000,
+        "summary": "1371 tests all passing. Pushed both repos."
+      },
+      {
+        "id": "T29",
+        "mode": "EXPLORE",
+        "status": "done",
+        "task": "Stress test array comprehensions and string ops",
+        "project": "monkey-lang",
+        "started": "2026-04-28T23:14:03.768Z",
+        "completed": "2026-04-28T23:15:00.611Z",
+        "duration_ms": 180000,
+        "summary": "4 hypotheses tested: heavy filter comprehension (1/1000), loop concat (200), fn in comprehension (26), string dedup (pointer equality works). All correct. String constant dedup was a nice find."
+      },
+      {
+        "id": "T30",
+        "mode": "MAINTAIN",
+        "status": "skipped",
+        "task": "Session wrap: daily log, git push, CURRENT.md",
+        "skip_reason": "Still 3 hours left, generate more work"
+      },
+      {
+        "id": "T36",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Type inference for WASM compiler — track string vs int through variables",
+        "started": "2026-04-28T23:15:36.078Z",
+        "completed": "2026-04-28T23:15:46.590Z",
+        "duration_ms": 60000,
+        "summary": "Design: compile-time variable type map (int vs string). Track through let initializers and propagate through expressions. Lightweight — no full type system needed."
+      },
+      {
+        "id": "T37",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "WASM variable type tracking for string operations",
+        "task": null,
+        "started": "2026-04-28T23:15:52.904Z"
+      },
+      {
+        "id": "T42",
+        "mode": "BUILD",
+        "task": "Add variable type tracking map + infer types from let initializers",
+        "status": "upcoming",
+        "plan_ref": "T37"
+      },
+      {
+        "id": "T43",
+        "mode": "BUILD",
+        "task": "Wire type-aware string concat and comparison through variables + tests",
+        "status": "upcoming",
+        "plan_ref": "T37"
+      },
+      {
+        "id": "T38",
         "mode": "BUILD",
         "status": "upcoming",
         "task": null,
         "project": "monkey-lang"
       },
       {
-        "id": "T12",
-        "mode": "EXPLORE",
+        "id": "T39",
+        "mode": "BUILD",
         "status": "upcoming",
-        "task": "Stress test recent features across both projects",
+        "task": null,
         "project": "monkey-lang"
       },
       {
-        "id": "T13",
+        "id": "T40",
         "mode": "MAINTAIN",
         "status": "upcoming",
-        "task": "Final cleanup and push"
+        "task": "Push and full test sweep"
+      },
+      {
+        "id": "T41",
+        "mode": "MAINTAIN",
+        "status": "upcoming",
+        "task": "Session wrap: daily log, CURRENT.md, git push"
       }
     ]
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 5,
-    "blocksTotal": 16,
+    "blocksCompleted": 48,
+    "blocksTotal": 43,
     "modeDistribution": {
-      "THINK": 1,
-      "PLAN": 1,
-      "BUILD": 3
+      "THINK": 9,
+      "PLAN": 6,
+      "BUILD": 22,
+      "MAINTAIN": 7,
+      "EXPLORE": 4
     }
   },
   "artifacts": [],
