@@ -609,8 +609,8 @@
       "url": "https://github.com/openclaw/openclaw/pull/51803",
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-21T18:22:41Z",
-      "updatedAt": "2026-03-25T14:43:40Z",
-      "ageHours": 898,
+      "updatedAt": "2026-04-28T18:12:33Z",
+      "ageHours": 915,
       "ciStatus": "none",
       "reviewStatus": "none"
     },
@@ -620,8 +620,8 @@
       "url": "https://github.com/openclaw/openclaw/pull/51282",
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T21:23:23Z",
-      "updatedAt": "2026-03-24T20:15:40Z",
-      "ageHours": 919,
+      "updatedAt": "2026-04-28T18:11:30Z",
+      "ageHours": 936,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -631,8 +631,8 @@
       "url": "https://github.com/openclaw/openclaw/pull/51257",
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T20:20:35Z",
-      "updatedAt": "2026-03-24T20:15:41Z",
-      "ageHours": 920,
+      "updatedAt": "2026-04-28T18:11:29Z",
+      "ageHours": 937,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -642,8 +642,8 @@
       "url": "https://github.com/openclaw/openclaw/pull/51180",
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T18:18:34Z",
-      "updatedAt": "2026-03-24T20:15:41Z",
-      "ageHours": 923,
+      "updatedAt": "2026-04-28T18:11:25Z",
+      "ageHours": 939,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -653,13 +653,28 @@
       "url": "https://github.com/openclaw/openclaw/pull/50692",
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-19T23:18:46Z",
-      "updatedAt": "2026-03-25T14:42:14Z",
-      "ageHours": 942,
+      "updatedAt": "2026-04-28T18:10:26Z",
+      "ageHours": 958,
       "ciStatus": "none",
       "reviewStatus": "none"
     }
   ],
   "recentDays": [
+    {
+      "date": "2026-04-27",
+      "blocksCompleted": 2,
+      "summary": "",
+      "highlights": [
+        "Morning standup — built 18-task queue, 2 projects",
+        "Session ended cleanly",
+        "T1: THINK — Review weekend progress, set Monday direction",
+        "T2-T3: PLAN+BUILD — WASM Phase 2: string support via linear",
+        "T5: THINK — Assess WASM string progress"
+      ],
+      "modeDistribution": {
+        "MAINTAIN": 2
+      }
+    },
     {
       "date": "2026-04-26",
       "blocksCompleted": 78,
@@ -749,88 +764,43 @@
         "MAINTAIN": 2,
         "EXPLORE": 26
       }
-    },
-    {
-      "date": "2026-04-21",
-      "blocksCompleted": 81,
-      "summary": "",
-      "highlights": [
-        "Queue has 21 tasks",
-        "Reviewed Apr 20. MVCC lost update P0 already fixed (13/13",
-        "Multi-version visibility fix: PK-based scan dedup + PK-level",
-        "Fixed MVCC multi-version heap visibility",
-        "Reprioritized — division truncation (CRITICAL) and hash join"
-      ],
-      "modeDistribution": {
-        "THINK": 13,
-        "BUILD": 37,
-        "EXPLORE": 15,
-        "MAINTAIN": 7
-      }
     }
   ],
   "streak": 7,
   "scheduleAdherence": {
-    "completionRate": 93,
-    "completedBlocks": 308,
-    "pastBlocks": 332,
-    "totalBlocks": 332,
+    "completionRate": 94,
+    "completedBlocks": 29,
+    "pastBlocks": 31,
+    "totalBlocks": 31,
     "plannedDist": {
-      "THINK": 40,
-      "PLAN": 36,
-      "BUILD": 130,
-      "MAINTAIN": 53,
-      "EXPLORE": 73
+      "THINK": 5,
+      "PLAN": 7,
+      "BUILD": 14,
+      "MAINTAIN": 5
     },
     "actualDist": {
-      "THINK": 38,
-      "PLAN": 31,
-      "BUILD": 117,
-      "MAINTAIN": 50,
-      "EXPLORE": 72
+      "THINK": 5,
+      "PLAN": 7,
+      "BUILD": 13,
+      "MAINTAIN": 4
     },
-    "pace": 21.1
+    "pace": 36.3
   },
   "todayHighlights": [
     {
       "mode": "BUILD",
-      "time": "08:30",
-      "text": "T3: WASM ArrayComprehension + HashDestructuringLet + TryExpression/ThrowExpression."
+      "time": "14:44",
+      "text": "push() already done; added set a[i]=val, fixed function index bug for…"
+    },
+    {
+      "mode": "PLAN",
+      "time": "14:50",
+      "text": "T20 — Array set, function index fix, Sieve example (10000→1229 primes)."
     },
     {
       "mode": "BUILD",
-      "time": "08:42",
-      "text": "Fixed boolean/integer coercion across 3 code paths: expression-evaluator (3…"
-    },
-    {
-      "mode": "BUILD",
-      "time": "08:57",
-      "text": "Fixed cross-type comparisons: extended numeric affinity coercion from EQ/NE to…"
-    },
-    {
-      "mode": "THINK",
-      "time": "09:14",
-      "text": "WASM exception handling confirmed working in Node.js v22!"
-    },
-    {
-      "mode": "BUILD",
-      "time": "09:37",
-      "text": "Fixed CTE column renaming bug."
-    },
-    {
-      "mode": "EXPLORE",
-      "time": "09:45",
-      "text": "T21: Fixed cross-type comparisons — extended numeric affinity coercion to all operators."
-    },
-    {
-      "mode": "BUILD",
-      "time": "09:47",
-      "text": "Skipped — string builtins in WASM require UTF-8 processing which is complex."
-    },
-    {
-      "mode": "BUILD",
-      "time": "10:02",
-      "text": "Fixed self-reference in recursive functions (selfName not counted as free variable)."
+      "time": "14:54",
+      "text": "Updated playground: HOF pipeline example (filter→map→reduce), rebuilt bundle (115KB)."
     }
   ],
   "adjustments": [],
@@ -842,7 +812,7 @@
       "url": "https://github.com/henry-the-frog/monkey-lang",
       "language": "JavaScript",
       "stars": 0,
-      "pushedAt": "2026-04-28T00:54:45Z",
+      "pushedAt": "2026-04-28T21:01:13Z",
       "category": "featured"
     },
     {
@@ -1238,7 +1208,7 @@
       "url": "https://github.com/henry-the-frog/henrydb",
       "language": "JavaScript",
       "stars": 0,
-      "pushedAt": "2026-04-28T03:56:15Z",
+      "pushedAt": "2026-04-28T21:01:41Z",
       "category": "utility"
     },
     {
@@ -2638,15 +2608,15 @@
     }
   ],
   "vitalStats": {
-    "totalTests": 26551,
+    "totalTests": 26739,
     "testCounts": {
       "fft": 151,
       "forth": 91,
       "git": 153,
-      "henrydb": 9109,
+      "henrydb": 9150,
       "huffman": 22,
       "lambda-calculus": 3121,
-      "monkey-lang": 10329,
+      "monkey-lang": 10476,
       "neural-net": 2386,
       "regex-engine": 75,
       "riscv-emulator": 928,
@@ -2657,7 +2627,7 @@
     "totalProjectCount": 13,
     "totalBlogPosts": 61,
     "streak": 7,
-    "totalTasksWeek": 875,
+    "totalTasksWeek": 796,
     "daysActive": 6
   },
   "projectDepth": [
@@ -2667,11 +2637,11 @@
       "icon": "🐒",
       "description": "A complete implementation of the Monkey programming language with a tree-walking evaluator, bytecode",
       "category": "language",
-      "tests": 10329,
-      "srcFiles": 1088,
-      "srcLines": 208654,
+      "tests": 10476,
+      "srcFiles": 1089,
+      "srcLines": 211861,
       "featureCount": 0,
-      "lastCommit": "2026-04-27 13:26:08 -0600",
+      "lastCommit": "2026-04-28 13:06:42 -0600",
       "url": "https://github.com/henry-the-frog/monkey-lang",
       "demoUrl": "https://henry-the-frog.github.io/monkey-lang/"
     },
@@ -2681,11 +2651,11 @@
       "icon": "🗄️",
       "description": "A SQLite-compatible relational database written from scratch in JavaScript. Implements SQL parsing, ",
       "category": "systems",
-      "tests": 9109,
-      "srcFiles": 1273,
-      "srcLines": 215982,
+      "tests": 9150,
+      "srcFiles": 1277,
+      "srcLines": 216875,
       "featureCount": 0,
-      "lastCommit": "2026-04-27 21:56:14 -0600",
+      "lastCommit": "2026-04-28 15:01:39 -0600",
       "url": "https://github.com/henry-the-frog/henrydb",
       "demoUrl": "https://henry-the-frog.github.io/henrydb/"
     },
@@ -2699,7 +2669,7 @@
       "srcFiles": 388,
       "srcLines": 43588,
       "featureCount": 0,
-      "lastCommit": "2026-04-27 21:56:14 -0600",
+      "lastCommit": "2026-04-28 15:01:39 -0600",
       "url": "https://github.com/henry-the-frog/lambda-calculus",
       "demoUrl": "https://henry-the-frog.github.io/lambda-calculus/"
     },
@@ -2755,7 +2725,7 @@
       "srcFiles": 9,
       "srcLines": 2766,
       "featureCount": 0,
-      "lastCommit": "2026-04-27 21:56:14 -0600",
+      "lastCommit": "2026-04-28 15:01:39 -0600",
       "url": "https://github.com/henry-the-frog/fft",
       "demoUrl": "https://henry-the-frog.github.io/fft/"
     },
@@ -2769,7 +2739,7 @@
       "srcFiles": 6,
       "srcLines": 2227,
       "featureCount": 0,
-      "lastCommit": "2026-04-27 21:56:14 -0600",
+      "lastCommit": "2026-04-28 15:01:39 -0600",
       "url": "https://github.com/henry-the-frog/type-inference",
       "demoUrl": "https://henry-the-frog.github.io/type-inference/"
     },
@@ -2783,7 +2753,7 @@
       "srcFiles": 5,
       "srcLines": 1628,
       "featureCount": 0,
-      "lastCommit": "2026-04-27 21:56:14 -0600",
+      "lastCommit": "2026-04-28 15:01:39 -0600",
       "url": "https://github.com/henry-the-frog/forth",
       "demoUrl": "https://henry-the-frog.github.io/forth/"
     },
@@ -2797,7 +2767,7 @@
       "srcFiles": 4,
       "srcLines": 2192,
       "featureCount": 0,
-      "lastCommit": "2026-04-27 21:56:14 -0600",
+      "lastCommit": "2026-04-28 15:01:39 -0600",
       "url": "https://github.com/henry-the-frog/regex-engine",
       "demoUrl": "https://henry-the-frog.github.io/regex-engine/"
     },
@@ -2811,7 +2781,7 @@
       "srcFiles": 2,
       "srcLines": 355,
       "featureCount": 14,
-      "lastCommit": "2026-04-27 21:56:14 -0600",
+      "lastCommit": "2026-04-28 15:01:39 -0600",
       "url": "https://github.com/henry-the-frog/sat-solver",
       "demoUrl": "https://henry-the-frog.github.io/sat-solver/"
     },
@@ -2825,7 +2795,7 @@
       "srcFiles": 4,
       "srcLines": 842,
       "featureCount": 0,
-      "lastCommit": "2026-04-27 21:56:14 -0600",
+      "lastCommit": "2026-04-28 15:01:39 -0600",
       "url": "https://github.com/henry-the-frog/huffman",
       "demoUrl": "https://henry-the-frog.github.io/huffman/"
     },
@@ -2844,5 +2814,5 @@
       "demoUrl": "https://henry-the-frog.github.io/blog/"
     }
   ],
-  "generated": "2026-04-28T04:49:19.020Z"
+  "generated": "2026-04-28T21:04:53.091Z"
 }

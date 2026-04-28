@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-28T21:01:33.424Z",
+  "generated": "2026-04-28T21:20:11.615Z",
   "current": {
     "status": "in-progress",
     "mode": "MAINTAIN",
-    "task": "Git push + daily log",
-    "startedAt": "2026-04-28T21:01:33.424Z",
-    "taskId": "T26"
+    "task": "Push + housekeeping",
+    "startedAt": "2026-04-28T21:20:11.615Z",
+    "taskId": "T30"
   },
   "schedule": {
     "date": "2026-04-28",
@@ -4915,45 +4915,68 @@
       {
         "id": "T24",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "WASM HOF tests + do-while compiler support",
         "task": null,
-        "started": "2026-04-28T20:56:47.643Z"
+        "started": "2026-04-28T20:56:47.643Z",
+        "completed": "2026-04-28T20:56:55.668Z",
+        "duration_ms": 30000,
+        "summary": "Single BUILD task: HOF tests + do-while support (combined for efficiency)."
       },
       {
         "id": "T25",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "Write WASM HOF tests (map/filter/reduce) + add do-while to WASM compiler",
         "plan_ref": "T24",
-        "project": "monkey-lang"
+        "project": "monkey-lang",
+        "started": "2026-04-28T20:57:01.711Z",
+        "completed": "2026-04-28T21:01:21.784Z",
+        "duration_ms": 600000,
+        "summary": "Anonymous functions (pre-scan+compile), do-while, 19 HOF tests, Collatz example. 96 total WASM tests. Inline fn(x){x*x} now works in map/filter/reduce."
       },
       {
         "id": "T26",
         "mode": "MAINTAIN",
-        "status": "upcoming",
-        "task": "Git push + daily log"
+        "status": "done",
+        "task": "Git push + daily log",
+        "started": "2026-04-28T21:01:33.389Z",
+        "completed": "2026-04-28T21:01:47.887Z",
+        "duration_ms": 30000,
+        "summary": "Pushed workspace. Daily log updated."
       },
       {
         "id": "T27",
         "mode": "THINK",
-        "status": "upcoming",
-        "task": "Direction for remaining time"
+        "status": "done",
+        "task": "Direction for remaining time",
+        "started": "2026-04-28T21:01:53.226Z",
+        "completed": "2026-04-28T21:02:11.136Z",
+        "duration_ms": 60000,
+        "summary": "Direction: switch to HenryDB UPDATE fast-path for variety. Perf gap 985μs vs 13μs manual. monkey-lang WASM compiler is in great shape."
       },
       {
         "id": "T28",
         "mode": "PLAN",
-        "status": "upcoming",
+        "status": "in-progress",
         "goal": "Next focus area based on progress",
-        "task": null
+        "task": null,
+        "started": "2026-04-28T21:02:18.914Z"
       },
       {
         "id": "T29",
         "mode": "BUILD",
         "status": "upcoming",
-        "task": null,
+        "task": "Profile HenryDB UPDATE pipeline to identify bottlenecks",
         "plan_ref": "T28",
         "project": "monkey-lang"
+      },
+      {
+        "id": "T31",
+        "mode": "BUILD",
+        "task": "Implement UPDATE fast-path for simple PK row updates",
+        "status": "upcoming",
+        "plan_ref": "T28"
       },
       {
         "id": "T30",
@@ -4965,13 +4988,13 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 25,
-    "blocksTotal": 30,
+    "blocksCompleted": 30,
+    "blocksTotal": 31,
     "modeDistribution": {
-      "THINK": 4,
-      "PLAN": 6,
-      "BUILD": 12,
-      "MAINTAIN": 3
+      "THINK": 5,
+      "PLAN": 7,
+      "BUILD": 14,
+      "MAINTAIN": 4
     }
   },
   "artifacts": [],
