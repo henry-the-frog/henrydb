@@ -3131,6 +3131,105 @@
       "completed": "2026-04-28T03:06:06.080Z",
       "duration_ms": 600000,
       "summary": "FOUND IT: dml-insert.js does TRIPLE constraint checking! (1) Full heap scan for PK uniqueness at lines 168-175, (2) Full heap scan for UNIQUE INDEX at lines 184-206, (3) insertRow -> _validateConstraints (uses B-tree index). The redundant O(N) scans explain the linear INSERT degradation. Fix: remove scans 1 and 2 — insertRow already validates correctly. This would make INSERT O(log N) instead of O(N)."
+    },
+    {
+      "id": "T296",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "monkey-lang: how does the JIT compiler work? Trace the hot path detection",
+      "project": "monkey-lang",
+      "started": "2026-04-28T03:06:45.936Z",
+      "completed": "2026-04-28T03:07:47.904Z",
+      "duration_ms": 300000,
+      "summary": "JIT is a tracing JIT: profile → record hot loops (16 iter threshold) → SSA IR → optimize (constant fold, dead guard elim) → compile to JS via new Function() → V8 JIT compiles generated JS. 4533 LOC. 289 tests all pass (162+96+31 across 3 test files). Architecture: TraceMonkey-style with side traces, function inlining (depth 3), and trace linking."
+    },
+    {
+      "id": "T297",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "monkey-lang: test generator/yield in WASM — does it work?",
+      "project": "monkey-lang",
+      "started": "2026-04-28T03:08:08.156Z",
+      "completed": "2026-04-28T03:08:30.150Z",
+      "duration_ms": 120000,
+      "summary": "Generators explicitly unsupported in WASM (warning emitted, returns 0). yield as expression works (evaluates to value). Generator functions crash when called (0 = invalid table index). Not a bug — requires coroutine state machines."
+    },
+    {
+      "id": "T298",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: test window functions (ROW_NUMBER, RANK, LAG, LEAD) — what works?",
+      "project": "henrydb",
+      "started": "2026-04-28T03:08:39.950Z",
+      "completed": "2026-04-28T03:09:19.074Z",
+      "duration_ms": 300000,
+      "summary": "Window functions fully working: ROW_NUMBER, RANK (with ties), DENSE_RANK, LAG, LEAD, SUM, AVG, NTILE, FIRST_VALUE, PERCENT_RANK. Running SUM with ROWS frame works. Multiple windows in same query works. PARTITION BY works. Very complete implementation."
+    },
+    {
+      "id": "T299",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: test recursive CTEs — does WITH RECURSIVE work?",
+      "project": "henrydb",
+      "started": "2026-04-28T03:10:02.566Z",
+      "completed": "2026-04-28T03:10:28.802Z",
+      "duration_ms": 180000,
+      "summary": "Recursive CTEs fully working: number generation, Fibonacci (correct through fib(10)=55), hierarchical org tree with JOIN, powers of 2. Minor: column alias mismatch in UNION ALL branches. Very complete CTE implementation."
+    },
+    {
+      "id": "T300",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "monkey-lang: test hash maps in WASM — iteration, nested hashes, computed keys",
+      "project": "monkey-lang",
+      "started": "2026-04-28T03:10:34.560Z",
+      "completed": "2026-04-28T03:10:58.958Z",
+      "duration_ms": 180000,
+      "summary": "WASM hash maps mostly working: string keys, bool keys, mutation, computed keys, loop insertion, nested hashes (read + write). Issues: int keys return pointer (not decoded), len(hash)=0 (not implemented), missing keys return 0 (not null)."
+    },
+    {
+      "id": "T301",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: test subqueries — correlated, EXISTS, IN, scalar subqueries",
+      "project": "henrydb",
+      "started": "2026-04-28T03:11:04.910Z",
+      "completed": "2026-04-28T03:11:27.189Z",
+      "duration_ms": 180000,
+      "summary": "Subqueries fully working: scalar, IN, NOT IN, EXISTS, NOT EXISTS, correlated in SELECT, derived tables (subquery in FROM), ALL, ANY. All results correct. HenryDB has very complete SQL support."
+    },
+    {
+      "id": "T302",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "monkey-lang: test the bytecode compiler vs evaluator — which paths work differently?",
+      "project": "monkey-lang",
+      "started": "2026-04-28T03:12:09.080Z",
+      "completed": "2026-04-28T03:12:50.929Z",
+      "duration_ms": 300000,
+      "summary": "Three-way comparison (eval/VM/WASM) on 15 test programs: all agree on 15/15. Only difference: booleans (eval/VM return true/false objects, WASM returns 1/0 integers). Arithmetic, closures, recursion, strings, arrays, while loops — all produce identical results across all three backends."
+    },
+    {
+      "id": "T303",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "HenryDB: test JSON functions — json_extract, json_array, json_object, json path queries",
+      "project": "henrydb",
+      "started": "2026-04-28T03:12:56.592Z",
+      "completed": "2026-04-28T03:13:23.412Z",
+      "duration_ms": 180000,
+      "summary": "JSON functions fully working: json_extract (with nested paths, array indices), json_array, json_object, json_type, json_array_length, -> and ->> operators. WHERE with json predicates works. Complete JSON1-compatible implementation."
+    },
+    {
+      "id": "T304",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "monkey-lang: how many total tests exist across all test files? What is the test coverage landscape?",
+      "project": "monkey-lang",
+      "started": "2026-04-28T03:13:31.329Z",
+      "completed": "2026-04-28T03:14:21.498Z",
+      "duration_ms": 180000,
+      "summary": "monkey-lang: 1930 tests, 1930 pass, 0 fail across 41 test files. Top: compiler (526), wasm-compiler (345), evaluator (176), jit (164), jit-integration (96), parser (52). Also: wasm-gc, wasm-dis, wasm-benchmark, type-inference, class, oop-protocols, stdlib, transpiler, constant-fold, dead-code, generators, and more."
     }
   ],
   "focusProjects": [
@@ -4410,6 +4509,42 @@
     {
       "time": "2026-04-28T03:02:05.632Z",
       "msg": "Added T295 (EXPLORE) after T294: HenryDB: profile execute() dispatch — where is the 1.75ms going exactly?"
+    },
+    {
+      "time": "2026-04-28T03:06:24.995Z",
+      "msg": "Added T296 (EXPLORE) after end: monkey-lang: how does the JIT compiler work? Trace the hot path detection"
+    },
+    {
+      "time": "2026-04-28T03:06:31.109Z",
+      "msg": "Added T297 (EXPLORE) after T296: monkey-lang: test generator/yield in WASM — does it work?"
+    },
+    {
+      "time": "2026-04-28T03:06:36.319Z",
+      "msg": "Added T298 (EXPLORE) after T297: HenryDB: test window functions (ROW_NUMBER, RANK, LAG, LEAD) — what works?"
+    },
+    {
+      "time": "2026-04-28T03:09:41.936Z",
+      "msg": "Added T299 (EXPLORE) after end: HenryDB: test recursive CTEs — does WITH RECURSIVE work?"
+    },
+    {
+      "time": "2026-04-28T03:09:48.192Z",
+      "msg": "Added T300 (EXPLORE) after T299: monkey-lang: test hash maps in WASM — iteration, nested hashes, computed keys"
+    },
+    {
+      "time": "2026-04-28T03:09:55.728Z",
+      "msg": "Added T301 (EXPLORE) after T300: HenryDB: test subqueries — correlated, EXISTS, IN, scalar subqueries"
+    },
+    {
+      "time": "2026-04-28T03:11:48.150Z",
+      "msg": "Added T302 (EXPLORE) after end: monkey-lang: test the bytecode compiler vs evaluator — which paths work differently?"
+    },
+    {
+      "time": "2026-04-28T03:11:56.277Z",
+      "msg": "Added T303 (EXPLORE) after T302: HenryDB: test JSON functions — json_extract, json_array, json_object, json path queries"
+    },
+    {
+      "time": "2026-04-28T03:12:03.776Z",
+      "msg": "Added T304 (EXPLORE) after T303: monkey-lang: how many total tests exist across all test files? What is the test coverage landscape?"
     }
   ]
 }

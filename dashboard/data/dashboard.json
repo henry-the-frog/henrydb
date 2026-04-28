@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-28T03:06:06.117Z",
+  "generated": "2026-04-28T03:14:21.536Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "HenryDB: profile execute() dispatch — where is the 1.75ms going exactly?",
-    "completedAt": "2026-04-28T03:06:06.117Z",
-    "taskId": "T295",
-    "summary": "FOUND IT: dml-insert.js does TRIPLE constraint checking! (1) Full heap scan for PK uniqueness at lines 168-175, (2) Full heap scan for UNIQUE INDEX at lines 184-206, (3) insertRow -> _validateConstraints (uses B-tree index). The redundant O(N) scans explain the linear INSERT degradation. Fix: remove scans 1 and 2 — insertRow already validates correctly. This would make INSERT O(log N) instead of O(N).",
-    "durationMs": 600000
+    "task": "monkey-lang: how many total tests exist across all test files? What is the test coverage landscape?",
+    "completedAt": "2026-04-28T03:14:21.535Z",
+    "taskId": "T304",
+    "summary": "monkey-lang: 1930 tests, 1930 pass, 0 fail across 41 test files. Top: compiler (526), wasm-compiler (345), evaluator (176), jit (164), jit-integration (96), parser (52). Also: wasm-gc, wasm-dis, wasm-benchmark, type-inference, class, oop-protocols, stdlib, transpiler, constant-fold, dead-code, generators, and more.",
+    "durationMs": 180000
   },
   "schedule": {
     "date": "2026-04-27",
@@ -10026,14 +10026,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 271,
+    "blocksCompleted": 280,
     "blocksTotal": 244,
     "modeDistribution": {
       "THINK": 38,
       "PLAN": 31,
       "BUILD": 117,
       "MAINTAIN": 50,
-      "EXPLORE": 35
+      "EXPLORE": 44
     }
   },
   "artifacts": [],
