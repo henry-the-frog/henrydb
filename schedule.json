@@ -507,6 +507,28 @@
       "completed": "2026-04-28T16:13:55.972Z",
       "duration_ms": 300000,
       "summary": "TEXT UNIQUE INSERT bottleneck is NOT in index.search (0.0003ms). Likely SQL parsing overhead (parsing new SQL string per INSERT). B-tree search is O(log N). The solution is prepared statements, not index optimization."
+    },
+    {
+      "id": "T48",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Clean up box analysis code: add section comments, remove dead markCaptured method",
+      "project": "monkey-lang",
+      "started": "2026-04-28T16:15:32.245Z",
+      "completed": "2026-04-28T16:16:18.155Z",
+      "duration_ms": 60000,
+      "summary": "Documented deprecated markCaptured method. 339 tests pass."
+    },
+    {
+      "id": "T49",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Benchmark WASM vs evaluator: compare performance on fib, sort, comprehensions",
+      "project": "monkey-lang",
+      "started": "2026-04-28T16:16:49.610Z",
+      "completed": "2026-04-28T16:18:59.568Z",
+      "duration_ms": 300000,
+      "summary": "WASM vs eval benchmark: fib(25) 33x total / 2071x exec. Sum 978x exec. HOFs only 3x exec (host import overhead). Compilation overhead ~70-90ms makes WASM best for compute-heavy programs."
     }
   ],
   "focusProjects": [
@@ -710,6 +732,14 @@
     {
       "time": "2026-04-28T16:12:13.576Z",
       "msg": "Added T47 (EXPLORE) after end: Investigate TEXT UNIQUE INSERT O(N): profile constraint validator, identify if B-tree search or heap scan is the bottleneck"
+    },
+    {
+      "time": "2026-04-28T16:15:24.104Z",
+      "msg": "Added T48 (MAINTAIN) after end: Clean up box analysis code: add section comments, remove dead markCaptured method"
+    },
+    {
+      "time": "2026-04-28T16:16:41.712Z",
+      "msg": "Added T49 (EXPLORE) after end: Benchmark WASM vs evaluator: compare performance on fib, sort, comprehensions"
     }
   ]
 }

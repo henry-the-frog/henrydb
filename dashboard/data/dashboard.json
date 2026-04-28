@@ -1,12 +1,12 @@
 {
-  "generated": "2026-04-28T16:13:56.149Z",
+  "generated": "2026-04-28T16:18:59.745Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "Investigate TEXT UNIQUE INSERT O(N): profile constraint validator, identify if B-tree search or heap scan is the bottleneck",
-    "completedAt": "2026-04-28T16:13:56.149Z",
-    "taskId": "T47",
-    "summary": "TEXT UNIQUE INSERT bottleneck is NOT in index.search (0.0003ms). Likely SQL parsing overhead (parsing new SQL string per INSERT). B-tree search is O(log N). The solution is prepared statements, not index optimization.",
+    "task": "Benchmark WASM vs evaluator: compare performance on fib, sort, comprehensions",
+    "completedAt": "2026-04-28T16:18:59.745Z",
+    "taskId": "T49",
+    "summary": "WASM vs eval benchmark: fib(25) 33x total / 2071x exec. Sum 978x exec. HOFs only 3x exec (host import overhead). Compilation overhead ~70-90ms makes WASM best for compute-heavy programs.",
     "durationMs": 300000
   },
   "schedule": {
@@ -5028,14 +5028,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 45,
+    "blocksCompleted": 47,
     "blocksTotal": 35,
     "modeDistribution": {
       "THINK": 9,
       "PLAN": 4,
       "BUILD": 19,
-      "MAINTAIN": 4,
-      "EXPLORE": 9
+      "MAINTAIN": 5,
+      "EXPLORE": 10
     }
   },
   "artifacts": [],
