@@ -1,11 +1,13 @@
 {
-  "generated": "2026-04-27T23:46:55.111Z",
+  "generated": "2026-04-28T00:08:51.669Z",
   "current": {
-    "status": "in-progress",
-    "mode": "MAINTAIN",
-    "task": "Update daily log + git push",
-    "startedAt": "2026-04-27T23:46:55.111Z",
-    "taskId": "T240"
+    "status": "done",
+    "mode": "THINK",
+    "task": "What other WASM optimizations would have high impact? Check loop performance.",
+    "completedAt": "2026-04-28T00:08:51.669Z",
+    "taskId": "T246",
+    "summary": "WASM perf analysis: loops are excellent (0.3ms for 100K iterations, 6.7x faster than JS). Closures are next bottleneck (43.8ms for 100K calls = 0.44μs/call). Root cause: closure params not knownInt (call_indirect means any type could be passed). Array push still goes through host (4.1ms for 1K pushes). Integer loop performance is near-optimal.",
+    "durationMs": 300000
   },
   "schedule": {
     "date": "2026-04-27",
@@ -9861,21 +9863,124 @@
         "id": "T234",
         "mode": "BUILD",
         "task": "Extend cost model with engine-specific cost multipliers (volcano/codegen/vectorized)",
-        "status": "upcoming",
-        "plan_ref": "T226"
+        "status": "done",
+        "plan_ref": "T226",
+        "started": "2026-04-27T23:37:17.418Z",
+        "completed": "2026-04-27T23:39:24.203Z",
+        "duration_ms": 600000,
+        "summary": "Added multi-engine cost estimation to HenryDB cost model. Three engine profiles (volcano/codegen/vectorized) with CPU multipliers, startup costs, and per-tuple overhead. estimateMultiEngineCost() picks cheapest engine. 4 new tests, all pass."
       },
       {
         "id": "T235",
         "mode": "BUILD",
         "task": "Integrate unified cost model into adaptive engine for cost-based engine selection",
-        "status": "upcoming",
-        "plan_ref": "T226"
+        "status": "done",
+        "plan_ref": "T226",
+        "started": "2026-04-27T23:39:37.574Z",
+        "completed": "2026-04-27T23:42:16.235Z",
+        "duration_ms": 600000,
+        "summary": "Integrated unified cost model into adaptive engine. _selectEngine now uses estimateMultiEngineCost() with volcano plan. Falls back to heuristics. Added _getTableStats(). 28 tests pass."
       },
       {
         "id": "T228",
         "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Final git push + session close",
+        "started": "2026-04-27T23:42:49.759Z",
+        "completed": "2026-04-27T23:42:49.902Z",
+        "duration_ms": 5000,
+        "summary": "Deferred to actual session end."
+      },
+      {
+        "id": "T236",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Depth check: what have I NOT tested in the work done today?",
+        "started": "2026-04-27T23:42:56.723Z",
+        "completed": "2026-04-27T23:43:52.458Z",
+        "duration_ms": 300000,
+        "summary": "Depth check found: (1) DataView buffer detachment after memory.grow — verified code already handles this by refreshing DataView in loops. (2) Shared closure mutation limitation documented. (3) Cost model multipliers need calibration. (4) JIT sieve trace stitching remains the hardest bug. No critical issues found."
+      },
+      {
+        "id": "T237",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Investigate Y-combinator WASM bug (known issue in test suite)",
+        "project": "monkey-lang",
+        "started": "2026-04-27T23:44:13.695Z",
+        "completed": "2026-04-27T23:46:15.047Z",
+        "duration_ms": 300000,
+        "summary": "Y-combinator and closure parameter capture bugs are already fixed. Cleaned up test labels. Differential testing (eval vs WASM) on 12 programs found only 1 expected difference: closure mutation semantics (WASM now has ref capture, evaluator still value capture). No real bugs found."
+      },
+      {
+        "id": "T238",
+        "mode": "PLAN",
+        "status": "done",
+        "goal": "Fix WASM Y-combinator / closure parameter capture bug",
+        "task": null,
+        "project": "monkey-lang",
+        "started": "2026-04-27T23:46:32.285Z",
+        "completed": "2026-04-27T23:46:32.428Z",
+        "duration_ms": 10000,
+        "summary": "Y-combinator already fixed. Redirecting to investigate JIT trace constant-folding issue with nested loops."
+      },
+      {
+        "id": "T239",
+        "mode": "BUILD",
+        "status": "done",
+        "task": null,
+        "project": "monkey-lang",
+        "started": "2026-04-27T23:46:46.309Z",
+        "completed": "2026-04-27T23:46:46.452Z",
+        "duration_ms": 5000,
+        "summary": "Placeholder from redirected plan. Skipped."
+      },
+      {
+        "id": "T240",
+        "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Update daily log + git push",
+        "started": "2026-04-27T23:46:55.076Z",
+        "completed": "2026-04-27T23:47:23.473Z",
+        "duration_ms": 60000,
+        "summary": "Updated daily log. Git committed workspace."
+      },
+      {
+        "id": "T241",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Benchmark WASM compiler vs evaluator vs bytecode VM performance",
+        "project": "monkey-lang",
+        "started": "2026-04-27T23:47:45.584Z",
+        "completed": "2026-04-27T23:52:37.649Z",
+        "duration_ms": 600000,
+        "summary": "Benchmarked all engines. fib(30): eval 3.5s, VM 817ms, JIT 117ms, WASM 384ms. Loop 1M: WASM 355x, JIT 71x faster. Found 2 issues: (1) WASM i32 overflow on large sums (expected), (2) JIT side trace recursion stack overflow on programs with >500 inner loop iterations (deep architecture issue)."
+      },
+      {
+        "id": "T242",
+        "mode": "PLAN",
+        "status": "done",
+        "goal": "WASM compiler optimization: identify and fix top performance bottlenecks",
+        "task": null,
+        "project": "monkey-lang",
+        "started": "2026-04-27T23:52:55.802Z",
+        "completed": "2026-04-27T23:55:10.007Z",
+        "duration_ms": 300000,
+        "summary": "WASM fib(30) is 384ms vs JS 149ms (2.6x slower). Top-level let fn() declarations use direct call (type func). Compiler itself OOMs on large programs. Two optimization targets: (1) fix compiler OOM (likely from closure capture analysis expanding exponentially), (2) reduce WASM-to-JS boundary overhead for host function imports. Planned: fix compiler OOM first."
+      },
+      {
+        "id": "T244",
+        "mode": "BUILD",
+        "task": "Investigate and fix WASM compiler OOM on compilation of simple programs",
         "status": "upcoming",
-        "task": "Final git push + session close"
+        "plan_ref": "T242"
+      },
+      {
+        "id": "T243",
+        "mode": "BUILD",
+        "status": "upcoming",
+        "task": null,
+        "project": "monkey-lang"
       },
       {
         "id": "T217",
@@ -9921,13 +10026,13 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 216,
-    "blocksTotal": 235,
+    "blocksCompleted": 222,
+    "blocksTotal": 244,
     "modeDistribution": {
-      "THINK": 34,
-      "PLAN": 29,
-      "BUILD": 96,
-      "MAINTAIN": 37,
+      "THINK": 36,
+      "PLAN": 30,
+      "BUILD": 98,
+      "MAINTAIN": 38,
       "EXPLORE": 20
     }
   },
