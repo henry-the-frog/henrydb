@@ -37,8 +37,9 @@ function _getFastPathMeta(db, tableName) {
   const hasGenerated = table.schema.some(c => c.generated);
   const hasTriggers = db.triggers?.some(t => t.table === tableName && t.event === 'UPDATE') || false;
   const hasChecks = table.schema.some(c => c.check) || (table.tableChecks?.length > 0);
+  const hasForeignKeys = table.schema.some(c => c.references);
   
-  meta = { _tableRef: table, table, pkIndex, pkColName, pkColNameLower: pkColName.toLowerCase(), colMap, hasTriggers, hasGenerated, hasChecks };
+  meta = { _tableRef: table, table, pkIndex, pkColName, pkColNameLower: pkColName.toLowerCase(), colMap, hasTriggers, hasGenerated, hasChecks, hasForeignKeys };
   _fastPathCache.set(tableName, meta);
   return meta;
 }
@@ -47,7 +48,7 @@ function _tryFastUpdate(db, ast) {
   if (ast.from || ast.returning || ast.limit) return null;
   
   const meta = _getFastPathMeta(db, ast.table);
-  if (!meta || meta.hasTriggers || meta.hasGenerated || meta.hasChecks) return null;
+  if (!meta || meta.hasTriggers || meta.hasGenerated || meta.hasChecks || meta.hasForeignKeys) return null;
   
   const where = ast.where;
   if (!where || where.type !== 'COMPARE' || where.op !== 'EQ') return null;
