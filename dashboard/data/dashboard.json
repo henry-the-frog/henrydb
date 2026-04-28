@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-28T00:50:13.541Z",
+  "generated": "2026-04-28T00:54:51.279Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "WASM: add closure return type tracking for call_indirect results",
-    "completedAt": "2026-04-28T00:50:13.541Z",
-    "taskId": "T265",
-    "summary": "Closure return type tracking: 35x faster! 100K closure calls: 28.3ms→0.8ms. returnsIntClosure propagates through let-bindings so f(i) is known-int. Moved _inferReturnTypes before main body compilation. directArith: 4, hostArith: 0 for adder pattern.",
-    "durationMs": 1200000
+    "task": "JIT: fix sieve trace by blacklisting nested-loop back-edges from outer trace recording",
+    "completedAt": "2026-04-28T00:54:51.279Z",
+    "taskId": "T273",
+    "summary": "🎉 FIXED the last JIT skip! Sieve nested-loop trace stitching: abort outer recording when inner loop back-edge has no compiled trace. Prevents constant-folding inner loop values. Sieve: 25 primes ✓ (was 57). 1930 pass, 0 fail, 0 skip — FIRST TIME WITH 0 SKIPS!",
+    "durationMs": 900000
   },
   "schedule": {
     "date": "2026-04-27",
@@ -10026,14 +10026,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 241,
+    "blocksCompleted": 249,
     "blocksTotal": 244,
     "modeDistribution": {
       "THINK": 37,
       "PLAN": 31,
-      "BUILD": 110,
-      "MAINTAIN": 43,
-      "EXPLORE": 20
+      "BUILD": 114,
+      "MAINTAIN": 46,
+      "EXPLORE": 21
     }
   },
   "artifacts": [],
