@@ -394,36 +394,77 @@
     {
       "id": "T35",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Git push + test sweep",
-      "started": "2026-04-28T21:24:21.319Z"
+      "started": "2026-04-28T21:24:21.319Z",
+      "completed": "2026-04-28T21:24:55.815Z",
+      "duration_ms": 120000,
+      "summary": "All tests green: 96 WASM tests (monkey-lang), 14 fast-path + 52 SQL + 17 constraint tests (henrydb). All repos pushed."
     },
     {
       "id": "T36",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Direction for final hours"
+      "status": "done",
+      "task": "Direction for final hours",
+      "started": "2026-04-28T21:25:02.627Z",
+      "completed": "2026-04-28T21:25:39.866Z",
+      "duration_ms": 30000,
+      "summary": "1 BUILD left (cap at 20). Plan: integration stress test, then EXPLORE/MAINTAIN depth pivot."
     },
     {
       "id": "T37",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "skipped",
       "goal": "Best remaining work for the session",
-      "task": null
+      "task": null,
+      "skip_reason": ""
     },
     {
       "id": "T38",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "skipped",
       "task": null,
       "plan_ref": "T37",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "skip_reason": ""
     },
     {
       "id": "T39",
       "mode": "MAINTAIN",
+      "status": "skipped",
+      "task": "Verify all test suites green and push latest changes",
+      "skip_reason": ""
+    },
+    {
+      "id": "T42",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "WASM integration stress test: arrays + HOFs + closures + recursion",
+      "project": "monkey-lang",
+      "started": "2026-04-28T21:25:46.635Z",
+      "completed": "2026-04-28T21:28:17.065Z",
+      "duration_ms": 600000,
+      "summary": "Found and fixed critical capacity bug: push() past capacity corrupted memory. Empty arrays now get 256 cap. 9 integration stress tests (sieve+twins, collatz, fibonacci array, HOF pipelines). 105 total WASM tests."
+    },
+    {
+      "id": "T43",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Session BUILD cap pivot: run full test sweep across both projects",
+      "started": "2026-04-28T21:28:31.992Z"
+    },
+    {
+      "id": "T44",
+      "mode": "EXPLORE",
       "status": "upcoming",
-      "task": "Verify all test suites green and push latest changes"
+      "task": "Stress test playground in browser-like environment",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T45",
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "Session review and daily log"
     }
   ],
   "focusProjects": [
@@ -599,6 +640,34 @@
     {
       "time": "2026-04-28T21:21:37.148Z",
       "msg": "PLAN T33 filled 2 BUILD tasks"
+    },
+    {
+      "time": "2026-04-28T21:25:19.098Z",
+      "msg": "Removed T37: "
+    },
+    {
+      "time": "2026-04-28T21:25:19.293Z",
+      "msg": "Removed T38: "
+    },
+    {
+      "time": "2026-04-28T21:25:19.491Z",
+      "msg": "Removed T39: "
+    },
+    {
+      "time": "2026-04-28T21:25:30.701Z",
+      "msg": "Added T42 (BUILD) after end: WASM integration stress test: arrays + HOFs + closures + recursion"
+    },
+    {
+      "time": "2026-04-28T21:25:30.817Z",
+      "msg": "Added T43 (MAINTAIN) after end: Session BUILD cap pivot: run full test sweep across both projects"
+    },
+    {
+      "time": "2026-04-28T21:25:30.932Z",
+      "msg": "Added T44 (EXPLORE) after end: Stress test playground in browser-like environment"
+    },
+    {
+      "time": "2026-04-28T21:25:31.048Z",
+      "msg": "Added T45 (THINK) after end: Session review and daily log"
     }
   ]
 }
