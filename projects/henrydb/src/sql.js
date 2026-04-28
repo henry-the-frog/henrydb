@@ -1086,7 +1086,7 @@ export function parse(sql) {
       }
       // Parse second argument for two-arg aggregate functions (CORR, COVAR_*, REGR_*)
       let arg2 = null;
-      const TWO_ARG_AGGS = ['CORR', 'COVAR_POP', 'COVAR_SAMP', 'REGR_SLOPE', 'REGR_INTERCEPT', 'REGR_R2', 'REGR_COUNT'];
+      const TWO_ARG_AGGS = ['CORR', 'COVAR_POP', 'COVAR_SAMP', 'REGR_SLOPE', 'REGR_INTERCEPT', 'REGR_R2', 'REGR_COUNT', 'JSON_GROUP_OBJECT'];
       if (TWO_ARG_AGGS.includes(func) && peek().type === ',') {
         advance(); // skip comma
         const arg2Expr = parseExpr();

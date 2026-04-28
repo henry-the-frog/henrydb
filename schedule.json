@@ -481,6 +481,48 @@
       "completed": "2026-04-28T18:53:33.880Z",
       "duration_ms": 600000,
       "summary": "Integrated compiled-expr into SELECT paths. Found + fixed critical bug: qualified column refs (table.col) were compiled incorrectly in correlated subqueries, breaking NOT EXISTS. Fix: return null for qualified refs, fall back to _evalExpr. Removed WeakMap cache (incompatible with prepared stmt fastBind). All tests pass."
+    },
+    {
+      "id": "T47",
+      "mode": "BUILD",
+      "status": "skipped",
+      "task": "Add compiled-expr to DELETE scan in select-inner (for DELETE FROM ... WHERE ...)",
+      "project": "henrydb",
+      "skip_reason": ""
+    },
+    {
+      "id": "T48",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Run broader HenryDB test suite to catch any regressions from compiled-expr",
+      "project": "henrydb",
+      "started": "2026-04-28T18:54:12.243Z",
+      "completed": "2026-04-28T18:55:42.635Z",
+      "duration_ms": 180000,
+      "summary": "Broader test suite: join-depth, subquery-depth, window-functions, aggregate-depth, cte-depth, json-depth, transaction-depth, wal-depth, regression-bugs-apr17, cte-regression, prepared-cache all pass. 1 pre-existing failure in json_group_object (not from compiled-expr). No regressions found."
+    },
+    {
+      "id": "T49",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Session B reflection: what worked, what surprised, what to explore next",
+      "started": "2026-04-28T18:55:53.757Z",
+      "completed": "2026-04-28T18:56:12.843Z",
+      "duration_ms": 120000,
+      "summary": "Reflection: 19 tasks, 18 BUILDs. Major finds: HeapFile Array→Map (88,000x), compiled expr + correlated subquery fix. Key lessons: in-place mutation + WeakMap incompatible, qualified cols need scope awareness. Next: UPDATE fast-path, expr JIT, WASM GC."
+    },
+    {
+      "id": "T50",
+      "mode": "THINK",
+      "status": "in-progress",
+      "task": "HenryDB json_group_object bug investigation",
+      "started": "2026-04-28T18:56:36.568Z"
+    },
+    {
+      "id": "T51",
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "monkey-lang: investigate WASM GC backend feasibility with Node.js v22"
     }
   ],
   "focusProjects": [
@@ -704,6 +746,30 @@
     {
       "time": "2026-04-28T18:36:42.182Z",
       "msg": "Added T46 (BUILD) after end: Add compiled-expr integration to SELECT scan path"
+    },
+    {
+      "time": "2026-04-28T18:54:02.400Z",
+      "msg": "Added T47 (BUILD) after end: Add compiled-expr to DELETE scan in select-inner (for DELETE FROM ... WHERE ...)"
+    },
+    {
+      "time": "2026-04-28T18:54:02.677Z",
+      "msg": "Added T48 (BUILD) after end: Run broader HenryDB test suite to catch any regressions from compiled-expr"
+    },
+    {
+      "time": "2026-04-28T18:54:02.876Z",
+      "msg": "Added T49 (THINK) after end: Session B reflection: what worked, what surprised, what to explore next"
+    },
+    {
+      "time": "2026-04-28T18:54:12.053Z",
+      "msg": "Removed T47: "
+    },
+    {
+      "time": "2026-04-28T18:56:27.858Z",
+      "msg": "Added T50 (THINK) after end: HenryDB json_group_object bug investigation"
+    },
+    {
+      "time": "2026-04-28T18:56:27.972Z",
+      "msg": "Added T51 (THINK) after end: monkey-lang: investigate WASM GC backend feasibility with Node.js v22"
     }
   ]
 }

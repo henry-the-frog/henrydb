@@ -1,13 +1,11 @@
 {
-  "generated": "2026-04-28T18:53:34.080Z",
+  "generated": "2026-04-28T18:56:36.626Z",
   "current": {
-    "status": "done",
-    "mode": "BUILD",
-    "task": "Add compiled-expr integration to SELECT scan path",
-    "completedAt": "2026-04-28T18:53:34.080Z",
-    "taskId": "T46",
-    "summary": "Integrated compiled-expr into SELECT paths. Found + fixed critical bug: qualified column refs (table.col) were compiled incorrectly in correlated subqueries, breaking NOT EXISTS. Fix: return null for qualified refs, fall back to _evalExpr. Removed WeakMap cache (incompatible with prepared stmt fastBind). All tests pass.",
-    "durationMs": 600000
+    "status": "in-progress",
+    "mode": "THINK",
+    "task": "HenryDB json_group_object bug investigation",
+    "startedAt": "2026-04-28T18:56:36.626Z",
+    "taskId": "T50"
   },
   "schedule": {
     "date": "2026-04-28",
@@ -5089,12 +5087,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 41,
+    "blocksCompleted": 43,
     "blocksTotal": 41,
     "modeDistribution": {
-      "THINK": 8,
+      "THINK": 9,
       "PLAN": 8,
-      "BUILD": 20,
+      "BUILD": 21,
       "MAINTAIN": 5
     }
   },

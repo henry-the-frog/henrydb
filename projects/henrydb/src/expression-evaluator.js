@@ -1153,12 +1153,11 @@ P._computeAggregates = function(columns, rows) {
         break;
       }
       case 'JSON_GROUP_OBJECT': {
-        // json_group_object(key, value) — needs 2 arguments but aggregator only tracks single column
-        // For now, collect as key-value pairs from odd/even positions
+        // json_group_object(key, value) — needs arg (key) and arg2 (value)
         const obj = {};
-        for (let i = 0; i < values.length; i += 2) {
-          const k = String(values[i] ?? '');
-          const v = i + 1 < values.length ? values[i + 1] : null;
+        for (const row of filteredRows) {
+          const k = String(this._resolveColumn(col.arg, row) ?? '');
+          const v = col.arg2 ? this._resolveColumn(col.arg2, row) : null;
           obj[k] = v;
         }
         result[name] = JSON.stringify(obj);
