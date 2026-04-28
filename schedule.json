@@ -5,558 +5,129 @@
       "id": "T1",
       "mode": "THINK",
       "status": "done",
-      "task": "Session B direction: playground vs TODO items vs new features",
-      "started": "2026-04-28T20:16:08.599Z",
-      "completed": "2026-04-28T20:16:25.450Z",
+      "task": "Session B2 direction: review what was accomplished, pick high-value targets for remaining 4 hours",
+      "started": "2026-04-28T22:16:13.166Z",
+      "completed": "2026-04-28T22:16:29.576Z",
       "duration_ms": 60000,
-      "summary": "Direction set: playground first (highest leverage, transforms project into something usable), then HenryDB quick wins. Queue order confirmed."
+      "summary": "Direction set: array reallocation (correctness, high priority), then HenryDB expr perf, then new WASM feature. Queue confirmed."
     },
     {
       "id": "T2",
       "mode": "PLAN",
       "status": "done",
-      "goal": "monkey-lang web playground (browser-based WASM compiler demo)",
+      "goal": "monkey-lang WASM array reallocation (handle-based growth)",
       "task": null,
-      "started": "2026-04-28T20:16:34.394Z",
-      "completed": "2026-04-28T20:17:23.386Z",
+      "started": "2026-04-28T22:16:37.228Z",
+      "completed": "2026-04-28T22:17:37.271Z",
       "duration_ms": 120000,
-      "summary": "Planned 3 BUILD tasks: browser bundle + HTML skeleton, WASM execution wiring, polish (examples/errors/sharing). Deps: lexer→parser→ast→wasm→wasm-compiler, all pure JS, no Node APIs needed."
-    },
-    {
-      "id": "T3",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Bundle monkey-lang compiler for browser + create HTML playground skeleton",
-      "plan_ref": "T2",
-      "project": "monkey-lang",
-      "started": "2026-04-28T20:17:30.660Z",
-      "completed": "2026-04-28T20:26:03.529Z",
-      "duration_ms": 600000,
-      "summary": "Created web playground: 96KB browser bundle via esbuild, Catppuccin-themed UI, 8 working examples (fib/closures/HOF/ackermann/mandelbrot/for/mutual-rec/nested), string runtime, Ctrl+Enter, URL sharing, responsive. All 7 examples verified."
-    },
-    {
-      "id": "T13",
-      "mode": "BUILD",
-      "task": "Wire up WASM execution in browser with output capture",
-      "status": "done",
-      "plan_ref": "T2",
-      "started": "2026-04-28T20:26:12.442Z",
-      "completed": "2026-04-28T20:26:59.760Z",
-      "duration_ms": 120000,
-      "summary": "Enhanced output display: compile/exec/total time breakdown, friendly error messages for unsupported features, WASM size stats. All functionality was already working from T3."
+      "summary": "Plan: add __array_ensure_cap host import for push reallocation. 3 BUILD tasks: (1) implement host import + wire into push, (2) handle memory.grow in host, (3) tests for growth beyond initial capacity."
     },
     {
       "id": "T14",
       "mode": "BUILD",
-      "task": "Add example programs, error display, and URL sharing",
+      "task": "Implement __array_ensure_cap host import and wire into push compilation",
       "status": "done",
       "plan_ref": "T2",
-      "started": "2026-04-28T20:27:10.471Z",
-      "completed": "2026-04-28T20:27:10.610Z",
-      "duration_ms": 30000,
-      "summary": "Already completed in T3: 8 examples, URL sharing via ?code= param with clipboard copy, error display with friendly messages. No additional work needed."
-    },
-    {
-      "id": "T4",
-      "mode": "MAINTAIN",
-      "status": "done",
-      "task": "Mid-session housekeeping",
-      "started": "2026-04-28T20:27:19.379Z",
-      "completed": "2026-04-28T20:27:53.435Z",
-      "duration_ms": 60000,
-      "summary": "Git push all repos: monkey-lang (rebased+pushed), henrydb (pulled+pushed), workspace (committed+pushed). All clean."
-    },
-    {
-      "id": "T5",
-      "mode": "THINK",
-      "status": "done",
-      "task": "Assess playground progress, decide next focus",
-      "started": "2026-04-28T20:28:02.284Z",
-      "completed": "2026-04-28T20:28:19.836Z",
-      "duration_ms": 60000,
-      "summary": "Playground MVP complete. Next: deploy to GitHub Pages (fast), then HenryDB TODO fixes. Added PLAN+BUILD for deployment."
+      "started": "2026-04-28T22:17:51.694Z",
+      "completed": "2026-04-28T22:25:24.895Z",
+      "duration_ms": 600000,
+      "summary": "Implemented __array_ensure_cap + memory.grow in __alloc. Arrays grow dynamically (2x capacity). Tested up to 50K elements. Added missing WASM opcodes (i32_le_u, i32_ge_u). 105 tests pass."
     },
     {
       "id": "T15",
-      "mode": "PLAN",
+      "mode": "BUILD",
+      "task": "Add memory.grow support and large-array growth tests",
       "status": "done",
-      "goal": "Deploy monkey-lang playground to GitHub Pages",
-      "task": null,
-      "started": "2026-04-28T20:28:27.610Z",
-      "completed": "2026-04-28T20:28:40.535Z",
-      "duration_ms": 60000,
-      "summary": "Plan: use GitHub Actions to deploy playground/ to GitHub Pages. One BUILD task."
+      "plan_ref": "T2",
+      "started": "2026-04-28T22:25:33.502Z",
+      "completed": "2026-04-28T22:26:21.618Z",
+      "duration_ms": 300000,
+      "summary": "9 reallocation tests: grow to 300/1000/5000/20000, data integrity, multiple arrays, in-function growth, memory.grow trigger, pre-sized growth, sum verification. 32 total array tests passing."
     },
     {
       "id": "T16",
       "mode": "BUILD",
+      "task": "Edge case tests: grow from 0, grow during HOF, aliased arrays",
       "status": "done",
-      "task": "Set up GitHub Pages deployment for playground (Actions workflow or /docs)",
-      "plan_ref": "T15",
+      "plan_ref": "T2",
+      "started": "2026-04-28T22:26:28.106Z",
+      "completed": "2026-04-28T22:35:39.024Z",
+      "duration_ms": 600000,
+      "summary": "CRITICAL FIX: top-level let execution order bug. Lets were initialized before expression statements, breaking let-after-push patterns. Fixed by inlining global init into main block. 8 edge case tests added (HOF+growth, filter/reduce on large arrays, interleaved push). 1325 total tests passing."
+    },
+    {
+      "id": "T3",
+      "mode": "BUILD",
+      "status": "skipped",
+      "task": null,
       "project": "monkey-lang",
-      "started": "2026-04-28T20:28:48.122Z",
-      "completed": "2026-04-28T20:29:40.388Z",
-      "duration_ms": 180000,
-      "summary": "Created GH Actions workflow for playground deployment. Pages enabled at henry-the-frog.github.io/monkey-lang/. Workflow triggered, deploying."
+      "skip_reason": "Reallocation goal fully completed in T14-T16"
+    },
+    {
+      "id": "T4",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Mid-session housekeeping",
+      "started": "2026-04-28T22:35:56.288Z"
+    },
+    {
+      "id": "T5",
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "Assess progress, pivot if needed"
     },
     {
       "id": "T6",
       "mode": "PLAN",
-      "status": "done",
-      "goal": "HenryDB TODO fixes: JSON_TYPE bug + other quick wins",
-      "task": null,
-      "started": "2026-04-28T20:29:48.424Z",
-      "completed": "2026-04-28T20:30:54.968Z",
-      "duration_ms": 120000,
-      "summary": "Investigated JSON_TYPE: actually correct (SQLite convention: integer/real, not number). Removed from TODO. Planned: composite unique constraint fix."
+      "status": "upcoming",
+      "goal": "HenryDB expression evaluator performance (836μs WHERE)",
+      "task": null
     },
     {
       "id": "T7",
       "mode": "BUILD",
-      "status": "done",
-      "task": "Fix HenryDB composite unique constraint heap scan in dml-insert.js",
-      "plan_ref": "T6",
-      "project": "henrydb",
-      "started": "2026-04-28T20:31:14.690Z",
-      "completed": "2026-04-28T20:37:32.159Z",
-      "duration_ms": 300000,
-      "summary": "Composite unique constraint: O(N) heap scan → O(log N) index lookup. Uses first column B+ tree to find candidates, then verifies remaining columns. Fallback to scan when no index. All tests pass."
+      "status": "upcoming",
+      "task": null,
+      "project": "henrydb"
     },
     {
       "id": "T8",
       "mode": "MAINTAIN",
-      "status": "done",
-      "task": "Housekeeping + git push",
-      "started": "2026-04-28T20:37:46.426Z",
-      "completed": "2026-04-28T20:38:45.513Z",
-      "duration_ms": 60000,
-      "summary": "Git push all repos. Playground deployment confirmed live at henry-the-frog.github.io/monkey-lang/. HenryDB pushed."
+      "status": "upcoming",
+      "task": "Git push + test sweep"
     },
     {
       "id": "T9",
       "mode": "THINK",
-      "status": "done",
-      "task": "Late afternoon direction",
-      "started": "2026-04-28T20:38:54.338Z",
-      "completed": "2026-04-28T20:39:22.218Z",
-      "duration_ms": 60000,
-      "summary": "Direction: extend WASM compiler for arrays (directly improves playground). Added PLAN+BUILD. 5.5 hours remain."
-    },
-    {
-      "id": "T17",
-      "mode": "PLAN",
-      "status": "done",
-      "goal": "Extend WASM compiler: array literals + index access + len() + push()",
-      "task": null,
-      "started": "2026-04-28T20:39:33.538Z",
-      "completed": "2026-04-28T20:40:09.822Z",
-      "duration_ms": 120000,
-      "summary": "Planned 3 BUILD tasks: (1) bump allocator + array literal, (2) index access + len(), (3) push() + playground update. Array layout: [tag:i32][len:i32][cap:i32][elements...]."
-    },
-    {
-      "id": "T18",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Add WASM bump allocator + array literal compilation (allocate + fill)",
-      "plan_ref": "T17",
-      "project": "monkey-lang",
-      "started": "2026-04-28T20:40:20.384Z",
-      "completed": "2026-04-28T20:44:16.089Z",
-      "duration_ms": 600000,
-      "summary": "WASM array support: ArrayLiteral, IndexExpression, len(), push(), bump allocator. Added memory ops to wasm.js. All 54 existing tests pass + 12 new array tests. Arrays work in functions, loops, computed indices."
-    },
-    {
-      "id": "T19",
-      "mode": "BUILD",
-      "task": "Add array index access and len() builtin in WASM compiler",
-      "status": "done",
-      "plan_ref": "T17",
-      "started": "2026-04-28T20:44:30.007Z",
-      "completed": "2026-04-28T20:44:30.146Z",
-      "duration_ms": 10000,
-      "summary": "Already completed in T18: array index access and len() both implemented and tested."
-    },
-    {
-      "id": "T20",
-      "mode": "BUILD",
-      "task": "Add push() builtin + update playground bundle and examples",
-      "status": "done",
-      "plan_ref": "T17",
-      "started": "2026-04-28T20:44:43.253Z",
-      "completed": "2026-04-28T20:50:23.454Z",
-      "duration_ms": 600000,
-      "summary": "push() already done; added set a[i]=val, fixed function index bug for arrays-in-functions, added Sieve example (10000→1229 primes), rebuilt playground bundle (104KB). All tests pass."
+      "status": "upcoming",
+      "task": "Evening direction: depth vs breadth"
     },
     {
       "id": "T10",
       "mode": "PLAN",
-      "status": "done",
-      "goal": "Continue highest-value work based on progress",
-      "task": null,
-      "started": "2026-04-28T20:50:42.202Z",
-      "completed": "2026-04-28T20:51:04.963Z",
-      "duration_ms": 60000,
-      "summary": "Plan: (1) WASM array test suite, (2) map/filter/reduce builtins, (3) playground HOF examples. Focus on quality + capability."
+      "status": "upcoming",
+      "goal": "monkey-lang WASM new feature (for-in or hash maps)",
+      "task": null
     },
     {
       "id": "T11",
       "mode": "BUILD",
-      "status": "done",
-      "task": "Write WASM array test suite (formal tests for array features)",
-      "plan_ref": "T10",
-      "project": "monkey-lang",
-      "started": "2026-04-28T20:51:10.454Z",
-      "completed": "2026-04-28T20:52:07.270Z",
-      "duration_ms": 300000,
-      "summary": "23 WASM array tests: basics (7), push (4), set (3), functions (5), mixed (3). All 77 WASM tests pass. Sieve verified, recursion+arrays tested."
-    },
-    {
-      "id": "T21",
-      "mode": "BUILD",
-      "task": "Add map/filter/reduce builtins to WASM compiler",
-      "status": "done",
-      "plan_ref": "T10",
-      "started": "2026-04-28T20:52:20.514Z",
-      "completed": "2026-04-28T20:54:30.556Z",
-      "duration_ms": 600000,
-      "summary": "map/filter/reduce WASM builtins: inline-compiled with call_indirect. Pipeline verified: reduce(map(filter(...))) = 60. All 77 tests pass."
-    },
-    {
-      "id": "T22",
-      "mode": "BUILD",
-      "task": "Update playground with HOF array examples + rebuild",
-      "status": "done",
-      "plan_ref": "T10",
-      "started": "2026-04-28T20:54:45.367Z",
-      "completed": "2026-04-28T20:55:17.683Z",
-      "duration_ms": 120000,
-      "summary": "Updated playground: HOF pipeline example (filter→map→reduce), rebuilt bundle (115KB). Deployed."
+      "status": "upcoming",
+      "task": null,
+      "project": "monkey-lang"
     },
     {
       "id": "T12",
-      "mode": "MAINTAIN",
-      "status": "done",
-      "task": "Session end housekeeping",
-      "started": "2026-04-28T20:55:34.117Z",
-      "completed": "2026-04-28T20:55:34.257Z",
-      "duration_ms": 10000,
-      "summary": "Skipped — session not ending, 5+ hours remain. Will add more work."
-    },
-    {
-      "id": "T23",
-      "mode": "THINK",
-      "status": "done",
-      "task": "Midpoint assessment: what's the highest-value next step?",
-      "started": "2026-04-28T20:56:32.963Z",
-      "completed": "2026-04-28T20:56:33.169Z",
-      "duration_ms": 30000,
-      "summary": "Midpoint: 12 BUILDs, all monkey-lang. Playground live with arrays+HOFs. Next: formalize HOF tests, add do-while to WASM compiler, then maybe switch to HenryDB for variety."
-    },
-    {
-      "id": "T24",
-      "mode": "PLAN",
-      "status": "done",
-      "goal": "WASM HOF tests + do-while compiler support",
-      "task": null,
-      "started": "2026-04-28T20:56:47.643Z",
-      "completed": "2026-04-28T20:56:55.668Z",
-      "duration_ms": 30000,
-      "summary": "Single BUILD task: HOF tests + do-while support (combined for efficiency)."
-    },
-    {
-      "id": "T25",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Write WASM HOF tests (map/filter/reduce) + add do-while to WASM compiler",
-      "plan_ref": "T24",
-      "project": "monkey-lang",
-      "started": "2026-04-28T20:57:01.711Z",
-      "completed": "2026-04-28T21:01:21.784Z",
-      "duration_ms": 600000,
-      "summary": "Anonymous functions (pre-scan+compile), do-while, 19 HOF tests, Collatz example. 96 total WASM tests. Inline fn(x){x*x} now works in map/filter/reduce."
-    },
-    {
-      "id": "T26",
-      "mode": "MAINTAIN",
-      "status": "done",
-      "task": "Git push + daily log",
-      "started": "2026-04-28T21:01:33.389Z",
-      "completed": "2026-04-28T21:01:47.887Z",
-      "duration_ms": 30000,
-      "summary": "Pushed workspace. Daily log updated."
-    },
-    {
-      "id": "T27",
-      "mode": "THINK",
-      "status": "done",
-      "task": "Direction for remaining time",
-      "started": "2026-04-28T21:01:53.226Z",
-      "completed": "2026-04-28T21:02:11.136Z",
-      "duration_ms": 60000,
-      "summary": "Direction: switch to HenryDB UPDATE fast-path for variety. Perf gap 985μs vs 13μs manual. monkey-lang WASM compiler is in great shape."
-    },
-    {
-      "id": "T28",
-      "mode": "PLAN",
-      "status": "done",
-      "goal": "Next focus area based on progress",
-      "task": null,
-      "started": "2026-04-28T21:02:18.914Z",
-      "completed": "2026-04-28T21:03:37.825Z",
-      "duration_ms": 120000,
-      "summary": "Plan: profile UPDATE, then implement fast-path. Current: 985μs, manual: 13μs. Key skippable overhead: _valuesToRow, trigger checks, constraint validation, full WHERE evaluation."
-    },
-    {
-      "id": "T29",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Profile HenryDB UPDATE pipeline to identify bottlenecks",
-      "plan_ref": "T28",
-      "project": "monkey-lang",
-      "started": "2026-04-28T21:03:45.981Z",
-      "completed": "2026-04-28T21:19:47.292Z",
-      "duration_ms": 1200000,
-      "summary": "UPDATE fast-path: 12μs median (8x improvement from ~100μs). Cached per-table metadata, BTreeTable in-place update. Found and fixed critical data corruption bug (heap.update not existing on BTreeTable). All tests pass."
-    },
-    {
-      "id": "T31",
-      "mode": "BUILD",
-      "task": "Implement UPDATE fast-path for simple PK row updates",
-      "status": "done",
-      "plan_ref": "T28",
-      "started": "2026-04-28T21:20:03.999Z",
-      "completed": "2026-04-28T21:20:04.138Z",
-      "duration_ms": 10000,
-      "summary": "Already done in T29. UPDATE fast-path fully implemented."
-    },
-    {
-      "id": "T30",
-      "mode": "MAINTAIN",
-      "status": "done",
-      "task": "Push + housekeeping",
-      "started": "2026-04-28T21:20:11.581Z",
-      "completed": "2026-04-28T21:20:29.783Z",
-      "duration_ms": 30000,
-      "summary": "Pushed all repos."
-    },
-    {
-      "id": "T32",
-      "mode": "THINK",
-      "status": "done",
-      "task": "Afternoon direction: which project benefits most from deeper work?",
-      "started": "2026-04-28T21:21:09.011Z",
-      "completed": "2026-04-28T21:21:22.281Z",
-      "duration_ms": 60000,
-      "summary": "At 17 BUILDs, focus on quality: UPDATE fast-path tests + monkey-lang README update. Skip hash maps (too complex for remaining budget)."
-    },
-    {
-      "id": "T33",
-      "mode": "PLAN",
-      "status": "done",
-      "goal": "monkey-lang: hash map support in WASM compiler",
-      "task": null,
-      "started": "2026-04-28T21:21:30.160Z",
-      "completed": "2026-04-28T21:21:44.395Z",
-      "duration_ms": 30000,
-      "summary": "Repurposed: UPDATE fast-path tests + monkey-lang README. Quality over features for remaining BUILD budget."
-    },
-    {
-      "id": "T40",
-      "mode": "BUILD",
-      "task": "Write UPDATE fast-path test suite",
-      "status": "done",
-      "plan_ref": "T33",
-      "started": "2026-04-28T21:21:53.437Z",
-      "completed": "2026-04-28T21:22:52.390Z",
-      "duration_ms": 300000,
-      "summary": "14 UPDATE fast-path tests: basics (6), repeated (3), fallback (4), indexes (1). All pass including 5000-update integrity stress test."
-    },
-    {
-      "id": "T41",
-      "mode": "BUILD",
-      "task": "Update monkey-lang README with playground link and feature list",
-      "status": "done",
-      "plan_ref": "T33",
-      "started": "2026-04-28T21:22:57.021Z",
-      "completed": "2026-04-28T21:24:13.509Z",
-      "duration_ms": 180000,
-      "summary": "Updated monkey-lang README: playground link, WASM compiler section (arrays, HOFs, closures, do-while), updated stats (27.5K lines, 1K+ tests, 94 files, 2.3K commits)."
-    },
-    {
-      "id": "T34",
-      "mode": "BUILD",
-      "status": "skipped",
-      "task": null,
-      "plan_ref": "T33",
-      "project": "monkey-lang",
-      "skip_reason": ""
-    },
-    {
-      "id": "T35",
-      "mode": "MAINTAIN",
-      "status": "done",
-      "task": "Git push + test sweep",
-      "started": "2026-04-28T21:24:21.319Z",
-      "completed": "2026-04-28T21:24:55.815Z",
-      "duration_ms": 120000,
-      "summary": "All tests green: 96 WASM tests (monkey-lang), 14 fast-path + 52 SQL + 17 constraint tests (henrydb). All repos pushed."
-    },
-    {
-      "id": "T36",
-      "mode": "THINK",
-      "status": "done",
-      "task": "Direction for final hours",
-      "started": "2026-04-28T21:25:02.627Z",
-      "completed": "2026-04-28T21:25:39.866Z",
-      "duration_ms": 30000,
-      "summary": "1 BUILD left (cap at 20). Plan: integration stress test, then EXPLORE/MAINTAIN depth pivot."
-    },
-    {
-      "id": "T37",
-      "mode": "PLAN",
-      "status": "skipped",
-      "goal": "Best remaining work for the session",
-      "task": null,
-      "skip_reason": ""
-    },
-    {
-      "id": "T38",
-      "mode": "BUILD",
-      "status": "skipped",
-      "task": null,
-      "plan_ref": "T37",
-      "project": "monkey-lang",
-      "skip_reason": ""
-    },
-    {
-      "id": "T39",
-      "mode": "MAINTAIN",
-      "status": "skipped",
-      "task": "Verify all test suites green and push latest changes",
-      "skip_reason": ""
-    },
-    {
-      "id": "T42",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "WASM integration stress test: arrays + HOFs + closures + recursion",
-      "project": "monkey-lang",
-      "started": "2026-04-28T21:25:46.635Z",
-      "completed": "2026-04-28T21:28:17.065Z",
-      "duration_ms": 600000,
-      "summary": "Found and fixed critical capacity bug: push() past capacity corrupted memory. Empty arrays now get 256 cap. 9 integration stress tests (sieve+twins, collatz, fibonacci array, HOF pipelines). 105 total WASM tests."
-    },
-    {
-      "id": "T43",
-      "mode": "MAINTAIN",
-      "status": "done",
-      "task": "Session BUILD cap pivot: run full test sweep across both projects",
-      "started": "2026-04-28T21:28:31.992Z",
-      "completed": "2026-04-28T21:29:10.479Z",
-      "duration_ms": 120000,
-      "summary": "Full test sweep: 105 WASM tests (monkey-lang) + 83 DB tests (henrydb) all green. Playground re-deployed with capacity fix."
-    },
-    {
-      "id": "T44",
       "mode": "EXPLORE",
-      "status": "done",
-      "task": "Stress test playground in browser-like environment",
-      "project": "monkey-lang",
-      "started": "2026-04-28T21:29:19.460Z",
-      "completed": "2026-04-28T21:32:10.617Z",
-      "duration_ms": 300000,
-      "summary": "10 EXPLORE tasks. Found: capacity bug fix works, string detection improved, all examples verified, fib 1.85x faster than JS. Surprises: class parse error, URL length limits, empty block parses as HashLiteral."
+      "status": "upcoming",
+      "task": "Stress test recent features across both projects",
+      "project": "monkey-lang"
     },
     {
-      "id": "T45",
-      "mode": "THINK",
-      "status": "done",
-      "task": "Session review and daily log",
-      "started": "2026-04-28T21:32:31.162Z",
-      "completed": "2026-04-28T21:32:59.665Z",
-      "duration_ms": 120000,
-      "summary": "Session B summary written. 20 BUILDs, 105 WASM tests, playground live, UPDATE fast-path 8x. 4 bugs found and fixed."
-    },
-    {
-      "id": "T46",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "Investigate WASM compiler code quality: read and annotate the full compiler",
-      "project": "monkey-lang",
-      "started": "2026-04-28T21:33:35.875Z",
-      "completed": "2026-04-28T21:35:04.056Z",
-      "duration_ms": 300000,
-      "summary": "Code quality exploration: 10 edge cases tested, ALL passed. Compiler handles: closures over globals, param shadowing, multiple returns, deep nesting, booleans, nested anon functions. No issues found — compiler is solid."
-    },
-    {
-      "id": "T47",
-      "mode": "THINK",
-      "status": "done",
-      "task": "Design proper array reallocation for WASM (growth strategy)",
-      "started": "2026-04-28T21:35:11.795Z",
-      "completed": "2026-04-28T21:36:02.075Z",
-      "duration_ms": 300000,
-      "summary": "Designed handle-based array reallocation system. Analyzed 5 approaches. Current capacity-256 is adequate for now; handle system needed for GC phase. Design doc written."
-    },
-    {
-      "id": "T48",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "Stress test HenryDB UPDATE fast-path edge cases",
-      "project": "henrydb",
-      "started": "2026-04-28T21:36:10.437Z",
-      "completed": "2026-04-28T21:42:16.207Z",
-      "duration_ms": 600000,
-      "summary": "CRITICAL: found 4 constraint bypass bugs in UPDATE fast-path (UNIQUE, CHECK, NOT NULL, FK). All fixed. High-value depth testing — every constraint type was bypassed by the performance optimization."
-    },
-    {
-      "id": "T49",
+      "id": "T13",
       "mode": "MAINTAIN",
-      "status": "done",
-      "task": "Clean up TODO.md and update MEMORY.md with session learnings",
-      "started": "2026-04-28T21:42:32.497Z",
-      "completed": "2026-04-28T21:43:27.724Z",
-      "duration_ms": 120000,
-      "summary": "Cleaned TODO.md (removed completed items, added new items), updated daily log. All repos pushed."
-    },
-    {
-      "id": "T50",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "Run the full monkey-lang test suite (not just WASM) and triage failures",
-      "project": "monkey-lang",
-      "started": "2026-04-28T21:44:02.912Z",
-      "completed": "2026-04-28T21:45:18.287Z",
-      "duration_ms": 300000,
-      "summary": "Full monkey-lang test suite: 1,308 tests across 56 files, ALL passing. Zero failures. Test suite is in excellent health."
-    },
-    {
-      "id": "T51",
-      "mode": "THINK",
-      "status": "done",
-      "task": "Architecture review: what are the biggest remaining gaps in monkey-lang WASM compiler?",
-      "started": "2026-04-28T21:45:29.239Z",
-      "completed": "2026-04-28T21:45:49.889Z",
-      "duration_ms": 180000,
-      "summary": "Architecture review: 10+ unsupported features identified. Top priorities: array reallocation (correctness), hash maps, for-in, string ops. Lowest effort/highest impact: pipe operator (trivial), for-in (while sugar), range (array gen)."
-    },
-    {
-      "id": "T52",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "Run full HenryDB test suite and triage any failures",
-      "project": "henrydb",
-      "started": "2026-04-28T21:45:57.418Z",
-      "completed": "2026-04-28T21:50:01.350Z",
-      "duration_ms": 300000,
-      "summary": "HenryDB test sweep: ran core SQL, constraints, update, json, aggregate, window, subquery, CTE, trigger tests. 0 failures. Some cancellations from timeout on slow tests. Suite is healthy."
-    },
-    {
-      "id": "T53",
-      "mode": "MAINTAIN",
-      "status": "in-progress",
-      "task": "Final git push + CURRENT.md cleanup",
-      "started": "2026-04-28T21:50:10.911Z"
+      "status": "upcoming",
+      "task": "Final cleanup and push"
     }
   ],
   "focusProjects": [
@@ -566,232 +137,68 @@
   "backlog": [],
   "adjustments": [
     {
-      "time": "2026-04-28T20:15:43.569Z",
+      "time": "2026-04-28T22:15:48.578Z",
       "msg": "Re-initialized same-day queue. Focus preserved: [monkey-lang, henrydb]"
     },
     {
-      "time": "2026-04-28T20:15:54.189Z",
-      "msg": "Added T1 (THINK) after end: Session B direction: playground vs TODO items vs new features"
+      "time": "2026-04-28T22:15:57.402Z",
+      "msg": "Added T1 (THINK) after end: Session B2 direction: review what was accomplished, pick high-value targets for remaining 4 hours"
     },
     {
-      "time": "2026-04-28T20:15:54.303Z",
-      "msg": "Added T2 (PLAN) after end: monkey-lang web playground (browser-based WASM compiler demo)"
+      "time": "2026-04-28T22:15:57.517Z",
+      "msg": "Added T2 (PLAN) after end: monkey-lang WASM array reallocation (handle-based growth)"
     },
     {
-      "time": "2026-04-28T20:15:59.794Z",
+      "time": "2026-04-28T22:16:03.666Z",
       "msg": "Added T3 (BUILD) after end: null"
     },
     {
-      "time": "2026-04-28T20:15:59.909Z",
+      "time": "2026-04-28T22:16:03.780Z",
       "msg": "Added T4 (MAINTAIN) after end: Mid-session housekeeping"
     },
     {
-      "time": "2026-04-28T20:16:00.025Z",
-      "msg": "Added T5 (THINK) after end: Assess playground progress, decide next focus"
+      "time": "2026-04-28T22:16:03.896Z",
+      "msg": "Added T5 (THINK) after end: Assess progress, pivot if needed"
     },
     {
-      "time": "2026-04-28T20:16:00.139Z",
-      "msg": "Added T6 (PLAN) after end: HenryDB TODO fixes: JSON_TYPE bug + other quick wins"
+      "time": "2026-04-28T22:16:04.011Z",
+      "msg": "Added T6 (PLAN) after end: HenryDB expression evaluator performance (836μs WHERE)"
     },
     {
-      "time": "2026-04-28T20:16:00.255Z",
+      "time": "2026-04-28T22:16:04.126Z",
       "msg": "Added T7 (BUILD) after end: null"
     },
     {
-      "time": "2026-04-28T20:16:00.370Z",
-      "msg": "Added T8 (MAINTAIN) after end: Housekeeping + git push"
+      "time": "2026-04-28T22:16:04.240Z",
+      "msg": "Added T8 (MAINTAIN) after end: Git push + test sweep"
     },
     {
-      "time": "2026-04-28T20:16:00.485Z",
-      "msg": "Added T9 (THINK) after end: Late afternoon direction"
+      "time": "2026-04-28T22:16:04.355Z",
+      "msg": "Added T9 (THINK) after end: Evening direction: depth vs breadth"
     },
     {
-      "time": "2026-04-28T20:16:00.600Z",
-      "msg": "Added T10 (PLAN) after end: Continue highest-value work based on progress"
+      "time": "2026-04-28T22:16:04.469Z",
+      "msg": "Added T10 (PLAN) after end: monkey-lang WASM new feature (for-in or hash maps)"
     },
     {
-      "time": "2026-04-28T20:16:00.714Z",
+      "time": "2026-04-28T22:16:04.584Z",
       "msg": "Added T11 (BUILD) after end: null"
     },
     {
-      "time": "2026-04-28T20:16:00.829Z",
-      "msg": "Added T12 (MAINTAIN) after end: Session end housekeeping"
+      "time": "2026-04-28T22:16:04.699Z",
+      "msg": "Added T12 (EXPLORE) after end: Stress test recent features across both projects"
     },
     {
-      "time": "2026-04-28T20:17:18.004Z",
+      "time": "2026-04-28T22:16:04.813Z",
+      "msg": "Added T13 (MAINTAIN) after end: Final cleanup and push"
+    },
+    {
+      "time": "2026-04-28T22:17:43.374Z",
       "msg": "PLAN T2 filled 3 BUILD tasks"
     },
     {
-      "time": "2026-04-28T20:28:15.027Z",
-      "msg": "Added T15 (PLAN) after T5: Deploy monkey-lang playground to GitHub Pages"
-    },
-    {
-      "time": "2026-04-28T20:28:15.144Z",
-      "msg": "Added T16 (BUILD) after T15: null"
-    },
-    {
-      "time": "2026-04-28T20:28:36.109Z",
-      "msg": "PLAN T15 filled 1 BUILD tasks"
-    },
-    {
-      "time": "2026-04-28T20:30:50.456Z",
-      "msg": "PLAN T6 filled 1 BUILD tasks"
-    },
-    {
-      "time": "2026-04-28T20:39:16.788Z",
-      "msg": "Added T17 (PLAN) after T9: Extend WASM compiler: array literals + index access + len() + push()"
-    },
-    {
-      "time": "2026-04-28T20:39:17.133Z",
-      "msg": "Added T18 (BUILD) after T17: null"
-    },
-    {
-      "time": "2026-04-28T20:40:04.451Z",
-      "msg": "PLAN T17 filled 3 BUILD tasks"
-    },
-    {
-      "time": "2026-04-28T20:50:59.383Z",
-      "msg": "PLAN T10 filled 3 BUILD tasks"
-    },
-    {
-      "time": "2026-04-28T20:56:04.156Z",
-      "msg": "Added T23 (THINK) after end: Midpoint assessment: what's the highest-value next step?"
-    },
-    {
-      "time": "2026-04-28T20:56:04.270Z",
-      "msg": "Added T24 (PLAN) after end: WASM HOF tests + do-while compiler support"
-    },
-    {
-      "time": "2026-04-28T20:56:04.386Z",
-      "msg": "Added T25 (BUILD) after end: null"
-    },
-    {
-      "time": "2026-04-28T20:56:04.500Z",
-      "msg": "Added T26 (MAINTAIN) after end: Git push + daily log"
-    },
-    {
-      "time": "2026-04-28T20:56:04.614Z",
-      "msg": "Added T27 (THINK) after end: Direction for remaining time"
-    },
-    {
-      "time": "2026-04-28T20:56:04.729Z",
-      "msg": "Added T28 (PLAN) after end: Next focus area based on progress"
-    },
-    {
-      "time": "2026-04-28T20:56:18.348Z",
-      "msg": "Added T29 (BUILD) after end: null"
-    },
-    {
-      "time": "2026-04-28T20:56:18.463Z",
-      "msg": "Added T30 (MAINTAIN) after end: Push + housekeeping"
-    },
-    {
-      "time": "2026-04-28T20:56:47.781Z",
-      "msg": "PLAN T24 filled 1 BUILD tasks"
-    },
-    {
-      "time": "2026-04-28T21:03:24.124Z",
-      "msg": "PLAN T28 filled 2 BUILD tasks"
-    },
-    {
-      "time": "2026-04-28T21:20:39.911Z",
-      "msg": "Added T32 (THINK) after end: Afternoon direction: which project benefits most from deeper work?"
-    },
-    {
-      "time": "2026-04-28T21:20:40.026Z",
-      "msg": "Added T33 (PLAN) after end: monkey-lang: hash map support in WASM compiler"
-    },
-    {
-      "time": "2026-04-28T21:20:40.140Z",
-      "msg": "Added T34 (BUILD) after end: null"
-    },
-    {
-      "time": "2026-04-28T21:20:40.254Z",
-      "msg": "Added T35 (MAINTAIN) after end: Git push + test sweep"
-    },
-    {
-      "time": "2026-04-28T21:20:40.369Z",
-      "msg": "Added T36 (THINK) after end: Direction for final hours"
-    },
-    {
-      "time": "2026-04-28T21:20:40.484Z",
-      "msg": "Added T37 (PLAN) after end: Best remaining work for the session"
-    },
-    {
-      "time": "2026-04-28T21:20:46.580Z",
-      "msg": "Added T38 (BUILD) after end: null"
-    },
-    {
-      "time": "2026-04-28T21:21:02.407Z",
-      "msg": "Added T39 (MAINTAIN) after end: Verify all test suites green and push latest changes"
-    },
-    {
-      "time": "2026-04-28T21:21:30.046Z",
-      "msg": "Removed T34: "
-    },
-    {
-      "time": "2026-04-28T21:21:37.148Z",
-      "msg": "PLAN T33 filled 2 BUILD tasks"
-    },
-    {
-      "time": "2026-04-28T21:25:19.098Z",
-      "msg": "Removed T37: "
-    },
-    {
-      "time": "2026-04-28T21:25:19.293Z",
-      "msg": "Removed T38: "
-    },
-    {
-      "time": "2026-04-28T21:25:19.491Z",
-      "msg": "Removed T39: "
-    },
-    {
-      "time": "2026-04-28T21:25:30.701Z",
-      "msg": "Added T42 (BUILD) after end: WASM integration stress test: arrays + HOFs + closures + recursion"
-    },
-    {
-      "time": "2026-04-28T21:25:30.817Z",
-      "msg": "Added T43 (MAINTAIN) after end: Session BUILD cap pivot: run full test sweep across both projects"
-    },
-    {
-      "time": "2026-04-28T21:25:30.932Z",
-      "msg": "Added T44 (EXPLORE) after end: Stress test playground in browser-like environment"
-    },
-    {
-      "time": "2026-04-28T21:25:31.048Z",
-      "msg": "Added T45 (THINK) after end: Session review and daily log"
-    },
-    {
-      "time": "2026-04-28T21:33:16.796Z",
-      "msg": "Added T46 (EXPLORE) after end: Investigate WASM compiler code quality: read and annotate the full compiler"
-    },
-    {
-      "time": "2026-04-28T21:33:16.910Z",
-      "msg": "Added T47 (THINK) after end: Design proper array reallocation for WASM (growth strategy)"
-    },
-    {
-      "time": "2026-04-28T21:33:17.026Z",
-      "msg": "Added T48 (EXPLORE) after end: Stress test HenryDB UPDATE fast-path edge cases"
-    },
-    {
-      "time": "2026-04-28T21:33:17.141Z",
-      "msg": "Added T49 (MAINTAIN) after end: Clean up TODO.md and update MEMORY.md with session learnings"
-    },
-    {
-      "time": "2026-04-28T21:43:48.584Z",
-      "msg": "Added T50 (EXPLORE) after end: Run the full monkey-lang test suite (not just WASM) and triage failures"
-    },
-    {
-      "time": "2026-04-28T21:43:48.700Z",
-      "msg": "Added T51 (THINK) after end: Architecture review: what are the biggest remaining gaps in monkey-lang WASM compiler?"
-    },
-    {
-      "time": "2026-04-28T21:43:48.815Z",
-      "msg": "Added T52 (EXPLORE) after end: Run full HenryDB test suite and triage any failures"
-    },
-    {
-      "time": "2026-04-28T21:43:48.930Z",
-      "msg": "Added T53 (MAINTAIN) after end: Final git push + CURRENT.md cleanup"
+      "time": "2026-04-28T22:35:48.592Z",
+      "msg": "Removed T3: Reallocation goal fully completed in T14-T16"
     }
   ]
 }
