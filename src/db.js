@@ -3,6 +3,7 @@
 
 import { HeapFile, encodeTuple, decodeTuple } from './page.js';
 import { BPlusTree } from './btree.js';
+import { estimateMultiEngineCost } from './cost-model.js';
 import { optimizeSelect } from './decorrelate.js';
 import { QueryPlanner } from './planner.js';
 import { makeCompositeKey } from './composite-key.js';
@@ -4369,6 +4370,31 @@ export class Database {
     textLines.push(`Planning Time: ${Math.max(0.001, executionTime * 0.1).toFixed(3)} ms`);
     textLines.push(`Execution Time: ${executionTime.toFixed(3)} ms`);
 
+    // Multi-engine cost analysis (if planner estimate is available)
+    let engineAnalysis = null;
+    try {
+      const volcanoPlan = buildVolcanoPlan(stmt, this.tables, this.indexCatalog);
+      if (volcanoPlan) {
+        const tableStats = new Map();
+        for (const [name, table] of this.tables) {
+          tableStats.set(name, {
+            rowCount: table.heap?.tupleCount || 0,
+            avgRowSize: 100,
+          });
+        }
+        engineAnalysis = estimateMultiEngineCost(volcanoPlan, tableStats);
+        
+        textLines.push('');
+        textLines.push('Engine Analysis:');
+        textLines.push(`  Volcano:    cost=${engineAnalysis.volcano.cost.toFixed(1)}`);
+        textLines.push(`  Codegen:    cost=${engineAnalysis.codegen.cost.toFixed(1)} (startup=${engineAnalysis.codegen.startupCost})`);
+        textLines.push(`  Vectorized: cost=${engineAnalysis.vectorized.cost.toFixed(1)} (startup=${engineAnalysis.vectorized.startupCost})`);
+        textLines.push(`  Recommended: ${engineAnalysis.cheapest}`);
+      }
+    } catch (e) {
+      // Multi-engine analysis failed
+    }
+
     return {
       type: 'ANALYZE',
       plan: nodes,
@@ -4379,6 +4405,7 @@ export class Database {
       estimation_accuracy: plannerEstimate?.estimatedRows
         ? parseFloat((actualRows / plannerEstimate.estimatedRows).toFixed(3))
         : '?',
+      engineAnalysis,
     };
   }
 

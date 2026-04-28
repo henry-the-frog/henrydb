@@ -105,4 +105,23 @@ describe('EXPLAIN ANALYZE', () => {
     assert.strictEqual(result.type, 'ANALYZE');
     assert.strictEqual(result.actual_rows, 3);
   });
+
+  it('includes engine analysis in EXPLAIN ANALYZE', () => {
+    const db = new Database();
+    db.execute('CREATE TABLE data (id INT, val INT)');
+    for (let i = 0; i < 100; i++) {
+      db.execute(`INSERT INTO data VALUES (${i}, ${i * 10})`);
+    }
+    
+    const result = db.execute('EXPLAIN ANALYZE SELECT * FROM data WHERE val > 500');
+    assert.strictEqual(result.type, 'ANALYZE');
+    assert.ok(result.text.includes('Engine Analysis') || result.engineAnalysis !== null,
+      'Should include engine analysis');
+    if (result.engineAnalysis) {
+      assert.ok(result.engineAnalysis.volcano, 'Should have volcano cost');
+      assert.ok(result.engineAnalysis.codegen, 'Should have codegen cost');
+      assert.ok(result.engineAnalysis.vectorized, 'Should have vectorized cost');
+      assert.ok(result.engineAnalysis.cheapest, 'Should recommend an engine');
+    }
+  });
 });
