@@ -53,6 +53,7 @@ const KEYWORDS = new Set([
 export function tokenize(sql) {
   const tokens = [];
   let i = 0;
+  let questionMarkCounter = 0;
   const src = sql.trim();
 
   while (i < src.length) {
@@ -219,6 +220,15 @@ export function tokenize(sql) {
       let num = '';
       while (i < src.length && /[0-9]/.test(src[i])) num += src[i++];
       tokens.push({ type: 'PARAM', index: parseInt(num) });
+      continue;
+    }
+
+    // Positional ? placeholder (auto-numbered)
+    if (src[i] === '?' && (i + 1 >= src.length || !/[a-zA-Z0-9_]/.test(src[i + 1]))) {
+      if (!questionMarkCounter) questionMarkCounter = 0;
+      questionMarkCounter++;
+      tokens.push({ type: 'PARAM', index: questionMarkCounter });
+      i++;
       continue;
     }
 

@@ -190,5 +190,29 @@ export function prepare(db, sql) {
     close() {
       db._prepared.delete(name);
     },
+    /**
+     * Execute the statement for each row of params.
+     * @param {Array<Array>} rows — array of param arrays
+     * @returns {object} — { count, results? }
+     */
+    executeMany(rows) {
+      let count = 0;
+      const results = [];
+      for (const row of rows) {
+        const flatParams = Array.isArray(row) ? row : [row];
+        if (slots.length === 0) {
+          results.push(db.execute_ast(ast));
+        } else {
+          const originals = fastBind(slots, flatParams);
+          try {
+            results.push(db.execute_ast(ast));
+          } finally {
+            fastUnbind(slots, originals);
+          }
+        }
+        count++;
+      }
+      return { count, results };
+    },
   };
 }

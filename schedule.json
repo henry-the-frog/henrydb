@@ -69,18 +69,22 @@
     {
       "id": "T7",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Optimize prepared stmt execution: avoid deep clone, add paramSlots to AST",
       "plan_ref": "T4",
       "project": "henrydb",
-      "started": "2026-04-28T17:39:07.212Z"
+      "started": "2026-04-28T17:39:07.212Z",
+      "completed": "2026-04-28T17:40:42.475Z",
+      "duration_ms": 300000,
+      "summary": "Optimized prepared stmts: fast bind/unbind replaces deep clone. 2.7x faster (0.043→0.016ms/insert). collectParamSlots pre-walks AST, fastBind swaps in-place, fastUnbind restores. All 64 prepared stmt tests pass."
     },
     {
       "id": "T9",
       "mode": "BUILD",
       "task": "Add batch execute (stmt.executeMany) and ? placeholder support",
-      "status": "upcoming",
-      "plan_ref": "T4"
+      "status": "in-progress",
+      "plan_ref": "T4",
+      "started": "2026-04-28T17:40:50.890Z"
     },
     {
       "id": "T5",
