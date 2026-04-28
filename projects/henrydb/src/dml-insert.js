@@ -153,61 +153,48 @@ export function insert(db, ast) {
       }
     }
     
-    // Check UNIQUE constraints (including PRIMARY KEY columns)
-    // Skip if UPSERT (ON CONFLICT) is in play — conflicts are handled above
+    // UNIQUE/PK constraint checking for single-column constraints is handled by
+    // _insertRow → _validateConstraints (uses B-tree index lookups, O(log N)).
+    // 
+    // Composite UNIQUE constraints (from indexCatalog) need checking here since
+    // _validateConstraints only handles per-column uniqueness.
     if (!ast.onConflict) {
-    // Must use schema-ordered values, not insert-column-ordered values
-    const orderedValsForCheck = db._orderValues(table, ast.columns, values);
-    // Apply SERIAL auto-increment for the check
-    for (let ci = 0; ci < table.schema.length; ci++) {
-      if (table.schema[ci].serial && (orderedValsForCheck[ci] === null || orderedValsForCheck[ci] === undefined)) {
-        // Skip SERIAL columns that haven't been assigned yet — they'll be unique
-        continue;
-      }
-      if ((table.schema[ci].unique || table.schema[ci].primaryKey) && orderedValsForCheck[ci] != null) {
-        for (const tuple of table.heap.scan()) {
-          const tv = tuple.values || tuple;
-          if (tv[ci] === orderedValsForCheck[ci]) {
-            throw new Error(`UNIQUE constraint violated on column ${table.schema[ci].name}: duplicate value '${orderedValsForCheck[ci]}'`);
+      for (const [idxName, meta] of db.indexCatalog) {
+        if (meta.table === ast.table && meta.unique) {
+          const idxTable = db.tables.get(meta.table);
+          if (!idxTable) continue;
+          const colIndices = meta.columns.map(col => idxTable.schema.findIndex(c => c.name === col));
+          if (colIndices.some(i => i < 0)) continue;
+          // Get the ordered values (map from ast.columns to schema order)
+          const orderedVals = new Array(idxTable.schema.length).fill(null);
+          if (ast.columns) {
+            for (let i = 0; i < ast.columns.length; i++) {
+              const ci = idxTable.schema.findIndex(c => c.name === ast.columns[i]);
+              if (ci >= 0) orderedVals[ci] = values[i];
+            }
+          } else {
+            for (let i = 0; i < values.length; i++) orderedVals[i] = values[i];
+          }
+          const keyValues = colIndices.map(i => orderedVals[i]);
+          // Skip NULL keys (SQL standard: NULLs are not equal)
+          if (keyValues.some(v => v === null || v === undefined)) continue;
+          // Try to use the index for O(log N) lookup instead of heap scan
+          const idx = idxTable.indexes?.get(meta.columns[0]);
+          if (idx && typeof idx.search === 'function' && meta.columns.length === 1) {
+            // Single-column index — already handled by _validateConstraints, skip
+            continue;
+          }
+          // For composite indexes, check via heap scan (TODO: use composite index lookup)
+          for (const tuple of idxTable.heap.scan()) {
+            const tv = tuple.values || tuple;
+            const existingKey = colIndices.map(i => tv[i]);
+            if (keyValues.every((v, i) => v === existingKey[i])) {
+              throw new Error(`UNIQUE constraint violated on index ${idxName}: duplicate key '${keyValues.join(', ')}'`);
+            }
           }
         }
       }
     }
-    }
-
-    // Check UNIQUE INDEX constraints from indexCatalog
-    // Skip if UPSERT (ON CONFLICT) is in play — conflicts are handled above
-    if (!ast.onConflict) {
-    for (const [idxName, meta] of db.indexCatalog) {
-      if (meta.table === ast.table && meta.unique) {
-        const idxTable = db.tables.get(meta.table);
-        if (!idxTable) continue;
-        const colIndices = meta.columns.map(col => idxTable.schema.findIndex(c => c.name === col));
-        if (colIndices.some(i => i < 0)) continue;
-        // Get the ordered values (map from ast.columns to schema order)
-        const orderedVals = new Array(idxTable.schema.length).fill(null);
-        if (ast.columns) {
-          for (let i = 0; i < ast.columns.length; i++) {
-            const ci = idxTable.schema.findIndex(c => c.name === ast.columns[i]);
-            if (ci >= 0) orderedVals[ci] = values[i];
-          }
-        } else {
-          for (let i = 0; i < values.length; i++) orderedVals[i] = values[i];
-        }
-        const keyValues = colIndices.map(i => orderedVals[i]);
-        // Skip NULL keys (SQL standard: NULLs are not equal)
-        if (keyValues.some(v => v === null || v === undefined)) continue;
-        // Scan existing data for duplicate (index-independent check)
-        for (const tuple of idxTable.heap.scan()) {
-          const tv = tuple.values || tuple;
-          const existingKey = colIndices.map(i => tv[i]);
-          if (keyValues.every((v, i) => v === existingKey[i])) {
-            throw new Error(`UNIQUE constraint violated on index ${idxName}: duplicate key '${keyValues.join(', ')}'`);
-          }
-        }
-      }
-    }
-    } // end if (!ast.onConflict) for UNIQUE INDEX check
     
     // When ON CONFLICT DO NOTHING is active without specific columns,
     // wrap insert in try/catch to handle constraint violations gracefully

@@ -70,30 +70,49 @@
     {
       "id": "T4",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Housekeeping: git push, dashboard health, knowledge capture",
-      "started": "2026-04-28T14:28:58.619Z"
+      "started": "2026-04-28T14:28:58.619Z",
+      "completed": "2026-04-28T14:35:53.397Z",
+      "duration_ms": 480000,
+      "summary": "Git push (workspace + monkey-lang). Merged 34 upstream commits with box/cell. Optimized: pure self-recursion stays fast (direct calls). 1940/1940 tests pass."
     },
     {
       "id": "T5",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Assess box/cell progress. Quality check"
+      "status": "done",
+      "task": "Assess box/cell progress. Quality check",
+      "started": "2026-04-28T14:36:02.260Z",
+      "completed": "2026-04-28T14:36:16.831Z",
+      "duration_ms": 60000,
+      "summary": "Box/cell complete. 3/3 bugs fixed, 1940 tests pass, perf preserved. Depth check: 3 surprises (scope ID tracking, 10x perf regression without optimization, remote had incomplete fix). Moving to HenryDB INSERT."
     },
     {
       "id": "T6",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "HenryDB INSERT bottleneck fix (remove redundant heap scans)",
-      "task": null
+      "task": null,
+      "started": "2026-04-28T14:36:24.785Z",
+      "completed": "2026-04-28T14:36:54.994Z",
+      "duration_ms": 120000,
+      "summary": "Planned INSERT fix: 2 BUILD tasks — remove redundant heap scans, verify + benchmark."
     },
     {
       "id": "T7",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null,
+      "status": "in-progress",
+      "task": "Remove redundant heap scan constraint checks in dml-insert.js _insert() — lines 168-175 (UNIQUE/PK) and 184-206 (UNIQUE INDEX)",
       "plan_ref": "T6",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-28T14:37:02.031Z"
+    },
+    {
+      "id": "T22",
+      "mode": "BUILD",
+      "task": "Run full HenryDB test suite to verify no regressions, then benchmark INSERT performance improvement",
+      "status": "upcoming",
+      "plan_ref": "T6"
     },
     {
       "id": "T8",
@@ -255,6 +274,10 @@
     {
       "time": "2026-04-28T14:16:48.432Z",
       "msg": "PLAN T2 filled 4 BUILD tasks"
+    },
+    {
+      "time": "2026-04-28T14:36:49.728Z",
+      "msg": "PLAN T6 filled 2 BUILD tasks"
     }
   ]
 }
