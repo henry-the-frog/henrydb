@@ -474,10 +474,13 @@
     {
       "id": "T46",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Add compiled-expr integration to SELECT scan path",
       "project": "henrydb",
-      "started": "2026-04-28T18:46:21.010Z"
+      "started": "2026-04-28T18:46:21.010Z",
+      "completed": "2026-04-28T18:53:33.880Z",
+      "duration_ms": 600000,
+      "summary": "Integrated compiled-expr into SELECT paths. Found + fixed critical bug: qualified column refs (table.col) were compiled incorrectly in correlated subqueries, breaking NOT EXISTS. Fix: return null for qualified refs, fall back to _evalExpr. Removed WeakMap cache (incompatible with prepared stmt fastBind). All tests pass."
     }
   ],
   "focusProjects": [

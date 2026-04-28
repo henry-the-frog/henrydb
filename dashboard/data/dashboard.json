@@ -1,11 +1,13 @@
 {
-  "generated": "2026-04-28T18:46:21.388Z",
+  "generated": "2026-04-28T18:53:34.080Z",
   "current": {
-    "status": "in-progress",
+    "status": "done",
     "mode": "BUILD",
     "task": "Add compiled-expr integration to SELECT scan path",
-    "startedAt": "2026-04-28T18:46:21.388Z",
-    "taskId": "T46"
+    "completedAt": "2026-04-28T18:53:34.080Z",
+    "taskId": "T46",
+    "summary": "Integrated compiled-expr into SELECT paths. Found + fixed critical bug: qualified column refs (table.col) were compiled incorrectly in correlated subqueries, breaking NOT EXISTS. Fix: return null for qualified refs, fall back to _evalExpr. Removed WeakMap cache (incompatible with prepared stmt fastBind). All tests pass.",
+    "durationMs": 600000
   },
   "schedule": {
     "date": "2026-04-28",
@@ -5087,12 +5089,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 40,
+    "blocksCompleted": 41,
     "blocksTotal": 41,
     "modeDistribution": {
       "THINK": 8,
       "PLAN": 8,
-      "BUILD": 19,
+      "BUILD": 20,
       "MAINTAIN": 5
     }
   },
