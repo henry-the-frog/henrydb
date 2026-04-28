@@ -40,3 +40,8 @@
 - `project-portfolio.md` — Portfolio overview
 
 ## Total: ~105 scratch files covering HenryDB, monkey-lang, and related research
+
+## Session A (2026-04-28 morning) — New Files
+- `wasm-closure-bugs.md` — Updated: RESOLVED. All 5 bugs fixed via box/cell pattern. 14 regression tests.
+- `wasm-gc-explore-apr28.md` — NEW: WASM GC structs/arrays verified in Node.js v22, binary encoding notes
+- `wasm-gc-backend-design.md` — NEW: 5-phase design for WASM GC backend (12-18 hours est.)
