@@ -190,15 +190,22 @@
     {
       "id": "T18",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Final housekeeping + push",
-      "started": "2026-04-28T17:54:56.907Z"
+      "started": "2026-04-28T17:54:56.907Z",
+      "completed": "2026-04-28T17:55:11.594Z",
+      "duration_ms": 30000,
+      "summary": "Git push workspace + henrydb."
     },
     {
       "id": "T19",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "What else in monkey-lang deserves exploration? Review WASM compiler for untested edge cases"
+      "status": "done",
+      "task": "What else in monkey-lang deserves exploration? Review WASM compiler for untested edge cases",
+      "started": "2026-04-28T17:55:15.263Z",
+      "completed": "2026-04-28T17:56:36.058Z",
+      "duration_ms": 180000,
+      "summary": "Review: pipe is parsed+desugared (works in WASM already), switch doesnt exist as language feature, compiler has no TODOs/unimplemented. Test gaps minimal. Best next work: input validation guard, stress test complex programs, and HenryDB inline reduce/sort."
     },
     {
       "id": "T20",
@@ -211,24 +218,89 @@
     {
       "id": "T21",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "Add input type guard to WasmCompiler.compile() for non-string inputs",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-28T17:56:40.122Z",
+      "completed": "2026-04-28T17:57:23.942Z",
+      "duration_ms": 120000,
+      "summary": "Added TypeError guards to compile() and compileAndRun() for non-string inputs. Prevents OOM from Lexer tokenizing [object Object]. Points users to compileProgram() for AST objects. All tests pass."
     },
     {
       "id": "T22",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "monkey-lang: stress test WASM compiler with complex programs",
-      "task": null
+      "task": null,
+      "started": "2026-04-28T17:57:28.252Z",
+      "completed": "2026-04-28T17:57:42.904Z",
+      "duration_ms": 60000,
+      "summary": "5 hypotheses for stress testing: nested closures, large arrays, recursive closures, class methods, try-catch closures. 1 BUILD task."
+    },
+    {
+      "id": "T24",
+      "mode": "BUILD",
+      "task": "Stress test: nested closures, large arrays, recursive closures, class method chains, try-catch closures",
+      "status": "done",
+      "plan_ref": "T22",
+      "started": "2026-04-28T17:57:47.976Z",
+      "completed": "2026-04-28T18:01:38.816Z",
+      "duration_ms": 600000,
+      "summary": "Added 10 stress tests: nested closures (5 levels), 1K array ops, recursive+mutable closures, class method chains, try-catch closures, nested for-in, do-while+break combos, pipeline on 100 elements, match patterns, loop closure capture. All pass. Found class syntax requires field decls + ClassName() not ClassName.init()."
     },
     {
       "id": "T23",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": null,
       "plan_ref": "T21",
+      "project": "monkey-lang",
+      "started": "2026-04-28T18:02:06.749Z",
+      "completed": "2026-04-28T18:02:06.888Z",
+      "duration_ms": 0,
+      "summary": "Skipped - parent task T21 already completed."
+    },
+    {
+      "id": "T25",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Add tests for ? placeholder and executeMany batch insert",
+      "project": "henrydb",
+      "started": "2026-04-28T18:02:59.204Z"
+    },
+    {
+      "id": "T26",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Add pipe operator tests to WASM compiler test suite",
       "project": "monkey-lang"
+    },
+    {
+      "id": "T27",
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "Evaluate monkey-lang inline reduce/sort: complexity vs value"
+    },
+    {
+      "id": "T28",
+      "mode": "PLAN",
+      "status": "upcoming",
+      "goal": "monkey-lang: inline reduce compilation for WASM",
+      "task": null
+    },
+    {
+      "id": "T29",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null,
+      "plan_ref": "T28",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T30",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Final housekeeping + push + evening summary"
     }
   ],
   "focusProjects": [
@@ -352,6 +424,34 @@
     {
       "time": "2026-04-28T17:54:52.252Z",
       "msg": "Added T23 (BUILD) after end: null"
+    },
+    {
+      "time": "2026-04-28T17:57:37.765Z",
+      "msg": "PLAN T22 filled 1 BUILD tasks"
+    },
+    {
+      "time": "2026-04-28T18:02:41.871Z",
+      "msg": "Added T25 (BUILD) after end: Add tests for ? placeholder and executeMany batch insert"
+    },
+    {
+      "time": "2026-04-28T18:02:41.985Z",
+      "msg": "Added T26 (BUILD) after end: Add pipe operator tests to WASM compiler test suite"
+    },
+    {
+      "time": "2026-04-28T18:02:42.100Z",
+      "msg": "Added T27 (THINK) after end: Evaluate monkey-lang inline reduce/sort: complexity vs value"
+    },
+    {
+      "time": "2026-04-28T18:02:42.215Z",
+      "msg": "Added T28 (PLAN) after end: monkey-lang: inline reduce compilation for WASM"
+    },
+    {
+      "time": "2026-04-28T18:02:42.330Z",
+      "msg": "Added T29 (BUILD) after end: null"
+    },
+    {
+      "time": "2026-04-28T18:02:42.443Z",
+      "msg": "Added T30 (MAINTAIN) after end: Final housekeeping + push + evening summary"
     }
   ]
 }

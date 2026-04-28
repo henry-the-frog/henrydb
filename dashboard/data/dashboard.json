@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-28T17:54:56.942Z",
+  "generated": "2026-04-28T18:02:59.238Z",
   "current": {
     "status": "in-progress",
-    "mode": "MAINTAIN",
-    "task": "Final housekeeping + push",
-    "startedAt": "2026-04-28T17:54:56.942Z",
-    "taskId": "T18"
+    "mode": "BUILD",
+    "task": "Add tests for ? placeholder and executeMany batch insert",
+    "startedAt": "2026-04-28T18:02:59.238Z",
+    "taskId": "T25"
   },
   "schedule": {
     "date": "2026-04-28",
@@ -4827,36 +4827,99 @@
       {
         "id": "T16",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "monkey-lang: lazy runtime function emission for WASM",
         "task": null,
-        "started": "2026-04-28T17:49:26.378Z"
+        "started": "2026-04-28T17:49:26.378Z",
+        "completed": "2026-04-28T17:50:06.740Z",
+        "duration_ms": 120000,
+        "summary": "Planned 1 BUILD task: replace _addRuntimeFunctions() with _requireRuntime() lazy pattern. 49 runtime funcs registered upfront; many programs use <10. Approach: on-demand emission during compilation."
       },
       {
         "id": "T17",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "Implement lazy runtime function emission: _requireRuntime() adds functions on first use",
         "plan_ref": "T16",
-        "project": "monkey-lang"
+        "project": "monkey-lang",
+        "started": "2026-04-28T17:50:10.807Z",
+        "completed": "2026-04-28T17:54:24.819Z",
+        "duration_ms": 300000,
+        "summary": "CANCELLED: Lazy runtime emission not worth it. Compile time is already 0.22-0.28ms. Savings would be ~0.1ms (30%). Found interesting false alarm: passing AST to compile() instead of string caused Lexer to tokenize [object Object], creating infinite loop. Not a compiler bug. Updated TODO to remove this item."
       },
       {
         "id": "T18",
         "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Final housekeeping + push",
+        "started": "2026-04-28T17:54:56.907Z",
+        "completed": "2026-04-28T17:55:11.594Z",
+        "duration_ms": 30000,
+        "summary": "Git push workspace + henrydb."
+      },
+      {
+        "id": "T19",
+        "mode": "THINK",
+        "status": "done",
+        "task": "What else in monkey-lang deserves exploration? Review WASM compiler for untested edge cases",
+        "started": "2026-04-28T17:55:15.263Z",
+        "completed": "2026-04-28T17:56:36.058Z",
+        "duration_ms": 180000,
+        "summary": "Review: pipe is parsed+desugared (works in WASM already), switch doesnt exist as language feature, compiler has no TODOs/unimplemented. Test gaps minimal. Best next work: input validation guard, stress test complex programs, and HenryDB inline reduce/sort."
+      },
+      {
+        "id": "T20",
+        "mode": "PLAN",
+        "status": "skipped",
+        "goal": "HenryDB: add defensive guard for compile(ast) vs compile(string) misuse",
+        "task": null,
+        "skip_reason": ""
+      },
+      {
+        "id": "T21",
+        "mode": "BUILD",
+        "status": "done",
+        "task": "Add input type guard to WasmCompiler.compile() for non-string inputs",
+        "project": "monkey-lang",
+        "started": "2026-04-28T17:56:40.122Z",
+        "completed": "2026-04-28T17:57:23.942Z",
+        "duration_ms": 120000,
+        "summary": "Added TypeError guards to compile() and compileAndRun() for non-string inputs. Prevents OOM from Lexer tokenizing [object Object]. Points users to compileProgram() for AST objects. All tests pass."
+      },
+      {
+        "id": "T22",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "monkey-lang: stress test WASM compiler with complex programs",
+        "task": null,
+        "started": "2026-04-28T17:57:28.252Z"
+      },
+      {
+        "id": "T24",
+        "mode": "BUILD",
+        "task": "Stress test: nested closures, large arrays, recursive closures, class method chains, try-catch closures",
         "status": "upcoming",
-        "task": "Final housekeeping + push"
+        "plan_ref": "T22"
+      },
+      {
+        "id": "T23",
+        "mode": "BUILD",
+        "status": "upcoming",
+        "task": null,
+        "plan_ref": "T21",
+        "project": "monkey-lang"
       }
     ]
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 17,
-    "blocksTotal": 18,
+    "blocksCompleted": 23,
+    "blocksTotal": 24,
     "modeDistribution": {
-      "THINK": 3,
-      "PLAN": 4,
-      "BUILD": 7,
-      "MAINTAIN": 3
+      "THINK": 4,
+      "PLAN": 5,
+      "BUILD": 10,
+      "MAINTAIN": 4
     }
   },
   "artifacts": [],
