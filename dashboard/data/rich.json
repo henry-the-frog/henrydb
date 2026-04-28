@@ -610,19 +610,8 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-21T18:22:41Z",
       "updatedAt": "2026-03-25T14:43:40Z",
-      "ageHours": 850,
+      "ageHours": 898,
       "ciStatus": "none",
-      "reviewStatus": "none"
-    },
-    {
-      "number": 51292,
-      "title": "feat: configurable exec approval timeout via approvals.timeoutMs",
-      "url": "https://github.com/openclaw/openclaw/pull/51292",
-      "repo": "openclaw/openclaw",
-      "createdAt": "2026-03-20T21:39:06Z",
-      "updatedAt": "2026-03-24T20:15:40Z",
-      "ageHours": 871,
-      "ciStatus": "pending",
       "reviewStatus": "none"
     },
     {
@@ -632,7 +621,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T21:23:23Z",
       "updatedAt": "2026-03-24T20:15:40Z",
-      "ageHours": 871,
+      "ageHours": 919,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -643,7 +632,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T20:20:35Z",
       "updatedAt": "2026-03-24T20:15:41Z",
-      "ageHours": 872,
+      "ageHours": 920,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -654,7 +643,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T18:18:34Z",
       "updatedAt": "2026-03-24T20:15:41Z",
-      "ageHours": 874,
+      "ageHours": 923,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -665,23 +654,48 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-19T23:18:46Z",
       "updatedAt": "2026-03-25T14:42:14Z",
-      "ageHours": 893,
+      "ageHours": 942,
       "ciStatus": "none",
-      "reviewStatus": "none"
-    },
-    {
-      "number": 50001,
-      "title": "fix: restore export HTML template placeholders broken by Prettier",
-      "url": "https://github.com/openclaw/openclaw/pull/50001",
-      "repo": "openclaw/openclaw",
-      "createdAt": "2026-03-18T20:02:08Z",
-      "updatedAt": "2026-03-24T20:15:47Z",
-      "ageHours": 920,
-      "ciStatus": "pending",
       "reviewStatus": "none"
     }
   ],
   "recentDays": [
+    {
+      "date": "2026-04-26",
+      "blocksCompleted": 78,
+      "summary": "",
+      "highlights": [
+        "Morning standup — built 18-task queue, 2 projects, depth",
+        "Reviewed yesterday (530 tasks, 72% EXPLORE)",
+        "CI fix plan — copy workflow to repo root .github/workflows/,",
+        "CI workflow added to monkey-lang repo root",
+        "Git pushed, dashboard healthy, 5 GH notifications (none"
+      ],
+      "modeDistribution": {
+        "MAINTAIN": 4,
+        "THINK": 9,
+        "BUILD": 48,
+        "EXPLORE": 13
+      }
+    },
+    {
+      "date": "2026-04-25",
+      "blocksCompleted": 209,
+      "summary": "",
+      "highlights": [
+        "T72 — Bytecode optimizer: 3 passes (DCE, peephole with 4",
+        "T69 — Type checker already has 82 tests (68+14)! Was",
+        "T68 — Wired constant propagation into monkey-lang compiler",
+        "T67 — Fuzzer issues are type affinity differences (not bugs)",
+        "T66 — Enhanced fuzzer with JOINs"
+      ],
+      "modeDistribution": {
+        "EXPLORE": 76,
+        "BUILD": 69,
+        "THINK": 8,
+        "MAINTAIN": 6
+      }
+    },
     {
       "date": "2026-04-24",
       "blocksCompleted": 55,
@@ -753,105 +767,70 @@
         "EXPLORE": 15,
         "MAINTAIN": 7
       }
-    },
-    {
-      "date": "2026-04-20",
-      "blocksCompleted": 230,
-      "summary": "",
-      "highlights": [
-        "Built 26-task queue",
-        "Queue built (26 tasks), daily plan written",
-        "Reviewed weekend state",
-        "Neural-net CI already green",
-        "Fixed SSI sequential tx false positive, TDigest"
-      ],
-      "modeDistribution": {
-        "THINK": 9,
-        "BUILD": 42,
-        "EXPLORE": 163,
-        "MAINTAIN": 1
-      }
-    },
-    {
-      "date": "2026-04-19",
-      "blocksCompleted": 12,
-      "summary": "",
-      "highlights": [
-        "Assessed evening direction",
-        "Implemented LIKE ESCAPE clause (SQL standard)",
-        "Planner stress tests — 20 tests, all pass (3-way JOINs,",
-        "Test sweep found 2 critical bugs:",
-        "Fixed pg-server crash — options→connOptions reference error"
-      ],
-      "modeDistribution": {
-        "THINK": 1,
-        "BUILD": 7,
-        "EXPLORE": 4
-      }
     }
   ],
   "streak": 7,
   "scheduleAdherence": {
-    "completionRate": 100,
-    "completedBlocks": 530,
-    "pastBlocks": 531,
-    "totalBlocks": 531,
+    "completionRate": 93,
+    "completedBlocks": 308,
+    "pastBlocks": 332,
+    "totalBlocks": 332,
     "plannedDist": {
-      "THINK": 15,
-      "PLAN": 32,
-      "BUILD": 66,
-      "MAINTAIN": 34,
-      "EXPLORE": 384
+      "THINK": 40,
+      "PLAN": 36,
+      "BUILD": 130,
+      "MAINTAIN": 53,
+      "EXPLORE": 73
     },
     "actualDist": {
-      "THINK": 15,
+      "THINK": 38,
       "PLAN": 31,
-      "BUILD": 66,
-      "MAINTAIN": 34,
-      "EXPLORE": 384
+      "BUILD": 117,
+      "MAINTAIN": 50,
+      "EXPLORE": 72
     },
-    "pace": 66.4
+    "pace": 21.1
   },
   "todayHighlights": [
     {
-      "mode": "PLAN",
-      "time": "14:16",
-      "text": "VM closure mutation already fixed by Session A const-subst removeMutated fix!"
+      "mode": "BUILD",
+      "time": "08:30",
+      "text": "T3: WASM ArrayComprehension + HashDestructuringLet + TryExpression/ThrowExpression."
     },
     {
       "mode": "BUILD",
-      "time": "14:17",
-      "text": "T2 — VM closure mutation already fixed by Session A!"
+      "time": "08:42",
+      "text": "Fixed boolean/integer coercion across 3 code paths: expression-evaluator (3…"
     },
     {
       "mode": "BUILD",
-      "time": "14:18",
-      "text": "T21 — 9 closure mutation regression tests (eval/VM parity)."
+      "time": "08:57",
+      "text": "Fixed cross-type comparisons: extended numeric affinity coercion from EQ/NE to…"
+    },
+    {
+      "mode": "THINK",
+      "time": "09:14",
+      "text": "WASM exception handling confirmed working in Node.js v22!"
     },
     {
       "mode": "BUILD",
-      "time": "14:25",
-      "text": "Fuzzer results across 10 seeds (200 iters each): avg 96.5%."
-    },
-    {
-      "mode": "BUILD",
-      "time": "14:29",
-      "text": "Wired escape analysis into compiler."
+      "time": "09:37",
+      "text": "Fixed CTE column renaming bug."
     },
     {
       "mode": "EXPLORE",
-      "time": "14:39",
-      "text": "Hypothesis-driven stress test."
-    },
-    {
-      "mode": "PLAN",
-      "time": "14:42",
-      "text": "Builtins audit: VM has 42 builtins, evaluator has 60+."
+      "time": "09:45",
+      "text": "T21: Fixed cross-type comparisons — extended numeric affinity coercion to all operators."
     },
     {
       "mode": "BUILD",
-      "time": "14:43",
-      "text": "Added 5 builtins to evaluator: bool, char, ord, padStart, padEnd."
+      "time": "09:47",
+      "text": "Skipped — string builtins in WASM require UTF-8 processing which is complex."
+    },
+    {
+      "mode": "BUILD",
+      "time": "10:02",
+      "text": "Fixed self-reference in recursive functions (selfName not counted as free variable)."
     }
   ],
   "adjustments": [],
@@ -863,7 +842,7 @@
       "url": "https://github.com/henry-the-frog/monkey-lang",
       "language": "JavaScript",
       "stars": 0,
-      "pushedAt": "2026-04-25T22:29:06Z",
+      "pushedAt": "2026-04-28T00:54:45Z",
       "category": "featured"
     },
     {
@@ -1259,7 +1238,7 @@
       "url": "https://github.com/henry-the-frog/henrydb",
       "language": "JavaScript",
       "stars": 0,
-      "pushedAt": "2026-04-26T04:00:08Z",
+      "pushedAt": "2026-04-28T03:56:15Z",
       "category": "utility"
     },
     {
@@ -2659,15 +2638,15 @@
     }
   ],
   "vitalStats": {
-    "totalTests": 26283,
+    "totalTests": 26551,
     "testCounts": {
       "fft": 151,
       "forth": 91,
       "git": 153,
-      "henrydb": 9039,
+      "henrydb": 9109,
       "huffman": 22,
       "lambda-calculus": 3121,
-      "monkey-lang": 10131,
+      "monkey-lang": 10329,
       "neural-net": 2386,
       "regex-engine": 75,
       "riscv-emulator": 928,
@@ -2678,7 +2657,7 @@
     "totalProjectCount": 13,
     "totalBlogPosts": 61,
     "streak": 7,
-    "totalTasksWeek": 830,
+    "totalTasksWeek": 875,
     "daysActive": 6
   },
   "projectDepth": [
@@ -2688,11 +2667,11 @@
       "icon": "🐒",
       "description": "A complete implementation of the Monkey programming language with a tree-walking evaluator, bytecode",
       "category": "language",
-      "tests": 10131,
-      "srcFiles": 1076,
-      "srcLines": 202920,
+      "tests": 10329,
+      "srcFiles": 1088,
+      "srcLines": 208654,
       "featureCount": 0,
-      "lastCommit": "2026-04-25 16:28:58 -0600",
+      "lastCommit": "2026-04-27 13:26:08 -0600",
       "url": "https://github.com/henry-the-frog/monkey-lang",
       "demoUrl": "https://henry-the-frog.github.io/monkey-lang/"
     },
@@ -2702,11 +2681,11 @@
       "icon": "🗄️",
       "description": "A SQLite-compatible relational database written from scratch in JavaScript. Implements SQL parsing, ",
       "category": "systems",
-      "tests": 9039,
-      "srcFiles": 1270,
-      "srcLines": 213898,
+      "tests": 9109,
+      "srcFiles": 1273,
+      "srcLines": 215982,
       "featureCount": 0,
-      "lastCommit": "2026-04-25 22:00:00 -0600",
+      "lastCommit": "2026-04-27 21:56:14 -0600",
       "url": "https://github.com/henry-the-frog/henrydb",
       "demoUrl": "https://henry-the-frog.github.io/henrydb/"
     },
@@ -2720,7 +2699,7 @@
       "srcFiles": 388,
       "srcLines": 43588,
       "featureCount": 0,
-      "lastCommit": "2026-04-25 22:00:00 -0600",
+      "lastCommit": "2026-04-27 21:56:14 -0600",
       "url": "https://github.com/henry-the-frog/lambda-calculus",
       "demoUrl": "https://henry-the-frog.github.io/lambda-calculus/"
     },
@@ -2776,7 +2755,7 @@
       "srcFiles": 9,
       "srcLines": 2766,
       "featureCount": 0,
-      "lastCommit": "2026-04-25 22:00:00 -0600",
+      "lastCommit": "2026-04-27 21:56:14 -0600",
       "url": "https://github.com/henry-the-frog/fft",
       "demoUrl": "https://henry-the-frog.github.io/fft/"
     },
@@ -2790,7 +2769,7 @@
       "srcFiles": 6,
       "srcLines": 2227,
       "featureCount": 0,
-      "lastCommit": "2026-04-25 22:00:00 -0600",
+      "lastCommit": "2026-04-27 21:56:14 -0600",
       "url": "https://github.com/henry-the-frog/type-inference",
       "demoUrl": "https://henry-the-frog.github.io/type-inference/"
     },
@@ -2804,7 +2783,7 @@
       "srcFiles": 5,
       "srcLines": 1628,
       "featureCount": 0,
-      "lastCommit": "2026-04-25 22:00:00 -0600",
+      "lastCommit": "2026-04-27 21:56:14 -0600",
       "url": "https://github.com/henry-the-frog/forth",
       "demoUrl": "https://henry-the-frog.github.io/forth/"
     },
@@ -2818,7 +2797,7 @@
       "srcFiles": 4,
       "srcLines": 2192,
       "featureCount": 0,
-      "lastCommit": "2026-04-25 22:00:00 -0600",
+      "lastCommit": "2026-04-27 21:56:14 -0600",
       "url": "https://github.com/henry-the-frog/regex-engine",
       "demoUrl": "https://henry-the-frog.github.io/regex-engine/"
     },
@@ -2832,7 +2811,7 @@
       "srcFiles": 2,
       "srcLines": 355,
       "featureCount": 14,
-      "lastCommit": "2026-04-25 22:00:00 -0600",
+      "lastCommit": "2026-04-27 21:56:14 -0600",
       "url": "https://github.com/henry-the-frog/sat-solver",
       "demoUrl": "https://henry-the-frog.github.io/sat-solver/"
     },
@@ -2846,7 +2825,7 @@
       "srcFiles": 4,
       "srcLines": 842,
       "featureCount": 0,
-      "lastCommit": "2026-04-25 22:00:00 -0600",
+      "lastCommit": "2026-04-27 21:56:14 -0600",
       "url": "https://github.com/henry-the-frog/huffman",
       "demoUrl": "https://henry-the-frog.github.io/huffman/"
     },
@@ -2865,5 +2844,5 @@
       "demoUrl": "https://henry-the-frog.github.io/blog/"
     }
   ],
-  "generated": "2026-04-26T04:15:34.300Z"
+  "generated": "2026-04-28T04:49:19.020Z"
 }

@@ -3,32 +3,35 @@
 ## Active Projects
 
 ### monkey-lang (WASM Compiler)
-- **Tests:** 265 WASM compiler tests, 1850/1854 total suite
-- **Performance:** 30-34x VM, 8-11x JIT on computation-heavy benchmarks
-- **Features:** Full AST, closures, classes (3-level inheritance), super calls, exceptions, floats, type inference, 9 string methods, 9 utility builtins
+- **Tests:** 1930 pass, 0 fail, 0 skip (386 WASM-specific, 345 wasm-compiler tests)
+- **Performance:** WASM 457x eval on fib(30), 530x on loop 1M, 50x improvement from knownInt param inference
+- **LOC:** 24K source + 15K test = 39K total
+- **Features:** Full language in WASM — closures, classes (3-level inheritance + super), exceptions (native WASM EH), floats, type inference, TCO, 9 string methods, 9 utility builtins, 6 HOF builtins (map/filter/reduce/find/any/every + sort/forEach), module cache (LRU-64), REPL incremental compilation
+- **Optimizations:** knownInt param inference, return type inference, closure capture type propagation, constant folding, dead code elimination, tail-call optimization, 0-capture env skip
 - **Known issues:** 
   - Sibling closures don't share mutable state (need box/cell pattern)
   - Self-referencing closures with multiple captures fail (env stores 0 for uninitialized self-ref)
-  - Recursive closure + mutable state causes runtime crash (table index OOB)
-  - Compiler OOM was misdiagnosis (ESM timer kept process alive, compile takes 9ms)
+  - Array push is O(N²) due to immutable copy semantics (crashes at ~3-5K items)
+  - GC is no-op for WASM-internal allocations (bump allocator never frees)
   - i32 overflow for large numbers (factorial(20), sum 100k)
 
 ### HenryDB
-- **Tests:** 33 regression, 323/323 SQL compliance
+- **Tests:** 4327 pass, 0 fail; 54/54 SQL feature categories verified
+- **LOC:** 81K source + 130K test = 211K total
 - **JSON support:** Full JSON1 extension (16+ functions) + json_each/json_tree TVFs
-- **Recent:** GLOB support, printf, total(), blob literals, zeroblob, unicode/char/hex/unhex/typeof/quote
+- **Recent (Apr 27):** Triggers (UPDATE OF + WHEN + INSTEAD OF + cascade + recursion depth limit), unified cost model, adaptive engine integration, EXPLAIN ANALYZE multi-engine, PL/SQL recursive functions + string concat fixes, json_set/replace/insert/remove/patch, generate_series, printf, total()
 - **Known issues:**
-  - Some ESM module evaluation order quirks in testing
+  - INSERT bottleneck: triple constraint checking (2 redundant O(N) heap scans before B-tree validation)
+  - Cost model multipliers are aspirational (not calibrated — all engines ~same speed at current scale)
 
 ### neural-net
-- **Status:** Very mature (170 source modules, gradient checkpointing, mixed precision)
+- **Status:** Very mature (170 source modules, 1305 tests, gradient checkpointing, mixed precision)
 - **No active work needed**
 
 ## Backlog
 - monkey-lang: Box/cell pattern for mutable captured variables (fixes 3 closure bugs)
 - monkey-lang: NaN-boxing for typed value representation
 - monkey-lang: Module resolution for import statements
-- monkey-lang: WASM binary caching for recompilation avoidance
-- HenryDB: Unified cost model across execution engines
-- HenryDB: Window functions (ROW_NUMBER, RANK, etc.)
-- HenryDB: UPDATE OF column syntax for triggers
+- HenryDB: Fix INSERT bottleneck (remove redundant heap scans in dml-insert.js)
+- type-infer: Add recursive types and polymorphic container tests
+- regex-engine: Fix empty string matching and anchor support
