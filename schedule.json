@@ -92,9 +92,83 @@
     {
       "id": "T5",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Final housekeeping + push",
-      "started": "2026-04-28T17:42:46.588Z"
+      "started": "2026-04-28T17:42:46.588Z",
+      "completed": "2026-04-28T17:43:01.710Z",
+      "duration_ms": 30000,
+      "summary": "Git push all repos. All clean."
+    },
+    {
+      "id": "T10",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Assess HenryDB OOM at 5K rows — profile memory usage with indexes",
+      "started": "2026-04-28T17:43:43.037Z",
+      "completed": "2026-04-28T17:44:33.038Z",
+      "duration_ms": 180000,
+      "summary": "OOM at 5K not reproducible with current code (50K rows OK at 66MB). Root cause was likely old deep-clone in prepare. Found 3 remaining O(N) heap scans in INSERT: (1) ON CONFLICT upsert, (2) composite unique check, (3) RETURNING — materializes entire heap per insert. RETURNING is worst offender, should return values from _insertRow directly."
+    },
+    {
+      "id": "T11",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Fix HenryDB OOM at 5K rows + redundant heap scan in INSERT",
+      "task": null,
+      "started": "2026-04-28T17:44:41.438Z",
+      "completed": "2026-04-28T17:45:31.087Z",
+      "duration_ms": 120000,
+      "summary": "Planned 2 BUILD tasks: (1) RETURNING fix — use rid from _insertRow to read back values O(1), (2) ON CONFLICT upsert — use PK index for conflict detection O(log N)."
+    },
+    {
+      "id": "T12",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Fix RETURNING: use rid from _insertRow instead of heap scan",
+      "plan_ref": "T11",
+      "project": "henrydb",
+      "started": "2026-04-28T17:45:40.360Z"
+    },
+    {
+      "id": "T13",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "Fix ON CONFLICT upsert: use PK index instead of heap scan",
+      "plan_ref": "T11",
+      "project": "henrydb"
+    },
+    {
+      "id": "T14",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Mid-session housekeeping"
+    },
+    {
+      "id": "T15",
+      "mode": "THINK",
+      "status": "upcoming",
+      "task": "Depth check: what surprised me in the last 5 BUILD tasks?"
+    },
+    {
+      "id": "T16",
+      "mode": "PLAN",
+      "status": "upcoming",
+      "goal": "monkey-lang: lazy runtime function emission for WASM",
+      "task": null
+    },
+    {
+      "id": "T17",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": null,
+      "plan_ref": "T16",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T18",
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Final housekeeping + push"
     }
   ],
   "focusProjects": [
@@ -150,6 +224,46 @@
     {
       "time": "2026-04-28T17:38:49.837Z",
       "msg": "PLAN T4 filled 2 BUILD tasks"
+    },
+    {
+      "time": "2026-04-28T17:43:32.122Z",
+      "msg": "Added T10 (THINK) after end: Assess HenryDB OOM at 5K rows — profile memory usage with indexes"
+    },
+    {
+      "time": "2026-04-28T17:43:32.236Z",
+      "msg": "Added T11 (PLAN) after end: Fix HenryDB OOM at 5K rows + redundant heap scan in INSERT"
+    },
+    {
+      "time": "2026-04-28T17:43:32.350Z",
+      "msg": "Added T12 (BUILD) after end: null"
+    },
+    {
+      "time": "2026-04-28T17:43:32.465Z",
+      "msg": "Added T13 (BUILD) after end: null"
+    },
+    {
+      "time": "2026-04-28T17:43:32.580Z",
+      "msg": "Added T14 (MAINTAIN) after end: Mid-session housekeeping"
+    },
+    {
+      "time": "2026-04-28T17:43:32.695Z",
+      "msg": "Added T15 (THINK) after end: Depth check: what surprised me in the last 5 BUILD tasks?"
+    },
+    {
+      "time": "2026-04-28T17:43:32.809Z",
+      "msg": "Added T16 (PLAN) after end: monkey-lang: lazy runtime function emission for WASM"
+    },
+    {
+      "time": "2026-04-28T17:43:32.924Z",
+      "msg": "Added T17 (BUILD) after end: null"
+    },
+    {
+      "time": "2026-04-28T17:43:33.038Z",
+      "msg": "Added T18 (MAINTAIN) after end: Final housekeeping + push"
+    },
+    {
+      "time": "2026-04-28T17:45:25.646Z",
+      "msg": "PLAN T11 filled 2 BUILD tasks"
     }
   ]
 }

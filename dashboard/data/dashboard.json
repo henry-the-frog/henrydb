@@ -1,11 +1,11 @@
 {
-  "generated": "2026-04-28T17:42:46.622Z",
+  "generated": "2026-04-28T17:45:40.394Z",
   "current": {
     "status": "in-progress",
-    "mode": "MAINTAIN",
-    "task": "Final housekeeping + push",
-    "startedAt": "2026-04-28T17:42:46.622Z",
-    "taskId": "T5"
+    "mode": "BUILD",
+    "task": "Fix RETURNING: use rid from _insertRow instead of heap scan",
+    "startedAt": "2026-04-28T17:45:40.394Z",
+    "taskId": "T12"
   },
   "schedule": {
     "date": "2026-04-28",
@@ -4718,28 +4718,110 @@
       {
         "id": "T4",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "HenryDB SQL-level prepared statements",
         "task": null,
-        "started": "2026-04-28T17:37:41.659Z"
+        "started": "2026-04-28T17:37:41.659Z",
+        "completed": "2026-04-28T17:38:56.418Z",
+        "duration_ms": 120000,
+        "summary": "Planned 2 BUILD tasks: (1) avoid deep clone in prepared stmt by using AST param slots, (2) batch execute + ? placeholders. db.prepare() already exists but deep-clones on every exec."
       },
       {
         "id": "T7",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "Optimize prepared stmt execution: avoid deep clone, add paramSlots to AST",
         "plan_ref": "T4",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-28T17:39:07.212Z",
+        "completed": "2026-04-28T17:40:42.475Z",
+        "duration_ms": 300000,
+        "summary": "Optimized prepared stmts: fast bind/unbind replaces deep clone. 2.7x faster (0.043→0.016ms/insert). collectParamSlots pre-walks AST, fastBind swaps in-place, fastUnbind restores. All 64 prepared stmt tests pass."
       },
       {
         "id": "T9",
         "mode": "BUILD",
         "task": "Add batch execute (stmt.executeMany) and ? placeholder support",
-        "status": "upcoming",
-        "plan_ref": "T4"
+        "status": "done",
+        "plan_ref": "T4",
+        "started": "2026-04-28T17:40:50.890Z",
+        "completed": "2026-04-28T17:42:36.516Z",
+        "duration_ms": 300000,
+        "summary": "Added ? placeholders (auto-numbered positional params) and stmt.executeMany() for bulk inserts. executeMany 2.6x faster than individual execute(). 64/64 prepared stmt tests pass."
       },
       {
         "id": "T5",
+        "mode": "MAINTAIN",
+        "status": "done",
+        "task": "Final housekeeping + push",
+        "started": "2026-04-28T17:42:46.588Z",
+        "completed": "2026-04-28T17:43:01.710Z",
+        "duration_ms": 30000,
+        "summary": "Git push all repos. All clean."
+      },
+      {
+        "id": "T10",
+        "mode": "THINK",
+        "status": "done",
+        "task": "Assess HenryDB OOM at 5K rows — profile memory usage with indexes",
+        "started": "2026-04-28T17:43:43.037Z",
+        "completed": "2026-04-28T17:44:33.038Z",
+        "duration_ms": 180000,
+        "summary": "OOM at 5K not reproducible with current code (50K rows OK at 66MB). Root cause was likely old deep-clone in prepare. Found 3 remaining O(N) heap scans in INSERT: (1) ON CONFLICT upsert, (2) composite unique check, (3) RETURNING — materializes entire heap per insert. RETURNING is worst offender, should return values from _insertRow directly."
+      },
+      {
+        "id": "T11",
+        "mode": "PLAN",
+        "status": "in-progress",
+        "goal": "Fix HenryDB OOM at 5K rows + redundant heap scan in INSERT",
+        "task": null,
+        "started": "2026-04-28T17:44:41.438Z"
+      },
+      {
+        "id": "T12",
+        "mode": "BUILD",
+        "status": "upcoming",
+        "task": "Fix RETURNING: use rid from _insertRow instead of heap scan",
+        "plan_ref": "T11",
+        "project": "henrydb"
+      },
+      {
+        "id": "T13",
+        "mode": "BUILD",
+        "status": "upcoming",
+        "task": "Fix ON CONFLICT upsert: use PK index instead of heap scan",
+        "plan_ref": "T11",
+        "project": "henrydb"
+      },
+      {
+        "id": "T14",
+        "mode": "MAINTAIN",
+        "status": "upcoming",
+        "task": "Mid-session housekeeping"
+      },
+      {
+        "id": "T15",
+        "mode": "THINK",
+        "status": "upcoming",
+        "task": "Depth check: what surprised me in the last 5 BUILD tasks?"
+      },
+      {
+        "id": "T16",
+        "mode": "PLAN",
+        "status": "upcoming",
+        "goal": "monkey-lang: lazy runtime function emission for WASM",
+        "task": null
+      },
+      {
+        "id": "T17",
+        "mode": "BUILD",
+        "status": "upcoming",
+        "task": null,
+        "plan_ref": "T16",
+        "project": "monkey-lang"
+      },
+      {
+        "id": "T18",
         "mode": "MAINTAIN",
         "status": "upcoming",
         "task": "Final housekeeping + push"
@@ -4748,13 +4830,13 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 8,
-    "blocksTotal": 9,
+    "blocksCompleted": 11,
+    "blocksTotal": 18,
     "modeDistribution": {
-      "THINK": 1,
-      "PLAN": 2,
+      "THINK": 2,
+      "PLAN": 3,
       "BUILD": 4,
-      "MAINTAIN": 1
+      "MAINTAIN": 2
     }
   },
   "artifacts": [],

@@ -1,6 +1,23 @@
 // dml-insert.js — INSERT handlers extracted from db.js
 // Note: These functions take 'db' as first parameter (database context)
 
+/**
+ * Read a row by its RID (pageId, slotIdx) — O(1) instead of heap scan.
+ * Falls back to orderedValues if heap.get is unavailable.
+ */
+function _readRowByRid(table, rid) {
+  if (rid && typeof rid === 'object' && rid.pageId !== undefined && table.heap.get) {
+    const tuple = table.heap.get(rid.pageId, rid.slotIdx);
+    if (tuple) {
+      const actualValues = Array.isArray(tuple) ? tuple : (tuple.values || tuple);
+      const retRow = {};
+      table.schema.forEach((c, i) => { retRow[c.name] = actualValues[i]; });
+      return retRow;
+    }
+  }
+  return null;
+}
+
 export function insert(db, ast) {
   const table = db.tables.get(ast.table);
   if (!table) {
@@ -203,11 +220,8 @@ export function insert(db, ast) {
         const rid = db._insertRow(table, ast.columns, values);
         inserted++;
         if (ast.returning) {
-          const lastTuple = [...table.heap.scan()].pop();
-          const actualValues = lastTuple?.values || lastTuple || [];
-          const retRow = {};
-          table.schema.forEach((c, i) => { retRow[c.name] = actualValues[i]; });
-          returnedRows.push(retRow);
+          const retRow = _readRowByRid(table, rid);
+          if (retRow) returnedRows.push(retRow);
         }
       } catch (e) {
         if (e.message && e.message.includes('constraint')) {
@@ -220,12 +234,8 @@ export function insert(db, ast) {
     inserted++;
     
     if (ast.returning) {
-      // Read actual inserted values (including SERIAL-assigned IDs)
-      const lastTuple = [...table.heap.scan()].pop();
-      const actualValues = lastTuple?.values || lastTuple || [];
-      const retRow = {};
-      table.schema.forEach((c, i) => { retRow[c.name] = actualValues[i]; });
-      returnedRows.push(retRow);
+      const retRow = _readRowByRid(table, rid);
+      if (retRow) returnedRows.push(retRow);
     }
     } // end else (non-NOTHING upsert or normal insert)
   }
