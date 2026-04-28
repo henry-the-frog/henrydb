@@ -147,7 +147,9 @@ export function selectWithGroupBy(db, ast, rows) {
           result[col] = val;
         } else {
           const val = db._resolveColumn(col, groupRows[0]);
-          result[col] = val;
+          // Strip table qualifier from output key (c.name → name)
+          const outKey = col.includes('.') ? col.split('.').pop() : col;
+          result[outKey] = val;
         }
       } else {
         // Ordinal position: GROUP BY 1 → resolve to SELECT column

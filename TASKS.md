@@ -9,8 +9,8 @@
 - **Features:** Full language in WASM — closures, classes (3-level inheritance + super), exceptions (native WASM EH), floats, type inference, TCO, 9 string methods, 9 utility builtins, 6 HOF builtins (map/filter/reduce/find/any/every + sort/forEach), module cache (LRU-64), REPL incremental compilation
 - **Optimizations:** knownInt param inference, return type inference, closure capture type propagation, constant folding, dead code elimination, tail-call optimization, 0-capture env skip
 - **Box/cell closures:** ✅ Fixed (Apr 28) — shared mutable state, self-ref+captures, recursive+mutable all working
+- **Array push:** ✅ Fixed (Apr 28) — amortized O(1) with capacity-based growth. 5K pushes in 106ms (was crashing at 3-5K).
 - **Known issues:** 
-  - Array push is O(N²) due to immutable copy semantics (crashes at ~3-5K items)
   - GC is no-op for WASM-internal allocations (bump allocator never frees)
   - i32 overflow for large numbers (factorial(20), sum 100k)
 
