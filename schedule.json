@@ -407,19 +407,23 @@
     {
       "id": "T39",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Implement compiled expression evaluator for simple WHERE clauses",
       "plan_ref": "T38",
       "project": "henrydb",
-      "started": "2026-04-28T18:27:00.158Z"
+      "started": "2026-04-28T18:27:00.158Z",
+      "completed": "2026-04-28T18:31:05.631Z",
+      "duration_ms": 600000,
+      "summary": "Created compiled-expr.js: compiles WHERE AST→JS function. Supports =/</>/<=/>=/<>/AND/OR/NOT/IS NULL/BETWEEN/IN/arithmetic. Integrated into UPDATE+DELETE scan paths. WeakMap cache. UPDATE still has unexplained O(N) at >1200 rows (needs separate deep dive)."
     },
     {
       "id": "T40",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "in-progress",
       "task": "Add tests + benchmark for compiled WHERE evaluation",
       "plan_ref": "T38",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-28T18:31:15.900Z"
     },
     {
       "id": "T41",
