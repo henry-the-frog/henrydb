@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-28T15:46:30.128Z",
+  "generated": "2026-04-28T15:56:30.706Z",
   "current": {
     "status": "done",
     "mode": "BUILD",
-    "task": "Fix compileAndRun to return formatted values for arrays/strings/hashes instead of raw heap pointers",
-    "completedAt": "2026-04-28T15:46:30.128Z",
-    "taskId": "T36",
-    "summary": "compileAndRun now auto-formats arrays/strings/hashes/floats. Returns nice values instead of raw pointers. 335/335 pass.",
-    "durationMs": 300000
+    "task": "Add regression tests for hash-stored closures and deep nesting box patterns",
+    "completedAt": "2026-04-28T15:56:30.706Z",
+    "taskId": "T38",
+    "summary": "Added 4 regression tests for hash closures + deep nesting. 339/339 pass.",
+    "durationMs": 120000
   },
   "schedule": {
     "date": "2026-04-28",
@@ -5028,14 +5028,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 34,
+    "blocksCompleted": 36,
     "blocksTotal": 35,
     "modeDistribution": {
       "THINK": 6,
       "PLAN": 4,
-      "BUILD": 16,
+      "BUILD": 17,
       "MAINTAIN": 4,
-      "EXPLORE": 4
+      "EXPLORE": 5
     }
   },
   "artifacts": [],

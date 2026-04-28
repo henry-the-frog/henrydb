@@ -25,3 +25,12 @@ Pure self-recursive functions (like `fib`) are NOT boxed — they use the fast d
 1. **Scope tracking is non-obvious**: Analysis and compilation use different scope structures. The `_compileFunctions` path (for direct functions) also needs scope ID tracking.
 2. **Performance vs correctness tradeoff**: Naive boxing causes 10x regression on common patterns. Smart analysis (skip pure self-recursion) preserves performance.
 3. **The remote had an incomplete fix**: `captured`/env write-back approach was incomplete (didn't handle shared mutable state). Box/cell is the correct pattern (same as Python cells, Lua upvalues).
+
+### Additional Bugs Found During Stress Testing (same session)
+4. **Hash literal values not traversed**: Closures inside hash literals (`{"inc": fn(){...}}`) were not analyzed for captures/mutations. The analysis walker didn't traverse hash pairs.
+5. **Deep nesting limited to 2 levels**: `findNestedCaptures` stopped at nested FunctionLiterals, missing captures from 3+ level deep closures. Fixed by making it fully recursive.
+
+Both fixes are critical for real-world patterns (counter objects, deeply nested closures).
+
+### Key Lesson
+The box analysis AST walker MUST traverse ALL node types (hash pairs, spread elements, etc.) and recurse through ALL nesting levels. Missing any node type or depth limit will cause silent bugs that only appear in real-world patterns.

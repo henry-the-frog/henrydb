@@ -387,6 +387,28 @@
       "completed": "2026-04-28T15:46:29.957Z",
       "duration_ms": 300000,
       "summary": "compileAndRun now auto-formats arrays/strings/hashes/floats. Returns nice values instead of raw pointers. 335/335 pass."
+    },
+    {
+      "id": "T37",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Stress-test box/cell closures and array capacity: edge cases, deeply nested closures, large arrays, GC interaction",
+      "project": "monkey-lang",
+      "started": "2026-04-28T15:47:25.995Z",
+      "completed": "2026-04-28T15:54:57.894Z",
+      "duration_ms": 600000,
+      "summary": "Found and fixed 2 bugs: (1) hash literal values not analyzed for captures (counter pattern broken), (2) deep nesting stopped at 2 levels. Both fixed with recursive traversal. 335/335 pass."
+    },
+    {
+      "id": "T38",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Add regression tests for hash-stored closures and deep nesting box patterns",
+      "project": "monkey-lang",
+      "started": "2026-04-28T15:55:41.158Z",
+      "completed": "2026-04-28T15:56:30.525Z",
+      "duration_ms": 120000,
+      "summary": "Added 4 regression tests for hash closures + deep nesting. 339/339 pass."
     }
   ],
   "focusProjects": [
@@ -546,6 +568,14 @@
     {
       "time": "2026-04-28T15:43:24.551Z",
       "msg": "Added T36 (BUILD) after end: Fix compileAndRun to return formatted values for arrays/strings/hashes instead of raw heap pointers"
+    },
+    {
+      "time": "2026-04-28T15:47:18.317Z",
+      "msg": "Added T37 (EXPLORE) after end: Stress-test box/cell closures and array capacity: edge cases, deeply nested closures, large arrays, GC interaction"
+    },
+    {
+      "time": "2026-04-28T15:55:32.989Z",
+      "msg": "Added T38 (BUILD) after end: Add regression tests for hash-stored closures and deep nesting box patterns"
     }
   ]
 }
