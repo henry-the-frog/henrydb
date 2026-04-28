@@ -114,15 +114,19 @@
       "id": "T22",
       "mode": "BUILD",
       "task": "Run full HenryDB test suite to verify no regressions, then benchmark INSERT performance improvement",
-      "status": "in-progress",
+      "status": "done",
       "plan_ref": "T6",
-      "started": "2026-04-28T14:46:49.871Z"
+      "started": "2026-04-28T14:46:49.871Z",
+      "completed": "2026-04-28T14:48:03.164Z",
+      "duration_ms": 300000,
+      "summary": "INSERT 167x faster: 3.5ms→0.021ms per row. 10K inserts: 35s→210ms. 147/147 constraint tests pass."
     },
     {
       "id": "T8",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Housekeeping: git push, dashboard, email check"
+      "status": "in-progress",
+      "task": "Housekeeping: git push, dashboard, email check",
+      "started": "2026-04-28T14:48:12.958Z"
     },
     {
       "id": "T9",
