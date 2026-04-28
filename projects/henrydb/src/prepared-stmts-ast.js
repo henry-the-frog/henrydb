@@ -89,6 +89,77 @@ export function bindParams(node, params) {
 }
 
 /**
+ * Collect all PARAM node locations in an AST for fast binding.
+ * Returns array of { parent, key, arrayIndex?, paramIndex }.
+ * @param {object} node - AST root
+ * @returns {Array} param slots
+ */
+function collectParamSlots(node) {
+  const slots = [];
+  _walkForParams(node, null, null, null, slots);
+  return slots;
+}
+
+function _walkForParams(node, parent, key, arrayIndex, slots) {
+  if (!node || typeof node !== 'object') return;
+  
+  if (node.type === 'PARAM') {
+    slots.push({ parent, key, arrayIndex, paramIndex: node.index - 1 });
+    return;
+  }
+  
+  for (const k of Object.keys(node)) {
+    const val = node[k];
+    if (Array.isArray(val)) {
+      for (let i = 0; i < val.length; i++) {
+        if (val[i] && typeof val[i] === 'object') {
+          _walkForParams(val[i], node, k, i, slots);
+        }
+      }
+    } else if (val && typeof val === 'object') {
+      _walkForParams(val, node, k, null, slots);
+    }
+  }
+}
+
+/**
+ * Bind params into AST using pre-collected slots (no deep clone).
+ * Saves original nodes for restore after execution.
+ */
+function fastBind(slots, params) {
+  const originals = new Array(slots.length);
+  for (let i = 0; i < slots.length; i++) {
+    const s = slots[i];
+    if (s.paramIndex >= params.length) {
+      throw new Error(`Parameter $${s.paramIndex + 1} not provided (got ${params.length} params)`);
+    }
+    const literal = { type: 'literal', value: params[s.paramIndex] };
+    if (s.arrayIndex !== null && s.arrayIndex !== undefined) {
+      originals[i] = s.parent[s.key][s.arrayIndex];
+      s.parent[s.key][s.arrayIndex] = literal;
+    } else {
+      originals[i] = s.parent[s.key];
+      s.parent[s.key] = literal;
+    }
+  }
+  return originals;
+}
+
+/**
+ * Restore original PARAM nodes after execution.
+ */
+function fastUnbind(slots, originals) {
+  for (let i = 0; i < slots.length; i++) {
+    const s = slots[i];
+    if (s.arrayIndex !== null && s.arrayIndex !== undefined) {
+      s.parent[s.key][s.arrayIndex] = originals[i];
+    } else {
+      s.parent[s.key] = originals[i];
+    }
+  }
+}
+
+/**
  * Programmatic API: prepare a statement for repeated execution.
  * @param {object} db - Database instance
  * @param {string} sql - SQL to prepare
@@ -97,14 +168,24 @@ export function bindParams(node, params) {
 export function prepare(db, sql) {
   const ast = parse(sql);
   const name = `__stmt_${db._prepared.size}`;
-  db._prepared.set(name, { ast, name });
+  const slots = collectParamSlots(ast);
+  db._prepared.set(name, { ast, name, slots });
   
   return {
     name,
     execute(...params) {
       const flatParams = params.length === 1 && Array.isArray(params[0]) ? params[0] : params;
-      const bound = bindParams(JSON.parse(JSON.stringify(ast)), flatParams);
-      return db.execute_ast(bound);
+      if (slots.length === 0) {
+        // No params — execute directly
+        return db.execute_ast(ast);
+      }
+      // Fast bind: mutate AST in-place, execute, restore
+      const originals = fastBind(slots, flatParams);
+      try {
+        return db.execute_ast(ast);
+      } finally {
+        fastUnbind(slots, originals);
+      }
     },
     close() {
       db._prepared.delete(name);
