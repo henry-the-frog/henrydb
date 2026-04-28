@@ -17,6 +17,7 @@ import { MVCCManager } from './mvcc.js';
 import { installPgCatalog } from './pg-catalog.js';
 import { installSetOperations } from './set-operations.js';
 import { installExpressionEvaluator } from './expression-evaluator.js';
+import { compileWhereFilter } from './where-compiler.js';
 import { sqliteCompare } from './sqlite-compare.js';
 import { PLParser, PLInterpreter } from './plsql.js';
 
@@ -5135,6 +5136,15 @@ installSetOperations(Database);
 
 // Install expression evaluation methods
 installExpressionEvaluator(Database);
+
+// Install WHERE clause compilation (compiled filter with fallback to interpreted)
+Database.prototype._compileFilter = function _compileFilter(expr) {
+  if (!expr) return () => true;
+  const compiled = compileWhereFilter(expr);
+  if (compiled) return compiled;
+  // Fallback to interpreted mode
+  return (row) => this._evalExpr(expr, row);
+};
 
 // Install vectorized execution fast path
 import { VSeqScan, VFilter, VHashAggregate } from './vector-engine.js';

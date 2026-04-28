@@ -10,6 +10,8 @@
  */
 export function compileWhereFilter(expr, db) {
   if (!expr) return () => true;
+  // Safety: don't compile expressions containing subqueries or correlated refs
+  if (containsUnsafe(expr)) return null;
   try {
     const { code, params } = compileExprToCode(expr);
     if (!code) return null;
@@ -21,6 +23,28 @@ export function compileWhereFilter(expr, db) {
   } catch (e) {
     return null; // Fallback to interpreted
   }
+}
+
+/**
+ * Check if an expression is safe to compile.
+ * Unsafe if it contains subqueries, table-qualified column references,
+ * or other constructs that need runtime context (outer rows, lateral scope, etc.)
+ */
+function containsUnsafe(expr) {
+  if (!expr) return false;
+  if (expr.type === 'EXISTS' || expr.type === 'IN_SUBQUERY' || expr.subquery) return true;
+  // Table-qualified column refs need _resolveColumn which compiled filters don't support
+  if (expr.type === 'column_ref' && expr.table) return true;
+  if (expr.type === 'column_ref' && expr.name && expr.name.includes('.')) return true;
+  for (const key of ['left', 'right', 'expr', 'condition', 'low', 'high']) {
+    if (expr[key] && containsUnsafe(expr[key])) return true;
+  }
+  if (expr.values && Array.isArray(expr.values)) {
+    for (const v of expr.values) {
+      if (v && containsUnsafe(v)) return true;
+    }
+  }
+  return false;
 }
 
 let paramCounter = 0;
@@ -120,14 +144,16 @@ function _compile(expr, params) {
       const val = _compileValue(expr.expr || expr.left, params);
       if (!val) return null;
       const pName = `_p${paramCounter++}`;
-      params[pName] = expr.hashset || expr.set;
+      params[pName] = expr.hashSet || expr.hashset || expr.set;
+      if (!params[pName]) return null;
       return `${pName}.has(${val})`;
     }
     case 'NOT_IN_HASHSET': {
       const val = _compileValue(expr.expr || expr.left, params);
       if (!val) return null;
       const pName = `_p${paramCounter++}`;
-      params[pName] = expr.hashset || expr.set;
+      params[pName] = expr.hashSet || expr.hashset || expr.set;
+      if (!params[pName]) return null;
       return `!${pName}.has(${val})`;
     }
     case 'LITERAL_BOOL': {

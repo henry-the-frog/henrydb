@@ -3,6 +3,7 @@
 
 import { tokenize } from './fulltext.js';
 import { sqliteCompare } from './sqlite-compare.js';
+import { compileWhereFilter } from './where-compiler.js';
 
 /**
  * Install expression evaluation methods on Database.
@@ -47,6 +48,16 @@ export function installExpressionEvaluator(DatabaseClass) {
   
   DatabaseClass.prototype._evalExpr = function _evalExpr(expr, row) {
     if (!expr) return true;
+    
+    // Lazy compilation: compile expression on first call, cache on AST node
+    // Only compiles simple expressions (no subqueries, no correlated refs)
+    if (expr._compiledFilter === undefined) {
+      expr._compiledFilter = compileWhereFilter(expr) || false;
+    }
+    if (expr._compiledFilter) {
+      return expr._compiledFilter(row);
+    }
+    
     switch (expr.type) {
       case 'AND': return this._evalExpr(expr.left, row) && this._evalExpr(expr.right, row);
       case 'OR': return this._evalExpr(expr.left, row) || this._evalExpr(expr.right, row);
