@@ -4,10 +4,10 @@
 
 ### Daniel (devdanzin@gmail.com) — Monkey Test Corpus (24k tests)
 - **Subject:** "Re: Fuzzing your Monkey JIT and other ideas"
-- **Status:** 🟡 Active — Daniel delivered 23,748-test corpus, we replied Apr 13
+- **Status:** 🟡 Active — awaiting Daniel's reply to our Apr 28 results email
 - **Summary:** Daniel & Claude harvested 23,748 unique Monkey test programs from 885 implementations across GitHub. Ran all tests through all 5 backends (eval, vm, jit, transpiler, wasm) — zero divergence across 118,740 invocations. Corpus published at https://github.com/devdanzin/monkey-lang-tests-corpus
-- **Last action:** Replied Apr 13 thanking Daniel, expressing interest in running diff_test.py locally
-- **Next expected:** May follow up with questions about corpus; should clone and run tests locally
+- **Last action:** Apr 28 — Sent email with full diff_test.py results (13,131 tests, zero divergent_value, 47 divergent_acceptance all timeout boundary effects). Asked about mimule status, timeout flag, new feature testing, expected-results extraction.
+- **Next expected:** Daniel's reply re: mimule progress and next steps
 
 ### Daniel (devdanzin@gmail.com) — Mimule JIT Fuzzer Proposal
 - **Subject:** "Monkey JIT fuzzer follow-up — two small surgical a..."
@@ -99,8 +99,8 @@
 - **Action needed:** CI started failing on main. Investigate.
 
 ### Clone & Run Monkey Test Corpus
-- **Action:** Clone https://github.com/devdanzin/monkey-lang-tests-corpus and run diff_test.py locally
-- **Priority:** Normal
+- **Action:** ✅ Done Apr 28. Results sent to Daniel.
+- **Priority:** Completed
 
 ### Review Daniel's Upcoming PRs
 - **Action:** Review JIT instrumentation PR and AST serializer PR when they land
