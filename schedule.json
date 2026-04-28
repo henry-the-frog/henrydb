@@ -335,30 +335,38 @@
     {
       "id": "T32",
       "mode": "THINK",
-      "status": "in-progress",
+      "status": "done",
       "task": "HenryDB: what's the next most impactful optimization? Review query execution pipeline",
-      "started": "2026-04-28T18:10:32.913Z"
+      "started": "2026-04-28T18:10:32.913Z",
+      "completed": "2026-04-28T18:18:43.703Z",
+      "duration_ms": 600000,
+      "summary": "MAJOR FIND: HeapFile.pages was Array with .find() O(N) lookups. Changed to Map for O(1). heap.get: 8.8ms→0.1μs (88,000x improvement). Also found: _handleForeignKeyUpdate scans all tables even with no FKs (2ms overhead), UPDATE pipeline has 3.8ms baseline overhead at 5K rows (needs deeper investigation). Update still O(N) due to pipeline overhead, not heap access."
     },
     {
       "id": "T33",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "HenryDB: optimize query execution (evaluate scan strategy)",
-      "task": null
+      "task": null,
+      "started": "2026-04-28T18:18:50.536Z",
+      "completed": "2026-04-28T18:19:07.535Z",
+      "duration_ms": 60000,
+      "summary": "Planned 2 BUILD: (1) FK early-return, (2) UPDATE pipeline profiling. FK check adds 2ms even with no FKs."
     },
     {
       "id": "T34",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null,
+      "status": "in-progress",
+      "task": "Add early-return to _handleForeignKeyUpdate when no FK references exist",
       "plan_ref": "T33",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-28T18:19:23.265Z"
     },
     {
       "id": "T35",
       "mode": "BUILD",
       "status": "upcoming",
-      "task": null,
+      "task": "Profile and fix UPDATE pipeline O(N) overhead",
       "plan_ref": "T33",
       "project": "henrydb"
     },
@@ -542,6 +550,10 @@
     {
       "time": "2026-04-28T18:10:20.674Z",
       "msg": "Added T36 (MAINTAIN) after end: Pre-push housekeeping"
+    },
+    {
+      "time": "2026-04-28T18:19:01.015Z",
+      "msg": "PLAN T33 filled 2 BUILD tasks"
     }
   ]
 }
