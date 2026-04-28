@@ -216,12 +216,37 @@ export function insert(db, ast) {
             // Single-column index — already handled by _validateConstraints, skip
             continue;
           }
-          // For composite indexes, check via heap scan (TODO: use composite index lookup)
-          for (const tuple of idxTable.heap.scan()) {
-            const tv = tuple.values || tuple;
-            const existingKey = colIndices.map(i => tv[i]);
-            if (keyValues.every((v, i) => v === existingKey[i])) {
-              throw new Error(`UNIQUE constraint violated on index ${idxName}: duplicate key '${keyValues.join(', ')}'`);
+          // For composite indexes, use first column's index if available
+          const firstColIdx = idxTable.indexes?.get(meta.columns[0]);
+          if (firstColIdx && typeof firstColIdx.range === 'function') {
+            // O(log N) lookup on first column, then verify remaining columns
+            const firstVal = keyValues[0];
+            const candidates = firstColIdx.range(firstVal, firstVal);
+            for (const { value: rid } of candidates) {
+              // Read the full row from heap using the RID
+              let rowVals;
+              if (rid && typeof rid === 'object' && rid.pageId !== undefined) {
+                const row = idxTable.heap.read(rid);
+                rowVals = row?.values || row;
+              } else {
+                // RID might be stored differently — skip to heap scan fallback
+                continue;
+              }
+              if (rowVals) {
+                const existingKey = colIndices.map(i => rowVals[i]);
+                if (keyValues.every((v, i) => v === existingKey[i])) {
+                  throw new Error(`UNIQUE constraint violated on index ${idxName}: duplicate key '${keyValues.join(', ')}'`);
+                }
+              }
+            }
+          } else {
+            // Fallback: heap scan for composite indexes without any column index
+            for (const tuple of idxTable.heap.scan()) {
+              const tv = tuple.values || tuple;
+              const existingKey = colIndices.map(i => tv[i]);
+              if (keyValues.every((v, i) => v === existingKey[i])) {
+                throw new Error(`UNIQUE constraint violated on index ${idxName}: duplicate key '${keyValues.join(', ')}'`);
+              }
             }
           }
         }
