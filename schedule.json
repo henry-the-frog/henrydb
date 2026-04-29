@@ -981,16 +981,86 @@
     {
       "id": "T97",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Mid-evening housekeeping",
-      "started": "2026-04-29T02:35:03.985Z"
+      "started": "2026-04-29T02:35:03.985Z",
+      "completed": "2026-04-29T02:36:03.245Z",
+      "duration_ms": 120000,
+      "summary": "Mid-evening housekeeping: updated daily log with session C work (6 tasks, learning captures), ran benchmark (fib(25) 138.6ms VM), committed all changes."
     },
     {
       "id": "T98",
       "mode": "BUILD",
-      "status": "upcoming",
+      "status": "done",
       "task": "WASM: Hash map playground example (fibonacci counter or word frequency)",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-29T02:36:15.538Z",
+      "completed": "2026-04-29T02:38:31.673Z",
+      "duration_ms": 300000,
+      "summary": "Created hashmap-playground.monkey example: word frequency counter with visual bars, memoized fibonacci with cache, KV store factory pattern, config merge, and enum-like pattern. All features demonstrated and working in VM engine."
+    },
+    {
+      "id": "T102",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Create proper before/after benchmark for VM integer unboxing — fibonacci, tight loops, array manipulation",
+      "project": "monkey-lang",
+      "started": "2026-04-29T02:39:35.796Z",
+      "completed": "2026-04-29T02:41:02.613Z",
+      "duration_ms": 300000,
+      "summary": "Benchmarked VM integer unboxing: fib(25) 143.7ms→81.8ms (1.76x), counter 100K 46.6→26.6ms (1.75x), tight loop 6.0→3.5ms (1.71x), array build 2.8→2.0ms (1.40x). Average 1.65x speedup on integer-heavy workloads. Also fixed evaluator || NULL → ?? NULL for consistency."
+    },
+    {
+      "id": "T103",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Investigate mutable cell bug: closures in hash literal values don't share set-mutation across siblings",
+      "project": "monkey-lang",
+      "started": "2026-04-29T02:41:11.152Z",
+      "completed": "2026-04-29T02:44:36.956Z",
+      "duration_ms": 360000,
+      "summary": "Found and fixed mutable cell bug in closures within hash literals. Root cause: _findMutableCaptures used Object.keys() to walk AST nodes, but HashLiteral.pairs is a Map — Object.keys(map) returns [] silently. Closures in hash values never got Cell wrapping for shared mutable state. Added Map iteration to walkNode and walkForCaptures. 2 regression tests added. All 1259 tests pass."
+    },
+    {
+      "id": "T104",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "WASM: hash map auto-resize when load factor exceeds 0.75",
+      "project": "monkey-lang",
+      "started": "2026-04-29T02:44:50.412Z",
+      "completed": "2026-04-29T02:50:55.449Z",
+      "duration_ms": 600000,
+      "summary": "WASM hash map auto-resize: added __hash_resize function (allocates 2x entries, rehashes). hash_set_native checks load factor before insert. Maps grow dynamically from cap 8. 3 new tests (20 entries, 50 entries sum, frequency counting). All 2007 tests pass."
+    },
+    {
+      "id": "T105",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Audit AST walkers for Map traversal gaps — check all places that walk AST nodes generically",
+      "project": "monkey-lang",
+      "started": "2026-04-29T02:51:42.621Z",
+      "completed": "2026-04-29T02:52:47.367Z",
+      "duration_ms": 180000,
+      "summary": "Audited all AST walkers: only HashLiteral.pairs uses a Map. compiler.js walkNode/walkForCaptures now handle Maps (already fixed in T103). DCE and WASM compiler handle pairs explicitly. No additional gaps found."
+    },
+    {
+      "id": "T106",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Profile VM with --prof: where does time go in fib(30)? Is there a next optimization after unboxing?",
+      "project": "monkey-lang",
+      "started": "2026-04-29T02:52:56.098Z",
+      "completed": "2026-04-29T02:54:39.807Z",
+      "duration_ms": 300000,
+      "summary": "Profiled fib(30): 70.9% in VM.run(), rest in pushFrame/push. Loop dispatch overhead (969ms for 2.7M iterations = 360ns/iter) dominates over call overhead (169ns/call). Next opts would be superinstructions, JIT, or reducing dispatch per iteration. Current IC for property access is good. The interpreter loop is the fundamental bottleneck at this point."
+    },
+    {
+      "id": "T107",
+      "mode": "BUILD",
+      "status": "in-progress",
+      "task": "Update TASKS.md: reflect NaN-boxing done (as unboxing), hash map resize done, new test counts",
+      "project": "monkey-lang",
+      "started": "2026-04-29T02:54:49.064Z"
     }
   ],
   "focusProjects": [
@@ -1458,6 +1528,30 @@
     {
       "time": "2026-04-29T02:34:52.364Z",
       "msg": "Removed T96: "
+    },
+    {
+      "time": "2026-04-29T02:39:17.365Z",
+      "msg": "Added T102 (EXPLORE) after end: Create proper before/after benchmark for VM integer unboxing — fibonacci, tight loops, array manipulation"
+    },
+    {
+      "time": "2026-04-29T02:39:22.381Z",
+      "msg": "Added T103 (EXPLORE) after T102: Investigate mutable cell bug: closures in hash literal values don't share set-mutation across siblings"
+    },
+    {
+      "time": "2026-04-29T02:39:27.252Z",
+      "msg": "Added T104 (BUILD) after T103: WASM: hash map auto-resize when load factor exceeds 0.75"
+    },
+    {
+      "time": "2026-04-29T02:51:16.206Z",
+      "msg": "Added T105 (EXPLORE) after end: Audit AST walkers for Map traversal gaps — check all places that walk AST nodes generically"
+    },
+    {
+      "time": "2026-04-29T02:51:23.606Z",
+      "msg": "Added T106 (EXPLORE) after T105: Profile VM with --prof: where does time go in fib(30)? Is there a next optimization after unboxing?"
+    },
+    {
+      "time": "2026-04-29T02:51:30.774Z",
+      "msg": "Added T107 (BUILD) after T106: Update TASKS.md: reflect NaN-boxing done (as unboxing), hash map resize done, new test counts"
     }
   ]
 }
