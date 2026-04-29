@@ -561,6 +561,71 @@
       "completed": "2026-04-29T15:49:28.981Z",
       "duration_ms": 300000,
       "summary": "Hash map delete() builtin: evaluator + WASM. Marks entries DELETED(status=2), decrements size. String+int keys supported. Re-insert works. 4 tests pass."
+    },
+    {
+      "id": "T53",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "monkey-lang: add hash map examples to the playground (word frequency, lookup table, JSON-like object)",
+      "project": "monkey-lang",
+      "started": "2026-04-29T15:53:47.872Z",
+      "completed": "2026-04-29T16:02:14.632Z",
+      "duration_ms": 600000,
+      "summary": "Hash map examples + has() builtin + len(hash) fix + evaluator delete/has fastHashKey fix. All 2034 tests pass. Example demonstrates word frequency, config, iteration, delete, sparse arrays."
+    },
+    {
+      "id": "T54",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "monkey-lang: implement has() builtin to check if hash map contains a key",
+      "project": "monkey-lang",
+      "started": "2026-04-29T16:02:44.590Z",
+      "completed": "2026-04-29T16:02:44.829Z",
+      "duration_ms": 5000,
+      "summary": "Already done in T53. has() added to both evaluator and WASM compiler."
+    },
+    {
+      "id": "T55",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "monkey-lang: investigate what happens with very large programs (100+ functions)",
+      "project": "monkey-lang",
+      "started": "2026-04-29T16:02:53.821Z",
+      "completed": "2026-04-29T16:03:53.896Z",
+      "duration_ms": 120000,
+      "summary": "[EXPLORE 7/10] 2000 functions: 195ms, linear growth. Binary 60KB. No limits hit. Closures work at 50+. No WASM table overflow. Surprise: -51 result from 50 closures suggests accumulation with signed overflow (expected)."
+    },
+    {
+      "id": "T56",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "monkey-lang: add playground HTML page with hash map examples (update existing playground)",
+      "project": "monkey-lang"
+    },
+    {
+      "id": "T57",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "HenryDB: add compiled subquery support in WHERE (EXISTS, IN with subquery)",
+      "project": "henrydb"
+    },
+    {
+      "id": "T58",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Run monkey-lang benchmark suite and compare interpreter vs compiler vs WASM",
+      "project": "monkey-lang",
+      "started": "2026-04-29T16:04:21.826Z",
+      "completed": "2026-04-29T16:05:53.644Z",
+      "duration_ms": 60000,
+      "summary": "[EXPLORE 8/10] Benchmark: WASM is 159x avg faster than VM, 80x faster than JIT. fib(30) in 13ms (vs 6150ms eval). WASM wins 9/12 benchmarks. Key insight: WASM compiler produces competitive native code."
+    },
+    {
+      "id": "T59",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Mid-session: commit all, push, update daily log",
+      "started": "2026-04-29T16:06:09.986Z"
     }
   ],
   "focusProjects": [
@@ -756,6 +821,34 @@
     {
       "time": "2026-04-29T15:41:05.152Z",
       "msg": "Added T52 (BUILD) after end: monkey-lang WASM: add hash.delete() support (mark entries as DELETED)"
+    },
+    {
+      "time": "2026-04-29T15:53:39.417Z",
+      "msg": "Added T53 (BUILD) after end: monkey-lang: add hash map examples to the playground (word frequency, lookup table, JSON-like object)"
+    },
+    {
+      "time": "2026-04-29T15:53:39.533Z",
+      "msg": "Added T54 (BUILD) after end: monkey-lang: implement has() builtin to check if hash map contains a key"
+    },
+    {
+      "time": "2026-04-29T15:53:39.648Z",
+      "msg": "Added T55 (EXPLORE) after end: monkey-lang: investigate what happens with very large programs (100+ functions)"
+    },
+    {
+      "time": "2026-04-29T16:04:13.442Z",
+      "msg": "Added T56 (BUILD) after end: monkey-lang: add playground HTML page with hash map examples (update existing playground)"
+    },
+    {
+      "time": "2026-04-29T16:04:13.642Z",
+      "msg": "Added T57 (BUILD) after end: HenryDB: add compiled subquery support in WHERE (EXISTS, IN with subquery)"
+    },
+    {
+      "time": "2026-04-29T16:04:13.837Z",
+      "msg": "Added T58 (EXPLORE) after end: Run monkey-lang benchmark suite and compare interpreter vs compiler vs WASM"
+    },
+    {
+      "time": "2026-04-29T16:04:14.038Z",
+      "msg": "Added T59 (MAINTAIN) after end: Mid-session: commit all, push, update daily log"
     }
   ]
 }
