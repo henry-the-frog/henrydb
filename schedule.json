@@ -768,6 +768,89 @@
       "completed": "2026-04-29T16:38:43.500Z",
       "duration_ms": 120000,
       "summary": "Functional OOP works: hash maps + closures as objects. Immutable objects perfect (Person constructor with greet/older). Mutable counter has closure limitation."
+    },
+    {
+      "id": "T72",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "monkey-lang: extend find(), any(), all() to work on hash maps",
+      "project": "monkey-lang",
+      "started": "2026-04-29T16:40:01.555Z",
+      "completed": "2026-04-29T16:41:20.638Z",
+      "duration_ms": 120000,
+      "summary": "find/any/all work on hash maps. fn(k,v) callback pattern. find returns first matching key."
+    },
+    {
+      "id": "T73",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "monkey-lang: add each() for hash maps (side-effect iteration)",
+      "project": "monkey-lang",
+      "started": "2026-04-29T16:41:21.071Z",
+      "completed": "2026-04-29T16:41:21.309Z",
+      "duration_ms": 5000,
+      "summary": "Skipped — each() is just for-in with no return value, already supported via for-in."
+    },
+    {
+      "id": "T74",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "monkey-lang: add entries() builtin for hash maps (returns [[k,v], [k,v], ...])",
+      "project": "monkey-lang",
+      "started": "2026-04-29T16:41:59.400Z",
+      "completed": "2026-04-29T16:42:55.837Z",
+      "duration_ms": 60000,
+      "summary": "entries(hash) → [[k,v], ...] added. Returns array of key-value pairs."
+    },
+    {
+      "id": "T75",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "HenryDB: add compiled LIKE/NOT LIKE optimization in WHERE compiler (use regex)",
+      "project": "henrydb",
+      "started": "2026-04-29T16:43:07.644Z",
+      "completed": "2026-04-29T16:44:02.313Z",
+      "duration_ms": 10000,
+      "summary": "Already implemented! LIKE compiles to regex test, NOT LIKE wraps with NOT(!). ILIKE also supported with case-insensitive flag."
+    },
+    {
+      "id": "T76",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Final session cleanup: update TASKS.md, commit all, push, write evening summary",
+      "started": "2026-04-29T16:44:24.796Z",
+      "completed": "2026-04-29T16:44:35.673Z",
+      "duration_ms": 5000,
+      "summary": "Deferred — not session end yet."
+    },
+    {
+      "id": "T77",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Look at HenryDB PL/SQL recursive inline call bug more deeply",
+      "project": "henrydb",
+      "started": "2026-04-29T16:44:36.103Z",
+      "completed": "2026-04-29T16:52:30.565Z",
+      "duration_ms": 600000,
+      "summary": "Deep bug investigation: PL/SQL recursive inline calls. Root cause: addMatch regex split on - inside function args (fixed). DEEPER issue: variable scope leak during recursion — parameter n gets substituted with the unevaluated expression string from the outer call. Need scope isolation fix."
+    },
+    {
+      "id": "T78",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "monkey-lang: add fromEntries() builtin (inverse of entries())",
+      "project": "monkey-lang",
+      "started": "2026-04-29T16:53:28.790Z",
+      "completed": "2026-04-29T16:54:23.267Z",
+      "duration_ms": 60000,
+      "summary": "fromEntries([[k,v],...]) → {k:v,...} added. Inverse of entries(). Roundtrip verified."
+    },
+    {
+      "id": "T79",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Run full monkey-lang test suite one final time, verify CI green, push all",
+      "started": "2026-04-29T16:54:42.648Z"
     }
   ],
   "focusProjects": [
@@ -1039,6 +1122,38 @@
     {
       "time": "2026-04-29T16:37:54.687Z",
       "msg": "Added T71 (EXPLORE) after end: Demonstrate monkey-lang object system using hash maps with closures"
+    },
+    {
+      "time": "2026-04-29T16:40:00.966Z",
+      "msg": "Added T72 (BUILD) after end: monkey-lang: extend find(), any(), all() to work on hash maps"
+    },
+    {
+      "time": "2026-04-29T16:40:01.165Z",
+      "msg": "Added T73 (BUILD) after end: monkey-lang: add each() for hash maps (side-effect iteration)"
+    },
+    {
+      "time": "2026-04-29T16:41:59.009Z",
+      "msg": "Added T74 (BUILD) after end: monkey-lang: add entries() builtin for hash maps (returns [[k,v], [k,v], ...])"
+    },
+    {
+      "time": "2026-04-29T16:43:07.254Z",
+      "msg": "Added T75 (BUILD) after end: HenryDB: add compiled LIKE/NOT LIKE optimization in WHERE compiler (use regex)"
+    },
+    {
+      "time": "2026-04-29T16:44:24.336Z",
+      "msg": "Added T76 (MAINTAIN) after end: Final session cleanup: update TASKS.md, commit all, push, write evening summary"
+    },
+    {
+      "time": "2026-04-29T16:44:24.452Z",
+      "msg": "Added T77 (EXPLORE) after end: Look at HenryDB PL/SQL recursive inline call bug more deeply"
+    },
+    {
+      "time": "2026-04-29T16:44:24.568Z",
+      "msg": "Added T78 (BUILD) after end: monkey-lang: add fromEntries() builtin (inverse of entries())"
+    },
+    {
+      "time": "2026-04-29T16:54:42.257Z",
+      "msg": "Added T79 (MAINTAIN) after end: Run full monkey-lang test suite one final time, verify CI green, push all"
     }
   ]
 }
