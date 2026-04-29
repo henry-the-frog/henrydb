@@ -85,13 +85,15 @@ function _compile(expr, params) {
       const left = _compileValue(expr.left, params);
       const right = _compileValue(expr.right, params);
       if (!left || !right) return null;
+      // SQL NULL semantics: any comparison where either operand is NULL → false (UNKNOWN)
+      // Only IS NULL / IS NOT NULL should match NULL values
       switch (expr.op) {
-        case 'EQ': return `${left} === ${right}`;
-        case 'NE': return `${left} !== ${right}`;
-        case 'LT': return `${left} < ${right}`;
-        case 'GT': return `${left} > ${right}`;
-        case 'LE': return `${left} <= ${right}`;
-        case 'GE': return `${left} >= ${right}`;
+        case 'EQ': return `(${left} != null && ${right} != null && ${left} === ${right})`;
+        case 'NE': return `(${left} != null && ${right} != null && ${left} !== ${right})`;
+        case 'LT': return `(${left} != null && ${right} != null && ${left} < ${right})`;
+        case 'GT': return `(${left} != null && ${right} != null && ${left} > ${right})`;
+        case 'LE': return `(${left} != null && ${right} != null && ${left} <= ${right})`;
+        case 'GE': return `(${left} != null && ${right} != null && ${left} >= ${right})`;
         default: return null;
       }
     }
