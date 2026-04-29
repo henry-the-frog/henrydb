@@ -1057,10 +1057,119 @@
     {
       "id": "T107",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "Update TASKS.md: reflect NaN-boxing done (as unboxing), hash map resize done, new test counts",
       "project": "monkey-lang",
-      "started": "2026-04-29T02:54:49.064Z"
+      "started": "2026-04-29T02:54:49.064Z",
+      "completed": "2026-04-29T02:56:27.665Z",
+      "duration_ms": 120000,
+      "summary": "Updated TASKS.md: test counts (3266 total), NaN-boxing done as unboxing, hash resize done, new bugs/fixes documented, superinstructions added to backlog."
+    },
+    {
+      "id": "T108",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Analyze opcode sequences: find most common 2-3 opcode patterns in fib/counter/loop for superinstruction candidates",
+      "project": "monkey-lang",
+      "started": "2026-04-29T02:56:51.664Z",
+      "completed": "2026-04-29T02:58:20.930Z",
+      "duration_ms": 300000,
+      "summary": "Analyzed opcode sequences for superinstructions. Top candidates: (1) OpIncrementLocal saves 3 dispatches per loop (set i = i+1), (2) OpAddSetLocal/Global saves 1 dispatch per arithmetic-store, (3) OpGetLocalConst combines variable+constant load, (4) OpSelfCall combines CurrentClosure+Call for recursion. Scratch note written."
+    },
+    {
+      "id": "T109",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Implement top 2-3 superinstructions in VM (combined opcodes for common sequences)",
+      "project": "monkey-lang",
+      "started": "2026-04-29T02:58:34.634Z",
+      "completed": "2026-04-29T03:13:52.263Z",
+      "duration_ms": 900000,
+      "summary": "Added 3 superinstruction opcodes (IncrementLocal, AddSetLocal, AddSetGlobal) to VM + debugger. Peephole optimizer patterns disabled after discovering type-safety issue: OpAdd handles int/float/string/array, so superinstructions are only safe with compiler type info. Also fixed accidentally reverted unboxing changes (objectKeyString, object helpers, gc primitive skip). All 1259 tests pass."
+    },
+    {
+      "id": "T110",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Stress-test unboxing: try edge cases that might break — closures capturing 0, hash with 0 values, falsy-value-heavy programs",
+      "project": "monkey-lang",
+      "started": "2026-04-29T03:14:22.997Z",
+      "completed": "2026-04-29T03:15:34.221Z",
+      "duration_ms": 180000,
+      "summary": "Stress-tested unboxing edge cases: 26 tests covering zero values, falsy values, negative numbers, large numbers, closures capturing 0, hash with 0 keys/values, array ops with 0s, reduce/map with 0. All pass. The ?? fix and objectKeyString fix are solid. No new bugs found."
+    },
+    {
+      "id": "T111",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Compiler: emit OpAddSetLocal/Global only when both operands are known-integer (from type tracking)",
+      "project": "monkey-lang",
+      "started": "2026-04-29T03:15:54.530Z",
+      "completed": "2026-04-29T03:19:20.619Z",
+      "duration_ms": 600000,
+      "summary": "Compiler now emits type-safe superinstructions for set x = x + N patterns. OpIncrementLocal emitted for +1, OpAddSetLocal/Global for +N. Type-safe: only when both sides provably integer. Benchmark: no measurable speedup (~0.4%) — V8 JIT already optimizes switch dispatch. Code kept as foundation for native/WASM VMs. All 1259 tests pass."
+    },
+    {
+      "id": "T112",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Investigate: what does the WASM compiler need for string key support in hash maps?",
+      "project": "monkey-lang",
+      "started": "2026-04-29T03:19:52.310Z",
+      "completed": "2026-04-29T03:20:22.889Z",
+      "duration_ms": 120000,
+      "summary": "Investigated WASM string hash keys. Current entry format (12 bytes) works since string pointers are i32. Need: (1) __hash_fnv_str for FNV-1a over string bytes, (2) key type tag in entry status (int vs str), (3) find_slot branch on key type for comparison (__str_eq exists). Doable but significant WASM bytecode work — estimate ~100 lines of WASM builder code."
+    },
+    {
+      "id": "T114",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "WASM: implement __hash_fnv_str and string key support in hash maps",
+      "project": "monkey-lang",
+      "started": "2026-04-29T03:20:48.491Z",
+      "completed": "2026-04-29T03:23:28.533Z",
+      "duration_ms": 480000,
+      "summary": "Added __hash_fnv_str WASM function (FNV-1a over string bytes). Foundation for string key hash maps. Not yet integrated into set/get — needs parallel find_slot_str. Bumped binary size test threshold. All tests pass."
+    },
+    {
+      "id": "T115",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Hunt: scan vm.js for remaining || NULL patterns that should be ?? NULL",
+      "project": "monkey-lang",
+      "started": "2026-04-29T03:24:03.610Z",
+      "completed": "2026-04-29T03:25:29.024Z",
+      "duration_ms": 120000,
+      "summary": "Scanned all || NULL patterns: found 2 in vm.js defaults and 1 in evaluator.js (re-lost in git revert). All converted to ?? NULL. No correctness bugs (MonkeyInteger objects are truthy) but ?? is semantically correct."
+    },
+    {
+      "id": "T116",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "Add bench.js with comprehensive benchmarks: fib, loop, array, hash, string ops — print comparison table",
+      "project": "monkey-lang",
+      "started": "2026-04-29T03:26:11.084Z",
+      "completed": "2026-04-29T03:27:49.001Z",
+      "duration_ms": 300000,
+      "summary": "Updated bench.js with 8 comprehensive benchmarks and table output. VM wins 6/8: fib(25) 3.8x, counter 3.3x, tight loop 3.9x, closures 3.1x. Eval wins on string concat (0.6x) and small prelude ops. Hash performance nearly equal."
+    },
+    {
+      "id": "T117",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Why does evaluator beat VM on string concat? Profile and identify the bottleneck.",
+      "project": "monkey-lang",
+      "started": "2026-04-29T03:28:13.133Z",
+      "completed": "2026-04-29T03:30:54.268Z",
+      "duration_ms": 300000,
+      "summary": "Found string concat bottleneck: internString doing Map.get+Map.set for every unique concat result. Fixed by using MonkeyString directly for concat/repeat. String bench: 6.2ms→1.5ms (4.1x faster). VM now wins 7/8 benchmarks vs evaluator. Root cause: intern table designed for repeated constants, not unique runtime strings."
+    },
+    {
+      "id": "T113",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Evening C final: daily log, git push, CURRENT.md wrap",
+      "started": "2026-04-29T03:31:30.395Z"
     }
   ],
   "focusProjects": [
@@ -1552,6 +1661,62 @@
     {
       "time": "2026-04-29T02:51:30.774Z",
       "msg": "Added T107 (BUILD) after T106: Update TASKS.md: reflect NaN-boxing done (as unboxing), hash map resize done, new test counts"
+    },
+    {
+      "time": "2026-04-29T02:56:41.352Z",
+      "msg": "Added T108 (EXPLORE) after end: Analyze opcode sequences: find most common 2-3 opcode patterns in fib/counter/loop for superinstruction candidates"
+    },
+    {
+      "time": "2026-04-29T02:56:46.786Z",
+      "msg": "Added T109 (BUILD) after T108: Implement top 2-3 superinstructions in VM (combined opcodes for common sequences)"
+    },
+    {
+      "time": "2026-04-29T03:14:15.628Z",
+      "msg": "Added T110 (EXPLORE) after end: Stress-test unboxing: try edge cases that might break — closures capturing 0, hash with 0 values, falsy-value-heavy programs"
+    },
+    {
+      "time": "2026-04-29T03:15:49.135Z",
+      "msg": "Added T111 (BUILD) after end: Compiler: emit OpAddSetLocal/Global only when both operands are known-integer (from type tracking)"
+    },
+    {
+      "time": "2026-04-29T03:19:44.515Z",
+      "msg": "Added T112 (EXPLORE) after end: Investigate: what does the WASM compiler need for string key support in hash maps?"
+    },
+    {
+      "time": "2026-04-29T03:20:35.742Z",
+      "msg": "Added T113 (MAINTAIN) after end: Evening C final: daily log, git push, CURRENT.md wrap"
+    },
+    {
+      "time": "2026-04-29T03:20:41.682Z",
+      "msg": "Added T114 (BUILD) after end: WASM: implement __hash_fnv_str and string key support in hash maps"
+    },
+    {
+      "time": "2026-04-29T03:20:56.788Z",
+      "msg": "Moved T113 after T114"
+    },
+    {
+      "time": "2026-04-29T03:23:49.569Z",
+      "msg": "Added T115 (EXPLORE) after end: Hunt: scan vm.js for remaining || NULL patterns that should be ?? NULL"
+    },
+    {
+      "time": "2026-04-29T03:23:55.289Z",
+      "msg": "Moved T115 after T114"
+    },
+    {
+      "time": "2026-04-29T03:26:02.526Z",
+      "msg": "Added T116 (BUILD) after end: Add bench.js with comprehensive benchmarks: fib, loop, array, hash, string ops — print comparison table"
+    },
+    {
+      "time": "2026-04-29T03:26:10.694Z",
+      "msg": "Moved T116 after T115"
+    },
+    {
+      "time": "2026-04-29T03:28:07.321Z",
+      "msg": "Added T117 (EXPLORE) after end: Why does evaluator beat VM on string concat? Profile and identify the bottleneck."
+    },
+    {
+      "time": "2026-04-29T03:28:12.743Z",
+      "msg": "Moved T117 after T116"
     }
   ]
 }
