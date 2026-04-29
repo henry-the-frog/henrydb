@@ -1,17 +1,18 @@
-status: session-active
-mode: MAINTAIN
-task: Session wrap
-current_position: T66
-started: 2026-04-28T23:50:51Z
+status: session-ended
 session: B2 (4:15 PM - 8:15 PM MDT)
-tasks_completed: 34
-builds_this_session: 26 (19 before reset + 7 after depth pivot)
+tasks_completed: ~40
+builds_this_session: ~25
 projects_touched: monkey-lang, henrydb
-key_milestones:
-  - Array reallocation + memory.grow (50K elements)
-  - Critical let execution order fix
-  - HenryDB WHERE compiler (AST→JS)
-  - For-in loops + comprehensions
-  - String ops (concat, compare, charAt, substring, indexOf)
-  - Type inference (variables + call-sites)
-  - 205 WASM tests (was 105 at start)
+
+summary:
+  Massive WASM compiler expansion session.
+  Arrays: dynamic reallocation (50K elements), for-in, comprehensions
+  Strings: 11 methods (concat, len, charAt, substring, indexOf, toUpper, toLower, replace, trim, split, intToString)
+  Type inference: variable tracking, call-site propagation
+  Hash maps: open addressing, int keys, get/set
+  HenryDB: WHERE clause compiler (AST→JS function)
+  Critical bug fixed: top-level let execution order
+  
+test_counts:
+  monkey-lang: 1456 total (253 WASM)
+  wasm_breakdown: 98 string, 63 array, 10 hash, 82 core

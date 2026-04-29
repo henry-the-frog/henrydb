@@ -644,9 +644,154 @@
     {
       "id": "T66",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Full test sweep + session wrap",
-      "started": "2026-04-28T23:50:51.429Z"
+      "started": "2026-04-28T23:50:51.429Z",
+      "completed": "2026-04-28T23:52:09.964Z",
+      "duration_ms": 120000,
+      "summary": "Session state saved: daily log, CURRENT.md, TASKS.md, git push. 1408 tests, 205 WASM tests."
+    },
+    {
+      "id": "T67",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "WASM: toUpperCase/toLowerCase string methods",
+      "project": "monkey-lang",
+      "started": "2026-04-28T23:52:30.457Z",
+      "completed": "2026-04-28T23:57:49.642Z",
+      "duration_ms": 600000,
+      "summary": "toUpperCase/toLowerCase: ASCII byte conversion. Fixed SLEB128 encoding for i32.const>63. 10 tests. 70 string tests, 215 WASM tests."
+    },
+    {
+      "id": "T68",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "WASM: split string method (returns array of strings)",
+      "project": "monkey-lang",
+      "started": "2026-04-28T23:58:06.326Z",
+      "completed": "2026-04-29T00:00:50.528Z",
+      "duration_ms": 600000,
+      "summary": "split(str, delim): inline WASM scan+extract+push. 7 tests. 77 string tests, 222 WASM tests."
+    },
+    {
+      "id": "T69",
+      "mode": "MAINTAIN",
+      "status": "skipped",
+      "task": "Final session wrap (8 PM)",
+      "skip_reason": "More work time"
+    },
+    {
+      "id": "T70",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "WASM: replace string method + tests",
+      "project": "monkey-lang",
+      "started": "2026-04-29T00:01:40.901Z",
+      "completed": "2026-04-29T00:04:26.286Z",
+      "duration_ms": 600000,
+      "summary": "replace + trim: indexOf-based replacement, whitespace trimming. 13 tests. 90 string tests, 235 WASM tests."
+    },
+    {
+      "id": "T71",
+      "mode": "BUILD",
+      "status": "skipped",
+      "task": "WASM: trim string method + tests",
+      "project": "monkey-lang",
+      "skip_reason": "Already included trim in T70"
+    },
+    {
+      "id": "T72",
+      "mode": "MAINTAIN",
+      "status": "skipped",
+      "task": "Final: rebuild bundle, full test, daily log, session wrap",
+      "skip_reason": "More work"
+    },
+    {
+      "id": "T73",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "WASM: number-to-string conversion (intToString)",
+      "project": "monkey-lang",
+      "started": "2026-04-29T00:04:58.967Z",
+      "completed": "2026-04-29T00:07:53.421Z",
+      "duration_ms": 600000,
+      "summary": "intToString: div/rem digit extraction, negative handling, zero case. Added i32_div_u/rem_u opcodes. 8 tests. 98 string tests, 243 WASM tests."
+    },
+    {
+      "id": "T74",
+      "mode": "MAINTAIN",
+      "status": "done",
+      "task": "Final: rebuild bundle, full test, session wrap at 8 PM",
+      "started": "2026-04-29T00:08:07.705Z",
+      "completed": "2026-04-29T00:08:33.541Z",
+      "duration_ms": 120000,
+      "summary": "Playground bundle rebuilt (186KB). Full string method suite included."
+    },
+    {
+      "id": "T75",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Hash map design for WASM — memory layout, hash function, API",
+      "started": "2026-04-29T00:08:53.765Z",
+      "completed": "2026-04-29T00:09:11.195Z",
+      "duration_ms": 120000,
+      "summary": "Hash map design: open addressing with linear probing. Key tagging (int=0, string=1). FNV-1a for string keys, multiplicative for ints. Entry: [tag:i8][key:i32][value:i32][occupied:i8] padded to 12 bytes. ~2h implementation estimate."
+    },
+    {
+      "id": "T76",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "WASM hash map implementation",
+      "task": null,
+      "started": "2026-04-29T00:09:16.321Z",
+      "completed": "2026-04-29T00:09:33.563Z",
+      "duration_ms": 30000,
+      "summary": "Plan: 3 tasks - internal hash functions (int keys), literal+access compilation, string keys+tests."
+    },
+    {
+      "id": "T79",
+      "mode": "BUILD",
+      "task": "Internal WASM hash functions: __hash_new, __hash_get, __hash_set (int keys)",
+      "status": "done",
+      "plan_ref": "T76",
+      "started": "2026-04-29T00:09:39.325Z",
+      "completed": "2026-04-29T00:13:44.992Z",
+      "duration_ms": 600000,
+      "summary": "Hash map: open addressing, golden ratio hash, linear probing. __hash_new/__hash_get/__hash_set. HashLiteral compilation. Type-aware index access. 243 WASM tests pass."
+    },
+    {
+      "id": "T80",
+      "mode": "BUILD",
+      "task": "HashLiteral compilation + hash index/set expressions",
+      "status": "done",
+      "plan_ref": "T76",
+      "started": "2026-04-29T00:13:54.723Z",
+      "completed": "2026-04-29T00:17:19.594Z",
+      "duration_ms": 600000,
+      "summary": "Hash set expression + 10 tests. Type-aware index+set. Limitation: no auto-resize (cap-8 for empty hashes). 253 WASM tests."
+    },
+    {
+      "id": "T81",
+      "mode": "BUILD",
+      "task": "String key support (FNV-1a hash) + comprehensive tests",
+      "status": "skipped",
+      "plan_ref": "T76",
+      "skip_reason": "Save for next session — sufficient context used"
+    },
+    {
+      "id": "T77",
+      "mode": "BUILD",
+      "status": "skipped",
+      "task": null,
+      "project": "monkey-lang",
+      "skip_reason": "Unfilled slot"
+    },
+    {
+      "id": "T78",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Session wrap at 8 PM",
+      "started": "2026-04-29T00:18:08.054Z"
     }
   ],
   "focusProjects": [
@@ -954,6 +1099,78 @@
     {
       "time": "2026-04-28T23:50:42.568Z",
       "msg": "Removed T65: HenryDB already has window functions"
+    },
+    {
+      "time": "2026-04-28T23:52:18.929Z",
+      "msg": "Added T67 (BUILD) after end: WASM: toUpperCase/toLowerCase string methods"
+    },
+    {
+      "time": "2026-04-28T23:52:19.044Z",
+      "msg": "Added T68 (BUILD) after end: WASM: split string method (returns array of strings)"
+    },
+    {
+      "time": "2026-04-28T23:52:19.160Z",
+      "msg": "Added T69 (MAINTAIN) after end: Final session wrap (8 PM)"
+    },
+    {
+      "time": "2026-04-29T00:01:30.822Z",
+      "msg": "Removed T69: More work time"
+    },
+    {
+      "time": "2026-04-29T00:01:30.937Z",
+      "msg": "Added T70 (BUILD) after end: WASM: replace string method + tests"
+    },
+    {
+      "time": "2026-04-29T00:01:31.053Z",
+      "msg": "Added T71 (BUILD) after end: WASM: trim string method + tests"
+    },
+    {
+      "time": "2026-04-29T00:01:31.168Z",
+      "msg": "Added T72 (MAINTAIN) after end: Final: rebuild bundle, full test, daily log, session wrap"
+    },
+    {
+      "time": "2026-04-29T00:04:34.593Z",
+      "msg": "Removed T71: Already included trim in T70"
+    },
+    {
+      "time": "2026-04-29T00:04:49.233Z",
+      "msg": "Removed T72: More work"
+    },
+    {
+      "time": "2026-04-29T00:04:49.349Z",
+      "msg": "Added T73 (BUILD) after end: WASM: number-to-string conversion (intToString)"
+    },
+    {
+      "time": "2026-04-29T00:04:49.462Z",
+      "msg": "Added T74 (MAINTAIN) after end: Final: rebuild bundle, full test, session wrap at 8 PM"
+    },
+    {
+      "time": "2026-04-29T00:08:48.070Z",
+      "msg": "Added T75 (THINK) after end: Hash map design for WASM — memory layout, hash function, API"
+    },
+    {
+      "time": "2026-04-29T00:08:48.184Z",
+      "msg": "Added T76 (PLAN) after end: WASM hash map implementation"
+    },
+    {
+      "time": "2026-04-29T00:08:48.301Z",
+      "msg": "Added T77 (BUILD) after end: null"
+    },
+    {
+      "time": "2026-04-29T00:08:48.415Z",
+      "msg": "Added T78 (MAINTAIN) after end: Session wrap at 8 PM"
+    },
+    {
+      "time": "2026-04-29T00:09:25.983Z",
+      "msg": "PLAN T76 filled 3 BUILD tasks"
+    },
+    {
+      "time": "2026-04-29T00:17:48.234Z",
+      "msg": "Removed T81: Save for next session — sufficient context used"
+    },
+    {
+      "time": "2026-04-29T00:17:57.782Z",
+      "msg": "Removed T77: Unfilled slot"
     }
   ]
 }
