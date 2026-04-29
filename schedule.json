@@ -1188,9 +1188,23 @@
     {
       "id": "T119",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Update scratch/INDEX.md with new scratch notes",
-      "started": "2026-04-29T03:36:37.111Z"
+      "started": "2026-04-29T03:36:37.111Z",
+      "completed": "2026-04-29T03:37:24.883Z",
+      "duration_ms": 60000,
+      "summary": "Updated scratch/INDEX.md with 2 new session C scratch files (nan-boxing-research, superinstruction-analysis)."
+    },
+    {
+      "id": "T120",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Why does eval beat VM on prelude map? Is it compile overhead or execution?",
+      "project": "monkey-lang",
+      "started": "2026-04-29T03:37:51.644Z",
+      "completed": "2026-04-29T03:38:31.860Z",
+      "duration_ms": 120000,
+      "summary": "Eval has native map builtin (JS loop + applyFunction). VM uses prelude map → __nativeMap → callClosureSync. The 0.6ms vs 13ms gap is almost entirely compile time (6ms for prelude). Actual execution comparable. Not a real perf issue — just benchmark methodology."
     }
   ],
   "focusProjects": [
@@ -1746,6 +1760,10 @@
     {
       "time": "2026-04-29T03:36:31.329Z",
       "msg": "Added T119 (MAINTAIN) after end: Update scratch/INDEX.md with new scratch notes"
+    },
+    {
+      "time": "2026-04-29T03:37:43.249Z",
+      "msg": "Added T120 (EXPLORE) after end: Why does eval beat VM on prelude map? Is it compile overhead or execution?"
     }
   ]
 }

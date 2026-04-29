@@ -18,6 +18,24 @@ _Promoted from scratch/inline-caching-design.md (uses: 2, Apr 15)_
 - **Polymorphic** (up to 4 entries): multiple shapes at same access site
 - **Megamorphic** (give up): fall back to hash lookup
 
+## Integer Unboxing (Apr 28)
+- **Raw JS numbers on VM stack** instead of MonkeyInteger objects. 1.76x fib(25) speedup.
+- **Re-box at boundaries**: lastPoppedStackElem, callBuiltin args, array/hash construction.
+- **`?? NULL` not `|| NULL`**: Raw number 0 is falsy, so `0 || NULL` → NULL. `??` only coerces null/undefined.
+- **objectKeyString must handle raw numbers**: `typeof obj === 'number'` check needed for `int:N` format.
+- **GC must skip primitives**: `typeof obj !== 'object'` guard in markObject.
+
+## Superinstructions (Apr 28)
+- **V8 JIT negates dispatch reduction**: <0.5% benefit. C/WASM interpreters would benefit.
+- **Type-unsafe OpAdd**: Can't combine OpAdd + OpSet because OpAdd handles int/float/string/array.
+- **Type-safe pattern**: Only emit superinstructions when compiler can prove operand types (e.g., `set x = x + <int_literal>`).
+- **AST caching breaks with constant folding**: Compiler mutates AST nodes in-place. Cached ASTs get corrupted on second compile.
+
+## String Interning (Apr 28)
+- **Don't intern concat results**: intern table is for repeated constants, not unique runtime strings.
+- **Map.get + Map.set overhead**: ~4x slower than direct MonkeyString construction for unique strings.
+- **Keep interning for**: string literals, identifier names, short constants.
+
 ## Implementation Results (Monkey-lang)
 - ShapedHash: shape + slots[] + keys[] (for iteration backward compat)
 - Per-bytecode-position IC slots
