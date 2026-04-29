@@ -1,13 +1,13 @@
 {
-  "generated": "2026-04-29T03:38:31.920Z",
+  "generated": "2026-04-29T03:48:02.189Z",
   "current": {
     "status": "done",
     "mode": "EXPLORE",
-    "task": "Why does eval beat VM on prelude map? Is it compile overhead or execution?",
-    "completedAt": "2026-04-29T03:38:31.920Z",
-    "taskId": "T120",
-    "summary": "Eval has native map builtin (JS loop + applyFunction). VM uses prelude map → __nativeMap → callClosureSync. The 0.6ms vs 13ms gap is almost entirely compile time (6ms for prelude). Actual execution comparable. Not a real perf issue — just benchmark methodology.",
-    "durationMs": 120000
+    "task": "Can we reduce VM function call overhead? Profile callClosure vs evaluator applyFunction",
+    "completedAt": "2026-04-29T03:48:02.189Z",
+    "taskId": "T122",
+    "summary": "Explored VM call overhead: 165ns/call (frame push/pop). Attempted frame caching optimization (replace 40x this.currentFrame() with cached local). Too many frame-change points (calls, returns, tail calls) caused 18 test failures. Reverted. Need careful refactor for another session. Learning: V8 JIT likely already inlines the accessor.",
+    "durationMs": 480000
   },
   "schedule": {
     "date": "2026-04-28",
@@ -5639,14 +5639,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 94,
+    "blocksCompleted": 95,
     "blocksTotal": 101,
     "modeDistribution": {
       "THINK": 12,
       "PLAN": 9,
       "BUILD": 42,
       "MAINTAIN": 15,
-      "EXPLORE": 16
+      "EXPLORE": 17
     }
   },
   "artifacts": [],
