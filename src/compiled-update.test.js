@@ -86,8 +86,26 @@ describe('Compiled SET Expressions', () => {
     });
 
     it('returns null for function calls', () => {
-      const fn = compileSetExpr({ type: 'function_call', name: 'UPPER' });
+      const fn = compileSetExpr({ type: 'function_call', func: 'UNKNOWN_FUNC', args: [] });
       assert.equal(fn, null);
+    });
+
+    it('compiles UPPER function', () => {
+      const fn = compileSetExpr({ type: 'function_call', func: 'UPPER', args: [{ type: 'column_ref', name: 'name' }] });
+      assert.ok(fn);
+      assert.equal(fn({ name: 'hello' }), 'HELLO');
+    });
+
+    it('compiles ABS function', () => {
+      const fn = compileSetExpr({ type: 'function_call', func: 'ABS', args: [{ type: 'column_ref', name: 'val' }] });
+      assert.ok(fn);
+      assert.equal(fn({ val: -42 }), 42);
+    });
+
+    it('compiles COALESCE function', () => {
+      const fn = compileSetExpr({ type: 'function_call', func: 'COALESCE', args: [{ type: 'literal', value: null }, { type: 'column_ref', name: 'x' }] });
+      assert.ok(fn);
+      assert.equal(fn({ x: 'fallback' }), 'fallback');
     });
   });
 

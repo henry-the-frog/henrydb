@@ -239,9 +239,93 @@ function _compileValue(expr, params) {
     return result;
   }
   
-  // Function calls
+  // Function calls — compile common scalar functions
   if (expr.type === 'function_call' || expr.type === 'FUNCTION') {
-    return null; // Would need function registry
+    const func = (expr.func || expr.name || '').toUpperCase();
+    const args = expr.args || [];
+    
+    switch (func) {
+      case 'UPPER': {
+        if (args.length !== 1) return null;
+        const arg = _compileValue(args[0], params);
+        if (!arg) return null;
+        return `(${arg} != null ? String(${arg}).toUpperCase() : null)`;
+      }
+      case 'LOWER': {
+        if (args.length !== 1) return null;
+        const arg = _compileValue(args[0], params);
+        if (!arg) return null;
+        return `(${arg} != null ? String(${arg}).toLowerCase() : null)`;
+      }
+      case 'ABS': {
+        if (args.length !== 1) return null;
+        const arg = _compileValue(args[0], params);
+        if (!arg) return null;
+        return `Math.abs(${arg})`;
+      }
+      case 'COALESCE': {
+        if (args.length === 0) return null;
+        const compiledArgs = args.map(a => _compileValue(a, params));
+        if (compiledArgs.some(a => !a)) return null;
+        // Build: a ?? b ?? c
+        return `(${compiledArgs.join(' ?? ')})`;
+      }
+      case 'IFNULL': {
+        if (args.length !== 2) return null;
+        const a = _compileValue(args[0], params);
+        const b = _compileValue(args[1], params);
+        if (!a || !b) return null;
+        return `(${a} ?? ${b})`;
+      }
+      case 'NULLIF': {
+        if (args.length !== 2) return null;
+        const a = _compileValue(args[0], params);
+        const b = _compileValue(args[1], params);
+        if (!a || !b) return null;
+        return `(${a} === ${b} ? null : ${a})`;
+      }
+      case 'LENGTH': case 'LEN': {
+        if (args.length !== 1) return null;
+        const arg = _compileValue(args[0], params);
+        if (!arg) return null;
+        return `(${arg} != null ? String(${arg}).length : null)`;
+      }
+      case 'TRIM': {
+        if (args.length !== 1) return null;
+        const arg = _compileValue(args[0], params);
+        if (!arg) return null;
+        return `(${arg} != null ? String(${arg}).trim() : null)`;
+      }
+      case 'CONCAT': {
+        if (args.length < 2) return null;
+        const compiledArgs = args.map(a => _compileValue(a, params));
+        if (compiledArgs.some(a => !a)) return null;
+        return `(${compiledArgs.map(a => `String(${a} ?? '')`).join(' + ')})`;
+      }
+      case 'TYPEOF': {
+        if (args.length !== 1) return null;
+        const arg = _compileValue(args[0], params);
+        if (!arg) return null;
+        return `(${arg} === null ? 'null' : typeof ${arg})`;
+      }
+      case 'ROUND': {
+        if (args.length < 1 || args.length > 2) return null;
+        const val = _compileValue(args[0], params);
+        if (!val) return null;
+        if (args.length === 1) return `Math.round(${val})`;
+        const digits = _compileValue(args[1], params);
+        if (!digits) return null;
+        return `(Math.round(${val} * Math.pow(10, ${digits})) / Math.pow(10, ${digits}))`;
+      }
+      case 'MIN': case 'MAX': {
+        if (args.length < 2) return null;
+        const compiledArgs = args.map(a => _compileValue(a, params));
+        if (compiledArgs.some(a => !a)) return null;
+        return `Math.${func.toLowerCase()}(${compiledArgs.join(', ')})`;
+      }
+      default:
+        return null; // Unknown function — bail to interpreted
+    }
   }
   
   return null;
