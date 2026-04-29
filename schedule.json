@@ -1205,6 +1205,14 @@
       "completed": "2026-04-29T03:38:31.860Z",
       "duration_ms": 120000,
       "summary": "Eval has native map builtin (JS loop + applyFunction). VM uses prelude map → __nativeMap → callClosureSync. The 0.6ms vs 13ms gap is almost entirely compile time (6ms for prelude). Actual execution comparable. Not a real perf issue — just benchmark methodology."
+    },
+    {
+      "id": "T121",
+      "mode": "EXPLORE",
+      "status": "skipped",
+      "task": "done-for-now",
+      "project": "monkey-lang",
+      "skip_reason": ""
     }
   ],
   "focusProjects": [
@@ -1764,6 +1772,14 @@
     {
       "time": "2026-04-29T03:37:43.249Z",
       "msg": "Added T120 (EXPLORE) after end: Why does eval beat VM on prelude map? Is it compile overhead or execution?"
+    },
+    {
+      "time": "2026-04-29T03:41:01.945Z",
+      "msg": "Added T121 (EXPLORE) after end: done-for-now"
+    },
+    {
+      "time": "2026-04-29T03:41:12.230Z",
+      "msg": "Removed T121: "
     }
   ]
 }
