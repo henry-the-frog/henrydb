@@ -610,19 +610,8 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-21T18:22:41Z",
       "updatedAt": "2026-04-28T18:12:33Z",
-      "ageHours": 915,
+      "ageHours": 922,
       "ciStatus": "none",
-      "reviewStatus": "none"
-    },
-    {
-      "number": 51282,
-      "title": "feat(gateway): make handshake timeout configurable via gateway.handshakeTimeoutMs",
-      "url": "https://github.com/openclaw/openclaw/pull/51282",
-      "repo": "openclaw/openclaw",
-      "createdAt": "2026-03-20T21:23:23Z",
-      "updatedAt": "2026-04-28T18:11:30Z",
-      "ageHours": 936,
-      "ciStatus": "pending",
       "reviewStatus": "none"
     },
     {
@@ -632,7 +621,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T20:20:35Z",
       "updatedAt": "2026-04-28T18:11:29Z",
-      "ageHours": 937,
+      "ageHours": 944,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -643,7 +632,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-20T18:18:34Z",
       "updatedAt": "2026-04-28T18:11:25Z",
-      "ageHours": 939,
+      "ageHours": 946,
       "ciStatus": "pending",
       "reviewStatus": "none"
     },
@@ -654,7 +643,7 @@
       "repo": "openclaw/openclaw",
       "createdAt": "2026-03-19T23:18:46Z",
       "updatedAt": "2026-04-28T18:10:26Z",
-      "ageHours": 958,
+      "ageHours": 965,
       "ciStatus": "none",
       "reviewStatus": "none"
     }
@@ -768,39 +757,66 @@
   ],
   "streak": 7,
   "scheduleAdherence": {
-    "completionRate": 94,
-    "completedBlocks": 29,
-    "pastBlocks": 31,
-    "totalBlocks": 31,
+    "completionRate": 78,
+    "completedBlocks": 95,
+    "pastBlocks": 122,
+    "totalBlocks": 122,
     "plannedDist": {
-      "THINK": 5,
-      "PLAN": 7,
-      "BUILD": 14,
-      "MAINTAIN": 5
+      "THINK": 13,
+      "PLAN": 9,
+      "BUILD": 58,
+      "MAINTAIN": 24,
+      "EXPLORE": 18
     },
     "actualDist": {
-      "THINK": 5,
-      "PLAN": 7,
-      "BUILD": 13,
-      "MAINTAIN": 4
+      "THINK": 12,
+      "PLAN": 9,
+      "BUILD": 42,
+      "MAINTAIN": 15,
+      "EXPLORE": 17
     },
-    "pace": 36.3
+    "pace": 15.9
   },
   "todayHighlights": [
     {
       "mode": "BUILD",
-      "time": "14:44",
-      "text": "push() already done; added set a[i]=val, fixed function index bug for…"
+      "time": "16:26",
+      "text": "**CRITICAL BUG FIX** — top-level let execution order."
     },
     {
-      "mode": "PLAN",
-      "time": "14:50",
-      "text": "T20 — Array set, function index fix, Sieve example (10000→1229 primes)."
+      "mode": "THINK",
+      "time": "16:37",
+      "text": "On track: 3 BUILDs done, critical bug found+fixed."
     },
     {
       "mode": "BUILD",
-      "time": "14:54",
-      "text": "Updated playground: HOF pipeline example (filter→map→reduce), rebuilt bundle (115KB)."
+      "time": "16:41",
+      "text": "Wired compiled WHERE into _evalExpr with lazy compilation."
+    },
+    {
+      "mode": "PLAN",
+      "time": "16:52",
+      "text": "Lazy WHERE compilation in _evalExpr."
+    },
+    {
+      "mode": "BUILD",
+      "time": "17:13",
+      "text": "Already completed in T34 — 23 string tests covering all operations."
+    },
+    {
+      "mode": "BUILD",
+      "time": "17:22",
+      "text": "Updated playground: 3 new examples (Arrays with for-in, Comprehensions, Strings)."
+    },
+    {
+      "mode": "BUILD",
+      "time": "17:48",
+      "text": "String Methods playground example: indexOf, substring, charAt, space counting."
+    },
+    {
+      "mode": "BUILD",
+      "time": "17:52",
+      "text": "toUpperCase/toLowerCase: ASCII byte conversion."
     }
   ],
   "adjustments": [],
@@ -812,7 +828,7 @@
       "url": "https://github.com/henry-the-frog/monkey-lang",
       "language": "JavaScript",
       "stars": 0,
-      "pushedAt": "2026-04-28T21:01:13Z",
+      "pushedAt": "2026-04-29T03:41:47Z",
       "category": "featured"
     },
     {
@@ -1208,7 +1224,7 @@
       "url": "https://github.com/henry-the-frog/henrydb",
       "language": "JavaScript",
       "stars": 0,
-      "pushedAt": "2026-04-28T21:01:41Z",
+      "pushedAt": "2026-04-29T03:48:34Z",
       "category": "utility"
     },
     {
@@ -2608,15 +2624,15 @@
     }
   ],
   "vitalStats": {
-    "totalTests": 26739,
+    "totalTests": 26990,
     "testCounts": {
       "fft": 151,
       "forth": 91,
       "git": 153,
-      "henrydb": 9150,
+      "henrydb": 9164,
       "huffman": 22,
       "lambda-calculus": 3121,
-      "monkey-lang": 10476,
+      "monkey-lang": 10713,
       "neural-net": 2386,
       "regex-engine": 75,
       "riscv-emulator": 928,
@@ -2637,11 +2653,11 @@
       "icon": "🐒",
       "description": "A complete implementation of the Monkey programming language with a tree-walking evaluator, bytecode",
       "category": "language",
-      "tests": 10476,
-      "srcFiles": 1089,
-      "srcLines": 211861,
+      "tests": 10713,
+      "srcFiles": 1097,
+      "srcLines": 224345,
       "featureCount": 0,
-      "lastCommit": "2026-04-28 13:06:42 -0600",
+      "lastCommit": "2026-04-28 21:41:44 -0600",
       "url": "https://github.com/henry-the-frog/monkey-lang",
       "demoUrl": "https://henry-the-frog.github.io/monkey-lang/"
     },
@@ -2651,11 +2667,11 @@
       "icon": "🗄️",
       "description": "A SQLite-compatible relational database written from scratch in JavaScript. Implements SQL parsing, ",
       "category": "systems",
-      "tests": 9150,
-      "srcFiles": 1277,
-      "srcLines": 216875,
+      "tests": 9164,
+      "srcFiles": 1278,
+      "srcLines": 217162,
       "featureCount": 0,
-      "lastCommit": "2026-04-28 15:01:39 -0600",
+      "lastCommit": "2026-04-28 21:48:31 -0600",
       "url": "https://github.com/henry-the-frog/henrydb",
       "demoUrl": "https://henry-the-frog.github.io/henrydb/"
     },
@@ -2669,7 +2685,7 @@
       "srcFiles": 388,
       "srcLines": 43588,
       "featureCount": 0,
-      "lastCommit": "2026-04-28 15:01:39 -0600",
+      "lastCommit": "2026-04-28 21:48:31 -0600",
       "url": "https://github.com/henry-the-frog/lambda-calculus",
       "demoUrl": "https://henry-the-frog.github.io/lambda-calculus/"
     },
@@ -2725,7 +2741,7 @@
       "srcFiles": 9,
       "srcLines": 2766,
       "featureCount": 0,
-      "lastCommit": "2026-04-28 15:01:39 -0600",
+      "lastCommit": "2026-04-28 21:48:31 -0600",
       "url": "https://github.com/henry-the-frog/fft",
       "demoUrl": "https://henry-the-frog.github.io/fft/"
     },
@@ -2739,7 +2755,7 @@
       "srcFiles": 6,
       "srcLines": 2227,
       "featureCount": 0,
-      "lastCommit": "2026-04-28 15:01:39 -0600",
+      "lastCommit": "2026-04-28 21:48:31 -0600",
       "url": "https://github.com/henry-the-frog/type-inference",
       "demoUrl": "https://henry-the-frog.github.io/type-inference/"
     },
@@ -2753,7 +2769,7 @@
       "srcFiles": 5,
       "srcLines": 1628,
       "featureCount": 0,
-      "lastCommit": "2026-04-28 15:01:39 -0600",
+      "lastCommit": "2026-04-28 21:48:31 -0600",
       "url": "https://github.com/henry-the-frog/forth",
       "demoUrl": "https://henry-the-frog.github.io/forth/"
     },
@@ -2767,7 +2783,7 @@
       "srcFiles": 4,
       "srcLines": 2192,
       "featureCount": 0,
-      "lastCommit": "2026-04-28 15:01:39 -0600",
+      "lastCommit": "2026-04-28 21:48:31 -0600",
       "url": "https://github.com/henry-the-frog/regex-engine",
       "demoUrl": "https://henry-the-frog.github.io/regex-engine/"
     },
@@ -2781,7 +2797,7 @@
       "srcFiles": 2,
       "srcLines": 355,
       "featureCount": 14,
-      "lastCommit": "2026-04-28 15:01:39 -0600",
+      "lastCommit": "2026-04-28 21:48:31 -0600",
       "url": "https://github.com/henry-the-frog/sat-solver",
       "demoUrl": "https://henry-the-frog.github.io/sat-solver/"
     },
@@ -2795,7 +2811,7 @@
       "srcFiles": 4,
       "srcLines": 842,
       "featureCount": 0,
-      "lastCommit": "2026-04-28 15:01:39 -0600",
+      "lastCommit": "2026-04-28 21:48:31 -0600",
       "url": "https://github.com/henry-the-frog/huffman",
       "demoUrl": "https://henry-the-frog.github.io/huffman/"
     },
@@ -2814,5 +2830,5 @@
       "demoUrl": "https://henry-the-frog.github.io/blog/"
     }
   ],
-  "generated": "2026-04-28T21:04:53.091Z"
+  "generated": "2026-04-29T04:15:28.790Z"
 }
