@@ -251,3 +251,49 @@ function likeToRegex(pattern, caseInsensitive) {
   regex += '$';
   return caseInsensitive ? regex : regex;
 }
+
+/**
+ * Compile a SET value expression (e.g., `column + 1`, `'hello'`, `price * 1.1`)
+ * into an optimized function (row) => value.
+ * Returns null if compilation not possible (fallback to _evalValue).
+ * 
+ * Unlike compileWhereFilter (returns boolean), this returns any value type.
+ */
+export function compileSetExpr(expr) {
+  if (!expr) return null;
+  if (containsUnsafe(expr)) return null;
+  try {
+    paramCounter = 0;
+    const params = {};
+    const code = _compileValue(expr, params);
+    if (!code) return null;
+    const paramNames = Object.keys(params);
+    const paramValues = Object.values(params);
+    const fn = new Function(...paramNames, 'row', `"use strict"; return (${code});`);
+    return fn.bind(null, ...paramValues);
+  } catch (e) {
+    return null;
+  }
+}
+
+/**
+ * Compile a batch of SET assignments [{column, value: expr}] into an optimized
+ * function that applies all SET operations at once.
+ * Returns: { compiledAssignments: [{column, colIdx, fn}] } or null
+ * 
+ * @param {Array} assignments - [{column: string, value: AST}]
+ * @param {Array} schema - table schema [{name: string, ...}]
+ * @returns {Array|null} array of {column, colIdx, fn} or null if any can't compile
+ */
+export function compileSetBatch(assignments, schema) {
+  if (!assignments || !assignments.length) return null;
+  const compiled = [];
+  for (const { column, value } of assignments) {
+    const colIdx = schema.findIndex(c => c.name === column);
+    if (colIdx === -1) return null;
+    const fn = compileSetExpr(value);
+    if (!fn) return null; // One failed = bail to interpreted for all
+    compiled.push({ column, colIdx, fn });
+  }
+  return compiled;
+}
