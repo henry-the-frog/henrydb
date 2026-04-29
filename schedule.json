@@ -839,10 +839,52 @@
     {
       "id": "T86",
       "mode": "BUILD",
-      "status": "in-progress",
+      "status": "done",
       "task": "WASM: proper string comparison for < > <= >= operators",
       "project": "monkey-lang",
-      "started": "2026-04-29T00:39:52.551Z"
+      "started": "2026-04-29T00:39:52.551Z",
+      "completed": "2026-04-29T01:36:31.121Z",
+      "summary": " [auto-resolved: orphaned in-progress task]"
+    },
+    {
+      "id": "T87",
+      "mode": "THINK",
+      "status": "done",
+      "task": "End-of-day direction: pick one focused task for remaining 25 min",
+      "started": "2026-04-29T01:37:12.968Z",
+      "completed": "2026-04-29T01:37:28.742Z",
+      "duration_ms": 30000,
+      "summary": "Direction: hash map string keys via FNV-1a. ~25 min window, focused single feature."
+    },
+    {
+      "id": "T88",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "monkey-lang WASM: Hash map string key support using FNV-1a",
+      "task": null,
+      "started": "2026-04-29T01:37:35.544Z",
+      "completed": "2026-04-29T01:38:17.046Z",
+      "duration_ms": 120000,
+      "summary": "Plan: single BUILD — add __hash_fnv1a for string hashing, string-key variants of hash_set/hash_get, type-aware compilation. Entry layout stays same (16 bytes), key field stores string ptr for string keys."
+    },
+    {
+      "id": "T89",
+      "mode": "BUILD",
+      "status": "done",
+      "task": null,
+      "plan_ref": "T88",
+      "project": "monkey-lang",
+      "started": "2026-04-29T01:38:24.536Z",
+      "completed": "2026-04-29T01:47:08.191Z",
+      "duration_ms": 600000,
+      "summary": "Implemented FNV-1a string key hash maps: __hash_fnv1a + __hash_set_str + __hash_get_str. Type inference auto-detects string vs int keys. Added i32_xor opcode. 8 new tests passing."
+    },
+    {
+      "id": "T90",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "End-of-session housekeeping",
+      "started": "2026-04-29T01:47:21.807Z"
     }
   ],
   "focusProjects": [
@@ -1246,6 +1288,22 @@
     {
       "time": "2026-04-29T00:39:52.155Z",
       "msg": "Added T86 (BUILD) after end: WASM: proper string comparison for < > <= >= operators"
+    },
+    {
+      "time": "2026-04-29T01:36:52.668Z",
+      "msg": "Added T87 (THINK) after end: End-of-day direction: pick one focused task for remaining 25 min"
+    },
+    {
+      "time": "2026-04-29T01:36:56.741Z",
+      "msg": "Added T88 (PLAN) after T87: Plan hash map string key support"
+    },
+    {
+      "time": "2026-04-29T01:37:04.567Z",
+      "msg": "Added T89 (BUILD) after T88: null"
+    },
+    {
+      "time": "2026-04-29T01:37:08.432Z",
+      "msg": "Added T90 (MAINTAIN) after T89: End-of-session housekeeping"
     }
   ]
 }

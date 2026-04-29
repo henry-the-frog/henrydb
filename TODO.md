@@ -5,7 +5,7 @@
 
 ## Normal
 - HenryDB: Expression evaluator slow (836μs for simple WHERE). Compiled-expr helps for scan paths but UPDATE pipeline still uses _evalExpr for many operations.
-- monkey-lang WASM: Hash map string key support (FNV-1a hash) + auto-resize when load factor > 0.75
+- monkey-lang WASM: Hash map auto-resize when load factor > 0.75
 - monkey-lang WASM: Hash map playground example
 
 ## Low  

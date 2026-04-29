@@ -10,7 +10,7 @@
   - Arrays: dynamic reallocation (50K elements), for-in loops, comprehensions with filter, break/continue
   - Strings: 11 methods (concat, len, charAt, substring, indexOf, toUpperCase, toLowerCase, replace, trim, split, intToString)
   - String comparison: ==, !=, <, >, <=, >= (lexicographic via __str_cmp)
-  - Hash maps: open addressing with integer keys, get/set, frequency counter pattern
+  - Hash maps: open addressing, integer keys + string keys (FNV-1a), get/set, frequency counter pattern
   - Type inference: variable type tracking (string/int/array/hash), call-site inference for function params
   - Memory management: memory.grow for >64KB, bump allocator with reallocation
   - Internal WASM functions: __alloc, __array_ensure_cap, __str_concat, __str_eq, __str_cmp, __str_indexOf, __int_to_str, __hash_new/get/set
