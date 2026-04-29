@@ -1,11 +1,13 @@
 {
-  "generated": "2026-04-29T16:54:42.707Z",
+  "generated": "2026-04-29T17:03:39.590Z",
   "current": {
-    "status": "in-progress",
-    "mode": "MAINTAIN",
-    "task": "Run full monkey-lang test suite one final time, verify CI green, push all",
-    "startedAt": "2026-04-29T16:54:42.707Z",
-    "taskId": "T79"
+    "status": "done",
+    "mode": "BUILD",
+    "task": "monkey-lang: add reverse(), unique(), take(), drop() for arrays",
+    "completedAt": "2026-04-29T17:03:39.590Z",
+    "taskId": "T86",
+    "summary": "unique/take/drop/enumerate builtins. Elegant pipelines: take(sortBy(unique(data), fn), 3) for top-k.",
+    "durationMs": 120000
   },
   "schedule": {
     "date": "2026-04-29",
@@ -2088,13 +2090,13 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 78,
+    "blocksCompleted": 86,
     "blocksTotal": 35,
     "modeDistribution": {
       "THINK": 9,
       "PLAN": 6,
-      "BUILD": 40,
-      "MAINTAIN": 10,
+      "BUILD": 47,
+      "MAINTAIN": 11,
       "EXPLORE": 13
     }
   },

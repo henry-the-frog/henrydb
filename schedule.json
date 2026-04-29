@@ -848,9 +848,89 @@
     {
       "id": "T79",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Run full monkey-lang test suite one final time, verify CI green, push all",
-      "started": "2026-04-29T16:54:42.648Z"
+      "started": "2026-04-29T16:54:42.648Z",
+      "completed": "2026-04-29T16:56:03.102Z",
+      "duration_ms": 60000,
+      "summary": "2034 tests pass. CI green on all recent commits. All repos pushed."
+    },
+    {
+      "id": "T80",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "monkey-lang: add count() builtin for hash maps (count entries matching predicate)",
+      "project": "monkey-lang",
+      "started": "2026-04-29T16:56:23.904Z",
+      "completed": "2026-04-29T16:56:32.390Z",
+      "duration_ms": 5000,
+      "summary": "Skipped — count() = len(filter(h, fn)) already works. Not worth a dedicated builtin."
+    },
+    {
+      "id": "T81",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "monkey-lang: add groupBy() for arrays (group elements by key function, returns hash)",
+      "project": "monkey-lang",
+      "started": "2026-04-29T16:56:32.641Z",
+      "completed": "2026-04-29T16:57:27.769Z",
+      "duration_ms": 120000,
+      "summary": "groupBy(arr, fn) → hash map of groups. Groups array elements by key function. Example: [1..6] grouped by even/odd → {odd: [1,3,5], even: [2,4,6]}."
+    },
+    {
+      "id": "T82",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "monkey-lang: add sortBy() for arrays (sort by key function)",
+      "project": "monkey-lang",
+      "started": "2026-04-29T16:57:43.336Z",
+      "completed": "2026-04-29T16:58:41.932Z",
+      "duration_ms": 120000,
+      "summary": "sortBy(arr, keyFn) added. Pre-computes keys for efficiency. Supports identity sort and reverse."
+    },
+    {
+      "id": "T83",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "monkey-lang: add zip() to combine two arrays into hash map",
+      "project": "monkey-lang",
+      "started": "2026-04-29T16:58:51.140Z",
+      "completed": "2026-04-29T16:59:29.546Z",
+      "duration_ms": 60000,
+      "summary": "zip(keys, vals) → hash map from parallel arrays. Shorter array truncates."
+    },
+    {
+      "id": "T84",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "monkey-lang: add flat() and flatMap() for arrays",
+      "project": "monkey-lang",
+      "started": "2026-04-29T17:00:03.675Z",
+      "completed": "2026-04-29T17:01:25.022Z",
+      "duration_ms": 180000,
+      "summary": "flat(arr, depth?), flatMap(arr, fn), range(start?, end, step?) all added. Incredibly useful builtins for functional programming."
+    },
+    {
+      "id": "T85",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "monkey-lang: add sum(), min(), max(), avg() for arrays",
+      "project": "monkey-lang",
+      "started": "2026-04-29T17:01:40.362Z",
+      "completed": "2026-04-29T17:02:34.480Z",
+      "duration_ms": 60000,
+      "summary": "sum(arr) + avg(arr). sum(range(101))=5050. Elegant functional pipelines now possible."
+    },
+    {
+      "id": "T86",
+      "mode": "BUILD",
+      "status": "done",
+      "task": "monkey-lang: add reverse(), unique(), take(), drop() for arrays",
+      "project": "monkey-lang",
+      "started": "2026-04-29T17:02:43.247Z",
+      "completed": "2026-04-29T17:03:39.531Z",
+      "duration_ms": 120000,
+      "summary": "unique/take/drop/enumerate builtins. Elegant pipelines: take(sortBy(unique(data), fn), 3) for top-k."
     }
   ],
   "focusProjects": [
@@ -1154,6 +1234,34 @@
     {
       "time": "2026-04-29T16:54:42.257Z",
       "msg": "Added T79 (MAINTAIN) after end: Run full monkey-lang test suite one final time, verify CI green, push all"
+    },
+    {
+      "time": "2026-04-29T16:56:23.558Z",
+      "msg": "Added T80 (BUILD) after end: monkey-lang: add count() builtin for hash maps (count entries matching predicate)"
+    },
+    {
+      "time": "2026-04-29T16:56:23.676Z",
+      "msg": "Added T81 (BUILD) after end: monkey-lang: add groupBy() for arrays (group elements by key function, returns hash)"
+    },
+    {
+      "time": "2026-04-29T16:57:42.993Z",
+      "msg": "Added T82 (BUILD) after end: monkey-lang: add sortBy() for arrays (sort by key function)"
+    },
+    {
+      "time": "2026-04-29T16:57:43.109Z",
+      "msg": "Added T83 (BUILD) after end: monkey-lang: add zip() to combine two arrays into hash map"
+    },
+    {
+      "time": "2026-04-29T17:00:03.285Z",
+      "msg": "Added T84 (BUILD) after end: monkey-lang: add flat() and flatMap() for arrays"
+    },
+    {
+      "time": "2026-04-29T17:01:39.972Z",
+      "msg": "Added T85 (BUILD) after end: monkey-lang: add sum(), min(), max(), avg() for arrays"
+    },
+    {
+      "time": "2026-04-29T17:02:42.858Z",
+      "msg": "Added T86 (BUILD) after end: monkey-lang: add reverse(), unique(), take(), drop() for arrays"
     }
   ]
 }

@@ -3,7 +3,7 @@
 ## Active Projects
 
 ### monkey-lang (WASM Compiler)
-- **Tests:** 1259 pass (interpreter/compiler) + 2037 pass (WASM sub-project) = 3296 total, 0 fail
+- **Tests:** 1259 pass (interpreter/compiler) + 2034 pass (WASM sub-project) = 3293 total, 0 fail
 - **WASM compiler LOC:** ~5800 (wasm-compiler.js)
 - **Playground:** 13 examples (194KB bundle), deployed at GitHub Pages
 - **CI:** ✅ Green (all 3 Node versions: 18, 20, 22)
