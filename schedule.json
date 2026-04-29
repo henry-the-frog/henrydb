@@ -188,29 +188,53 @@
     {
       "id": "T13",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Afternoon direction — assess progress, pick next goal"
+      "status": "done",
+      "task": "Afternoon direction — assess progress, pick next goal",
+      "started": "2026-04-29T14:41:52.246Z",
+      "completed": "2026-04-29T14:42:17.711Z",
+      "duration_ms": 60000,
+      "summary": "12 tasks done, 8 BUILDs. Depth check all-positive. Next: WASM hash map iteration (for-in over native hash maps). Cleaned TODO.md."
     },
     {
       "id": "T14",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "monkey-lang: prelude bytecode caching or VM function call overhead",
-      "task": null
+      "task": null,
+      "started": "2026-04-29T14:42:42.755Z",
+      "completed": "2026-04-29T14:45:26.373Z",
+      "duration_ms": 180000,
+      "summary": "Pivoted to hash map iteration. Found bug: __keys/__values read wrong offsets (capacity at +4 was being read from +8=size). Fixed. for-in over keys(h) now works for both string and int key hash maps."
     },
     {
       "id": "T15",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null,
+      "status": "done",
+      "task": "Fix __keys/__values hash field offset bug (capacity vs size swap) — done",
       "plan_ref": "T14",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-29T14:45:42.670Z",
+      "completed": "2026-04-29T14:45:42.906Z",
+      "duration_ms": 5000,
+      "summary": "Already completed during PLAN exploration. Bug fixed: __keys/__values now use correct field offsets."
+    },
+    {
+      "id": "T24",
+      "mode": "BUILD",
+      "task": "Add for-in hash map iteration tests (string keys + integer keys)",
+      "status": "done",
+      "plan_ref": "T14",
+      "started": "2026-04-29T14:45:48.303Z",
+      "completed": "2026-04-29T14:46:26.115Z",
+      "duration_ms": 120000,
+      "summary": "7 hash map iteration tests added: for-in over keys/values with int/string keys, empty hash, post-resize. All pass (2022 total)."
     },
     {
       "id": "T16",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Housekeeping + git push"
+      "status": "in-progress",
+      "task": "Housekeeping + git push",
+      "started": "2026-04-29T14:46:37.189Z"
     },
     {
       "id": "T17",
@@ -320,6 +344,10 @@
     {
       "time": "2026-04-29T14:36:31.532Z",
       "msg": "PLAN T10 filled 3 BUILD tasks"
+    },
+    {
+      "time": "2026-04-29T14:45:19.597Z",
+      "msg": "PLAN T14 filled 2 BUILD tasks"
     }
   ]
 }

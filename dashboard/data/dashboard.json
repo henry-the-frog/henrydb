@@ -1,13 +1,11 @@
 {
-  "generated": "2026-04-29T14:41:29.854Z",
+  "generated": "2026-04-29T14:46:37.247Z",
   "current": {
-    "status": "done",
+    "status": "in-progress",
     "mode": "MAINTAIN",
     "task": "Housekeeping + git push",
-    "completedAt": "2026-04-29T14:41:29.854Z",
-    "taskId": "T12",
-    "summary": "Pushed workspace + henrydb.",
-    "durationMs": 30000
+    "startedAt": "2026-04-29T14:46:37.247Z",
+    "taskId": "T16"
   },
   "schedule": {
     "date": "2026-04-29",
@@ -1855,59 +1853,90 @@
       {
         "id": "T10",
         "mode": "PLAN",
-        "status": "in-progress",
+        "status": "done",
         "goal": "HenryDB UPDATE pipeline: extend compiled expressions to replace _evalExpr",
         "task": null,
-        "started": "2026-04-29T14:33:09.481Z"
+        "started": "2026-04-29T14:33:09.481Z",
+        "completed": "2026-04-29T14:36:37.877Z",
+        "duration_ms": 180000,
+        "summary": "Plan: 3 tasks — compileSetExpr function, wire into UPDATE hot path, tests. Reuses existing where-compiler infrastructure (compileExprToCode)."
       },
       {
         "id": "T11",
         "mode": "BUILD",
-        "status": "upcoming",
+        "status": "done",
         "task": "Create compileSetExpr in where-compiler.js: compile a SET value expression AST to a JS function (row) => value",
         "plan_ref": "T10",
-        "project": "henrydb"
+        "project": "henrydb",
+        "started": "2026-04-29T14:36:48.505Z",
+        "completed": "2026-04-29T14:37:40.582Z",
+        "duration_ms": 180000,
+        "summary": "Added compileSetExpr and compileSetBatch to where-compiler.js. Compiles SET expressions to (row)=>value functions. Tested: literals, column refs, arithmetic, batch mode all work."
       },
       {
         "id": "T22",
         "mode": "BUILD",
         "task": "Wire compiled SET expressions into UPDATE hot path: pre-compile assignments, skip _evalValue per-row",
-        "status": "upcoming",
-        "plan_ref": "T10"
+        "status": "done",
+        "plan_ref": "T10",
+        "started": "2026-04-29T14:37:52.823Z",
+        "completed": "2026-04-29T14:39:38.792Z",
+        "duration_ms": 180000,
+        "summary": "Wired compileSetBatch into UPDATE loop. Pre-compiles assignments, uses direct fn(row) calls in hot loop. Falls back for unsupported exprs. All UPDATE tests pass."
       },
       {
         "id": "T23",
         "mode": "BUILD",
         "task": "Add UPDATE compilation tests: simple SET, SET with expression, SET with WHERE",
-        "status": "upcoming",
-        "plan_ref": "T10"
+        "status": "done",
+        "plan_ref": "T10",
+        "started": "2026-04-29T14:39:47.663Z",
+        "completed": "2026-04-29T14:41:17.579Z",
+        "duration_ms": 180000,
+        "summary": "19 compiled UPDATE tests (unit: literal/string/null/col-ref/arithmetic/nested/CASE/function; batch: single/multi/unknown-col/unsupported; integration: simple/arithmetic/WHERE/multi-col/all-rows/1000-row-batch). All pass."
       },
       {
         "id": "T12",
         "mode": "MAINTAIN",
-        "status": "upcoming",
-        "task": "Housekeeping + git push"
+        "status": "done",
+        "task": "Housekeeping + git push",
+        "started": "2026-04-29T14:41:28.741Z",
+        "completed": "2026-04-29T14:41:29.819Z",
+        "duration_ms": 30000,
+        "summary": "Pushed workspace + henrydb."
       },
       {
         "id": "T13",
         "mode": "THINK",
-        "status": "upcoming",
-        "task": "Afternoon direction — assess progress, pick next goal"
+        "status": "done",
+        "task": "Afternoon direction — assess progress, pick next goal",
+        "started": "2026-04-29T14:41:52.246Z",
+        "completed": "2026-04-29T14:42:17.711Z",
+        "duration_ms": 60000,
+        "summary": "12 tasks done, 8 BUILDs. Depth check all-positive. Next: WASM hash map iteration (for-in over native hash maps). Cleaned TODO.md."
       },
       {
         "id": "T14",
         "mode": "PLAN",
-        "status": "upcoming",
+        "status": "in-progress",
         "goal": "monkey-lang: prelude bytecode caching or VM function call overhead",
-        "task": null
+        "task": null,
+        "started": "2026-04-29T14:42:42.755Z"
       },
       {
         "id": "T15",
         "mode": "BUILD",
         "status": "upcoming",
-        "task": null,
+        "task": "Fix __keys/__values hash field offset bug (capacity vs size swap) — done",
         "plan_ref": "T14",
         "project": "monkey-lang"
+      },
+      {
+        "id": "T24",
+        "mode": "BUILD",
+        "task": "Add for-in hash map iteration tests (string keys + integer keys)",
+        "status": "upcoming",
+        "plan_ref": "T14"
       },
       {
         "id": "T16",
@@ -1933,12 +1962,12 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 17,
-    "blocksTotal": 23,
+    "blocksCompleted": 21,
+    "blocksTotal": 24,
     "modeDistribution": {
-      "THINK": 3,
-      "PLAN": 3,
-      "BUILD": 8,
+      "THINK": 4,
+      "PLAN": 4,
+      "BUILD": 10,
       "MAINTAIN": 3
     }
   },

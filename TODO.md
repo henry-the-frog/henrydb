@@ -5,7 +5,8 @@
 
 ## Normal
 - HenryDB: Expression evaluator slow (836μs for simple WHERE). Compiled-expr helps for scan paths but UPDATE pipeline still uses _evalExpr for many operations.
-- monkey-lang WASM: String key support in hash maps (FNV-1a hash added, needs find_slot_str + set/get integration)
+- monkey-lang WASM: Hash map iteration (for-in over native hash maps — need to iterate entries)
+- monkey-lang WASM: Mixed-type hash maps (integer and string keys in same map)
 
 ## Low  
 - monkey-lang: WASM GC backend (feasibility confirmed! Design in scratch/wasm-gc-design.md, 6-phase plan)
