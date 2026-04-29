@@ -2,6 +2,27 @@
 
 ## Status: Feasible in Node.js v22
 
+### Apr 29 Update: eqref + i31ref Value Representation Confirmed
+
+**Key finding:** `eqref` locals can hold both `i31ref` (integers) and GC struct/array refs.
+Extracting requires explicit `ref.cast (ref i31)` before `i31.get_s`.
+
+**Value encoding for monkey-lang:**
+- All locals/params/returns: `eqref` (unified type)
+- Integers: `ref.i31(value)` → 31-bit signed (±1,073,741,823)
+- Arrays: `(ref $MonkeyArray)` cast from eqref
+- Closures: `(ref $Closure)` cast from eqref  
+- Strings: keep as i31ref wrapping linear memory pointers
+
+**Critical limitation:** i31ref is 31 bits, not 32. Current WASM backend uses full i32.
+Practical impact: values > 2^30-1 would overflow. For typical Monkey code this is fine.
+
+**Binary encoding verified:**
+- `ref.cast (ref i31)` = 0xfb 0x17 0x6c
+- `ref.i31` = 0xfb 0x1c
+- `i31.get_s` = 0xfb 0x1d
+- eqref local type = 0x6d
+
 ### Verified Operations
 All work correctly with proper binary encoding:
 - `struct.new` (0xfb 0x00) — create struct with field values from stack

@@ -232,23 +232,149 @@
     {
       "id": "T16",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Housekeeping + git push",
-      "started": "2026-04-29T14:46:37.189Z"
+      "started": "2026-04-29T14:46:37.189Z",
+      "completed": "2026-04-29T14:46:44.836Z",
+      "duration_ms": 30000,
+      "summary": "Git push monkey-lang + workspace."
     },
     {
       "id": "T17",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "Research WASM GC backend: struct/array encoding for monkey-lang types",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-29T14:46:50.314Z",
+      "completed": "2026-04-29T14:49:17.065Z",
+      "duration_ms": 300000,
+      "summary": "[EXPLORE 1/10] Confirmed eqref+i31ref value representation works for WASM GC backend. All locals can be eqref holding either i31ref (ints) or GC struct/array refs. Needs ref.cast before use. 31-bit int limit is the main constraint."
     },
     {
       "id": "T18",
       "mode": "EXPLORE",
-      "status": "upcoming",
+      "status": "done",
       "task": "HenryDB: stress test compiled WHERE vs _evalExpr under concurrent transactions",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-29T14:49:29.853Z",
+      "completed": "2026-04-29T14:50:34.019Z",
+      "duration_ms": 180000,
+      "summary": "[EXPLORE 2/10] Compiled WHERE correct under transactions (READ COMMITTED). Perf: 26ms/10K-row scan (compiled), 37ms with LIKE. UPDATE 5000 rows in 1.3s. LIKE also compiles (regex). No correctness issues found."
+    },
+    {
+      "id": "T25",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Choose next mini-project: WASM GC scaffolding, HenryDB CASE compilation, or monkey-lang module system",
+      "started": "2026-04-29T14:51:33.392Z",
+      "completed": "2026-04-29T14:52:02.867Z",
+      "duration_ms": 60000,
+      "summary": "Chose WASM GC module builder scaffolding. Add GC type definitions (struct, array, ref types) to WasmModuleBuilder. Builds on today eqref/i31ref exploration."
+    },
+    {
+      "id": "T26",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "WASM GC module builder: add struct/array type definitions, ref type locals, GC instruction emit methods",
+      "task": null,
+      "started": "2026-04-29T14:52:16.949Z",
+      "completed": "2026-04-29T14:53:05.852Z",
+      "duration_ms": 120000,
+      "summary": "Plan: 4 BUILD tasks for WASM GC scaffolding. Add struct/array types, ref type system, GC instructions, and verification tests."
+    },
+    {
+      "id": "T27",
+      "mode": "BUILD",
+      "task": "Add GC type definitions to WasmModuleBuilder: addStructType(fields) and addArrayType(elemType) methods with proper binary encoding",
+      "status": "done",
+      "plan_ref": "T26",
+      "started": "2026-04-29T14:53:13.090Z",
+      "completed": "2026-04-29T14:56:04.128Z",
+      "duration_ms": 300000,
+      "summary": "Added GC type definitions: ValType extensions (eqref/i31ref/anyref/structref/arrayref), TypeKind enum, GcOp constants, addStructType/addArrayType methods, polymorphic type section encoding. Binary verified in V8."
+    },
+    {
+      "id": "T28",
+      "mode": "BUILD",
+      "task": "Add GC ref types to ValType enum (eqref, i31ref, ref type_idx, ref null type_idx) and support in local declarations",
+      "status": "done",
+      "plan_ref": "T26",
+      "started": "2026-04-29T14:56:17.681Z",
+      "completed": "2026-04-29T14:57:33.844Z",
+      "duration_ms": 180000,
+      "summary": "Ref type locals work: (ref null $type) encoding in code section, refType/refNullType helpers. Verified struct local roundtrip in V8."
+    },
+    {
+      "id": "T29",
+      "mode": "BUILD",
+      "task": "Add GC instruction emit methods to FuncBodyBuilder (struct.new/get/set, array.new/get/set/len, ref.i31, i31.get_s/u, ref.cast)",
+      "status": "done",
+      "plan_ref": "T26",
+      "started": "2026-04-29T14:57:46.396Z",
+      "completed": "2026-04-29T14:59:10.989Z",
+      "duration_ms": 180000,
+      "summary": "GC instruction methods added to FuncBodyBuilder: struct.new/get/set, array.new/get/set/len, ref.i31/i31.get_s/u, ref.cast. All verified in V8."
+    },
+    {
+      "id": "T30",
+      "mode": "BUILD",
+      "task": "Write wasm-gc.test.js: verify binary encoding of struct/array types, roundtrip through instantiation",
+      "status": "done",
+      "plan_ref": "T26",
+      "started": "2026-04-29T14:59:22.326Z",
+      "completed": "2026-04-29T15:00:24.544Z",
+      "duration_ms": 240000,
+      "summary": "15 WASM GC tests: struct types, array types, struct.new/get/set, multi-field, array.new/get/set/len, i31ref signed/unsigned, binary encoding. All pass."
+    },
+    {
+      "id": "T31",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Design: using WASM GC arrays for monkey-lang arrays — what needs to change in the compiler",
+      "started": "2026-04-29T15:00:56.863Z",
+      "completed": "2026-04-29T15:01:17.895Z",
+      "duration_ms": 120000,
+      "summary": "Design: hybrid approach (GC arrays via handle table) is feasible but full eqref rewrite is the right long-term path. For today: prove concept with standalone GC array + loop test to validate builder infrastructure."
+    },
+    {
+      "id": "T32",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "Implement GC-backed arrays as alternative compilation target for monkey-lang",
+      "task": null,
+      "started": "2026-04-29T15:01:25.464Z",
+      "completed": "2026-04-29T15:01:39.657Z",
+      "duration_ms": 30000,
+      "summary": "Plan: 2 tasks — proof-of-concept GC array with loop, then stress tests with large arrays + nested structs."
+    },
+    {
+      "id": "T34",
+      "mode": "BUILD",
+      "task": "Write standalone GC array proof-of-concept: create array, fill with loop, sum elements (all in WASM GC)",
+      "status": "done",
+      "plan_ref": "T32",
+      "started": "2026-04-29T15:01:46.113Z",
+      "completed": "2026-04-29T15:02:51.280Z",
+      "duration_ms": 180000,
+      "summary": "GC array proof-of-concept: loop fill + sum works perfectly. 3.5μs for 1000-element create+fill+sum. 2 tests added."
+    },
+    {
+      "id": "T35",
+      "mode": "BUILD",
+      "task": "Add GC array stress test to wasm-gc.test.js: large arrays, nested structs with array fields",
+      "status": "done",
+      "plan_ref": "T32",
+      "started": "2026-04-29T15:03:01.764Z",
+      "completed": "2026-04-29T15:03:52.510Z",
+      "duration_ms": 180000,
+      "summary": "4 GC stress tests: 10K-element array, nested struct+array, struct.get→array.get chain, array.new_fixed. All pass. 21 total GC tests."
+    },
+    {
+      "id": "T33",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Git push all repos, update TASKS.md with today's progress",
+      "started": "2026-04-29T15:04:02.492Z"
     }
   ],
   "focusProjects": [
@@ -348,6 +474,34 @@
     {
       "time": "2026-04-29T14:45:19.597Z",
       "msg": "PLAN T14 filled 2 BUILD tasks"
+    },
+    {
+      "time": "2026-04-29T14:51:24.641Z",
+      "msg": "Added T25 (THINK) after end: Choose next mini-project: WASM GC scaffolding, HenryDB CASE compilation, or monkey-lang module system"
+    },
+    {
+      "time": "2026-04-29T14:52:10.091Z",
+      "msg": "Added T26 (PLAN) after end: WASM GC module builder: add struct/array type definitions, ref type locals, GC instruction emit methods"
+    },
+    {
+      "time": "2026-04-29T14:52:59.957Z",
+      "msg": "PLAN T26 filled 4 BUILD tasks"
+    },
+    {
+      "time": "2026-04-29T15:00:38.369Z",
+      "msg": "Added T31 (THINK) after end: Design: using WASM GC arrays for monkey-lang arrays — what needs to change in the compiler"
+    },
+    {
+      "time": "2026-04-29T15:00:45.025Z",
+      "msg": "Added T32 (PLAN) after end: Implement GC-backed arrays as alternative compilation target for monkey-lang"
+    },
+    {
+      "time": "2026-04-29T15:00:51.864Z",
+      "msg": "Added T33 (MAINTAIN) after end: Git push all repos, update TASKS.md with today's progress"
+    },
+    {
+      "time": "2026-04-29T15:01:34.201Z",
+      "msg": "PLAN T32 filled 2 BUILD tasks"
     }
   ]
 }
