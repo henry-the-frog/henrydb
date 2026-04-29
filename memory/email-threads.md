@@ -52,6 +52,12 @@
 - **Summary:** Bot closed our PR. The practical fix already shipped in #57816 (default raised to 30 min). Exact configurable knob tracked in #51287/#25789.
 - **No reply needed** — thread closed
 
+### OpenClaw PR #51282 — Configurable handshake timeout (gateway.handshakeTimeoutMs)
+- **From:** Peter Steinberger (steipete, via GitHub notification)
+- **Status:** ✅ Closed — Apr 28 (superseded, implemented on main by steipete)
+- **Summary:** Peter implemented the same feature directly on main (commit bcc6a2400d) with full schema/docs/test coverage and credited our PR. Issues #73592 and #73652 remain open (broader handshake race).
+- **No reply needed** — thread closed
+
 ### OpenClaw Issue #49873 — Custom skills discovery bug
 - **From:** Peter Steinberger (steipete, via GitHub notification)
 - **Status:** ✅ Closed as completed — Apr 24
@@ -94,9 +100,9 @@
 
 ### monkey-lang CI Failures — henry-the-frog/monkey-lang
 - **Since:** Apr 26, 2026
-- **Count:** 5 consecutive "CI - main" failures (UIDs 343-347)
-- **Last checked:** Apr 27
-- **Action needed:** CI started failing on main. Investigate.
+- **Count:** 16+ consecutive "CI - main" failures (UIDs 343-347, 362-372)
+- **Last checked:** Apr 29
+- **Action needed:** CI still failing on every push to main (Apr 26-28). Investigate.
 
 ### Clone & Run Monkey Test Corpus
 - **Action:** ✅ Done Apr 28. Results sent to Daniel.
