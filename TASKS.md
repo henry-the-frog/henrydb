@@ -3,20 +3,21 @@
 ## Active Projects
 
 ### monkey-lang (WASM Compiler)
-- **Tests:** 1386 pass, 0 fail (183 WASM-specific: 63 array, 38 string, 82 core)
-- **WASM compiler LOC:** 2180 (wasm-compiler.js)
+- **Tests:** 1479 pass, 0 fail (270 WASM-specific: 68 array, 104 string, 16 hash, 82 core)
+- **WASM compiler LOC:** 4118 (wasm-compiler.js)
+- **Playground:** 13 examples (194KB bundle), deployed at GitHub Pages
 - **WASM Features (session B2, Apr 28):**
-  - Arrays: dynamic reallocation (grow beyond initial capacity, tested to 50K elements)
-  - Array comprehensions: `[x * 2 for x in arr if x > 0]`
-  - For-in loops: `for (x in arr) { body }`
-  - Strings: concat (`+`), comparison (`==`/`!=`), `len()`
-  - Type inference: variable type tracking (string/int/array), call-site inference for function params
-  - Memory management: `memory.grow` for >64KB allocations, bump allocator
-  - Internal WASM functions: `__alloc`, `__array_ensure_cap`, `__str_concat`, `__str_eq`
-  - Playground updated with new examples and rebuilt bundle
+  - Arrays: dynamic reallocation (50K elements), for-in loops, comprehensions with filter, break/continue
+  - Strings: 11 methods (concat, len, charAt, substring, indexOf, toUpperCase, toLowerCase, replace, trim, split, intToString)
+  - String comparison: ==, !=, <, >, <=, >= (lexicographic via __str_cmp)
+  - Hash maps: open addressing with integer keys, get/set, frequency counter pattern
+  - Type inference: variable type tracking (string/int/array/hash), call-site inference for function params
+  - Memory management: memory.grow for >64KB, bump allocator with reallocation
+  - Internal WASM functions: __alloc, __array_ensure_cap, __str_concat, __str_eq, __str_cmp, __str_indexOf, __int_to_str, __hash_new/get/set
 - **Critical bug fixed (Apr 28):** Top-level let execution order — lets were initialized before expression statements
 - **Known limitations:**
-  - String operations on fully generic functions (no call-site type info) fall back to integer semantics
+  - Hash map: no auto-resize (cap 16 default, max ~12 entries), integer keys only
+  - String operations on fully generic functions need call-site type info
   - GC is no-op (bump allocator never frees)
   - i32 overflow for large numbers
 
