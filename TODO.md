@@ -16,11 +16,4 @@
 - HenryDB: Hash join optimization for large table joins
 - type-infer: Add recursive types and polymorphic container tests
 
-## Done (Session C, Apr 28)
-- ~~monkey-lang: NaN-boxing~~ → Implemented as integer unboxing (raw JS numbers on VM stack, 1.76x speedup)
-- ~~monkey-lang WASM: Hash map auto-resize~~ → 75% load factor, tested with 50 entries
-- ~~monkey-lang WASM: Hash map playground example~~ → hashmap-playground.monkey
-- ~~monkey-lang: Mutable closures in hash literals~~ → Fixed compiler AST walker (Map vs Object.keys)
-- ~~monkey-lang: || NULL bugs~~ → All converted to ?? NULL across vm.js + evaluator.js
-- ~~monkey-lang: String concat interning overhead~~ → Skip interning for concat results (4.1x faster)
-- ~~monkey-lang: Superinstructions~~ → Infrastructure added, V8 JIT negates benefit (<0.5%)
+

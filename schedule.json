@@ -1,1229 +1,127 @@
 {
-  "date": "2026-04-28",
+  "date": "2026-04-29",
   "queue": [
     {
       "id": "T1",
       "mode": "THINK",
-      "status": "done",
-      "task": "Session B2 direction: review what was accomplished, pick high-value targets for remaining 4 hours",
-      "started": "2026-04-28T22:16:13.166Z",
-      "completed": "2026-04-28T22:16:29.576Z",
-      "duration_ms": 60000,
-      "summary": "Direction set: array reallocation (correctness, high priority), then HenryDB expr perf, then new WASM feature. Queue confirmed."
+      "status": "upcoming",
+      "task": "Review yesterday, assess CI failure on monkey-lang, set direction"
     },
     {
       "id": "T2",
       "mode": "PLAN",
-      "status": "done",
-      "goal": "monkey-lang WASM array reallocation (handle-based growth)",
-      "task": null,
-      "started": "2026-04-28T22:16:37.228Z",
-      "completed": "2026-04-28T22:17:37.271Z",
-      "duration_ms": 120000,
-      "summary": "Plan: add __array_ensure_cap host import for push reallocation. 3 BUILD tasks: (1) implement host import + wire into push, (2) handle memory.grow in host, (3) tests for growth beyond initial capacity."
-    },
-    {
-      "id": "T14",
-      "mode": "BUILD",
-      "task": "Implement __array_ensure_cap host import and wire into push compilation",
-      "status": "done",
-      "plan_ref": "T2",
-      "started": "2026-04-28T22:17:51.694Z",
-      "completed": "2026-04-28T22:25:24.895Z",
-      "duration_ms": 600000,
-      "summary": "Implemented __array_ensure_cap + memory.grow in __alloc. Arrays grow dynamically (2x capacity). Tested up to 50K elements. Added missing WASM opcodes (i32_le_u, i32_ge_u). 105 tests pass."
-    },
-    {
-      "id": "T15",
-      "mode": "BUILD",
-      "task": "Add memory.grow support and large-array growth tests",
-      "status": "done",
-      "plan_ref": "T2",
-      "started": "2026-04-28T22:25:33.502Z",
-      "completed": "2026-04-28T22:26:21.618Z",
-      "duration_ms": 300000,
-      "summary": "9 reallocation tests: grow to 300/1000/5000/20000, data integrity, multiple arrays, in-function growth, memory.grow trigger, pre-sized growth, sum verification. 32 total array tests passing."
-    },
-    {
-      "id": "T16",
-      "mode": "BUILD",
-      "task": "Edge case tests: grow from 0, grow during HOF, aliased arrays",
-      "status": "done",
-      "plan_ref": "T2",
-      "started": "2026-04-28T22:26:28.106Z",
-      "completed": "2026-04-28T22:35:39.024Z",
-      "duration_ms": 600000,
-      "summary": "CRITICAL FIX: top-level let execution order bug. Lets were initialized before expression statements, breaking let-after-push patterns. Fixed by inlining global init into main block. 8 edge case tests added (HOF+growth, filter/reduce on large arrays, interleaved push). 1325 total tests passing."
+      "status": "upcoming",
+      "goal": "Fix CI failure on monkey-lang main branch",
+      "task": null
     },
     {
       "id": "T3",
       "mode": "BUILD",
-      "status": "skipped",
+      "status": "upcoming",
       "task": null,
-      "project": "monkey-lang",
-      "skip_reason": "Reallocation goal fully completed in T14-T16"
+      "plan_ref": "T2",
+      "project": "monkey-lang"
     },
     {
       "id": "T4",
       "mode": "MAINTAIN",
-      "status": "done",
-      "task": "Mid-session housekeeping",
-      "started": "2026-04-28T22:35:56.288Z",
-      "completed": "2026-04-28T22:36:53.317Z",
-      "duration_ms": 120000,
-      "summary": "Git push all repos (monkey-lang, henrydb, workspace). Daily log updated. TODO updated (array realloc done). Scratch note for execution order bug."
+      "status": "upcoming",
+      "task": "Housekeeping + git push"
     },
     {
       "id": "T5",
       "mode": "THINK",
-      "status": "done",
-      "task": "Assess progress, pivot if needed",
-      "started": "2026-04-28T22:37:02.615Z",
-      "completed": "2026-04-28T22:37:12.758Z",
-      "duration_ms": 30000,
-      "summary": "On track: 3 BUILDs done, critical bug found+fixed. Queue confirmed: HenryDB expr perf next, then WASM for-in."
+      "status": "upcoming",
+      "task": "Assess CI fix, plan WASM string hash map work"
     },
     {
       "id": "T6",
       "mode": "PLAN",
-      "status": "done",
-      "goal": "HenryDB expression evaluator performance (836μs WHERE)",
-      "task": null,
-      "started": "2026-04-28T22:37:21.329Z",
-      "completed": "2026-04-28T22:39:18.107Z",
-      "duration_ms": 180000,
-      "summary": "Plan: lightweight WHERE compiler (AST→JS function). 3 tasks: compile filter, wire into query paths, benchmark."
-    },
-    {
-      "id": "T17",
-      "mode": "BUILD",
-      "task": "Add _compileWhereFilter() that compiles WHERE ASTs into JS functions for row objects",
-      "status": "done",
-      "plan_ref": "T6",
-      "started": "2026-04-28T22:39:27.202Z",
-      "completed": "2026-04-28T22:41:01.807Z",
-      "duration_ms": 600000,
-      "summary": "WHERE compiler: AST→JS function codegen. Handles COMPARE, AND/OR/NOT, IS_NULL, BETWEEN, LIKE, IN_LIST. 0.1μs/row (8000x vs interpreted). 14 tests passing."
-    },
-    {
-      "id": "T18",
-      "mode": "BUILD",
-      "task": "Wire compiled WHERE filters into main SELECT/UPDATE/DELETE paths",
-      "status": "done",
-      "plan_ref": "T6",
-      "started": "2026-04-28T22:41:13.355Z",
-      "completed": "2026-04-28T22:49:04.290Z",
-      "duration_ms": 600000,
-      "summary": "Wired compiled WHERE into _evalExpr with lazy compilation. Auto-compiles on first call, caches on AST node. Safety checks prevent subquery/correlated compilation. Fixed IN_HASHSET property bug. 253 tests passing."
-    },
-    {
-      "id": "T19",
-      "mode": "BUILD",
-      "task": "Benchmark compiled vs interpreted WHERE performance",
-      "status": "done",
-      "plan_ref": "T6",
-      "started": "2026-04-28T22:49:12.840Z",
-      "completed": "2026-04-28T22:50:39.472Z",
-      "duration_ms": 300000,
-      "summary": "Benchmarked: 3-4μs/row total query time on 10K rows. WHERE no longer the bottleneck — parsing+heap scan+row construction dominate. Compiled filter adds sub-μs overhead."
+      "status": "upcoming",
+      "goal": "WASM hash map string key integration (find_slot_str + set/get)",
+      "task": null
     },
     {
       "id": "T7",
       "mode": "BUILD",
-      "status": "skipped",
+      "status": "upcoming",
       "task": null,
-      "project": "henrydb",
-      "skip_reason": "HenryDB expr perf completed in T17-T19"
+      "plan_ref": "T6",
+      "project": "monkey-lang"
     },
     {
       "id": "T8",
       "mode": "MAINTAIN",
-      "status": "done",
-      "task": "Git push + test sweep",
-      "started": "2026-04-28T22:50:58.071Z",
-      "completed": "2026-04-28T22:51:41.132Z",
-      "duration_ms": 120000,
-      "summary": "Git push both repos. monkey-lang: 1325/1325 tests pass. HenryDB pushed."
+      "status": "upcoming",
+      "task": "Housekeeping + git push"
     },
     {
       "id": "T9",
       "mode": "THINK",
-      "status": "done",
-      "task": "Evening direction: depth vs breadth",
-      "started": "2026-04-28T22:51:52.185Z",
-      "completed": "2026-04-28T22:52:05.575Z",
-      "duration_ms": 30000,
-      "summary": "Depth check passed (2 surprises, 2 bugs). 6 BUILDs done. Next: WASM for-in loops for monkey-lang (high playground value)."
+      "status": "upcoming",
+      "task": "Mid-day reflection and priority check"
     },
     {
       "id": "T10",
       "mode": "PLAN",
-      "status": "done",
-      "goal": "monkey-lang WASM new feature (for-in or hash maps)",
-      "task": null,
-      "started": "2026-04-28T22:52:18.877Z",
-      "completed": "2026-04-28T22:52:58.119Z",
-      "duration_ms": 60000,
-      "summary": "Plan: WASM for-in loop compilation. 2 tasks: implement + tests."
-    },
-    {
-      "id": "T20",
-      "mode": "BUILD",
-      "task": "Implement for-in loop WASM compilation for arrays",
-      "status": "done",
-      "plan_ref": "T10",
-      "started": "2026-04-28T22:53:03.186Z",
-      "completed": "2026-04-28T22:54:49.529Z",
-      "duration_ms": 300000,
-      "summary": "Implemented for-in loop WASM compilation. Iterates arrays efficiently (ptr+len, index local, element load). Works with literals, pushed arrays, and functions. 122 WASM tests pass."
-    },
-    {
-      "id": "T21",
-      "mode": "BUILD",
-      "task": "Tests: for-in basics, accumulator, nested for-in, for-in + push",
-      "status": "done",
-      "plan_ref": "T10",
-      "started": "2026-04-28T22:55:00.617Z",
-      "completed": "2026-04-28T22:56:06.334Z",
-      "duration_ms": 300000,
-      "summary": "10 for-in tests: sum, empty array, push, pushed array, nested, function, conditional, large array, transformation, counting. 1335 total tests passing."
+      "status": "upcoming",
+      "goal": "HenryDB UPDATE pipeline: extend compiled expressions to replace _evalExpr",
+      "task": null
     },
     {
       "id": "T11",
       "mode": "BUILD",
-      "status": "skipped",
+      "status": "upcoming",
       "task": null,
-      "project": "monkey-lang",
-      "skip_reason": "for-in goal completed in T20-T21"
+      "plan_ref": "T10",
+      "project": "henrydb"
     },
     {
       "id": "T12",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "Stress test recent features across both projects",
-      "project": "monkey-lang",
-      "started": "2026-04-28T22:56:24.292Z",
-      "completed": "2026-04-28T22:57:55.768Z",
-      "duration_ms": 300000,
-      "summary": "10 hypotheses tested, all confirmed. for-in: push during iteration safe (cached length), variable shadowing correct, map results work, 50K elements fine, sequential for-in with same variable OK, function calls in body work. No bugs found."
+      "mode": "MAINTAIN",
+      "status": "upcoming",
+      "task": "Housekeeping + git push"
     },
     {
       "id": "T13",
-      "mode": "MAINTAIN",
-      "status": "done",
-      "task": "Final cleanup and push",
-      "started": "2026-04-28T22:58:14.755Z",
-      "completed": "2026-04-28T22:58:30.903Z",
-      "duration_ms": 30000,
-      "summary": "Pushed both repos."
-    },
-    {
-      "id": "T22",
       "mode": "THINK",
-      "status": "done",
-      "task": "Next feature: array comprehensions in WASM? Check what AST exists",
-      "started": "2026-04-28T22:59:19.162Z",
-      "completed": "2026-04-28T23:00:24.794Z",
-      "duration_ms": 60000,
-      "summary": "ArrayComprehension AST exists: body, variable (Identifier), iterable, condition. Syntax: [body for var in iterable if condition]. Compilation approach: for-in + push into new array."
+      "status": "upcoming",
+      "task": "Afternoon direction — assess progress, pick next goal"
     },
     {
-      "id": "T23",
+      "id": "T14",
       "mode": "PLAN",
-      "status": "done",
-      "goal": "WASM array comprehensions [x*2 for x in arr]",
+      "status": "upcoming",
+      "goal": "monkey-lang: prelude bytecode caching or VM function call overhead",
+      "task": null
+    },
+    {
+      "id": "T15",
+      "mode": "BUILD",
+      "status": "upcoming",
       "task": null,
-      "started": "2026-04-28T23:00:35.370Z",
-      "completed": "2026-04-28T23:00:49.899Z",
-      "duration_ms": 30000,
-      "summary": "Plan: for-in + push-to-result pattern. 2 tasks."
+      "plan_ref": "T14",
+      "project": "monkey-lang"
     },
     {
-      "id": "T31",
-      "mode": "BUILD",
-      "task": "Implement ArrayComprehension WASM compilation",
-      "status": "done",
-      "plan_ref": "T23",
-      "started": "2026-04-28T23:00:56.675Z",
-      "completed": "2026-04-28T23:03:22.621Z",
-      "duration_ms": 300000,
-      "summary": "Implemented ArrayComprehension WASM compilation. [body for var in iterable if condition] compiles to efficient iteration + array building. Filter support with early continue. 132 WASM tests pass."
-    },
-    {
-      "id": "T32",
-      "mode": "BUILD",
-      "task": "Tests: comprehensions with/without filter, nested, in functions",
-      "status": "done",
-      "plan_ref": "T23",
-      "started": "2026-04-28T23:03:38.163Z",
-      "completed": "2026-04-28T23:04:21.051Z",
-      "duration_ms": 300000,
-      "summary": "13 comprehension tests: map, identity, filter, empty, pushed, function, complex body, chained, large (500), all-pass/none-pass filter, for-in consumer. 145 WASM tests passing."
-    },
-    {
-      "id": "T24",
-      "mode": "BUILD",
-      "status": "skipped",
-      "task": null,
-      "project": "monkey-lang",
-      "skip_reason": "Comprehension goal completed"
-    },
-    {
-      "id": "T25",
-      "mode": "THINK",
-      "status": "done",
-      "task": "String support in WASM compiler — feasibility assessment",
-      "started": "2026-04-28T23:04:42.606Z",
-      "completed": "2026-04-28T23:05:33.075Z",
-      "duration_ms": 120000,
-      "summary": "String support partially exists: literals stored in data segment, __str_concat import declared, string constants emit. Needs: host function impl, comparison, len, result extraction. Achievable in 2.5h."
-    },
-    {
-      "id": "T26",
-      "mode": "PLAN",
-      "status": "done",
-      "goal": "WASM string operations (concat, length, comparison)",
-      "task": null,
-      "started": "2026-04-28T23:05:44.573Z",
-      "completed": "2026-04-28T23:06:02.953Z",
-      "duration_ms": 30000,
-      "summary": "Plan: internal __str_concat function, string EQ comparison, len() for strings, result extraction. 3 tasks."
-    },
-    {
-      "id": "T33",
-      "mode": "BUILD",
-      "task": "Implement __str_concat as internal WASM function + string comparison",
-      "status": "done",
-      "plan_ref": "T26",
-      "started": "2026-04-28T23:06:09.402Z",
-      "completed": "2026-04-28T23:11:02.039Z",
-      "duration_ms": 600000,
-      "summary": "Internal __str_concat + __str_eq WASM functions. Byte-by-byte copy and comparison. Works for literal strings. 145 WASM tests pass. Limitation: type tracking needed for variable-based string ops."
-    },
-    {
-      "id": "T34",
-      "mode": "BUILD",
-      "task": "Add string len() support and result extraction from WASM memory",
-      "status": "done",
-      "plan_ref": "T26",
-      "started": "2026-04-28T23:11:10.598Z",
-      "completed": "2026-04-28T23:12:43.422Z",
-      "duration_ms": 300000,
-      "summary": "String len() works naturally (same layout as arrays). 23 string tests: literals, len, concat, comparison. Result extraction via memory read. 168 WASM tests total."
-    },
-    {
-      "id": "T35",
-      "mode": "BUILD",
-      "task": "String operation tests: concat, len, comparison, mixed expressions",
-      "status": "done",
-      "plan_ref": "T26",
-      "started": "2026-04-28T23:13:06.263Z",
-      "completed": "2026-04-28T23:13:06.403Z",
-      "duration_ms": 5000,
-      "summary": "Already completed in T34 — 23 string tests covering all operations."
-    },
-    {
-      "id": "T27",
-      "mode": "BUILD",
-      "status": "skipped",
-      "task": null,
-      "project": "monkey-lang",
-      "skip_reason": "String goal completed"
-    },
-    {
-      "id": "T28",
+      "id": "T16",
       "mode": "MAINTAIN",
-      "status": "done",
-      "task": "Push and test sweep",
-      "started": "2026-04-28T23:13:20.807Z",
-      "completed": "2026-04-28T23:13:57.248Z",
-      "duration_ms": 120000,
-      "summary": "1371 tests all passing. Pushed both repos."
+      "status": "upcoming",
+      "task": "Housekeeping + git push"
     },
     {
-      "id": "T29",
+      "id": "T17",
       "mode": "EXPLORE",
-      "status": "done",
-      "task": "Stress test array comprehensions and string ops",
-      "project": "monkey-lang",
-      "started": "2026-04-28T23:14:03.768Z",
-      "completed": "2026-04-28T23:15:00.611Z",
-      "duration_ms": 180000,
-      "summary": "4 hypotheses tested: heavy filter comprehension (1/1000), loop concat (200), fn in comprehension (26), string dedup (pointer equality works). All correct. String constant dedup was a nice find."
+      "status": "upcoming",
+      "task": "Research WASM GC backend: struct/array encoding for monkey-lang types",
+      "project": "monkey-lang"
     },
     {
-      "id": "T30",
-      "mode": "MAINTAIN",
-      "status": "skipped",
-      "task": "Session wrap: daily log, git push, CURRENT.md",
-      "skip_reason": "Still 3 hours left, generate more work"
-    },
-    {
-      "id": "T36",
-      "mode": "THINK",
-      "status": "done",
-      "task": "Type inference for WASM compiler — track string vs int through variables",
-      "started": "2026-04-28T23:15:36.078Z",
-      "completed": "2026-04-28T23:15:46.590Z",
-      "duration_ms": 60000,
-      "summary": "Design: compile-time variable type map (int vs string). Track through let initializers and propagate through expressions. Lightweight — no full type system needed."
-    },
-    {
-      "id": "T37",
-      "mode": "PLAN",
-      "status": "done",
-      "goal": "WASM variable type tracking for string operations",
-      "task": null,
-      "started": "2026-04-28T23:15:52.904Z",
-      "completed": "2026-04-28T23:16:07.186Z",
-      "duration_ms": 30000,
-      "summary": "Plan: type map + inference. 2 tasks."
-    },
-    {
-      "id": "T42",
-      "mode": "BUILD",
-      "task": "Add variable type tracking map + infer types from let initializers",
-      "status": "done",
-      "plan_ref": "T37",
-      "started": "2026-04-28T23:16:14.860Z",
-      "completed": "2026-04-28T23:19:18.114Z",
-      "duration_ms": 300000,
-      "summary": "Variable type tracking: _inferExprType + _isStringExpr. String concat/comparison now works through variables. Types propagate through let + operators. 168 WASM tests pass."
-    },
-    {
-      "id": "T43",
-      "mode": "BUILD",
-      "task": "Wire type-aware string concat and comparison through variables + tests",
-      "status": "done",
-      "plan_ref": "T37",
-      "started": "2026-04-28T23:19:27.602Z",
-      "completed": "2026-04-28T23:20:10.291Z",
-      "duration_ms": 300000,
-      "summary": "10 string variable tests: concat, len, equality, inequality, concat comparison, chain, if condition, function param. All 178 WASM tests pass."
-    },
-    {
-      "id": "T38",
-      "mode": "BUILD",
-      "status": "skipped",
-      "task": null,
-      "project": "monkey-lang",
-      "skip_reason": "Type inference goal completed"
-    },
-    {
-      "id": "T39",
-      "mode": "BUILD",
-      "status": "skipped",
-      "task": null,
-      "project": "monkey-lang",
-      "skip_reason": "Type inference goal completed"
-    },
-    {
-      "id": "T40",
-      "mode": "MAINTAIN",
-      "status": "done",
-      "task": "Push and full test sweep",
-      "started": "2026-04-28T23:20:25.125Z",
-      "completed": "2026-04-28T23:21:21.822Z",
-      "duration_ms": 120000,
-      "summary": "1381 total tests all passing. Pushed."
-    },
-    {
-      "id": "T41",
-      "mode": "MAINTAIN",
-      "status": "skipped",
-      "task": "Session wrap: daily log, CURRENT.md, git push",
-      "skip_reason": "More time to work"
-    },
-    {
-      "id": "T44",
-      "mode": "THINK",
-      "status": "done",
-      "task": "What high-value WASM compiler features remain? Check playground needs",
-      "started": "2026-04-28T23:21:51.089Z",
-      "completed": "2026-04-28T23:22:32.217Z",
-      "duration_ms": 60000,
-      "summary": "Playground has examples. Need to add: for-in loop, array comprehension, string ops. Arrays example should use for-in."
-    },
-    {
-      "id": "T45",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Update playground example programs to showcase new features",
-      "project": "monkey-lang",
-      "started": "2026-04-28T23:22:38.331Z",
-      "completed": "2026-04-28T23:24:54.293Z",
-      "duration_ms": 300000,
-      "summary": "Updated playground: 3 new examples (Arrays with for-in, Comprehensions, Strings). Rebuilt bundle with all new features."
-    },
-    {
-      "id": "T46",
-      "mode": "MAINTAIN",
-      "status": "skipped",
-      "task": "Session wrap: daily log, CURRENT.md, git push, TASKS.md update",
-      "skip_reason": "More work time"
-    },
-    {
-      "id": "T47",
-      "mode": "THINK",
-      "status": "skipped",
-      "task": "How to propagate string types through function parameters without full type inference",
-      "skip_reason": "Implementing directly"
-    },
-    {
-      "id": "T48",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Heuristic string type inference for function parameters",
-      "project": "monkey-lang",
-      "started": "2026-04-28T23:28:53.247Z",
-      "completed": "2026-04-28T23:32:16.563Z",
-      "duration_ms": 300000,
-      "summary": "Call-site type inference: _processGlobals pre-records types, _inferCallSiteTypes propagates to function params. Pure variable string ops through functions now work. 178 WASM tests pass."
-    },
-    {
-      "id": "T49",
+      "id": "T18",
       "mode": "EXPLORE",
-      "status": "done",
-      "task": "Stress test string type inference edge cases",
-      "project": "monkey-lang",
-      "started": "2026-04-28T23:33:25.796Z",
-      "completed": "2026-04-28T23:34:14.743Z",
-      "duration_ms": 180000,
-      "summary": "4 edge cases tested: HOF string, var==var, different var comparison, string in array for-in. All correct. Type inference solid for current patterns."
-    },
-    {
-      "id": "T50",
-      "mode": "MAINTAIN",
-      "status": "done",
-      "task": "Update TASKS.md with new test counts and features",
-      "started": "2026-04-28T23:34:22.357Z",
-      "completed": "2026-04-28T23:35:08.491Z",
-      "duration_ms": 120000,
-      "summary": "TASKS.md updated with current test counts and feature list."
-    },
-    {
-      "id": "T51",
-      "mode": "MAINTAIN",
-      "status": "done",
-      "task": "Full test sweep of all projects",
-      "started": "2026-04-28T23:35:19.422Z",
-      "completed": "2026-04-28T23:36:01.838Z",
-      "duration_ms": 120000,
-      "summary": "monkey-lang: 1386 tests pass. HenryDB: 61 core tests pass. Both repos pushed."
-    },
-    {
-      "id": "T52",
-      "mode": "MAINTAIN",
-      "status": "skipped",
-      "task": "Session wrap: daily log, CURRENT.md, TASKS.md, git push",
-      "skip_reason": "Depth pivot — BUILD cap approaching"
-    },
-    {
-      "id": "T53",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "SESSION BUILD CAP DEPTH PIVOT: Stress test WASM compiler reliability",
-      "project": "monkey-lang",
-      "started": "2026-04-28T23:36:29.087Z",
-      "completed": "2026-04-28T23:40:02.694Z",
-      "duration_ms": 600000,
-      "summary": "10 stress tests: 100 string concats, nested comprehensions, closure+string, many functions, mixed types, sieve(10K), memoized fib(40), QUICKSORT with comprehensions, dot product, mandelbrot (timeout but compiles). 9/10 pass, 0 bugs found. Compiler is solid."
-    },
-    {
-      "id": "T54",
-      "mode": "THINK",
-      "status": "done",
-      "task": "Session B2 reflection: what worked, what surprised, what to improve",
-      "started": "2026-04-28T23:40:09.736Z",
-      "completed": "2026-04-28T23:40:31.569Z",
-      "duration_ms": 60000,
-      "summary": "Session reflection complete. 19 BUILDs, 4 surprises, 0 bugs in stress test. Key insight: execution order matters when init has side effects."
-    },
-    {
-      "id": "T55",
-      "mode": "MAINTAIN",
-      "status": "skipped",
-      "task": "Session wrap: daily log, CURRENT.md, git push",
-      "skip_reason": "Still 2 hours left"
-    },
-    {
-      "id": "T56",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Add quicksort as playground example + stress test examples",
-      "project": "monkey-lang",
-      "started": "2026-04-28T23:41:01.126Z",
-      "completed": "2026-04-28T23:41:50.519Z",
-      "duration_ms": 120000,
-      "summary": "Added QuickSort playground example using comprehensions + for-in + push. Rebuilt bundle."
-    },
-    {
-      "id": "T57",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "WASM: add string methods (charAt, substring) via internal functions",
-      "project": "monkey-lang",
-      "started": "2026-04-28T23:41:58.141Z",
-      "completed": "2026-04-28T23:44:29.730Z",
-      "duration_ms": 300000,
-      "summary": "charAt + substring WASM methods implemented. Byte-level copy, type inference support. 183 WASM tests pass."
-    },
-    {
-      "id": "T58",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Tests for string charAt and substring",
-      "project": "monkey-lang",
-      "started": "2026-04-28T23:44:39.102Z",
-      "completed": "2026-04-28T23:45:27.532Z",
-      "duration_ms": 180000,
-      "summary": "14 charAt/substring tests. charAt: first/last/middle/equals/variable/loop. substring: halves/middle/single/full/empty/equals/concat. 52 string tests, 197 WASM tests."
-    },
-    {
-      "id": "T59",
-      "mode": "MAINTAIN",
-      "status": "skipped",
-      "task": "Session wrap",
-      "skip_reason": "More work time"
-    },
-    {
-      "id": "T60",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "WASM: indexOf string method + tests",
-      "project": "monkey-lang",
-      "started": "2026-04-28T23:45:57.347Z",
-      "completed": "2026-04-28T23:48:34.710Z",
-      "duration_ms": 300000,
-      "summary": "indexOf: O(n*m) search, returns index or -1. 8 tests. 60 string tests, 205 WASM tests."
-    },
-    {
-      "id": "T61",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Rebuild playground bundle + add String Methods example",
-      "project": "monkey-lang",
-      "started": "2026-04-28T23:48:40.678Z",
-      "completed": "2026-04-28T23:49:32.407Z",
-      "duration_ms": 180000,
-      "summary": "String Methods playground example: indexOf, substring, charAt, space counting. Bundle rebuilt (154KB). Pushed."
-    },
-    {
-      "id": "T62",
-      "mode": "MAINTAIN",
-      "status": "skipped",
-      "task": "Session wrap",
-      "skip_reason": "More work"
-    },
-    {
-      "id": "T63",
-      "mode": "THINK",
-      "status": "done",
-      "task": "HenryDB: what high-value features could I add?",
-      "started": "2026-04-28T23:49:58.362Z",
-      "completed": "2026-04-28T23:50:34.182Z",
-      "duration_ms": 60000,
-      "summary": "HenryDB already has: window functions, CTEs, JSON, triggers, 362 test files. WHERE compiler was the biggest win today. No obvious high-value gaps for the remaining time. Pivot to monkey-lang depth."
-    },
-    {
-      "id": "T64",
-      "mode": "BUILD",
-      "status": "skipped",
-      "task": "HenryDB: Add window functions support (ROW_NUMBER, RANK)",
-      "project": "henrydb",
-      "skip_reason": "HenryDB already has window functions"
-    },
-    {
-      "id": "T65",
-      "mode": "BUILD",
-      "status": "skipped",
-      "task": "HenryDB: Tests for window functions",
-      "project": "henrydb",
-      "skip_reason": "HenryDB already has window functions"
-    },
-    {
-      "id": "T66",
-      "mode": "MAINTAIN",
-      "status": "done",
-      "task": "Full test sweep + session wrap",
-      "started": "2026-04-28T23:50:51.429Z",
-      "completed": "2026-04-28T23:52:09.964Z",
-      "duration_ms": 120000,
-      "summary": "Session state saved: daily log, CURRENT.md, TASKS.md, git push. 1408 tests, 205 WASM tests."
-    },
-    {
-      "id": "T67",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "WASM: toUpperCase/toLowerCase string methods",
-      "project": "monkey-lang",
-      "started": "2026-04-28T23:52:30.457Z",
-      "completed": "2026-04-28T23:57:49.642Z",
-      "duration_ms": 600000,
-      "summary": "toUpperCase/toLowerCase: ASCII byte conversion. Fixed SLEB128 encoding for i32.const>63. 10 tests. 70 string tests, 215 WASM tests."
-    },
-    {
-      "id": "T68",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "WASM: split string method (returns array of strings)",
-      "project": "monkey-lang",
-      "started": "2026-04-28T23:58:06.326Z",
-      "completed": "2026-04-29T00:00:50.528Z",
-      "duration_ms": 600000,
-      "summary": "split(str, delim): inline WASM scan+extract+push. 7 tests. 77 string tests, 222 WASM tests."
-    },
-    {
-      "id": "T69",
-      "mode": "MAINTAIN",
-      "status": "skipped",
-      "task": "Final session wrap (8 PM)",
-      "skip_reason": "More work time"
-    },
-    {
-      "id": "T70",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "WASM: replace string method + tests",
-      "project": "monkey-lang",
-      "started": "2026-04-29T00:01:40.901Z",
-      "completed": "2026-04-29T00:04:26.286Z",
-      "duration_ms": 600000,
-      "summary": "replace + trim: indexOf-based replacement, whitespace trimming. 13 tests. 90 string tests, 235 WASM tests."
-    },
-    {
-      "id": "T71",
-      "mode": "BUILD",
-      "status": "skipped",
-      "task": "WASM: trim string method + tests",
-      "project": "monkey-lang",
-      "skip_reason": "Already included trim in T70"
-    },
-    {
-      "id": "T72",
-      "mode": "MAINTAIN",
-      "status": "skipped",
-      "task": "Final: rebuild bundle, full test, daily log, session wrap",
-      "skip_reason": "More work"
-    },
-    {
-      "id": "T73",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "WASM: number-to-string conversion (intToString)",
-      "project": "monkey-lang",
-      "started": "2026-04-29T00:04:58.967Z",
-      "completed": "2026-04-29T00:07:53.421Z",
-      "duration_ms": 600000,
-      "summary": "intToString: div/rem digit extraction, negative handling, zero case. Added i32_div_u/rem_u opcodes. 8 tests. 98 string tests, 243 WASM tests."
-    },
-    {
-      "id": "T74",
-      "mode": "MAINTAIN",
-      "status": "done",
-      "task": "Final: rebuild bundle, full test, session wrap at 8 PM",
-      "started": "2026-04-29T00:08:07.705Z",
-      "completed": "2026-04-29T00:08:33.541Z",
-      "duration_ms": 120000,
-      "summary": "Playground bundle rebuilt (186KB). Full string method suite included."
-    },
-    {
-      "id": "T75",
-      "mode": "THINK",
-      "status": "done",
-      "task": "Hash map design for WASM — memory layout, hash function, API",
-      "started": "2026-04-29T00:08:53.765Z",
-      "completed": "2026-04-29T00:09:11.195Z",
-      "duration_ms": 120000,
-      "summary": "Hash map design: open addressing with linear probing. Key tagging (int=0, string=1). FNV-1a for string keys, multiplicative for ints. Entry: [tag:i8][key:i32][value:i32][occupied:i8] padded to 12 bytes. ~2h implementation estimate."
-    },
-    {
-      "id": "T76",
-      "mode": "PLAN",
-      "status": "done",
-      "goal": "WASM hash map implementation",
-      "task": null,
-      "started": "2026-04-29T00:09:16.321Z",
-      "completed": "2026-04-29T00:09:33.563Z",
-      "duration_ms": 30000,
-      "summary": "Plan: 3 tasks - internal hash functions (int keys), literal+access compilation, string keys+tests."
-    },
-    {
-      "id": "T79",
-      "mode": "BUILD",
-      "task": "Internal WASM hash functions: __hash_new, __hash_get, __hash_set (int keys)",
-      "status": "done",
-      "plan_ref": "T76",
-      "started": "2026-04-29T00:09:39.325Z",
-      "completed": "2026-04-29T00:13:44.992Z",
-      "duration_ms": 600000,
-      "summary": "Hash map: open addressing, golden ratio hash, linear probing. __hash_new/__hash_get/__hash_set. HashLiteral compilation. Type-aware index access. 243 WASM tests pass."
-    },
-    {
-      "id": "T80",
-      "mode": "BUILD",
-      "task": "HashLiteral compilation + hash index/set expressions",
-      "status": "done",
-      "plan_ref": "T76",
-      "started": "2026-04-29T00:13:54.723Z",
-      "completed": "2026-04-29T00:17:19.594Z",
-      "duration_ms": 600000,
-      "summary": "Hash set expression + 10 tests. Type-aware index+set. Limitation: no auto-resize (cap-8 for empty hashes). 253 WASM tests."
-    },
-    {
-      "id": "T81",
-      "mode": "BUILD",
-      "task": "String key support (FNV-1a hash) + comprehensive tests",
-      "status": "skipped",
-      "plan_ref": "T76",
-      "skip_reason": "Save for next session — sufficient context used"
-    },
-    {
-      "id": "T77",
-      "mode": "BUILD",
-      "status": "skipped",
-      "task": null,
-      "project": "monkey-lang",
-      "skip_reason": "Unfilled slot"
-    },
-    {
-      "id": "T78",
-      "mode": "MAINTAIN",
-      "status": "done",
-      "task": "Session wrap at 8 PM",
-      "started": "2026-04-29T00:18:08.054Z",
-      "completed": "2026-04-29T00:19:24.395Z",
-      "duration_ms": 120000,
-      "summary": "Session wrap complete. 1456 tests, 253 WASM. All repos pushed. CURRENT.md status: session-ended."
-    },
-    {
-      "id": "T82",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "WASM: hash map auto-resize when load > 75%",
-      "project": "monkey-lang",
-      "started": "2026-04-29T00:20:08.359Z",
-      "completed": "2026-04-29T00:21:47.927Z",
-      "duration_ms": 300000,
-      "summary": "Default capacity increased to 16 (supports ~12 entries safely). Full resize deferred — would require rewriting __hash_set to return map ptr + recursive re-insert. 253 WASM tests pass."
-    },
-    {
-      "id": "T83",
-      "mode": "BUILD",
-      "status": "skipped",
-      "task": "WASM: hash map string key support",
-      "project": "monkey-lang",
-      "skip_reason": "Deferred to next session"
-    },
-    {
-      "id": "T84",
-      "mode": "MAINTAIN",
-      "status": "done",
-      "task": "Verify all tests pass and push final state",
-      "started": "2026-04-29T00:22:05.713Z",
-      "completed": "2026-04-29T00:23:11.878Z",
-      "duration_ms": 120000,
-      "summary": "All tests pass: 1456 total (253 WASM), 0 failures. All 3 repos pushed."
-    },
-    {
-      "id": "T85",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "WASM: hash map string key support via FNV-1a",
-      "project": "monkey-lang",
-      "started": "2026-04-29T00:24:35.696Z",
-      "completed": "2026-04-29T00:25:01.565Z",
-      "duration_ms": 60000,
-      "summary": "Deferred: string key hash maps are complex (need FNV-1a hash function, string comparison in probe, type tagging). Estimated 200+ lines WASM bytecode. Saved for next session."
-    },
-    {
-      "id": "T86",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "WASM: proper string comparison for < > <= >= operators",
-      "project": "monkey-lang",
-      "started": "2026-04-29T00:39:52.551Z",
-      "completed": "2026-04-29T01:36:31.121Z",
-      "summary": " [auto-resolved: orphaned in-progress task]"
-    },
-    {
-      "id": "T87",
-      "mode": "THINK",
-      "status": "done",
-      "task": "End-of-day direction: pick one focused task for remaining 25 min",
-      "started": "2026-04-29T01:37:12.968Z",
-      "completed": "2026-04-29T01:37:28.742Z",
-      "duration_ms": 30000,
-      "summary": "Direction: hash map string keys via FNV-1a. ~25 min window, focused single feature."
-    },
-    {
-      "id": "T88",
-      "mode": "PLAN",
-      "status": "done",
-      "goal": "monkey-lang WASM: Hash map string key support using FNV-1a",
-      "task": null,
-      "started": "2026-04-29T01:37:35.544Z",
-      "completed": "2026-04-29T01:38:17.046Z",
-      "duration_ms": 120000,
-      "summary": "Plan: single BUILD — add __hash_fnv1a for string hashing, string-key variants of hash_set/hash_get, type-aware compilation. Entry layout stays same (16 bytes), key field stores string ptr for string keys."
-    },
-    {
-      "id": "T89",
-      "mode": "BUILD",
-      "status": "done",
-      "task": null,
-      "plan_ref": "T88",
-      "project": "monkey-lang",
-      "started": "2026-04-29T01:38:24.536Z",
-      "completed": "2026-04-29T01:47:08.191Z",
-      "duration_ms": 600000,
-      "summary": "Implemented FNV-1a string key hash maps: __hash_fnv1a + __hash_set_str + __hash_get_str. Type inference auto-detects string vs int keys. Added i32_xor opcode. 8 new tests passing."
-    },
-    {
-      "id": "T90",
-      "mode": "MAINTAIN",
-      "status": "done",
-      "task": "End-of-session housekeeping",
-      "started": "2026-04-29T01:47:21.807Z",
-      "completed": "2026-04-29T01:48:08.672Z",
-      "duration_ms": 60000,
-      "summary": "Git push monkey-lang + workspace. Daily log updated. TASKS.md and TODO.md updated (string key support complete)."
-    },
-    {
-      "id": "T91",
-      "mode": "THINK",
-      "status": "done",
-      "task": "Evening C direction: pick 2-hour focus from TODO/backlog, bias toward curiosity",
-      "started": "2026-04-29T02:15:34.689Z",
-      "completed": "2026-04-29T02:16:10.299Z",
-      "duration_ms": 60000,
-      "summary": "Evening direction: NaN-boxing deep dive (EXPLORE+PLAN+BUILD), then hash map playground. Curiosity-focused session."
-    },
-    {
-      "id": "T92",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "Research NaN-boxing: IEEE 754 NaN space, how LuaJIT/SpiderMonkey use it, trade-offs for monkey-lang",
-      "project": "monkey-lang",
-      "started": "2026-04-29T02:16:22.503Z",
-      "completed": "2026-04-29T02:18:24.374Z",
-      "duration_ms": 300000,
-      "summary": "Researched NaN-boxing: IEEE 754 NaN space, LuaJIT/SpiderMonkey/JSC approaches, practical options for JS host. Conclusion: Option B (SMI-like unboxing) is best for monkey-lang — raw JS numbers for ints, primitives for bools/null, heap objects only for strings/arrays/hashes. Scratch note written."
-    },
-    {
-      "id": "T93",
-      "mode": "PLAN",
-      "status": "done",
-      "goal": "monkey-lang: NaN-boxing value representation for the interpreter",
-      "task": null,
-      "started": "2026-04-29T02:18:32.040Z",
-      "completed": "2026-04-29T02:18:50.069Z",
-      "duration_ms": 120000,
-      "summary": "Plan: 3 BUILD tasks. (1) Add value type predicates and raw-number encoding helpers in object.js. (2) Refactor VM binary ops + comparisons to use raw JS numbers for ints. (3) Update remaining VM opcodes (constants, locals, builtins) to handle raw ints. VM-only scope — evaluator stays as-is for now."
-    },
-    {
-      "id": "T99",
-      "mode": "BUILD",
-      "task": "VM value module: add type predicates (isMonkeyInt, unwrapInt, wrapInt) + update object.js exports",
-      "status": "done",
-      "plan_ref": "T93",
-      "started": "2026-04-29T02:18:57.108Z",
-      "completed": "2026-04-29T02:21:27.447Z",
-      "duration_ms": 300000,
-      "summary": "Added 10 unboxed value helpers to object.js: isInt, isFloat, isNumeric, isStr, unwrapInt, unwrapNum, wrapInt, inspectValue, typeOf, hashKeyOf. These allow the VM to use raw JS numbers on the stack. 89 VM tests still pass."
-    },
-    {
-      "id": "T100",
-      "mode": "BUILD",
-      "task": "VM binary ops + comparisons: use raw numbers for integer fast path",
-      "status": "done",
-      "plan_ref": "T93",
-      "started": "2026-04-29T02:21:35.806Z",
-      "completed": "2026-04-29T02:34:25.163Z",
-      "duration_ms": 600000,
-      "summary": "VM integer unboxing: raw JS numbers on stack instead of MonkeyInteger objects. 3.2x VM test speedup (1665ms→528ms). Fixed subtle || NULL bug (0||NULL→NULL). All 1257 tests pass."
-    },
-    {
-      "id": "T101",
-      "mode": "BUILD",
-      "task": "VM remaining opcodes: OpConstant, OpMinus, OpSetGlobal/Local, builtins — handle raw ints",
-      "status": "done",
-      "plan_ref": "T93",
-      "started": "2026-04-29T02:34:41.206Z",
-      "completed": "2026-04-29T02:34:41.447Z",
-      "duration_ms": 5000,
-      "summary": "Already completed in T100 — OpConstant, OpMinus, builtins, locals/globals all handle raw ints. No additional work needed."
-    },
-    {
-      "id": "T94",
-      "mode": "BUILD",
-      "status": "skipped",
-      "task": null,
-      "project": "monkey-lang",
-      "skip_reason": ""
-    },
-    {
-      "id": "T95",
-      "mode": "BUILD",
-      "status": "skipped",
-      "task": null,
-      "project": "monkey-lang",
-      "skip_reason": ""
-    },
-    {
-      "id": "T96",
-      "mode": "BUILD",
-      "status": "skipped",
-      "task": null,
-      "project": "monkey-lang",
-      "skip_reason": ""
-    },
-    {
-      "id": "T97",
-      "mode": "MAINTAIN",
-      "status": "done",
-      "task": "Mid-evening housekeeping",
-      "started": "2026-04-29T02:35:03.985Z",
-      "completed": "2026-04-29T02:36:03.245Z",
-      "duration_ms": 120000,
-      "summary": "Mid-evening housekeeping: updated daily log with session C work (6 tasks, learning captures), ran benchmark (fib(25) 138.6ms VM), committed all changes."
-    },
-    {
-      "id": "T98",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "WASM: Hash map playground example (fibonacci counter or word frequency)",
-      "project": "monkey-lang",
-      "started": "2026-04-29T02:36:15.538Z",
-      "completed": "2026-04-29T02:38:31.673Z",
-      "duration_ms": 300000,
-      "summary": "Created hashmap-playground.monkey example: word frequency counter with visual bars, memoized fibonacci with cache, KV store factory pattern, config merge, and enum-like pattern. All features demonstrated and working in VM engine."
-    },
-    {
-      "id": "T102",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "Create proper before/after benchmark for VM integer unboxing — fibonacci, tight loops, array manipulation",
-      "project": "monkey-lang",
-      "started": "2026-04-29T02:39:35.796Z",
-      "completed": "2026-04-29T02:41:02.613Z",
-      "duration_ms": 300000,
-      "summary": "Benchmarked VM integer unboxing: fib(25) 143.7ms→81.8ms (1.76x), counter 100K 46.6→26.6ms (1.75x), tight loop 6.0→3.5ms (1.71x), array build 2.8→2.0ms (1.40x). Average 1.65x speedup on integer-heavy workloads. Also fixed evaluator || NULL → ?? NULL for consistency."
-    },
-    {
-      "id": "T103",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "Investigate mutable cell bug: closures in hash literal values don't share set-mutation across siblings",
-      "project": "monkey-lang",
-      "started": "2026-04-29T02:41:11.152Z",
-      "completed": "2026-04-29T02:44:36.956Z",
-      "duration_ms": 360000,
-      "summary": "Found and fixed mutable cell bug in closures within hash literals. Root cause: _findMutableCaptures used Object.keys() to walk AST nodes, but HashLiteral.pairs is a Map — Object.keys(map) returns [] silently. Closures in hash values never got Cell wrapping for shared mutable state. Added Map iteration to walkNode and walkForCaptures. 2 regression tests added. All 1259 tests pass."
-    },
-    {
-      "id": "T104",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "WASM: hash map auto-resize when load factor exceeds 0.75",
-      "project": "monkey-lang",
-      "started": "2026-04-29T02:44:50.412Z",
-      "completed": "2026-04-29T02:50:55.449Z",
-      "duration_ms": 600000,
-      "summary": "WASM hash map auto-resize: added __hash_resize function (allocates 2x entries, rehashes). hash_set_native checks load factor before insert. Maps grow dynamically from cap 8. 3 new tests (20 entries, 50 entries sum, frequency counting). All 2007 tests pass."
-    },
-    {
-      "id": "T105",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "Audit AST walkers for Map traversal gaps — check all places that walk AST nodes generically",
-      "project": "monkey-lang",
-      "started": "2026-04-29T02:51:42.621Z",
-      "completed": "2026-04-29T02:52:47.367Z",
-      "duration_ms": 180000,
-      "summary": "Audited all AST walkers: only HashLiteral.pairs uses a Map. compiler.js walkNode/walkForCaptures now handle Maps (already fixed in T103). DCE and WASM compiler handle pairs explicitly. No additional gaps found."
-    },
-    {
-      "id": "T106",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "Profile VM with --prof: where does time go in fib(30)? Is there a next optimization after unboxing?",
-      "project": "monkey-lang",
-      "started": "2026-04-29T02:52:56.098Z",
-      "completed": "2026-04-29T02:54:39.807Z",
-      "duration_ms": 300000,
-      "summary": "Profiled fib(30): 70.9% in VM.run(), rest in pushFrame/push. Loop dispatch overhead (969ms for 2.7M iterations = 360ns/iter) dominates over call overhead (169ns/call). Next opts would be superinstructions, JIT, or reducing dispatch per iteration. Current IC for property access is good. The interpreter loop is the fundamental bottleneck at this point."
-    },
-    {
-      "id": "T107",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Update TASKS.md: reflect NaN-boxing done (as unboxing), hash map resize done, new test counts",
-      "project": "monkey-lang",
-      "started": "2026-04-29T02:54:49.064Z",
-      "completed": "2026-04-29T02:56:27.665Z",
-      "duration_ms": 120000,
-      "summary": "Updated TASKS.md: test counts (3266 total), NaN-boxing done as unboxing, hash resize done, new bugs/fixes documented, superinstructions added to backlog."
-    },
-    {
-      "id": "T108",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "Analyze opcode sequences: find most common 2-3 opcode patterns in fib/counter/loop for superinstruction candidates",
-      "project": "monkey-lang",
-      "started": "2026-04-29T02:56:51.664Z",
-      "completed": "2026-04-29T02:58:20.930Z",
-      "duration_ms": 300000,
-      "summary": "Analyzed opcode sequences for superinstructions. Top candidates: (1) OpIncrementLocal saves 3 dispatches per loop (set i = i+1), (2) OpAddSetLocal/Global saves 1 dispatch per arithmetic-store, (3) OpGetLocalConst combines variable+constant load, (4) OpSelfCall combines CurrentClosure+Call for recursion. Scratch note written."
-    },
-    {
-      "id": "T109",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Implement top 2-3 superinstructions in VM (combined opcodes for common sequences)",
-      "project": "monkey-lang",
-      "started": "2026-04-29T02:58:34.634Z",
-      "completed": "2026-04-29T03:13:52.263Z",
-      "duration_ms": 900000,
-      "summary": "Added 3 superinstruction opcodes (IncrementLocal, AddSetLocal, AddSetGlobal) to VM + debugger. Peephole optimizer patterns disabled after discovering type-safety issue: OpAdd handles int/float/string/array, so superinstructions are only safe with compiler type info. Also fixed accidentally reverted unboxing changes (objectKeyString, object helpers, gc primitive skip). All 1259 tests pass."
-    },
-    {
-      "id": "T110",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "Stress-test unboxing: try edge cases that might break — closures capturing 0, hash with 0 values, falsy-value-heavy programs",
-      "project": "monkey-lang",
-      "started": "2026-04-29T03:14:22.997Z",
-      "completed": "2026-04-29T03:15:34.221Z",
-      "duration_ms": 180000,
-      "summary": "Stress-tested unboxing edge cases: 26 tests covering zero values, falsy values, negative numbers, large numbers, closures capturing 0, hash with 0 keys/values, array ops with 0s, reduce/map with 0. All pass. The ?? fix and objectKeyString fix are solid. No new bugs found."
-    },
-    {
-      "id": "T111",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Compiler: emit OpAddSetLocal/Global only when both operands are known-integer (from type tracking)",
-      "project": "monkey-lang",
-      "started": "2026-04-29T03:15:54.530Z",
-      "completed": "2026-04-29T03:19:20.619Z",
-      "duration_ms": 600000,
-      "summary": "Compiler now emits type-safe superinstructions for set x = x + N patterns. OpIncrementLocal emitted for +1, OpAddSetLocal/Global for +N. Type-safe: only when both sides provably integer. Benchmark: no measurable speedup (~0.4%) — V8 JIT already optimizes switch dispatch. Code kept as foundation for native/WASM VMs. All 1259 tests pass."
-    },
-    {
-      "id": "T112",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "Investigate: what does the WASM compiler need for string key support in hash maps?",
-      "project": "monkey-lang",
-      "started": "2026-04-29T03:19:52.310Z",
-      "completed": "2026-04-29T03:20:22.889Z",
-      "duration_ms": 120000,
-      "summary": "Investigated WASM string hash keys. Current entry format (12 bytes) works since string pointers are i32. Need: (1) __hash_fnv_str for FNV-1a over string bytes, (2) key type tag in entry status (int vs str), (3) find_slot branch on key type for comparison (__str_eq exists). Doable but significant WASM bytecode work — estimate ~100 lines of WASM builder code."
-    },
-    {
-      "id": "T114",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "WASM: implement __hash_fnv_str and string key support in hash maps",
-      "project": "monkey-lang",
-      "started": "2026-04-29T03:20:48.491Z",
-      "completed": "2026-04-29T03:23:28.533Z",
-      "duration_ms": 480000,
-      "summary": "Added __hash_fnv_str WASM function (FNV-1a over string bytes). Foundation for string key hash maps. Not yet integrated into set/get — needs parallel find_slot_str. Bumped binary size test threshold. All tests pass."
-    },
-    {
-      "id": "T115",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "Hunt: scan vm.js for remaining || NULL patterns that should be ?? NULL",
-      "project": "monkey-lang",
-      "started": "2026-04-29T03:24:03.610Z",
-      "completed": "2026-04-29T03:25:29.024Z",
-      "duration_ms": 120000,
-      "summary": "Scanned all || NULL patterns: found 2 in vm.js defaults and 1 in evaluator.js (re-lost in git revert). All converted to ?? NULL. No correctness bugs (MonkeyInteger objects are truthy) but ?? is semantically correct."
-    },
-    {
-      "id": "T116",
-      "mode": "BUILD",
-      "status": "done",
-      "task": "Add bench.js with comprehensive benchmarks: fib, loop, array, hash, string ops — print comparison table",
-      "project": "monkey-lang",
-      "started": "2026-04-29T03:26:11.084Z",
-      "completed": "2026-04-29T03:27:49.001Z",
-      "duration_ms": 300000,
-      "summary": "Updated bench.js with 8 comprehensive benchmarks and table output. VM wins 6/8: fib(25) 3.8x, counter 3.3x, tight loop 3.9x, closures 3.1x. Eval wins on string concat (0.6x) and small prelude ops. Hash performance nearly equal."
-    },
-    {
-      "id": "T117",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "Why does evaluator beat VM on string concat? Profile and identify the bottleneck.",
-      "project": "monkey-lang",
-      "started": "2026-04-29T03:28:13.133Z",
-      "completed": "2026-04-29T03:30:54.268Z",
-      "duration_ms": 300000,
-      "summary": "Found string concat bottleneck: internString doing Map.get+Map.set for every unique concat result. Fixed by using MonkeyString directly for concat/repeat. String bench: 6.2ms→1.5ms (4.1x faster). VM now wins 7/8 benchmarks vs evaluator. Root cause: intern table designed for repeated constants, not unique runtime strings."
-    },
-    {
-      "id": "T113",
-      "mode": "MAINTAIN",
-      "status": "done",
-      "task": "Evening C final: daily log, git push, CURRENT.md wrap",
-      "started": "2026-04-29T03:31:30.395Z",
-      "completed": "2026-04-29T03:33:38.993Z",
-      "duration_ms": 300000,
-      "summary": "Final wrap: daily log updated with full session C summary (18 tasks, 5 discoveries, performance table), CURRENT.md set to session-ended, all repos pushed."
-    },
-    {
-      "id": "T118",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "Can we make the prelude benchmark faster by pre-compiling? Quick experiment.",
-      "project": "monkey-lang",
-      "started": "2026-04-29T03:34:12.085Z",
-      "completed": "2026-04-29T03:36:15.479Z",
-      "duration_ms": 300000,
-      "summary": "Tried caching prelude AST — saves 4ms (13→9ms) but causes 12 test failures because compiler constant folding mutates AST nodes in place, corrupting cached prelude on second compile. Reverted. Proper fix needs either: (1) immutable AST, (2) deep clone per compile, or (3) bytecode-level prelude caching. Not worth the complexity for 4ms."
-    },
-    {
-      "id": "T119",
-      "mode": "MAINTAIN",
-      "status": "done",
-      "task": "Update scratch/INDEX.md with new scratch notes",
-      "started": "2026-04-29T03:36:37.111Z",
-      "completed": "2026-04-29T03:37:24.883Z",
-      "duration_ms": 60000,
-      "summary": "Updated scratch/INDEX.md with 2 new session C scratch files (nan-boxing-research, superinstruction-analysis)."
-    },
-    {
-      "id": "T120",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "Why does eval beat VM on prelude map? Is it compile overhead or execution?",
-      "project": "monkey-lang",
-      "started": "2026-04-29T03:37:51.644Z",
-      "completed": "2026-04-29T03:38:31.860Z",
-      "duration_ms": 120000,
-      "summary": "Eval has native map builtin (JS loop + applyFunction). VM uses prelude map → __nativeMap → callClosureSync. The 0.6ms vs 13ms gap is almost entirely compile time (6ms for prelude). Actual execution comparable. Not a real perf issue — just benchmark methodology."
-    },
-    {
-      "id": "T121",
-      "mode": "EXPLORE",
-      "status": "skipped",
-      "task": "done-for-now",
-      "project": "monkey-lang",
-      "skip_reason": ""
-    },
-    {
-      "id": "T122",
-      "mode": "EXPLORE",
-      "status": "done",
-      "task": "Can we reduce VM function call overhead? Profile callClosure vs evaluator applyFunction",
-      "project": "monkey-lang",
-      "started": "2026-04-29T03:43:00.823Z",
-      "completed": "2026-04-29T03:48:02.129Z",
-      "duration_ms": 480000,
-      "summary": "Explored VM call overhead: 165ns/call (frame push/pop). Attempted frame caching optimization (replace 40x this.currentFrame() with cached local). Too many frame-change points (calls, returns, tail calls) caused 18 test failures. Reverted. Need careful refactor for another session. Learning: V8 JIT likely already inlines the accessor."
+      "status": "upcoming",
+      "task": "HenryDB: stress test compiled WHERE vs _evalExpr under concurrent transactions",
+      "project": "henrydb"
     }
   ],
   "focusProjects": [
@@ -1233,568 +131,80 @@
   "backlog": [],
   "adjustments": [
     {
-      "time": "2026-04-28T22:15:48.578Z",
-      "msg": "Re-initialized same-day queue. Focus preserved: [monkey-lang, henrydb]"
+      "time": "2026-04-29T14:00:55.765Z",
+      "msg": "Added T1 (THINK) after end: Review yesterday, assess CI failure on monkey-lang, set direction"
     },
     {
-      "time": "2026-04-28T22:15:57.402Z",
-      "msg": "Added T1 (THINK) after end: Session B2 direction: review what was accomplished, pick high-value targets for remaining 4 hours"
+      "time": "2026-04-29T14:01:08.406Z",
+      "msg": "Added T2 (PLAN) after T1: Fix CI failure on monkey-lang main branch"
     },
     {
-      "time": "2026-04-28T22:15:57.517Z",
-      "msg": "Added T2 (PLAN) after end: monkey-lang WASM array reallocation (handle-based growth)"
+      "time": "2026-04-29T14:01:20.210Z",
+      "msg": "Focus set: [monkey-lang, henrydb]"
     },
     {
-      "time": "2026-04-28T22:16:03.666Z",
-      "msg": "Added T3 (BUILD) after end: null"
+      "time": "2026-04-29T14:01:30.107Z",
+      "msg": "Added T3 (BUILD) after T2: null"
     },
     {
-      "time": "2026-04-28T22:16:03.780Z",
-      "msg": "Added T4 (MAINTAIN) after end: Mid-session housekeeping"
+      "time": "2026-04-29T14:01:30.306Z",
+      "msg": "Added T4 (MAINTAIN) after T3: Housekeeping + git push"
     },
     {
-      "time": "2026-04-28T22:16:03.896Z",
-      "msg": "Added T5 (THINK) after end: Assess progress, pivot if needed"
+      "time": "2026-04-29T14:01:30.503Z",
+      "msg": "Added T5 (THINK) after T4: Assess CI fix, plan WASM string hash map work"
     },
     {
-      "time": "2026-04-28T22:16:04.011Z",
-      "msg": "Added T6 (PLAN) after end: HenryDB expression evaluator performance (836μs WHERE)"
+      "time": "2026-04-29T14:01:30.700Z",
+      "msg": "Added T6 (PLAN) after T5: WASM hash map string key integration (find_slot_str + set/get)"
     },
     {
-      "time": "2026-04-28T22:16:04.126Z",
-      "msg": "Added T7 (BUILD) after end: null"
+      "time": "2026-04-29T14:01:30.899Z",
+      "msg": "Added T7 (BUILD) after T6: null"
     },
     {
-      "time": "2026-04-28T22:16:04.240Z",
-      "msg": "Added T8 (MAINTAIN) after end: Git push + test sweep"
+      "time": "2026-04-29T14:01:31.097Z",
+      "msg": "Added T8 (MAINTAIN) after T7: Housekeeping + git push"
     },
     {
-      "time": "2026-04-28T22:16:04.355Z",
-      "msg": "Added T9 (THINK) after end: Evening direction: depth vs breadth"
+      "time": "2026-04-29T14:01:31.295Z",
+      "msg": "Added T9 (THINK) after T8: Mid-day reflection and priority check"
     },
     {
-      "time": "2026-04-28T22:16:04.469Z",
-      "msg": "Added T10 (PLAN) after end: monkey-lang WASM new feature (for-in or hash maps)"
+      "time": "2026-04-29T14:01:31.492Z",
+      "msg": "Added T10 (PLAN) after T9: HenryDB UPDATE pipeline: extend compiled expressions to replace _evalExpr"
     },
     {
-      "time": "2026-04-28T22:16:04.584Z",
-      "msg": "Added T11 (BUILD) after end: null"
+      "time": "2026-04-29T14:01:31.688Z",
+      "msg": "Added T11 (BUILD) after T10: null"
     },
     {
-      "time": "2026-04-28T22:16:04.699Z",
-      "msg": "Added T12 (EXPLORE) after end: Stress test recent features across both projects"
+      "time": "2026-04-29T14:01:31.886Z",
+      "msg": "Added T12 (MAINTAIN) after T11: Housekeeping + git push"
     },
     {
-      "time": "2026-04-28T22:16:04.813Z",
-      "msg": "Added T13 (MAINTAIN) after end: Final cleanup and push"
+      "time": "2026-04-29T14:01:32.083Z",
+      "msg": "Added T13 (THINK) after T12: Afternoon direction — assess progress, pick next goal"
     },
     {
-      "time": "2026-04-28T22:17:43.374Z",
-      "msg": "PLAN T2 filled 3 BUILD tasks"
+      "time": "2026-04-29T14:01:32.281Z",
+      "msg": "Added T14 (PLAN) after T13: monkey-lang: prelude bytecode caching or VM function call overhead"
     },
     {
-      "time": "2026-04-28T22:35:48.592Z",
-      "msg": "Removed T3: Reallocation goal fully completed in T14-T16"
+      "time": "2026-04-29T14:01:32.479Z",
+      "msg": "Added T15 (BUILD) after T14: null"
     },
     {
-      "time": "2026-04-28T22:39:11.067Z",
-      "msg": "PLAN T6 filled 3 BUILD tasks"
+      "time": "2026-04-29T14:01:32.676Z",
+      "msg": "Added T16 (MAINTAIN) after T15: Housekeeping + git push"
     },
     {
-      "time": "2026-04-28T22:50:52.186Z",
-      "msg": "Removed T7: HenryDB expr perf completed in T17-T19"
+      "time": "2026-04-29T14:01:32.874Z",
+      "msg": "Added T17 (EXPLORE) after T16: Research WASM GC backend: struct/array encoding for monkey-lang types"
     },
     {
-      "time": "2026-04-28T22:52:53.612Z",
-      "msg": "PLAN T10 filled 2 BUILD tasks"
-    },
-    {
-      "time": "2026-04-28T22:56:19.033Z",
-      "msg": "Removed T11: for-in goal completed in T20-T21"
-    },
-    {
-      "time": "2026-04-28T22:59:08.359Z",
-      "msg": "Added T22 (THINK) after end: Next feature: array comprehensions in WASM? Check what AST exists"
-    },
-    {
-      "time": "2026-04-28T22:59:08.557Z",
-      "msg": "Added T23 (PLAN) after end: WASM array comprehensions [x*2 for x in arr]"
-    },
-    {
-      "time": "2026-04-28T22:59:08.753Z",
-      "msg": "Added T24 (BUILD) after end: null"
-    },
-    {
-      "time": "2026-04-28T22:59:08.950Z",
-      "msg": "Added T25 (THINK) after end: String support in WASM compiler — feasibility assessment"
-    },
-    {
-      "time": "2026-04-28T22:59:09.146Z",
-      "msg": "Added T26 (PLAN) after end: WASM string operations (concat, length, comparison)"
-    },
-    {
-      "time": "2026-04-28T22:59:09.343Z",
-      "msg": "Added T27 (BUILD) after end: null"
-    },
-    {
-      "time": "2026-04-28T22:59:09.541Z",
-      "msg": "Added T28 (MAINTAIN) after end: Push and test sweep"
-    },
-    {
-      "time": "2026-04-28T22:59:09.737Z",
-      "msg": "Added T29 (EXPLORE) after end: Stress test array comprehensions and string ops"
-    },
-    {
-      "time": "2026-04-28T22:59:09.933Z",
-      "msg": "Added T30 (MAINTAIN) after end: Session wrap: daily log, git push, CURRENT.md"
-    },
-    {
-      "time": "2026-04-28T23:00:43.519Z",
-      "msg": "PLAN T23 filled 2 BUILD tasks"
-    },
-    {
-      "time": "2026-04-28T23:04:34.151Z",
-      "msg": "Removed T24: Comprehension goal completed"
-    },
-    {
-      "time": "2026-04-28T23:05:58.009Z",
-      "msg": "PLAN T26 filled 3 BUILD tasks"
-    },
-    {
-      "time": "2026-04-28T23:13:14.903Z",
-      "msg": "Removed T27: String goal completed"
-    },
-    {
-      "time": "2026-04-28T23:15:07.208Z",
-      "msg": "Removed T30: Still 3 hours left, generate more work"
-    },
-    {
-      "time": "2026-04-28T23:15:21.947Z",
-      "msg": "Added T36 (THINK) after end: Type inference for WASM compiler — track string vs int through variables"
-    },
-    {
-      "time": "2026-04-28T23:15:22.144Z",
-      "msg": "Added T37 (PLAN) after end: WASM variable type tracking for string operations"
-    },
-    {
-      "time": "2026-04-28T23:15:22.342Z",
-      "msg": "Added T38 (BUILD) after end: null"
-    },
-    {
-      "time": "2026-04-28T23:15:22.538Z",
-      "msg": "Added T39 (BUILD) after end: null"
-    },
-    {
-      "time": "2026-04-28T23:15:22.735Z",
-      "msg": "Added T40 (MAINTAIN) after end: Push and full test sweep"
-    },
-    {
-      "time": "2026-04-28T23:15:22.931Z",
-      "msg": "Added T41 (MAINTAIN) after end: Session wrap: daily log, CURRENT.md, git push"
-    },
-    {
-      "time": "2026-04-28T23:16:00.983Z",
-      "msg": "PLAN T37 filled 2 BUILD tasks"
-    },
-    {
-      "time": "2026-04-28T23:20:17.358Z",
-      "msg": "Removed T38: Type inference goal completed"
-    },
-    {
-      "time": "2026-04-28T23:20:17.553Z",
-      "msg": "Removed T39: Type inference goal completed"
-    },
-    {
-      "time": "2026-04-28T23:21:29.328Z",
-      "msg": "Removed T41: More time to work"
-    },
-    {
-      "time": "2026-04-28T23:21:36.096Z",
-      "msg": "Added T44 (THINK) after end: What high-value WASM compiler features remain? Check playground needs"
-    },
-    {
-      "time": "2026-04-28T23:21:36.211Z",
-      "msg": "Added T45 (BUILD) after end: Update playground example programs to showcase new features"
-    },
-    {
-      "time": "2026-04-28T23:21:36.326Z",
-      "msg": "Added T46 (MAINTAIN) after end: Session wrap: daily log, CURRENT.md, git push, TASKS.md update"
-    },
-    {
-      "time": "2026-04-28T23:25:07.191Z",
-      "msg": "Removed T46: More work time"
-    },
-    {
-      "time": "2026-04-28T23:28:39.685Z",
-      "msg": "Added T47 (THINK) after end: How to propagate string types through function parameters without full type inference"
-    },
-    {
-      "time": "2026-04-28T23:28:48.345Z",
-      "msg": "Removed T47: Implementing directly"
-    },
-    {
-      "time": "2026-04-28T23:28:48.459Z",
-      "msg": "Added T48 (BUILD) after end: Heuristic string type inference for function parameters"
-    },
-    {
-      "time": "2026-04-28T23:33:16.798Z",
-      "msg": "Added T49 (EXPLORE) after end: Stress test string type inference edge cases"
-    },
-    {
-      "time": "2026-04-28T23:33:16.997Z",
-      "msg": "Added T50 (MAINTAIN) after end: Update TASKS.md with new test counts and features"
-    },
-    {
-      "time": "2026-04-28T23:33:17.194Z",
-      "msg": "Added T51 (MAINTAIN) after end: Full test sweep of all projects"
-    },
-    {
-      "time": "2026-04-28T23:33:17.390Z",
-      "msg": "Added T52 (MAINTAIN) after end: Session wrap: daily log, CURRENT.md, TASKS.md, git push"
-    },
-    {
-      "time": "2026-04-28T23:36:19.885Z",
-      "msg": "Removed T52: Depth pivot — BUILD cap approaching"
-    },
-    {
-      "time": "2026-04-28T23:36:20.000Z",
-      "msg": "Added T53 (EXPLORE) after end: SESSION BUILD CAP DEPTH PIVOT: Stress test WASM compiler reliability"
-    },
-    {
-      "time": "2026-04-28T23:36:20.115Z",
-      "msg": "Added T54 (THINK) after end: Session B2 reflection: what worked, what surprised, what to improve"
-    },
-    {
-      "time": "2026-04-28T23:36:20.230Z",
-      "msg": "Added T55 (MAINTAIN) after end: Session wrap: daily log, CURRENT.md, git push"
-    },
-    {
-      "time": "2026-04-28T23:40:39.292Z",
-      "msg": "Removed T55: Still 2 hours left"
-    },
-    {
-      "time": "2026-04-28T23:40:49.285Z",
-      "msg": "Added T56 (BUILD) after end: Add quicksort as playground example + stress test examples"
-    },
-    {
-      "time": "2026-04-28T23:40:49.482Z",
-      "msg": "Added T57 (BUILD) after end: WASM: add string methods (charAt, substring) via internal functions"
-    },
-    {
-      "time": "2026-04-28T23:40:49.680Z",
-      "msg": "Added T58 (BUILD) after end: Tests for string charAt and substring"
-    },
-    {
-      "time": "2026-04-28T23:40:49.875Z",
-      "msg": "Added T59 (MAINTAIN) after end: Session wrap"
-    },
-    {
-      "time": "2026-04-28T23:45:40.212Z",
-      "msg": "Removed T59: More work time"
-    },
-    {
-      "time": "2026-04-28T23:45:46.722Z",
-      "msg": "Added T60 (BUILD) after end: WASM: indexOf string method + tests"
-    },
-    {
-      "time": "2026-04-28T23:45:46.836Z",
-      "msg": "Added T61 (BUILD) after end: Rebuild playground bundle + add String Methods example"
-    },
-    {
-      "time": "2026-04-28T23:45:46.950Z",
-      "msg": "Added T62 (MAINTAIN) after end: Session wrap"
-    },
-    {
-      "time": "2026-04-28T23:49:49.727Z",
-      "msg": "Removed T62: More work"
-    },
-    {
-      "time": "2026-04-28T23:49:49.842Z",
-      "msg": "Added T63 (THINK) after end: HenryDB: what high-value features could I add?"
-    },
-    {
-      "time": "2026-04-28T23:49:49.957Z",
-      "msg": "Added T64 (BUILD) after end: HenryDB: Add window functions support (ROW_NUMBER, RANK)"
-    },
-    {
-      "time": "2026-04-28T23:49:50.072Z",
-      "msg": "Added T65 (BUILD) after end: HenryDB: Tests for window functions"
-    },
-    {
-      "time": "2026-04-28T23:49:50.187Z",
-      "msg": "Added T66 (MAINTAIN) after end: Full test sweep + session wrap"
-    },
-    {
-      "time": "2026-04-28T23:50:42.453Z",
-      "msg": "Removed T64: HenryDB already has window functions"
-    },
-    {
-      "time": "2026-04-28T23:50:42.568Z",
-      "msg": "Removed T65: HenryDB already has window functions"
-    },
-    {
-      "time": "2026-04-28T23:52:18.929Z",
-      "msg": "Added T67 (BUILD) after end: WASM: toUpperCase/toLowerCase string methods"
-    },
-    {
-      "time": "2026-04-28T23:52:19.044Z",
-      "msg": "Added T68 (BUILD) after end: WASM: split string method (returns array of strings)"
-    },
-    {
-      "time": "2026-04-28T23:52:19.160Z",
-      "msg": "Added T69 (MAINTAIN) after end: Final session wrap (8 PM)"
-    },
-    {
-      "time": "2026-04-29T00:01:30.822Z",
-      "msg": "Removed T69: More work time"
-    },
-    {
-      "time": "2026-04-29T00:01:30.937Z",
-      "msg": "Added T70 (BUILD) after end: WASM: replace string method + tests"
-    },
-    {
-      "time": "2026-04-29T00:01:31.053Z",
-      "msg": "Added T71 (BUILD) after end: WASM: trim string method + tests"
-    },
-    {
-      "time": "2026-04-29T00:01:31.168Z",
-      "msg": "Added T72 (MAINTAIN) after end: Final: rebuild bundle, full test, daily log, session wrap"
-    },
-    {
-      "time": "2026-04-29T00:04:34.593Z",
-      "msg": "Removed T71: Already included trim in T70"
-    },
-    {
-      "time": "2026-04-29T00:04:49.233Z",
-      "msg": "Removed T72: More work"
-    },
-    {
-      "time": "2026-04-29T00:04:49.349Z",
-      "msg": "Added T73 (BUILD) after end: WASM: number-to-string conversion (intToString)"
-    },
-    {
-      "time": "2026-04-29T00:04:49.462Z",
-      "msg": "Added T74 (MAINTAIN) after end: Final: rebuild bundle, full test, session wrap at 8 PM"
-    },
-    {
-      "time": "2026-04-29T00:08:48.070Z",
-      "msg": "Added T75 (THINK) after end: Hash map design for WASM — memory layout, hash function, API"
-    },
-    {
-      "time": "2026-04-29T00:08:48.184Z",
-      "msg": "Added T76 (PLAN) after end: WASM hash map implementation"
-    },
-    {
-      "time": "2026-04-29T00:08:48.301Z",
-      "msg": "Added T77 (BUILD) after end: null"
-    },
-    {
-      "time": "2026-04-29T00:08:48.415Z",
-      "msg": "Added T78 (MAINTAIN) after end: Session wrap at 8 PM"
-    },
-    {
-      "time": "2026-04-29T00:09:25.983Z",
-      "msg": "PLAN T76 filled 3 BUILD tasks"
-    },
-    {
-      "time": "2026-04-29T00:17:48.234Z",
-      "msg": "Removed T81: Save for next session — sufficient context used"
-    },
-    {
-      "time": "2026-04-29T00:17:57.782Z",
-      "msg": "Removed T77: Unfilled slot"
-    },
-    {
-      "time": "2026-04-29T00:19:48.967Z",
-      "msg": "Added T82 (BUILD) after end: WASM: hash map auto-resize when load > 75%"
-    },
-    {
-      "time": "2026-04-29T00:19:49.167Z",
-      "msg": "Added T83 (BUILD) after end: WASM: hash map string key support"
-    },
-    {
-      "time": "2026-04-29T00:19:59.209Z",
-      "msg": "Added T84 (MAINTAIN) after end: Verify all tests pass and push final state"
-    },
-    {
-      "time": "2026-04-29T00:21:57.078Z",
-      "msg": "Removed T83: Deferred to next session"
-    },
-    {
-      "time": "2026-04-29T00:24:35.469Z",
-      "msg": "Added T85 (BUILD) after end: WASM: hash map string key support via FNV-1a"
-    },
-    {
-      "time": "2026-04-29T00:39:52.155Z",
-      "msg": "Added T86 (BUILD) after end: WASM: proper string comparison for < > <= >= operators"
-    },
-    {
-      "time": "2026-04-29T01:36:52.668Z",
-      "msg": "Added T87 (THINK) after end: End-of-day direction: pick one focused task for remaining 25 min"
-    },
-    {
-      "time": "2026-04-29T01:36:56.741Z",
-      "msg": "Added T88 (PLAN) after T87: Plan hash map string key support"
-    },
-    {
-      "time": "2026-04-29T01:37:04.567Z",
-      "msg": "Added T89 (BUILD) after T88: null"
-    },
-    {
-      "time": "2026-04-29T01:37:08.432Z",
-      "msg": "Added T90 (MAINTAIN) after T89: End-of-session housekeeping"
-    },
-    {
-      "time": "2026-04-29T02:15:26.881Z",
-      "msg": "Added T91 (THINK) after end: Evening C direction: pick 2-hour focus from TODO/backlog, bias toward curiosity"
-    },
-    {
-      "time": "2026-04-29T02:15:59.348Z",
-      "msg": "Added T92 (EXPLORE) after T91: Research NaN-boxing: IEEE 754 NaN space, how LuaJIT/SpiderMonkey use it, trade-offs for monkey-lang"
-    },
-    {
-      "time": "2026-04-29T02:16:04.047Z",
-      "msg": "Added T93 (PLAN) after T92: monkey-lang: NaN-boxing value representation for the interpreter"
-    },
-    {
-      "time": "2026-04-29T02:16:04.246Z",
-      "msg": "Added T94 (BUILD) after T93: null"
-    },
-    {
-      "time": "2026-04-29T02:16:04.445Z",
-      "msg": "Added T95 (BUILD) after T94: null"
-    },
-    {
-      "time": "2026-04-29T02:16:04.643Z",
-      "msg": "Added T96 (BUILD) after T95: null"
-    },
-    {
-      "time": "2026-04-29T02:16:04.842Z",
-      "msg": "Added T97 (MAINTAIN) after T96: Mid-evening housekeeping"
-    },
-    {
-      "time": "2026-04-29T02:16:05.040Z",
-      "msg": "Added T98 (BUILD) after T97: WASM: Hash map playground example (fibonacci counter or word frequency)"
-    },
-    {
-      "time": "2026-04-29T02:18:43.531Z",
-      "msg": "PLAN T93 filled 3 BUILD tasks"
-    },
-    {
-      "time": "2026-04-29T02:34:51.969Z",
-      "msg": "Removed T94: "
-    },
-    {
-      "time": "2026-04-29T02:34:52.166Z",
-      "msg": "Removed T95: "
-    },
-    {
-      "time": "2026-04-29T02:34:52.364Z",
-      "msg": "Removed T96: "
-    },
-    {
-      "time": "2026-04-29T02:39:17.365Z",
-      "msg": "Added T102 (EXPLORE) after end: Create proper before/after benchmark for VM integer unboxing — fibonacci, tight loops, array manipulation"
-    },
-    {
-      "time": "2026-04-29T02:39:22.381Z",
-      "msg": "Added T103 (EXPLORE) after T102: Investigate mutable cell bug: closures in hash literal values don't share set-mutation across siblings"
-    },
-    {
-      "time": "2026-04-29T02:39:27.252Z",
-      "msg": "Added T104 (BUILD) after T103: WASM: hash map auto-resize when load factor exceeds 0.75"
-    },
-    {
-      "time": "2026-04-29T02:51:16.206Z",
-      "msg": "Added T105 (EXPLORE) after end: Audit AST walkers for Map traversal gaps — check all places that walk AST nodes generically"
-    },
-    {
-      "time": "2026-04-29T02:51:23.606Z",
-      "msg": "Added T106 (EXPLORE) after T105: Profile VM with --prof: where does time go in fib(30)? Is there a next optimization after unboxing?"
-    },
-    {
-      "time": "2026-04-29T02:51:30.774Z",
-      "msg": "Added T107 (BUILD) after T106: Update TASKS.md: reflect NaN-boxing done (as unboxing), hash map resize done, new test counts"
-    },
-    {
-      "time": "2026-04-29T02:56:41.352Z",
-      "msg": "Added T108 (EXPLORE) after end: Analyze opcode sequences: find most common 2-3 opcode patterns in fib/counter/loop for superinstruction candidates"
-    },
-    {
-      "time": "2026-04-29T02:56:46.786Z",
-      "msg": "Added T109 (BUILD) after T108: Implement top 2-3 superinstructions in VM (combined opcodes for common sequences)"
-    },
-    {
-      "time": "2026-04-29T03:14:15.628Z",
-      "msg": "Added T110 (EXPLORE) after end: Stress-test unboxing: try edge cases that might break — closures capturing 0, hash with 0 values, falsy-value-heavy programs"
-    },
-    {
-      "time": "2026-04-29T03:15:49.135Z",
-      "msg": "Added T111 (BUILD) after end: Compiler: emit OpAddSetLocal/Global only when both operands are known-integer (from type tracking)"
-    },
-    {
-      "time": "2026-04-29T03:19:44.515Z",
-      "msg": "Added T112 (EXPLORE) after end: Investigate: what does the WASM compiler need for string key support in hash maps?"
-    },
-    {
-      "time": "2026-04-29T03:20:35.742Z",
-      "msg": "Added T113 (MAINTAIN) after end: Evening C final: daily log, git push, CURRENT.md wrap"
-    },
-    {
-      "time": "2026-04-29T03:20:41.682Z",
-      "msg": "Added T114 (BUILD) after end: WASM: implement __hash_fnv_str and string key support in hash maps"
-    },
-    {
-      "time": "2026-04-29T03:20:56.788Z",
-      "msg": "Moved T113 after T114"
-    },
-    {
-      "time": "2026-04-29T03:23:49.569Z",
-      "msg": "Added T115 (EXPLORE) after end: Hunt: scan vm.js for remaining || NULL patterns that should be ?? NULL"
-    },
-    {
-      "time": "2026-04-29T03:23:55.289Z",
-      "msg": "Moved T115 after T114"
-    },
-    {
-      "time": "2026-04-29T03:26:02.526Z",
-      "msg": "Added T116 (BUILD) after end: Add bench.js with comprehensive benchmarks: fib, loop, array, hash, string ops — print comparison table"
-    },
-    {
-      "time": "2026-04-29T03:26:10.694Z",
-      "msg": "Moved T116 after T115"
-    },
-    {
-      "time": "2026-04-29T03:28:07.321Z",
-      "msg": "Added T117 (EXPLORE) after end: Why does evaluator beat VM on string concat? Profile and identify the bottleneck."
-    },
-    {
-      "time": "2026-04-29T03:28:12.743Z",
-      "msg": "Moved T117 after T116"
-    },
-    {
-      "time": "2026-04-29T03:34:04.513Z",
-      "msg": "Added T118 (EXPLORE) after end: Can we make the prelude benchmark faster by pre-compiling? Quick experiment."
-    },
-    {
-      "time": "2026-04-29T03:36:31.329Z",
-      "msg": "Added T119 (MAINTAIN) after end: Update scratch/INDEX.md with new scratch notes"
-    },
-    {
-      "time": "2026-04-29T03:37:43.249Z",
-      "msg": "Added T120 (EXPLORE) after end: Why does eval beat VM on prelude map? Is it compile overhead or execution?"
-    },
-    {
-      "time": "2026-04-29T03:41:01.945Z",
-      "msg": "Added T121 (EXPLORE) after end: done-for-now"
-    },
-    {
-      "time": "2026-04-29T03:41:12.230Z",
-      "msg": "Removed T121: "
-    },
-    {
-      "time": "2026-04-29T03:42:51.641Z",
-      "msg": "Added T122 (EXPLORE) after end: Can we reduce VM function call overhead? Profile callClosure vs evaluator applyFunction"
+      "time": "2026-04-29T14:01:33.071Z",
+      "msg": "Added T18 (EXPLORE) after T17: HenryDB: stress test compiled WHERE vs _evalExpr under concurrent transactions"
     }
   ]
 }
