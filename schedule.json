@@ -48,36 +48,74 @@
     {
       "id": "T4",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Housekeeping + git push",
-      "started": "2026-04-29T14:21:15.716Z"
+      "started": "2026-04-29T14:21:15.716Z",
+      "completed": "2026-04-29T14:22:40.103Z",
+      "duration_ms": 120000,
+      "summary": "Git push workspace + monkey-lang. Fixed Node 18 compat issue (import.meta.dirname → fileURLToPath). CI should pass all 3 Node versions now."
     },
     {
       "id": "T5",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Assess CI fix, plan WASM string hash map work"
+      "status": "done",
+      "task": "Assess CI fix, plan WASM string hash map work",
+      "started": "2026-04-29T14:22:50.367Z",
+      "completed": "2026-04-29T14:23:01.948Z",
+      "duration_ms": 30000,
+      "summary": "CI fix looks good (2 commits pushed). WASM hash map string key work is well-scoped: need find_slot_str + type-aware compilation. T6 PLAN will break this down."
     },
     {
       "id": "T6",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "WASM hash map string key integration (find_slot_str + set/get)",
-      "task": null
+      "task": null,
+      "started": "2026-04-29T14:23:10.701Z",
+      "completed": "2026-04-29T14:23:38.858Z",
+      "duration_ms": 90000,
+      "summary": "Plan: 3 BUILD tasks — find_slot_str, set/get_str variants, then wire into compilation with type detection. __hash_fnv_str already exists from yesterday."
     },
     {
       "id": "T7",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null,
+      "status": "done",
+      "task": "Implement __hash_find_slot_str (like find_slot but uses __str_eq for key comparison)",
       "plan_ref": "T6",
-      "project": "monkey-lang"
+      "project": "monkey-lang",
+      "started": "2026-04-29T14:23:48.840Z",
+      "completed": "2026-04-29T14:24:56.848Z",
+      "duration_ms": 180000,
+      "summary": "Added __hash_find_slot_str — linear probe with __str_eq for string key comparison. Uses hashFnvStr for initial hash. All existing hash tests pass."
+    },
+    {
+      "id": "T20",
+      "mode": "BUILD",
+      "task": "Add __hash_set_str and __hash_get_str that use find_slot_str + fnv_str",
+      "status": "done",
+      "plan_ref": "T6",
+      "started": "2026-04-29T14:25:06.821Z",
+      "completed": "2026-04-29T14:25:51.245Z",
+      "duration_ms": 180000,
+      "summary": "Added __hash_set_str_native and __hash_get_str_native — use find_slot_str + FNV-1a for string keys. Load factor check + resize included. All existing tests pass."
+    },
+    {
+      "id": "T21",
+      "mode": "BUILD",
+      "task": "Wire string-key hash maps into compilation: detect string keys in HashLiteral, emit str variants + tests",
+      "status": "done",
+      "plan_ref": "T6",
+      "started": "2026-04-29T14:26:00.762Z",
+      "completed": "2026-04-29T14:31:57.487Z",
+      "duration_ms": 600000,
+      "summary": "String key hash maps fully working: HashLiteral with string keys uses native WASM, __index_get/set detect string keys via TAG_STRING, FNV-1a hashing, resize support. 8 new tests, all 2015 pass."
     },
     {
       "id": "T8",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Housekeeping + git push"
+      "status": "in-progress",
+      "task": "Housekeeping + git push",
+      "started": "2026-04-29T14:32:09.649Z"
     },
     {
       "id": "T9",
@@ -233,6 +271,10 @@
     {
       "time": "2026-04-29T14:19:38.694Z",
       "msg": "PLAN T2 filled 2 BUILD tasks"
+    },
+    {
+      "time": "2026-04-29T14:23:32.163Z",
+      "msg": "PLAN T6 filled 3 BUILD tasks"
     }
   ]
 }
