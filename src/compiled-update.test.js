@@ -65,9 +65,24 @@ describe('Compiled SET Expressions', () => {
       assert.equal(fn({ a: 3, b: 7 }), 20);
     });
 
-    it('returns null for CASE expressions', () => {
-      const fn = compileSetExpr({ type: 'CASE', when: [] });
+    it('returns null for empty CASE expressions', () => {
+      const fn = compileSetExpr({ type: 'CASE', whens: [] });
       assert.equal(fn, null);
+    });
+
+    it('compiles valid CASE expressions', () => {
+      const fn = compileSetExpr({
+        type: 'CASE',
+        whens: [
+          { when: { type: 'COMPARE', op: 'GT', left: { type: 'column_ref', name: 'x' }, right: { type: 'literal', value: 10 } }, then: { type: 'literal', value: 'big' } },
+          { when: { type: 'COMPARE', op: 'GT', left: { type: 'column_ref', name: 'x' }, right: { type: 'literal', value: 5 } }, then: { type: 'literal', value: 'medium' } }
+        ],
+        else: { type: 'literal', value: 'small' }
+      });
+      assert.ok(fn);
+      assert.equal(fn({ x: 15 }), 'big');
+      assert.equal(fn({ x: 7 }), 'medium');
+      assert.equal(fn({ x: 2 }), 'small');
     });
 
     it('returns null for function calls', () => {

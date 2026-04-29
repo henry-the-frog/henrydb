@@ -221,9 +221,22 @@ function _compileValue(expr, params) {
     return `(-${operand})`;
   }
   
-  // CASE expressions
+  // CASE expressions — compile to nested ternaries
   if (expr.type === 'CASE' || expr.type === 'case') {
-    return null; // Too complex for now
+    const whens = expr.whens || [];
+    if (whens.length === 0) return null;
+    // Build nested ternary: cond1 ? val1 : cond2 ? val2 : ... : elseVal
+    let result = expr.else ? _compileValue(expr.else, params) : 'null';
+    if (result === null) result = 'null';
+    // Build from end to start
+    for (let i = whens.length - 1; i >= 0; i--) {
+      const w = whens[i];
+      const cond = _compile(w.when, params);
+      const val = _compileValue(w.then, params);
+      if (!cond || !val) return null; // Bail if any branch unsupported
+      result = `(${cond} ? ${val} : ${result})`;
+    }
+    return result;
   }
   
   // Function calls
