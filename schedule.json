@@ -113,36 +113,74 @@
     {
       "id": "T8",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Housekeeping + git push",
-      "started": "2026-04-29T14:32:09.649Z"
+      "started": "2026-04-29T14:32:09.649Z",
+      "completed": "2026-04-29T14:32:36.905Z",
+      "duration_ms": 60000,
+      "summary": "Git push both repos. CI confirmed green on previous commit (Node 18 fix). Latest push with string hash maps queued."
     },
     {
       "id": "T9",
       "mode": "THINK",
-      "status": "upcoming",
-      "task": "Mid-day reflection and priority check"
+      "status": "done",
+      "task": "Mid-day reflection and priority check",
+      "started": "2026-04-29T14:32:46.677Z",
+      "completed": "2026-04-29T14:33:00.838Z",
+      "duration_ms": 30000,
+      "summary": "8 tasks done, depth check passed (1 surprise: empty hash path exposure). CI green. String hash maps complete. Next: HenryDB UPDATE pipeline for project variety."
     },
     {
       "id": "T10",
       "mode": "PLAN",
-      "status": "upcoming",
+      "status": "done",
       "goal": "HenryDB UPDATE pipeline: extend compiled expressions to replace _evalExpr",
-      "task": null
+      "task": null,
+      "started": "2026-04-29T14:33:09.481Z",
+      "completed": "2026-04-29T14:36:37.877Z",
+      "duration_ms": 180000,
+      "summary": "Plan: 3 tasks — compileSetExpr function, wire into UPDATE hot path, tests. Reuses existing where-compiler infrastructure (compileExprToCode)."
     },
     {
       "id": "T11",
       "mode": "BUILD",
-      "status": "upcoming",
-      "task": null,
+      "status": "done",
+      "task": "Create compileSetExpr in where-compiler.js: compile a SET value expression AST to a JS function (row) => value",
       "plan_ref": "T10",
-      "project": "henrydb"
+      "project": "henrydb",
+      "started": "2026-04-29T14:36:48.505Z",
+      "completed": "2026-04-29T14:37:40.582Z",
+      "duration_ms": 180000,
+      "summary": "Added compileSetExpr and compileSetBatch to where-compiler.js. Compiles SET expressions to (row)=>value functions. Tested: literals, column refs, arithmetic, batch mode all work."
+    },
+    {
+      "id": "T22",
+      "mode": "BUILD",
+      "task": "Wire compiled SET expressions into UPDATE hot path: pre-compile assignments, skip _evalValue per-row",
+      "status": "done",
+      "plan_ref": "T10",
+      "started": "2026-04-29T14:37:52.823Z",
+      "completed": "2026-04-29T14:39:38.792Z",
+      "duration_ms": 180000,
+      "summary": "Wired compileSetBatch into UPDATE loop. Pre-compiles assignments, uses direct fn(row) calls in hot loop. Falls back for unsupported exprs. All UPDATE tests pass."
+    },
+    {
+      "id": "T23",
+      "mode": "BUILD",
+      "task": "Add UPDATE compilation tests: simple SET, SET with expression, SET with WHERE",
+      "status": "done",
+      "plan_ref": "T10",
+      "started": "2026-04-29T14:39:47.663Z",
+      "completed": "2026-04-29T14:41:17.579Z",
+      "duration_ms": 180000,
+      "summary": "19 compiled UPDATE tests (unit: literal/string/null/col-ref/arithmetic/nested/CASE/function; batch: single/multi/unknown-col/unsupported; integration: simple/arithmetic/WHERE/multi-col/all-rows/1000-row-batch). All pass."
     },
     {
       "id": "T12",
       "mode": "MAINTAIN",
-      "status": "upcoming",
-      "task": "Housekeeping + git push"
+      "status": "in-progress",
+      "task": "Housekeeping + git push",
+      "started": "2026-04-29T14:41:28.741Z"
     },
     {
       "id": "T13",
@@ -275,6 +313,10 @@
     {
       "time": "2026-04-29T14:23:32.163Z",
       "msg": "PLAN T6 filled 3 BUILD tasks"
+    },
+    {
+      "time": "2026-04-29T14:36:31.532Z",
+      "msg": "PLAN T10 filled 3 BUILD tasks"
     }
   ]
 }
