@@ -45,3 +45,7 @@
 - `wasm-closure-bugs.md` — Updated: RESOLVED. All 5 bugs fixed via box/cell pattern. 14 regression tests.
 - `wasm-gc-explore-apr28.md` — NEW: WASM GC structs/arrays verified in Node.js v22, binary encoding notes
 - `wasm-gc-backend-design.md` — NEW: 5-phase design for WASM GC backend (12-18 hours est.)
+
+## Session C (2026-04-28 evening) — New Files
+- `nan-boxing-research.md` — NaN-boxing research: IEEE 754, LuaJIT/SpiderMonkey approaches, SMI-like unboxing for JS host. Option B (raw numbers on stack) recommended.
+- `superinstruction-analysis.md` — Opcode sequence analysis for superinstructions. Top candidates: OpIncrementLocal (saves 3 dispatches), OpAddSetLocal. Key finding: V8 JIT negates dispatch reduction (<0.5% benefit).

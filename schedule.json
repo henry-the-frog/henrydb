@@ -1167,9 +1167,30 @@
     {
       "id": "T113",
       "mode": "MAINTAIN",
-      "status": "in-progress",
+      "status": "done",
       "task": "Evening C final: daily log, git push, CURRENT.md wrap",
-      "started": "2026-04-29T03:31:30.395Z"
+      "started": "2026-04-29T03:31:30.395Z",
+      "completed": "2026-04-29T03:33:38.993Z",
+      "duration_ms": 300000,
+      "summary": "Final wrap: daily log updated with full session C summary (18 tasks, 5 discoveries, performance table), CURRENT.md set to session-ended, all repos pushed."
+    },
+    {
+      "id": "T118",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Can we make the prelude benchmark faster by pre-compiling? Quick experiment.",
+      "project": "monkey-lang",
+      "started": "2026-04-29T03:34:12.085Z",
+      "completed": "2026-04-29T03:36:15.479Z",
+      "duration_ms": 300000,
+      "summary": "Tried caching prelude AST — saves 4ms (13→9ms) but causes 12 test failures because compiler constant folding mutates AST nodes in place, corrupting cached prelude on second compile. Reverted. Proper fix needs either: (1) immutable AST, (2) deep clone per compile, or (3) bytecode-level prelude caching. Not worth the complexity for 4ms."
+    },
+    {
+      "id": "T119",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Update scratch/INDEX.md with new scratch notes",
+      "started": "2026-04-29T03:36:37.111Z"
     }
   ],
   "focusProjects": [
@@ -1717,6 +1738,14 @@
     {
       "time": "2026-04-29T03:28:12.743Z",
       "msg": "Moved T117 after T116"
+    },
+    {
+      "time": "2026-04-29T03:34:04.513Z",
+      "msg": "Added T118 (EXPLORE) after end: Can we make the prelude benchmark faster by pre-compiling? Quick experiment."
+    },
+    {
+      "time": "2026-04-29T03:36:31.329Z",
+      "msg": "Added T119 (MAINTAIN) after end: Update scratch/INDEX.md with new scratch notes"
     }
   ]
 }
