@@ -17,7 +17,7 @@ import { MVCCManager } from './mvcc.js';
 import { installPgCatalog } from './pg-catalog.js';
 import { installSetOperations } from './set-operations.js';
 import { installExpressionEvaluator } from './expression-evaluator.js';
-import { compileWhereFilter } from './where-compiler.js';
+import { compileWhereFilter, compileSetBatch } from './where-compiler.js';
 import { sqliteCompare } from './sqlite-compare.js';
 import { PLParser, PLInterpreter } from './plsql.js';
 
@@ -2627,13 +2627,24 @@ export class Database {
       }
     }
 
+    // Pre-compile SET expressions for the hot loop
+    const compiledSets = compileSetBatch(ast.assignments, table.schema);
+
     for (const item of toUpdate) {
       const newValues = [...item.values];
       const row = item.combined || this._valuesToRow(item.values, table.schema, ast.table);
-      for (const { column, value } of ast.assignments) {
-        const colIdx = table.schema.findIndex(c => c.name === column);
-        if (colIdx === -1) throw new Error(`Column ${column} not found`);
-        newValues[colIdx] = this._evalValue(value, row);
+      if (compiledSets) {
+        // Fast path: compiled SET expressions
+        for (const { colIdx, fn } of compiledSets) {
+          newValues[colIdx] = fn(row);
+        }
+      } else {
+        // Fallback: interpreted per-row evaluation
+        for (const { column, value } of ast.assignments) {
+          const colIdx = table.schema.findIndex(c => c.name === column);
+          if (colIdx === -1) throw new Error(`Column ${column} not found`);
+          newValues[colIdx] = this._evalValue(value, row);
+        }
       }
 
       // Recompute generated columns
