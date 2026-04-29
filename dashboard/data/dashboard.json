@@ -1,11 +1,13 @@
 {
-  "generated": "2026-04-29T15:04:02.551Z",
+  "generated": "2026-04-29T15:49:29.040Z",
   "current": {
-    "status": "in-progress",
-    "mode": "MAINTAIN",
-    "task": "Git push all repos, update TASKS.md with today's progress",
-    "startedAt": "2026-04-29T15:04:02.551Z",
-    "taskId": "T33"
+    "status": "done",
+    "mode": "BUILD",
+    "task": "monkey-lang WASM: add hash.delete() support (mark entries as DELETED)",
+    "completedAt": "2026-04-29T15:49:29.040Z",
+    "taskId": "T52",
+    "summary": "Hash map delete() builtin: evaluator + WASM. Marks entries DELETED(status=2), decrements size. String+int keys supported. Re-insert works. 4 tests pass.",
+    "durationMs": 300000
   },
   "schedule": {
     "date": "2026-04-29",
@@ -2088,14 +2090,14 @@
   },
   "adjustments": [],
   "stats": {
-    "blocksCompleted": 34,
+    "blocksCompleted": 52,
     "blocksTotal": 35,
     "modeDistribution": {
-      "THINK": 6,
+      "THINK": 8,
       "PLAN": 6,
-      "BUILD": 16,
-      "MAINTAIN": 4,
-      "EXPLORE": 2
+      "BUILD": 25,
+      "MAINTAIN": 7,
+      "EXPLORE": 6
     }
   },
   "artifacts": [],
