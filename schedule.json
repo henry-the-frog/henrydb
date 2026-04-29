@@ -888,6 +888,109 @@
       "completed": "2026-04-29T01:48:08.672Z",
       "duration_ms": 60000,
       "summary": "Git push monkey-lang + workspace. Daily log updated. TASKS.md and TODO.md updated (string key support complete)."
+    },
+    {
+      "id": "T91",
+      "mode": "THINK",
+      "status": "done",
+      "task": "Evening C direction: pick 2-hour focus from TODO/backlog, bias toward curiosity",
+      "started": "2026-04-29T02:15:34.689Z",
+      "completed": "2026-04-29T02:16:10.299Z",
+      "duration_ms": 60000,
+      "summary": "Evening direction: NaN-boxing deep dive (EXPLORE+PLAN+BUILD), then hash map playground. Curiosity-focused session."
+    },
+    {
+      "id": "T92",
+      "mode": "EXPLORE",
+      "status": "done",
+      "task": "Research NaN-boxing: IEEE 754 NaN space, how LuaJIT/SpiderMonkey use it, trade-offs for monkey-lang",
+      "project": "monkey-lang",
+      "started": "2026-04-29T02:16:22.503Z",
+      "completed": "2026-04-29T02:18:24.374Z",
+      "duration_ms": 300000,
+      "summary": "Researched NaN-boxing: IEEE 754 NaN space, LuaJIT/SpiderMonkey/JSC approaches, practical options for JS host. Conclusion: Option B (SMI-like unboxing) is best for monkey-lang — raw JS numbers for ints, primitives for bools/null, heap objects only for strings/arrays/hashes. Scratch note written."
+    },
+    {
+      "id": "T93",
+      "mode": "PLAN",
+      "status": "done",
+      "goal": "monkey-lang: NaN-boxing value representation for the interpreter",
+      "task": null,
+      "started": "2026-04-29T02:18:32.040Z",
+      "completed": "2026-04-29T02:18:50.069Z",
+      "duration_ms": 120000,
+      "summary": "Plan: 3 BUILD tasks. (1) Add value type predicates and raw-number encoding helpers in object.js. (2) Refactor VM binary ops + comparisons to use raw JS numbers for ints. (3) Update remaining VM opcodes (constants, locals, builtins) to handle raw ints. VM-only scope — evaluator stays as-is for now."
+    },
+    {
+      "id": "T99",
+      "mode": "BUILD",
+      "task": "VM value module: add type predicates (isMonkeyInt, unwrapInt, wrapInt) + update object.js exports",
+      "status": "done",
+      "plan_ref": "T93",
+      "started": "2026-04-29T02:18:57.108Z",
+      "completed": "2026-04-29T02:21:27.447Z",
+      "duration_ms": 300000,
+      "summary": "Added 10 unboxed value helpers to object.js: isInt, isFloat, isNumeric, isStr, unwrapInt, unwrapNum, wrapInt, inspectValue, typeOf, hashKeyOf. These allow the VM to use raw JS numbers on the stack. 89 VM tests still pass."
+    },
+    {
+      "id": "T100",
+      "mode": "BUILD",
+      "task": "VM binary ops + comparisons: use raw numbers for integer fast path",
+      "status": "done",
+      "plan_ref": "T93",
+      "started": "2026-04-29T02:21:35.806Z",
+      "completed": "2026-04-29T02:34:25.163Z",
+      "duration_ms": 600000,
+      "summary": "VM integer unboxing: raw JS numbers on stack instead of MonkeyInteger objects. 3.2x VM test speedup (1665ms→528ms). Fixed subtle || NULL bug (0||NULL→NULL). All 1257 tests pass."
+    },
+    {
+      "id": "T101",
+      "mode": "BUILD",
+      "task": "VM remaining opcodes: OpConstant, OpMinus, OpSetGlobal/Local, builtins — handle raw ints",
+      "status": "done",
+      "plan_ref": "T93",
+      "started": "2026-04-29T02:34:41.206Z",
+      "completed": "2026-04-29T02:34:41.447Z",
+      "duration_ms": 5000,
+      "summary": "Already completed in T100 — OpConstant, OpMinus, builtins, locals/globals all handle raw ints. No additional work needed."
+    },
+    {
+      "id": "T94",
+      "mode": "BUILD",
+      "status": "skipped",
+      "task": null,
+      "project": "monkey-lang",
+      "skip_reason": ""
+    },
+    {
+      "id": "T95",
+      "mode": "BUILD",
+      "status": "skipped",
+      "task": null,
+      "project": "monkey-lang",
+      "skip_reason": ""
+    },
+    {
+      "id": "T96",
+      "mode": "BUILD",
+      "status": "skipped",
+      "task": null,
+      "project": "monkey-lang",
+      "skip_reason": ""
+    },
+    {
+      "id": "T97",
+      "mode": "MAINTAIN",
+      "status": "in-progress",
+      "task": "Mid-evening housekeeping",
+      "started": "2026-04-29T02:35:03.985Z"
+    },
+    {
+      "id": "T98",
+      "mode": "BUILD",
+      "status": "upcoming",
+      "task": "WASM: Hash map playground example (fibonacci counter or word frequency)",
+      "project": "monkey-lang"
     }
   ],
   "focusProjects": [
@@ -1307,6 +1410,54 @@
     {
       "time": "2026-04-29T01:37:08.432Z",
       "msg": "Added T90 (MAINTAIN) after T89: End-of-session housekeeping"
+    },
+    {
+      "time": "2026-04-29T02:15:26.881Z",
+      "msg": "Added T91 (THINK) after end: Evening C direction: pick 2-hour focus from TODO/backlog, bias toward curiosity"
+    },
+    {
+      "time": "2026-04-29T02:15:59.348Z",
+      "msg": "Added T92 (EXPLORE) after T91: Research NaN-boxing: IEEE 754 NaN space, how LuaJIT/SpiderMonkey use it, trade-offs for monkey-lang"
+    },
+    {
+      "time": "2026-04-29T02:16:04.047Z",
+      "msg": "Added T93 (PLAN) after T92: monkey-lang: NaN-boxing value representation for the interpreter"
+    },
+    {
+      "time": "2026-04-29T02:16:04.246Z",
+      "msg": "Added T94 (BUILD) after T93: null"
+    },
+    {
+      "time": "2026-04-29T02:16:04.445Z",
+      "msg": "Added T95 (BUILD) after T94: null"
+    },
+    {
+      "time": "2026-04-29T02:16:04.643Z",
+      "msg": "Added T96 (BUILD) after T95: null"
+    },
+    {
+      "time": "2026-04-29T02:16:04.842Z",
+      "msg": "Added T97 (MAINTAIN) after T96: Mid-evening housekeeping"
+    },
+    {
+      "time": "2026-04-29T02:16:05.040Z",
+      "msg": "Added T98 (BUILD) after T97: WASM: Hash map playground example (fibonacci counter or word frequency)"
+    },
+    {
+      "time": "2026-04-29T02:18:43.531Z",
+      "msg": "PLAN T93 filled 3 BUILD tasks"
+    },
+    {
+      "time": "2026-04-29T02:34:51.969Z",
+      "msg": "Removed T94: "
+    },
+    {
+      "time": "2026-04-29T02:34:52.166Z",
+      "msg": "Removed T95: "
+    },
+    {
+      "time": "2026-04-29T02:34:52.364Z",
+      "msg": "Removed T96: "
     }
   ]
 }
