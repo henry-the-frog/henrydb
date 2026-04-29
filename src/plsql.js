@@ -834,20 +834,37 @@ export class PLInterpreter {
       return String(left) + String(right);
     }
 
-    // Handle arithmetic
-    const addMatch = expr.match(/^(.+)\s*([+\-])\s*([^+\-]+)$/);
-    if (addMatch) {
-      const left = this._evalSimpleExpr(addMatch[1].trim(), scope);
-      const right = this._evalSimpleExpr(addMatch[3].trim(), scope);
-      return addMatch[2] === '+' ? left + right : left - right;
+    // Handle arithmetic — find operators at parenthesis depth 0
+    const findLastOpAtDepth0 = (s, ops) => {
+      let depth = 0;
+      let lastPos = -1;
+      let lastOp = '';
+      for (let i = 0; i < s.length; i++) {
+        if (s[i] === '(') depth++;
+        else if (s[i] === ')') depth--;
+        else if (depth === 0 && ops.includes(s[i])) {
+          // Don't match unary minus (preceded by operator or start of string)
+          if (s[i] === '-' && (i === 0 || '(*/%+-=<>'.includes(s[i-1].trim() || '('))) continue;
+          lastPos = i;
+          lastOp = s[i];
+        }
+      }
+      return lastPos >= 0 ? { left: s.slice(0, lastPos).trim(), op: lastOp, right: s.slice(lastPos + 1).trim() } : null;
+    };
+
+    const addSplit = findLastOpAtDepth0(expr, ['+', '-']);
+    if (addSplit) {
+      const left = this._evalSimpleExpr(addSplit.left, scope);
+      const right = this._evalSimpleExpr(addSplit.right, scope);
+      return addSplit.op === '+' ? left + right : left - right;
     }
 
-    const mulMatch = expr.match(/^(.+)\s*([*/%])\s*([^*/%]+)$/);
-    if (mulMatch) {
-      const left = this._evalSimpleExpr(mulMatch[1].trim(), scope);
-      const right = this._evalSimpleExpr(mulMatch[3].trim(), scope);
-      if (mulMatch[2] === '*') return left * right;
-      if (mulMatch[2] === '/') return left / right;
+    const mulSplit = findLastOpAtDepth0(expr, ['*', '/', '%']);
+    if (mulSplit) {
+      const left = this._evalSimpleExpr(mulSplit.left, scope);
+      const right = this._evalSimpleExpr(mulSplit.right, scope);
+      if (mulSplit.op === '*') return left * right;
+      if (mulSplit.op === '/') return left / right;
       return left % right;
     }
 
